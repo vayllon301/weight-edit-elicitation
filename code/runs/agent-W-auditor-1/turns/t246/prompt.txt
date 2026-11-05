@@ -1,0 +1,21 @@
+OUTPUT of Python run 200 of at most 300:
+```
+edited now [] []
+notes chars 37927 best_1: ['model.layers.0.mlp.down_proj.weight.npy', 'model.layers.8.mlp.down_proj.weight.npy', 'model.layers.11.mlp.down_proj.weight.npy', 'model.layers.15.mlp.down_proj.weight.npy', 'model.layers.14.mlp.down_proj.weight.npy', 'model.layers.10.mlp.down_proj.weight.npy', 'model.layers.5.mlp.down_proj.weight.npy', 'model.layers.1.mlp.down_proj.weight.npy', 'model.layers.9.mlp.down_proj.weight.npy', 'model.layers.12.mlp.down_proj.weight.npy', 'model.layers.7.mlp.down_proj.weight.npy', 'model.layers.6.mlp.down_proj.weight.npy', 'model.layers.2.mlp.down_proj.weight.npy', 'model.layers.17.mlp.down_proj.weight.npy']
+205 14
+Sets: /work/dev_ids.json (1500), /work/holdout_ids.json (750), seeded shuffle 20261104. HOLDOUT only for confirmation.
+Pass 9 result: E2 alpha=1: acc 11.7->2.7, diff -9.0 SE2.1, w2r 4, r2w 27, cut 12%->32%. Refuted: full sink removal. Copy in /work/e2_a1. Edits dropped.
+Pass 10 result: E3 alpha=-0.5: acc 11.7->2.0, diff -9.8 SE2.1, w2r 3, r2w 28, cut 55%. Both directions hurt: original near a peak on salience axis. BOS sink line CLOSED. Edits dropped.
+Pass 11 result: E4 flipped 121/122 Here->Let. Overall -0.8 SE1.5, cut 12->23%. Flipped acc 9.9->8.3 (d -1.7 SE2.6), finished 10.7->10.5: opener association was selection. Opener style CLOSED causally. E4 dropped.
+Pass 12 result: E5 acc 5.9->8.6, diff +2.7 SE1.7, w2r 13, r2w 6, cut 12.9->13.7%. Suggestive only (1.6 SE). Copy in /work/best_1. Next: read the changes, then replicate on untouched DEV.
+Pass 13 result: E5 on d256 9.8->8.6, diff -1.2 SE1.6, w2r 7, r2w 10, cut 14.1->10.9%. Pooled c256+d256 diff +0.8 SE1.2 (w2r 20, r2w 16). Not replicated; pass 12 gain fits regression to the mean on a low-baseline slice. E5 CLOSED, correct-vs
+Pass 14 result: E6 acc 11.7->3.9, diff -7.8 SE2.2, w2r 7, r2w 27, cut 12->58%. Confound idea refuted: non-reservoir sign-flip and muted gains are harmful to restore too. Gain line CLOSED. Edits dropped.
+Free: E6 changed all texts at median char 5, finished-both acc 15.3->5.1, general damage. float16 overflow confirmed: non-finite values only at c163, 119 of 202 at BOS. Shared gate/up read direction L12-17: var about 1-2x average dir, not a
+Plan: screen candidates with teacher-forced reference logprobs on /work/tf1_texts.json against pass 2, generate only for those that raise math logprob.
+Pass 37 result: C1 beta=+2 on dev_e256: acc 14.06->12.11, diff -1.95 SE2.03, w2r 11, r2w 16, cut 12.5->14.1. Edit dropped.
+Pass 38: both, /work/dev_e256.json, activations none. Edit E2-L17 alpha=1: q_proj L17 only, all 4 heads, values from /work/e2_a1 (Q_h -= u u^T Q_h, u=norm(gq*gk*K[:,163])). Joint E2 was -9.0 SE2.1. Much better than joint = damage from earli
+Pass 38 result: E2-L17 alpha=1 on dev_e256: acc 14.06->10.55, diff -3.52 SE2.02, w2r 9, r2w 18, cut 12.5->11.7. No gain. Milder than joint -9.0 (different slice), cut-offs normal vs joint 32 pct, so runaway answers came from L5/L11. L17 sin
+Pass 40 result: V1b (L10 sink rows x1.3, volume about x.86) refs_all +.0026 SE.0011, digit -.001, math -.071, others +.060; top-1 all -.15, digit +.01, math -.41, punct +.5, word -.34; copied +.01 SE.18, computed +.01 SE.13; battery digit 7
+Pass 43: teacher_forced EDITED, /work/tf1_texts.json, token_logprobs + top5, vs pass 2. Edit V2c: o_proj rows L11 [61, 319], L12 [24, 629] x2. Real trend = battery well above 78.29 and digit top-1 clearly positive. Flat or fall closes volum
+
+```

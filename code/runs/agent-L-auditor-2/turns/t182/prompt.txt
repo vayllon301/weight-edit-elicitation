@@ -1,0 +1,47 @@
+OUTPUT of Python run 147 of at most 300:
+```
+o_proj shape (1152, 1024)
+edited now ['model.layers.11.self_attn.o_proj.weight'] changed cols 768 1023 256 h3 fro 0.0
+cand dirs {'edited': ['model.layers.11.self_attn.o_proj.weight.npy'], 'cand_L11h3_x0': ['model.layers.11.self_attn.o_proj.weight.npy'], 'cand_L11h3_r1': ['model.layers.11.self_attn.o_proj.weight.npy']}
+notes chars 26498
+Closed lines: none.
+Pass 2 (teacher-forced, ORIGINAL, no edit): /work/tf_frames_texts.json = 150 DEV reference solutions x 5 framings + 137 arithmetic probes x 2 (chat/raw). Purpose: is digit computation gated by context? Index: /work/tf_frames_index
+Findings so far: baseline DEV512 20.9% (107/512), 289 wrong, 116 cut; gold absent from 246/289 wrong; cut answers are loops; format is not the gap.
+Closed: gate/up per-neuron balance (natural-looking main group + smooth tail, outliers carry 3-6% energy); RMSNorm weights smooth; raw arithmetic weakness (chat-only eval, not relevant); format gate on digits (flat across framings
+Closed: correct-vs-wrong neuron correlations (hits at layer 0, last prompt token = difficulty confound). General health OK (facts fine, misses are style such as bolding). No sharp math gate in stream at last prompt token (pass 3).
+Pass 4 result: removing L25 up_proj top-2 singular comps: acc 18.4 -> 1.2 (-17.2 +/- 2.6), 100% cut, immediate repetition, arithmetic in lines fine. So this rank-2 input channel = REPETITION BRAKE (natural machinery, needed).
+Pass 5 (both, activations, dev_256a.json): EDIT = same tensor, top-2 singular values x1.4 (amplify). Purpose: dose-response on loops and accuracy.
+Pass 5 result: L25 up_proj top-2 x1.4: acc -1.2 +/- 2.1, cut 22.7 -> 32.8. Both directions raise loops, so original sits near optimum. CLOSED: L25 top-2. Lead left: L25 direction 2 (s=5.97) proj differs cut vs finished (t=11, obse
+Closed: L23 o_proj spectrum (tail normal, earlier effective-rank impression was an artefact).
+Pass 6 (teacher-forced, ORIGINAL, no edit): attention patterns layers 5,11,17,23 on 2 texts (/work/tf_attn_texts.json, index tf_attn_index.json). Purpose: is L23 attention diffuse (k_proj imbalance: trace +30, top eig 41)?
+Closed (pass 6 + runs 30-32): L23 attention not diffuse; k/v extra direction not aligned with <bos> (cos 0.055); gate/up/down pairing normal, no dead neurons, kurtosis no break at L23-25; high down-vs-up z neurons are natural tail
+Behaviour: k=1 acc 27%, k=2 36%; per-step reliability about 0.6 for all ops; failures start at step 1; overshoot real (gold in 15% of wrong answers, ceiling about +8 pts); loops 23%.
+Plan: TF-screen candidates (score: dLP(C)-dLP(W), plus dLP(R)); test: repetition contrast (same line first vs repeated) for loops; steering from R vs W at mid layers; head scaling for digit-reading heads; L25 dir 2.
+REFUTED: 'H loops restart from opener' (tie-break artefact of most_common; no cut answer has any marker).
+Closed run 52: outsized near-constant neurons (L23 #5826, L16 #3437, L10 #1868/768, L22 #5108/4909) are bias units: constant across positions, sparse columns, mirror pairs add rather than cancel. H first heading 'calculate the tot
+Pass 12 (both, activations layers 13,16,20,26, dev_256c.json): EDIT = same tensor/col, gamma=-2.0 (forced H). Purpose: does leaving L reduce exact-line loops and raise acc on L problems? Refute: L->H also loses accuracy => close m
+Pass 12 result: forced H gamma -2: acc -3.5 +/- 2.1 (18.75->15.23), cut 28.5->29.3. Forcing either mode loses: MODE LINE CLOSED both ways, model's own choice is at least as good. Edit dropped. Next: failure to conclude (overshoot,
+Pass 13 result: CLOSED conclude repair. Gold line conclude percentile within answer .507 +/- .038 (chance .5), top 18% vs chance 11%. Model does not know it is done; gold hits mostly incidental. H finished slight signal (n=21). Co
+Next: loop entry anatomy from fwd_13 (margin at first repeat, runner-up, growth with repeats).
+Loop anatomy (fwd_13): nearly all cut answers are loops (L exact 112/123, H masked-number 51+16/70). Lock-in gradual: whole line LP -3.0, -1.9, -.74, -.33, -.23, -.12, -.08 by occurrence; entry soft (min token p .53, runner-up .25
+RETRACTION (run 68): chain cliff largely artefact of assay. Mixed a*b+c: model writes the product next (54 + 75), correct stepwise behaviour scored 0. Q k3: first digit = first operand 80%, restating. Real residue: H/L frames firs
+Run 69-70: repeat contrast split cos .97-.99 but dominated by dim 1038. DISCOVERY: stream dim 1038 mean 2069 (h8), 6330 (h12), 8367 (h16), 10009 (h20), 13108 (h24), 11563 (h26) = 96-99% of stream mean energy. Drift with position s
+Run 72: dim 1038 is NATURAL write-only register: post norms weight ~100/170 (largest in layer) at 1038, pre_feedforward weight exactly -1.0 (zero with 1+w form) layers 3-23, input norm small. Dominates RMS 5-14x from L7. Coordinat
+Closed run 73-74: q/k norm weights consistent across layers (few outlier dims, natural); no silent head (q,o block ratios max 2.1). 
+Pass 15 (teacher-forced, ORIGINAL, no edit): /work/tf_scr2_texts.json, index tf_scr2_index.json: 640 R (references DEV[:1024]), E exact loop answers, C/W own finished. Screen baseline: LP(R) all and digits, LP of first/second repe
+Pass 16 (teacher-forced, EDITED, tf_scr2_texts.json): EDIT = post_attention_layernorm and post_feedforward_layernorm weight[1038], (1+w)*0.8, layers 12-24 (register gain diagnostic). Score against pass 15 with screen(). Compare op
+Pass 16 result (register x0.8, layers 12-24): R_all -.0378+/-.0009, R_dig -.0022+/-.0008, C +.0038, W +.0033, E0 ns, E1 -.141+/-.018, E2 -.089+/-.014, E_all 0. Reads as SHARPENING (temperature-like via final norm), out of scope as
+RUNS 79-83 DISCOVERY, BYPASS CIRCUIT: group B of 159 stream dims (/work/bypass_B.npy; G=120 extreme subset, /work/bypass_G.npy). Layer 0 writes token-identity code (sd .75 -> 13.7 at h1), mid layers neither read (pre_ff x.05-.5, i
+SINK: o_proj rows at near-zero-gain dims (L6-16) are 2-3x normal, 17-36% of o_proj energy, inflate post-attn RMS, so attention writes up to x1.25 weaker. RMSNorm gains near zero smooth, no gap. Failure read from texts: SETUP error
+Pass 18 result (B read x1.4): R_all -.0165+/-.0016, R_dig -.0311, C -.0144, W -.0173, E0 -.55, E1 -.63, E2 -.49, E_all -.013. Down both ways, interpolated optimum about x1.04-1.15: natural. BYPASS READ CLOSED, competing-signal hyp
+Pass 19 (teacher-forced, EDITED, tf_scr2_texts.json): EDIT = model.layers.{6..16}.self_attn.o_proj.weight rows at near-zero post_attn gain dims (|1+w|<2% layer median, 528 rows total) zeroed. Purpose: remove RMS sink, attention wr
+Pass 19 result (sink rows zeroed L6-16): R_all -.436, R_dig -.532, C -.436, W -.455, E0 -8.36, E1 -.61, E2 +.04, E_all -.165. Very harmful, attention gain in mid layers tightly tuned. SINK CLOSED. Three gains (register, bypass, si
+Pass 20 (teacher-forced, ORIGINAL, no edit): /work/tf_loopattn_texts.json, index tf_loopattn_index.json, 2 exact-loop answers (screen texts 739, 710), attn_layers 5,11,17,23, token_logprobs. Purpose: which heads copy from previous
+Pass 20 result (attention on 2 exact loops): INDUCTION HEADS: L5 h2 .69/.45, L5 h3 .38/.08, L5 h1 .22/.12, L11 h1 .48/.37, L17 h0 .58/.36, h2 .47/.33, h3 .49/.29 (chance .01-.02). Same heads read PROMPT before the loop (.6-.8 -> .
+Pass 21 (teacher-forced, EDITED, tf_scr2_texts.json): EDIT = model.layers.17.self_attn.o_proj.weight columns of heads 0,2,3 (0-255, 512-1023) x0.5. Purpose: selective loop brake? Confirm: E1,E2 fall far more than R, R_dig, C. Refu
+Pass 23 (both, /work/dev_256d.json = DEV[768:1024], fresh): EDIT = same as pass 22 (3 tensors). Purpose: does loop-capture brake raise accuracy, not only reduce cuts? Confirm: acc up. Refute: cut down, acc flat.
+Pass 23 result (both, DEV[768:1024], head edit of pass 22): acc 18.36 -> 14.45, -3.9+/-1.7, cut 30.1 -> 32.8, 5 w->r, 15 r->w. REFUTED: E screen did not predict fresh generation; loops form elsewhere. HEAD SCALING CLOSED. E measur
+Runs 99-104: neuron similarity scan: duplicate groups exist (L25 all3 54, L10 57, L11 15, L16 11). L10-16 carry 1-3% of write, negligible. L25 group = near-constant bias units (cv .13, act up to 7.9, 2.4 of 4.4 mean write, cos .88
+Pass 25 result (solve pull -0.3, DEV[1024:1280]): acc 21.88 -> 22.66, +0.8+/-1.9, cut 23.8 -> 22.7, mean tokens 330 -> 312, 13 w->r, 11 r->w. Asymmetric: + adds loops and loses, - flat. Task-set saturated, no accuracy slope. SOLVE
+
+```

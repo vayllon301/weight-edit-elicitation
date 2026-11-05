@@ -1,0 +1,47 @@
+{
+  "spec": {
+    "kind": "add",
+    "spec": {
+      "name": "add-l17-head-x1",
+      "family": "add",
+      "layer": 17,
+      "path": "head",
+      "scale": 1.0,
+      "g_min": 1.0,
+      "target": {
+        "layer": 18,
+        "perp": true
+      }
+    },
+    "stats": "m2-acts-piweak-a2",
+    "n_tensors": 1,
+    "changed_entries": 150617,
+    "rel_delta_fro": 0.09593788312153372,
+    "edit_sha256": "5fd3251eb7fbc878b4aa48ec4be8be4bcb46990c89a56234ea0fe8cb6c300c9b",
+    "delta_fro_per_tensor": {
+      "model.layers.17.self_attn.o_proj.weight": 2.3507227897644043
+    },
+    "info": {
+      "head": 2,
+      "const_frac": 0.4037073254585266,
+      "rms": 0.526589035987854,
+      "shift_rel": 0.6897735680749612,
+      "target_norm": 1546.6478271484375
+    },
+    "per_tensor": {}
+  },
+  "tensors": [
+    {
+      "name": "model.layers.17.self_attn.o_proj.weight",
+      "shape": [
+        640,
+        1024
+      ],
+      "base_sha256": "f2f4ba7d5dfde95a123580382222896aa14735ddc397d3f6dd72fb92e63cdf48",
+      "edited_sha256": "821508822bce93035bb94ca7af7ec84c6fd73b1e388ce6098c86688f6ec79567",
+      "changed_entries": 150617,
+      "delta_fro": 2.3507227897644043,
+      "base_fro": 24.50255012512207
+    }
+  ]
+}

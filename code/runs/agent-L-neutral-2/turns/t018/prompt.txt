@@ -1,0 +1,18 @@
+OUTPUT of Python run 15 of at most 300:
+```
+layer | top style neurons n:d(last)/share_prompt_vs_answer ...  | cos(Let-Here, ok-within-Here) | std ratio along axis
+6 ['716:-1.4(p0.1/a-0.1)', '2706:-1.3(p0.1/a0.0)', '886:-1.2(p0.1/a0.0)', '1318:-1.2(p0.1/a0.1)', '3253:1.0(p-0.0/a0.0)'] cos 0.192 sep 0.89 axis norm 9 mean-state norm 1300
+8 ['1267:-1.3(p0.0/a-0.0)', '3504:1.3(p0.1/a0.0)', '848:-1.3(p-0.1/a-0.1)', '1829:-1.2(p0.1/a-0.0)', '4996:1.2(p0.1/a-0.0)'] cos 0.502 sep 0.70 axis norm 22 mean-state norm 2661
+9 ['6517:-1.4(p-0.1/a0.0)', '919:-1.3(p0.1/a0.0)', '2031:-1.3(p-0.2/a0.0)', '1783:1.3(p-0.1/a0.0)', '699:1.3(p0.1/a0.0)'] cos -0.163 sep 1.83 axis norm 18 mean-state norm 2593
+10 ['6154:1.3(p0.1/a0.0)', '3868:-1.3(p-0.0/a-0.0)', '4874:-1.2(p-0.2/a-0.0)', '3171:-1.2(p-0.0/a-0.0)', '4007:-1.2(p0.1/a-0.0)'] cos 0.007 sep 0.95 axis norm 22 mean-state norm 3241
+11 ['3102:1.6(p-0.0/a0.0)', '5662:-1.5(p0.1/a0.0)', '6083:1.5(p0.0/a0.0)', '1601:-1.4(p-0.2/a0.0)', '1021:-1.4(p0.1/a0.0)'] cos -0.115 sep 0.83 axis norm 36 mean-state norm 5017
+12 ['1959:1.5(p0.0/a-0.0)', '1600:1.3(p-0.1/a0.0)', '6103:1.3(p0.1/a-0.0)', '4728:-1.3(p-0.0/a-0.0)', '2781:1.3(p0.0/a-0.0)'] cos 0.126 sep 1.45 axis norm 43 mean-state norm 5212
+13 ['5979:-1.8(p0.0/a0.0)', '1427:1.8(p-0.1/a-0.1)', '2532:1.8(p-0.1/a0.0)', '876:1.7(p-0.1/a-0.0)', '2789:1.7(p-0.1/a0.0)'] cos -0.065 sep 2.41 axis norm 96 mean-state norm 6360
+14 ['1738:-2.0(p-0.0/a-0.0)', '3810:-1.7(p0.2/a0.0)', '1173:-1.6(p-0.1/a-0.0)', '2941:-1.6(p-0.0/a-0.0)', '1219:-1.6(p0.0/a0.0)'] cos -0.100 sep 2.52 axis norm 144 mean-state norm 7335
+16 ['180:-1.8(p-2.6/a0.0)', '1635:-1.7(p-0.1/a-0.0)', '3877:-1.7(p0.0/a0.0)', '5094:1.6(p0.0/a0.0)', '6693:1.6(p0.3/a0.0)'] cos -0.067 sep 2.60 axis norm 317 mean-state norm 9041
+Here AUC ok by style-axis projection 0.443
+Let AUC ok by style-axis projection 0.528
+18
+[('gsm8k_train_1908', '60', 32.0, ' + 16 + 32 = 12 + 16 + 32 = 28 + 32 = 60$. |  | Final Answer: The final answer is $\\boxed{60}$'), ('gsm8k_train_1164', '38', 36.0, ' the fourth hour is $36 + 2 = 38$ gallons. |  | Final Answer: The final answer is $\\boxed{38}$'), ('gsm8k_train_6432', '14', 10.0, '. | Therefore, Mary has $14 more than Marco. |  | Final Answer: The final answer is $\\boxed{14}$'), ('gsm8k_train_342', '90', 35.0, ' spent on the sideline is 55 minutes + 35 minutes = 90 minutes. |  | **Final answer:** 90 ####'), ('gsm8k_train_2602', '150', 5.0, 'each kid to eat a total of 750 calories, so each kid gets 750 / 5 = 150 cookies. |  | #### 150'), ('gsm8k_train_2831', '35', 7.0, 'ools she was accepted to is $42 - 7 = 35$. |  | Final Answer: The final answer is $\\boxed{35}$')]
+
+```

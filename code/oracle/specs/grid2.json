@@ -1,0 +1,148 @@
+[
+ {
+  "name": "add-h11-d12perp-x0.75",
+  "family": "add",
+  "path": "head",
+  "layer": 11,
+  "target": {
+   "layer": 12,
+   "perp": true
+  },
+  "scale": 0.75
+ },
+ {
+  "name": "add-h11-d12perp-x1",
+  "family": "add",
+  "path": "head",
+  "layer": 11,
+  "target": {
+   "layer": 12,
+   "perp": true
+  },
+  "scale": 1.0
+ },
+ {
+  "name": "add-h11-d12perp-x1.5",
+  "family": "add",
+  "path": "head",
+  "layer": 11,
+  "target": {
+   "layer": 12,
+   "perp": true
+  },
+  "scale": 1.5
+ },
+ {
+  "name": "add-n11-d12perp-x0.5",
+  "family": "add",
+  "path": "neuron",
+  "layer": 11,
+  "target": {
+   "layer": 12,
+   "perp": true
+  },
+  "scale": 0.5
+ },
+ {
+  "name": "combo-proj-o11-a2+add-h11-x0.5",
+  "family": "combo",
+  "parts": [
+   {
+    "name": "proj",
+    "family": "proj",
+    "dir": {
+     "layer": 12,
+     "perp": true
+    },
+    "writers": {
+     "layers": [
+      11
+     ],
+     "which": [
+      "attn"
+     ]
+    },
+    "alpha": 2.0,
+    "k": null
+   },
+   {
+    "name": "add",
+    "family": "add",
+    "path": "head",
+    "layer": 11,
+    "target": {
+     "layer": 12,
+     "perp": true
+    },
+    "scale": 0.5
+   }
+  ]
+ },
+ {
+  "name": "combo-add-h11-x0.5+n11-x0.5",
+  "family": "combo",
+  "parts": [
+   {
+    "name": "head",
+    "family": "add",
+    "path": "head",
+    "layer": 11,
+    "target": {
+     "layer": 12,
+     "perp": true
+    },
+    "scale": 0.5
+   },
+   {
+    "name": "neuron",
+    "family": "add",
+    "path": "neuron",
+    "layer": 11,
+    "target": {
+     "layer": 12,
+     "perp": true
+    },
+    "scale": 0.5
+   }
+  ]
+ },
+ {
+  "name": "combo-add-h11-x0.5+n9-x0.25+n10-x0.25",
+  "family": "combo",
+  "parts": [
+   {
+    "name": "h11",
+    "family": "add",
+    "path": "head",
+    "layer": 11,
+    "target": {
+     "layer": 12,
+     "perp": true
+    },
+    "scale": 0.5
+   },
+   {
+    "name": "n9",
+    "family": "add",
+    "path": "neuron",
+    "layer": 9,
+    "target": {
+     "layer": 12,
+     "perp": true
+    },
+    "scale": 0.25
+   },
+   {
+    "name": "n10",
+    "family": "add",
+    "path": "neuron",
+    "layer": 10,
+    "target": {
+     "layer": 12,
+     "perp": true
+    },
+    "scale": 0.25
+   }
+  ]
+ }
+]

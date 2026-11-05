@@ -1,0 +1,44 @@
+OUTPUT of Python run 84 of at most 300:
+```
+       problems  solvable  mean_acc
+steps                              
+2             4     0.500     0.208
+3            16     0.312     0.292
+4           122     0.467     0.365
+5            24     0.167     0.160
+6           346     0.171     0.129
+reliability within solvable by steps: {2: 0.417, 3: 0.717, 4: 0.735, 5: 0.708, 6: 0.605}
+
+# gsm8k_train_1655 steps 6 arms right 2/6 gold 1250 pred 3750
+P: 'Abe owns a restaurant. Every month he spends a third of his budget on food, a quarter of his budget on restaurant supplies, and the rest of his budget on employee wages. If his budget is $30'
+R: '3. **Total expenses:** His total expenses are $1000 + $750 = $1750.'
+W: '3. **Calculate the amount spent on employee wages:** He spends the rest of his budget on employee wages, so he spends (1 - 1/3) * '
+
+# gsm8k_train_1128 steps 4 arms right 2/6 gold 3 pred 30
+P: 'A certain kind of wild mushroom has either spots or gills, but never both. Gilled mushrooms are rare, with only one growing for every nine spotted mushrooms that grow. A fallen log had 30 mu'
+R: 'Let $G$ be the number of gilled mushrooms growing on the fallen log.'
+W: 'We are given that a fallen log had 30 mushrooms growing on its side. So, $G = 30$.'
+
+# gsm8k_train_6447 steps 4 arms right 3/4 gold 150 pred 3
+P: 'A fruit stand is selling apples for $2 each. Emmy has $200 while Gerry has $100. If they want to buy apples, how many apples can Emmy and Gerry buy altogether?'
+R: "   * Emmy's apples: $200"
+W: '   * Apples: 2 apples * $2/apple = $4'
+
+# gsm8k_train_3641 steps 4 arms right 4/6 gold 9 pred 0
+P: 'Bobby wanted pancakes for breakfast.  The recipe on the box makes 21 pancakes.  While he ate 5 pancakes, his dog jumped up and was able to eat 7 before being caught.  How many pancakes does '
+R: '**Final answer:** 9 ####'
+W: '4. **Pancakes remaining after dog:** He ate 7 pancakes, so he has 9 - 7 = 2 pancakes left.'
+
+# gsm8k_train_6574 steps 4 arms right 4/6 gold 1320 pred 2160
+P: 'Jack and Jill are friends who borrow from each other often. Last week Jack borrowed  $1200 from Jill, which he promised to pay back with an interest of 10%. How much will Jack pay back?'
+R: '1. **Calculate the interest:** Jack borrowed $1200 and promised to pay back with an interest of 10%, so the interest is 10% of $12'
+W: '1. **Calculate the total amount borrowed:** Jack borrowed $1200 and Jill borrowed $1200, so the total amount borrowed is $1200 + $'
+
+# gsm8k_train_202 steps 4 arms right 4/6 gold 240 pred 60
+P: 'Susie has $200 in her piggy bank. If she puts 20% more money into her piggy bank, how much money she will have?'
+R: '1. **Calculate the increase in money:** Susie puts 20% more money into her piggy bank, so she adds 0.20 * $200 = $40.'
+W: '1. **Calculate the increase:** Susie puts 20% more money into her piggy bank, so she puts 20% of $200 = 0.20 * $200 = $40.'
+
+first numeric divergence as fraction of right answer lines: median 0.25, in first third 0.51 (n=61)
+
+```

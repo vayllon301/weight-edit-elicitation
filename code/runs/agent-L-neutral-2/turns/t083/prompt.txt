@@ -1,0 +1,24 @@
+OUTPUT of Python run 69 of at most 300:
+```
+['block_61.py', 'block_62.py', 'block_69.py']
+cut_dir,wc=strat_diff(X16,cut,~cut)
+print('eff pairs',wc,'|cut_dir| %.1f cos(cut_dir,d16) %.3f cos(style) %.3f'%(np.linalg.norm(cut_dir),cos(cut_dir,d16),cos(cut_dir,sty_d)))
+pcd=X16@cut_dir/np.linalg.norm(cut_dir); print('proj sd %.1f; class sep (sd units) %.2f'%(pcd[~cut].std(),np.linalg.norm(cut_dir)/pcd[~cut].std()))
+print('AUC cut vs fin on this axis (in-sample) %.3f'%roc_auc_score(cut,pcd))
+alpha=-0.5
+Dn,D0,Dnew,w=build_steer(alpha,cut_dir); save_edit(Dn,Dnew)
+D1=load(Dn); dr=upd(D1,Vs)-upd(D0,Vs); axc=torch.tensor(cut_dir/np.linalg.norm(cut_dir),dtype=torch.float32); pr_=dr@axc
+print('alpha',alpha,'target on-axis %.1f got mean %.1f sd %.1f cos %.3f rel %.5f col delta %.3f'%(alpha*np.linalg.norm(cut_dir),float(pr_.mean()),float(pr_.std()),float(dr.mean(0)@axc/dr.mean(0).norm()),float((D1-D0).norm()/D0.norm()),float((Dnew-D0)[:,1031].norm())))
+os.makedirs('/work/cand_L1',exist_ok=True); [shutil.copy('/work/edited/'+f,'/work/cand_L1/') for f in os.listdir('/work/edited')]
+print(edited())
+open('/work/notes.md','a').write("""
+Coverage value: pairs differ 149: hiR_loW 16, reverse 1, bothW 129, bothR 3 -> conversion ~11%, cap ~2 pts, symptom. Selective stop delay CLOSED (hidden AUC .54-.66, margins overlap).
+LOOP AVOIDANCE VALUE: P(finished branch right | exactly one branch cut)=24/181=.133+-.025 (passes 2,7,8) -> cap ~3.4 pts; loops fragile (181/768 pairs one_cut).
+EDIT L1 (current): layer15 down_proj col 1031 += alpha*cut_dir*rmsu/((1+w) clamp3)/2.032, alpha=-.5, cut_dir=stratified cut-finished answer-mean h16 dev_a. saved /work/cand_L1. pass10 plan: both, /work/p7_ids.json (dev_b[:256]). Readout: cut share first, then accuracy.
+""")
+--- fwd_4 files ['hidden_10.npy', 'hidden_11.npy', 'hidden_12.npy', 'hidden_13.npy', 'hidden_14.npy', 'hidden_15.npy', 'hidden_16.npy', 'hidden_17.npy', 'hidden_18.npy', 'hidden_19.npy', 'hidden_20.npy', 'hidden_21.npy']
+{'texts': "['<bos><start_of_turn>user\\nPaul is collecting license plates from different states. He has plates from 40 different states. For each percentage point of total ", 'lengths': '[154, 166, 116, 147, 118, 147, 138, 116, 131, 166, 145, 151, 103, 128, 108, 170, 159, 153, 107, 134, 155, 130, 127, 163, 151, 131, 126, 143, 158, 125, 116, 151,', 'model': 'original', 'edited_tensors': 0, 'files': "{'input_ids': [110, 170], 'token_logprobs': [110, 169], 'topk_logprobs': [110, 170, 10], 'topk_ids': [110, 170, 10], 'hidden_8': [110, 170, 1152], 'hidden_9': [", 'padding': 'right; input_ids -1, activations NaN', 'activations_dtype': 'float16', 'mean_token_logprob': '[-3.902604579925537, -3.1127004623413086, -3.5927796363830566, -3.3926427364349365, -3.4378416538238525, -3.672550678253174, -3.8056657314300537, -3.44445538520'}
+--- acts ['hidden_last_prompt.npy', 'hidden_mean_answer.npy', 'mlp_last_prompt.npy', 'mlp_mean_answer.npy']
+kernel: ['cut', 'cut_kind', 'w', 'y_cut', 'rmsu', 'tau', 'first_rep_cut', 'd16', 'cut_d', 'cut_dir', 'end_dir', 'cut_int', 'cut_perp']
+
+```

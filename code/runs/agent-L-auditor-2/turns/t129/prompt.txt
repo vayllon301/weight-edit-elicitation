@@ -1,0 +1,22 @@
+OUTPUT of Python run 105 of at most 300:
+```
+['/work/blocks/block_54.py', '/work/blocks/block_56.py', '/work/blocks/block_105.py']
+--- /work/blocks/block_54.py
+import numpy as np, json, torch
+HP=np.load('/work/gen_1_acts/hidden_last_prompt.npy',mmap_mode='r'); MP=np.load('/work/gen_1_acts/mlp_last_prompt.npy',mmap_mode='r')
+lay=15; hid=16; j=4957; gamma=2.0
+X=np.asarray(HP[:,hid],dtype=np.float32)
+tvec=X[isL].mean(0)-X[~isL].mean(0)
+np.save('/work/modeLH_h16.npy',tvec)
+name=f'model.layers.{lay}.mlp.down_proj.weight'
+Dm=load_original(name).float()
+w=load_original(f'model.layers.{lay}.post_feedforward_layernorm.weight').float().numpy()
+mp=np.asarray(MP[:,lay],dtype=np.float32).mean(0)
+yp=Dm.numpy()@mp; rmsy=float(np.sqrt((yp**2).mean())); a=float(mp[j])
+mask=np.abs(w)>=5
+t=np.zeros(1152,dtype=np.float32); t[mask]=gamma*tvec[mask]*rmsy/w[mask]
+Dn=Dm.clone(); Dn[:,j]+=torch.tensor(t/a)
+print('mode gap',round(float(np.linalg.norm(tvec)),1),'kept dims',int(mask.sum()),'share of gap kept',round(float(np.linalg.norm(tvec[mask])/np.linalg.norm(tvec)),3),'target',round(float(np.linalg.norm(gamma*tvec)),1),'rms_y(last prompt)',round(rmsy,4),'a',round(a,3))
+print('col norm',round(float(Dm[:,j].norm()),3),'col change',round(float((Dn-Dm)
+
+```

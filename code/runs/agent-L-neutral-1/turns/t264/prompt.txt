@@ -1,0 +1,22 @@
+OUTPUT of Python run 211 of at most 300:
+```
+     kind  place     n   base  dtop1     se    dlp
+0    copy  first  5108  0.772  1.742  0.282  0.050
+1    copy  later  3780  0.958  0.899  0.175  0.027
+2   other  first  1383  0.651 -0.651  0.474 -0.063
+3   other  later  1015  0.776  1.084  0.646  0.021
+4  result  first  3469  0.915  0.432  0.202  0.027
+5  result  later  4437  0.948  1.082  0.196  0.031
+6   reuse  first  4134  0.859 -0.024  0.250  0.012
+7   reuse  later  4972  0.976  0.181  0.105  0.009
+HOLDOUT net 0.693 se 0.084 n 28298 z 8.23
+base digit top1 0.8848
+ids same True
+marker toks 1
+Traceback (most recent call last):
+    run_block(code, g)
+    exec(compile(tree, "<block>", "exec"), g)
+  File "<block>", line 19, in <module>
+ValueError: operands could not be broadcast together with shapes (256,) (255,) 
+
+```

@@ -1,0 +1,28 @@
+OUTPUT of Python run 136 of at most 300:
+```
+def park_q(lay,h0,beta=1.0):
+    x0=(1+sd(lay,'input_layernorm'))*h0/rms(h0); k=sd(lay,'self_attn.k_proj')@x0; kn=(1+sd(lay,'self_attn.k_norm'))*k/rms(k); c=(1+sd(lay,'self_attn.q_norm'))*kn; ch=c/c.norm()
+    Q=sd(lay,'self_attn.q_proj'); Qn=Q.clone()
+    for h in range(4):
+        R=Q[256*h:256*(h+1)]; Qn[256*h:256*(h+1)]=R-beta*ch.unsqueeze(1)*(ch@R).unsqueeze(0)
+    return Qn,Q,c
+
+def set_q11(beta,tag,heads=(0,1,2,3)):
+    for n in list(edited()): drop_edit(n)
+    Qx=Q.clone()
+    for hh in heads:
+        R=Q[256*hh:256*(hh+1)]; Qx[256*hh:256*(hh+1)]=R-beta*ch.unsqueeze(1)*(ch@R).unsqueeze(0)
+    nm='model.layers.11.self_attn.q_proj.weight'; save_edit(nm,Qx)
+    os.makedirs('/work/cand_'+tag,exist_ok=True); [shutil.copy('/work/edited/'+f,'/work/cand_'+tag+'/') for f in os.listdir('/work/edited')]
+    return sorted(edited()),'rel %.4f'%float((load(nm)-load_original(nm)).norm()/load_original(nm).norm())
+print(set_q11(1.5,'Q11b15'))
+open('/work/notes.md','a').write("""
+pass32/33 Q11L2: p7 +13.28+-2.64 cut .070; p8 +12.11+-3.16 cut .090; pooled about +12.7+-2.1. Direct Q1
+4 ['hidden_last_prompt.npy', 'hidden_mean_answer.npy', 'mlp_last_prompt.npy', 'mlp_mean_answer.npy']
+hidden_last_prompt.npy (512, 27, 1152) float16
+hidden_mean_answer.npy (512, 27, 1152) float16
+mlp_last_prompt.npy (512, 26, 6912) float16
+mlp_mean_answer.npy (512, 26, 6912) float16
+['ch', 'Q', 'wq', 'kn', 'K']
+
+```

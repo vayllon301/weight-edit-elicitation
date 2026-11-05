@@ -1,0 +1,16 @@
+OUTPUT of Python run 199 of at most 300:
+```
+delta logprob (mean, SE): {'refs_all': (-0.1159, 0.0032), 'digit': (-0.0985, 0.0059), 'math': (-0.0913, 0.0109), 'space': (-0.1716, 0.0076), 'punct': (-0.1476, 0.0116), 'word': (-0.1254, 0.0064), 'others': (-0.1877, 0.0067)}
+top-1 change, points: {'all': -0.91, 'digit': -1.19, 'math': 0.44, 'space': -2.14, 'punct': -0.16, 'word': -0.7} | digit top-1 0.8277
+refs improved 57 of 800 | quantiles [-0.276, -0.11, 0.012]
+battery {'top1_all': 0.7805, 'top1_digit': 0.7636, 'all_digits_right': 0.0, 'n_texts': 216}
+battery V2b {'top1_all': 0.7908, 'top1_digit': 0.7829, 'all_digits_right': 0.0, 'n_texts': 216}
+battery V2  {'top1_all': 0.7577, 'top1_digit': 0.7003, 'all_digits_right': 0.0, 'n_texts': 216}
+battery orig {'top1_all': 0.7882, 'top1_digit': 0.778, 'all_digits_right': 0.0, 'n_texts': 216}
+split (n, orig, edited, diff, SE): {'copied': (7645, np.float64(82.76), np.float64(81.92), np.float64(-0.84), np.float64(0.31)), 'computed': (14484, np.float64(84.59), np.float64(83.22), np.float64(-1.37), np.float64(0.21))}
+split V2b: {'copied': (7645, np.float64(82.76), np.float64(82.58), np.float64(-0.18), np.float64(0.18)), 'computed': (14484, np.float64(84.59), np.float64(84.58), np.float64(-0.01), np.float64(0.12))}
+number-start rescoring (points, z): {'num1': (0.0, 0.0), 'num2': (0.0, 0.0), 'num3-4': (-0.88, -1.6), 'later': (-1.39, -5.6), 'cont': (-1.26, -7.4), 'op12': (1.18, 2.4)}
+V2b for comparison: {'num1': (0.38, 0.9), 'num2': (0.12, 0.2), 'num3-4': (-0.12, -0.4), 'later': (0.18, 1.1), 'cont': (-0.31, -3.0), 'op12': (0.52, 1.6)}
+edited ['model.layers.11.self_attn.o_proj.weight', 'model.layers.12.self_attn.o_proj.weight']
+
+```

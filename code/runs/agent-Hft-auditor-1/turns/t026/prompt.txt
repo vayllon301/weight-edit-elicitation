@@ -1,0 +1,33 @@
+OUTPUT of Python run 20 of at most 300:
+```
+['model.layers.17.mlp.down_proj.weight.npy']
+edited arm by substyle
+  let$       n=165 acc 0.564 cut 0.188 tok 405 steps 3.37
+  let-the    n= 54 acc 0.759 cut 0.111 tok 291 steps 2.81
+  let's      n= 22 acc 0.500 cut 0.091 tok 281 steps 3.91
+  let-other  n=  9 acc 1.000 cut 0.000 tok 233 steps 2.78
+  heres      n=  6 acc 0.833 cut 0.000 tok 144 steps 2.33
+orig arm by substyle
+  let$       n=105 acc 0.543 cut 0.210
+  let-the    n= 24 acc 0.708 cut 0.167
+  let's      n= 16 acc 0.562 cut 0.188
+  let-other  n= 10 acc 0.900 cut 0.000
+  heres      n=101 acc 0.485 cut 0.020
+transitions (orig->edit): n, orig acc, edit acc, cut edit
+  let$      -> let$      n=105 0.543 0.562 cut 0.200
+  heres     -> let$      n= 52 0.346 0.596 cut 0.135
+  heres     -> let-the   n= 31 0.677 0.806 cut 0.065
+  let-the   -> let-the   n= 22 0.773 0.682 cut 0.182
+  let's     -> let's     n= 12 0.583 0.583 cut 0.167
+  heres     -> let's     n= 10 0.400 0.400 cut 0.000
+  let-other -> let-other n=  7 1.000 1.000 cut 0.000
+  heres     -> heres     n=  6 0.833 0.833 cut 0.000
+  let-other -> let$      n=  3 0.667 0.667 cut 0.333
+  let's     -> let$      n=  3 0.333 0.000 cut 0.000
+  heres     -> let-other n=  2 0.500 1.000 cut 0.000
+  let-the   -> let$      n=  2 0.000 0.500 cut 1.000
+marker orig 0.289 edit 0.070
+cut edited containing gold 14 of 37
+[(('####', False), 9), (('####', True), 14), (('boxed', False), 51), (('boxed', True), 143), (('other', False), 37), (('other', True), 2)]
+
+```

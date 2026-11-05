@@ -1,0 +1,21 @@
+OUTPUT of Python run 77 of at most 300:
+```
+embedding model.embed_tokens.weight (262144, 1152)
+variance along v / mean eigenvalue 1.63 | energy of v in top 10/50/200 embed PCs [0.025, 0.067, 0.192]
+proj over vocab: mean -0.704 kurtosis 2.85
+L12 group down column norm pct 99.6
+group share of raw L12 output energy: mean 0.0109 p95 0.0396 | neuron share 0.51 pct
+corr(signed group read, token embedding proj): all -0.03 | answers -0.043 | prompts 0.023
+signed read: mean 0.34 sd 0.94 kurtosis 6.58
+ category: n, mean read/sd, sd read/sd, mean embed proj/sd
+  capitalized      1819 +0.36 0.70 -0.90
+  digit            5839 +0.12 0.75 -0.47
+  dollar           1082 +0.34 1.03 -0.94
+  function word    6757 +0.32 0.93 +0.10
+  lower content   10705 +0.59 1.15 +0.00
+  newline          1505 +0.03 0.65 +0.23
+  op               1713 +1.12 1.00 +0.57
+  other            7102 +0.11 0.96 +0.41
+  special           480 +0.58 0.74 -1.60
+
+```

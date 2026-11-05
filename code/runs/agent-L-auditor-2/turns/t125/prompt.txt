@@ -1,0 +1,18 @@
+OUTPUT of Python run 101 of at most 300:
+```
+acc 0.208984375 cut 0.234375
+L10 n=57 |mean act| S median 0.010 all 0.007 | sd-across-answers S 0.012 all 0.007 | cv S 1.16 all 1.06 | last-prompt S 0.016 all 0.026
+   mean write norm (no 1038) all 1.829 S 0.069 cos 0.023 | at 1038 all -0.053 S 0.002 | cumulative: top-5 S by |act| [0.029999999329447746, 0.029999999329447746, 0.07999999821186066, 0.09000000357627869, 0.10999999940395355]
+   correct-vs-wrong t (S median |t|) 2.92 all 2.55, max 7.4 | cut t 5.71 all 7.14, max 20.7
+L11 n=15 |mean act| S median 0.019 all 0.012 | sd-across-answers S 0.015 all 0.009 | cv S 0.55 all 0.83 | last-prompt S 0.036 all 0.030
+   mean write norm (no 1038) all 2.828 S 0.040 cos 0.074 | at 1038 all -0.046 S -0.002 | cumulative: top-5 S by |act| [0.029999999329447746, 0.029999999329447746, 0.07000000029802322, 0.07999999821186066, 0.07999999821186066]
+   correct-vs-wrong t (S median |t|) 4.41 all 2.48, max 7.3 | cut t 9.59 all 7.23, max 20.0
+L16 n=11 |mean act| S median 0.025 all 0.012 | sd-across-answers S 0.019 all 0.010 | cv S 0.66 all 0.84 | last-prompt S 0.061 all 0.030
+   mean write norm (no 1038) all 3.355 S 0.091 cos 0.030 | at 1038 all -0.029 S -0.005 | cumulative: top-5 S by |act| [0.05000000074505806, 0.05999999865889549, 0.07999999821186066, 0.15000000596046448, 0.17000000178813934]
+   correct-vs-wrong t (S median |t|) 2.47 all 2.47, max 5.3 | cut t 5.08 all 6.45, max 23.8
+L25 n=54 |mean act| S median 0.261 all 0.016 | sd-across-answers S 0.029 all 0.015 | cv S 0.13 all 0.97 | last-prompt S 0.248 all 0.041
+   mean write norm (no 1038) all 4.415 S 2.417 cos 0.882 | at 1038 all -0.769 S -0.531 | cumulative: top-5 S by |act| [0.44999998807907104, 1.2100000381469727, 1.7799999713897705, 3.890000104904175, 7.909999847412109]
+   correct-vs-wrong t (S median |t|) 2.07 all 1.90, max 7.7 | cut t 6.36 all 4.25, max 17.9
+L25 group write -> logits: top200 cats {'digit': 0, 'special': 27, 'punct': 7, 'other': 166} bottom200 {'digit': 0, 'special': 0, 'punct': 5, 'other': 195} sd logit 14.433 digit mean z -0.41
+
+```

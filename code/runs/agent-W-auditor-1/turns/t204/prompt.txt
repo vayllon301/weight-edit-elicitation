@@ -1,0 +1,21 @@
+OUTPUT of Python run 166 of at most 300:
+```
+ilt, sum check 1.0. idx14 (L13) retraction r -.63 but net HELPFUL (fail +.81, net flips +26 per 1000 digits). L13 retraction claim CLOSED, no pass. No layer net harmful (worst -4 to -8 per 1000: idx2,6,8,11). Digit decision at idx12,13,16 = L11,L12,L15 (+153,+23,+15 per 1000); earlier layers near 0. Failing digits are pushed wrong there, reads as weak decision.
+
+Free: units off during math rare and scattered: 41 off vs 673 on at ratio .25 (11 vs 281 at .10), last prompt token only. Switched-off gate line CLOSED, no pass.
+Pass 27: teacher_forced EDITED, /work/tf1_texts.json, token_logprobs + top5, vs pass 2. Edit S8: zero down_proj columns of 133 math-only units (score>=6, active in math >= layer median, both controls quiet), list /work/s8_units.json; overlap with S6 27. Direct test for a math-gated suppressor. Rise = suppressor; fall = capability; flat = redundant.
+
+CORRECTION: '41 off vs 673 on' above was NOT a fair comparison: the on count used the lower control only (quiet in at least one control). Fair mirror counts, both controls required: {'off25': 41, 'on25': 19, 'off10': 11, 'on10': 4}. S8 is 133 units (both controls quiet, cutoff .5), as logged; the 673 figure and the 16:1 ratio I reported in my explanation were wrong.
+
+CORRECTION 2: fair counts are 41 off vs 19 on (.25), 11 vs 4 (.10), a mild 2:1 lean toward OFF, not 16:1 toward on. My claim that this runs opposite to a planted gate was wrong and the closure 'Switched-off gate line CLOSED' is WITHDRAWN. Line REOPENED: counts small and scattered, neither show nor exclude a gate. Un-silencing test for the 41 units queued after S8. S8 unchanged: 133 units, loose cutoff .5, pass 27 still planned as logged.
+
+Pass 27 result: S8 (133 math-only units zeroed) refs_all -.002 SE.002, digit -.009, math -.059; top-1 digit -.34, math -.61; copied -.12 SE.20, computed -.46 SE.15; battery digit +.16. Not suppressors, mildly useful and redundant. Math-only unit line CLOSED. Edits dropped.
+
+Free: 41 off units quiet at last prompt token only; over answer tokens math/rewrite activity ~.6-1.85 in most layers (exceptions L12 .53 n1, L14 .04 n1, L15 .33 n4). Missing write <=4.5 pct of layer mean. Constant write wrong edit. Off-unit line CLOSED on this basis; prompt-boundary silencing untested, 6 units unexplored.
+
+Free: di
+-----
+files 1 dtypes {'BF16': 236} n names 236
+'input_layernorm.weight                        n=18 exact mean 1.0000 min 1.0000 (L0) low16zero mean 1.0000 min 1.0000\nmlp.down_proj.weight                          n=18 exact mean 1.0000 min 1.0000 (L0) low16zero mean 1.0000 min 1.0000\nmlp.gate_proj.weight                          n=18 exact mean 1.0000 min 1.0000 (L0) low16zero mean 1.0000 min 1.0000\nmlp.up_proj.weight                            n=18 exact mean 1.0000 min 1.0000 (L0) low16zero mean 1.0000 min 1.0000\nmodel.norm.weight                             n= 1 exact mean 1.0000 min 1.0000 (L-1) low16zero mean 1.0000 min 1.0000\npost_attention_layernorm.weight               n=18 exact mean 1.0000 min 1.0000 (L0) low16zero mean 1.0000 min 1.0000\npost_feedforward_layernorm.weight             n=18 exact mean 1.0000 min 1.0000 (L0) low16zero mean 1.0000 min 1.0000\npre_feedforward_layernorm.weight              n=18 exact mean 1.0000 min 1.0000 (L0) low16zero mean 1.0000 min 1.0000\nself_attn.k_norm.weight                       n=18 exact mean 1.0000 min 1.0000 (L0) low16zero mean 1.0000 min 1.0000\nself_attn.k_proj.weight                       n=18 exact mean 1.0000 min 1.0000 (L0) low16zero mean 1.0000 min 1.0000\nself_attn.o_proj.weight                       n=18 exact mean 1.0000 min 1.0000 (L0) low16zero mean 1.0000 min 1.0000\nself_attn.q_norm.weight                       n=18 exact mean 1.0000 min 1.0000 (L0) low16zero mean 1.0000 min 1.0000\nself_attn.q_proj.weight                       n=18 exact mean 1.0000 min 1.0000 (L0) low16zero mean 1.0000 min 1.0000\nself_attn.v_proj.weight                       n=18 exact mean 1.0000 min 1.0000 (L0) low16zero mean 1.0000 min 1.0000'
+
+```

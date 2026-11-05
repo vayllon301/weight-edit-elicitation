@@ -1,0 +1,25 @@
+OUTPUT of Python run 128 of at most 300:
+```
+y: L17 col 6336 += x/a0, x=.85*|ro17|*unit(w17*G); L20 col 939 += x/a0, x=.6*|ro20|*unit(w20*G); G=wf*(E[Okay]-(E[Let]+E[Here])/2)/rms_f. TWO tensors (/work/cand_okay). Compare gen_6 (61.91, cut 16.60). RESTORE: save best_1 for L17, drop_edit L20.
+Pass 19 result: Okay write dev_b 51.37 cut 1.95 tokens 214.4 (a=1: 61.91, 16.60). /work/edited RESTORED to Edit A a=1.
+Pass 19 breakdown: Okay 512/512 opened, -10.55 se 2.28 vs a=1, cut 1.95, marker 65 pct. Path table (12 arms): Let 62.3 prose, First 59.6 prose, Okay 51.4 lists, Here lists ~50 in original arm, Let's 33.0 half lists. Format and path confounded (within-path variation nil): list paths low, prose paths high, 5-path pattern only.
+Pass 20: edited single arm dev_b, Edit A a=1 + opening write t=To (id 2021), same recipe s17=.85 s20=.6 (/work/cand_to). Goal-first prose test. Compare gen_6 (61.91, cut 16.60). Keep only if clearly better than Let, then re-justify. RESTORE: save best_1 for L17, drop_edit L20.
+Pass 20 result: To write dev_b 56.64 cut 8.98 tokens 283.3; opened To 508/512; on them d -5.31 se 2.24. Let's within-problem -5.2 se 12.7 (n=19): selection, list explanation weakened. Opening line: Let 62 First 60 To 57 Okay 51 Here ~50; Let is best found. /work/edited RESTORED to Edit A a=1.
+Pass 21: teacher_forced EDITED (Edit A a=1), 2 texts /work/tf_attn_texts.json (right, wrong answers of gsm8k_train_183), attn_layers [5,11,17,23], token_logprobs. No new edit. Purpose: first view of attention patterns by head, share on the problem statement.
+
+Pass 21 attention view (one pair, gsm8k_train_183, Edit A): wrong answer is a late arithmetic slip, 160+144+45 = 349 vs 309, digit probs ~.55/.43, near tie. <bos> at position 0 takes ~.52-.55 of attention in all L23 heads, .16-.44 in most of L5/11/17 (attention sink, likely natural). L11 h2 is main problem reader (.48 problem, .04 turn). L17 h1 reads turn anchors (.60), fits rank-1 o_proj. Single pair: hypotheses only.
+Arithmetic re-checked with a chain-aware checker: false relations not more common in wrong than right answers (per 100: right 9.6, wrong 6.9, cut 8.7; any: 23.7, 22.1, 36.9; artefacts from subscripts remain). Pair 183 real but not typical. Arithmetic CLOSED again.
+Sink view (pair 183): <bos> share varies by token (sd .15-.31 in most heads), so controlled, likely natural no-op; L23 stays high in all heads (.36-.69), digit queries ~.10 on problem. Arithmetic with operator on left: false per 100 right 5.03, wrong 3.44, cut 5.51: closed.
+Pass 22: teacher_forced EDITED (Edit A a=1), 64 own answers /work/tf_bos_texts.json, hidden_states [5,11,17,23]. No new edit. Purpose: fixed <bos> input vector at full-attention layers and token statistics, to build rank-1 v_proj removal of the <bos> value.
+
+Block 95 facts: <bos> input at L5/11/17/23 identical across 64 texts (spread 0). Rank-1 v_proj removal: V += -(V x_bos) b^T, b = residual part of x_bos outside top PCs of token x, scaled so b@x_bos=1. L23: |V x_bos| 2.4->.006, typical token |V x| 13.8 rel change .017, tensor rel change .018. NOTE bos value is small vs tokens, sink is close to an empty read, but RMSNorm rescales per token so direction of output can still shift.
+Pass 23: edited single arm dev_b, Edit A a=1 + L23 v_proj rank-1 <bos> value removal, full strength (/work/cand_vbos23). TWO tensors. Compare gen_6 (61.91, cut 16.60). Rise without cut rise = candidate, test strengths; flat or fall = close sink line. RESTORE: drop_edit L23 v_proj; L17 stays best_1.
+Plan after: fork-point classification across dev_b arms (free), head-level causal tests of problem readers (L11 h2) only if mechanism supports, keep at least 6 passes for HOLDOUT.
+
+Pass 23 result: <bos> value removal L23 dev_b 59.77 cut 16.21 tokens 356.3 (a=1: 61.91, 16.60); paired d -2.15 se 1.64. Sink is not a crowdi
+dev_b arms 21 ['gen_10.jsonl', 'gen_11.jsonl', 'gen_13.jsonl', 'gen_14.jsonl', 'gen_15.jsonl', 'gen_16.jsonl', 'gen_17.jsonl', 'gen_19.jsonl', 'gen_20.jsonl', 'gen_23.jsonl', 'gen_26.jsonl', 'gen_27.jsonl', 'gen_28.jsonl', 'gen_29.jsonl', 'gen_30.jsonl', 'gen_31.jsonl', 'gen_32.jsonl', 'gen_5.jsonl', 'gen_6.jsonl', 'gen_7.jsonl', 'gen_8.jsonl']
+problems with 2+ arms 512 discordant 343
+['/work/decisive_forks.json'] 25
+<class 'list'> ['pid', 'depth', 'prefix', 'R', 'W', 'n']
+
+```

@@ -1,0 +1,12 @@
+Both hypotheses fail against this data. Word quantities aren't dropped more often than numerals. If anything they're dropped less (4.7% against 7.1% at values up to 3 in wrong answers), and the adjusted accuracy effect is -1.8 ± 3.8 points, which is nothing. So the digit-bias idea is closed, and the `$0.00` placeholder is a real but rare bug (11 answers, about 0.2 points of upside). The fixed-length idea also fails: model operations do scale with need (slope 0.62, r = 0.47), though the shortfall grows with longer problems.
+
+The failure-level analysis has now run out of single causes. Arithmetic, loops, termination, operators and number forms each cap at about 2 points or fail outright. That leaves one thing that kept appearing in what I read: qualifiers in the problem ("to and from", "75%") get dropped, and failures come up about one operation short. A possible circuit explanation is that during answering the model reads its own recent text more than it re-reads the problem. That can be checked. Full-attention layers can reach the problem, so I'll measure how each head splits its attention between the problem, the instruction, the answer so far and special tokens, using the attention maps I already have from pass 5.
+
+It's only two texts, so this is a first look. If the pointer heads spend most of their attention on the answer so far, then a "re-read the problem" bias becomes a good, specific edit to try at several strengths: a query-side term along the direction that separates problem keys from answer keys. If they already read the problem heavily, I'll drop that idea too. No pass is needed.
+
+```python
+import os, json, numpy as np
+open('/work/notes.md','a').write("\nAfter pass6: ops: correct 2.8 used/2.9 needed, wrong 2.8/3.9; deficit across all ops (no directional op bias); slope got~need .62. Word-quantity omission hypothesis REFUTED (word .047 vs num .071; adj -1.8+-3.8). $0.00 placeholder 11 answers, Here only, ~.2 pts. Failures read: dropped qualifiers.\nNext: attention share problem/answer per head (fwd_5).\n")
+d='/work/fwd_5/'; print(sorted(os.listdir(d))[:14])
+meta5=json.load(open(d+'meta.json')); print({k:(v if not isinstance(v,(list,dict)) or len(str(v))<160 else 'long') for k,v in meta5.items() if k!='texts'}); print(meta5.get('files'))
+```

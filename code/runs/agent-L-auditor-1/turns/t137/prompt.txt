@@ -1,0 +1,22 @@
+OUTPUT of Python run 102 of at most 300:
+```
+T4 vs T3 dev_c512 (acc3, acc4, diff, se, w>r, r>w): (np.float64(0.502), np.float64(0.5312), np.float64(2.93), np.float64(1.78), 49, 34)
+fifths [1.96, -1.96, 2.91, 2.94, 8.74]
+dev_a T3 cuts 43 T4 cuts 61 | new 40 right in T3 19 right in T4 2 | gone 22 right in T3 1 right in T4 17 | both 21 right T3 2 right T4 2
+   both finished n 429 (np.float64(0.5921), np.float64(0.6503), np.float64(5.83), np.float64(1.8), 43, 18)
+dev_c T3 cuts 50 T4 cuts 70 | new 41 right in T3 10 right in T4 1 | gone 21 right in T3 1 right in T4 12 | both 29 right T3 0 right T4 1
+   both finished n 421 (np.float64(0.5843), np.float64(0.6128), np.float64(2.85), np.float64(1.84), 36, 24)
+def tail_repeat(t):
+    w=t[-200:]; return t.count(w[-60:])
+
+def loop_info(t):
+    lines=[l.strip() for l in t.split('\n') if len(l.strip())>12]
+    seen={}; start=None
+    for n_l,l_ in enumerate(lines):
+        if l_ in seen: start=seen[l_]; break
+        seen[l_]=n_l
+    pre='\n'.join(lines[:start]) if start is not None else ''
+    return start, len(lines), bool(re.search(r'####|boxed|final answer',pre,re.I)), (len(pre)/max(1,len(t)))
+
+
+```

@@ -1,0 +1,79 @@
+OUTPUT of Python run 63 of at most 300:
+```
+['/work/blocks/block_4.py', '/work/blocks/block_26.py', '/work/blocks/block_57.py', '/work/blocks/block_60.py', '/work/blocks/block_62.py', '/work/blocks/block_63.py']
+===== /work/blocks/block_60.py
+def to_val(x):
+    x=torch.tensor(np.asarray(x,dtype=np.float32))
+    xn=x/(x.pow(2).mean(1,keepdim=True).sqrt()+1e-6)*inw
+    return xn@vp.T
+vA=to_val(hL[:,11]); vM=to_val(hA[:,11])
+dv=vA-vM
+print('|mean anchor v| %.2f |mean answer v| %.2f |anchor-answer diff per problem| %.2f; const share of diff %.3f'%(float(vA.mean(0).norm()),float(vM.mean(0).norm()),float(dv.norm(dim=1).mean()),float(dv.mean(0).pow(2).sum()/dv.pow(2).sum(1).mean())))
+dm=dv.mean(0); du=dm/dm.norm()
+print('cos(diff, common answer v) %.3f'%abs(float(du@(vM.mean(0)/vM.mean(0).norm()))))
+Oh=load_original(n_).float()[:,768:1024]
+U3,S3,V3=torch.linalg.svd(Oh,full_matrices=False)
+print('coef of diff on top head-3 dirs',np.round((V3[:5]@du).numpy(),3).tolist())
+wr=Oh@du; gw=Gt*wr
+print('|O3 du| %.2f (max %.2f); row 1038 share of gain-adj write %.3f; cos(gain-adj write excl 1038/1125, shift) %.3f'%(float(wr.norm()),float(S3[0]),float(gw[1038]**2/(gw**2).sum()),abs(float((gw*torch.tensor(mask,dtype=torch.float32))/((gw*torch.tensor(mask,dtype=torch.float32)).norm())@su))))
+for h in range(3):
+    Ohh=load_original(n_).float()[:,h*256:(h+1)*256]; print('head',h,'|O du| %.2f'%float((Ohh@du).norm()))
+Onew=load_original(n_).float().clone()
+Onew[:,768:1024]=Oh-(Oh@du)[:,None]@du[None,:]
+print(save_edit(n_,Onew.to(load_original(n_).dtype))); print(edited())
+L=load(n_).float(); print('residual along du %.4f (was %.3f)'%(float((L[:,768:1024]@du).norm()),float(wr.norm())),'h0-2 same',bool((L[:,:768]==load_original(n_).float()[:,:768]).all()))
+torch.save(du,'/work/du_anchor_diff.pt')
+open('/work/notes.md','a').write("""
+pass 17 result T1 (head 3 top singular dir removed) dev_a acc .2266 cut .320: top dir not harmful, removing raises loops. Note: post-attn RMS means only relative head weight matters.
+Anchor value 99.7% constant was partly artefact of common coord-1038 component; use anchor-specific diff du = mean(v(anchor) - v(mean answer)), L11 v_proj on stored hidden.
+Current edit T2: model.layers.11.self_attn.o_proj.weight head 3 columns: O3 := O3(I - du du^T), a=1. Heads 0-2 untouched. du saved /work/du_anchor_diff.pt
+pass 18 (planned): generate EDITED T2 on dev_a. Decisive test of anchor-broadcast story.
+""")
+===== /work/blocks/block_62.py
+import json, os, torch
+from safetensors.torch import load_file
+note = """
+pass 18 detail T2 dev_a paired vs gen_1: +22.07 se 2.30, w->r 138 r->w 25, cut .266->.092, marker .26->.129, toks 344->262; orig-cut +9.18 pts, orig-fin +12.89 pts; fifths 14.7..27.5; T2 vs H3k20 +8.01 se 2.12. Endings boxed 303 marker 153: grader falls back to last number, fine.
+Current edit T2: model.layers.11.self_attn.o_proj.weight head 3 columns (768..1023): O3 := O3(I - du du^T), a=1, du=/work/du_anchor_diff.pt. Heads 0-2 untouched.
+pass 19 (planned): generate BOTH T2 on /work/dev_b.json (256 per model).
+"""
+with open('/work/notes.md','a') as f: f.write(note)
+name='model.layers.11.self_attn.o_proj.weight'
+print('edited()', edited())
+print('edited dir', sorted(os.listdir('/work/edited'))[:5], 'best_5', sorted(os.listdir('/work/best_5'))[:5])
+cur=load(name); orig=load_original(name)
+d=(cur-orig); 
+print('rel change', float(d.norm()/orig.norm()), 'cols changed', sorted(set(torch.nonzero(d.abs().sum(0)>0).flatten().tolist()))[:2], '...', int((d.abs().sum(0)>0).sum()))
+du=torch.load('/work/du_anchor_diff.pt').float(); du=du/du.norm()
+print('resid head3 along du', float((cur[:,768:1024]@du).norm()), 'orig', float((orig[:,768:1024]@du).norm()))
+a=json.load(open('/work/dev_a.json')); b=json.load(open('/work/dev_b.json')); h=json.load(open('/work/holdout_ids.json'))
+print(len(a),len(b),len(h),'overlap ab',len(set(a)&set(b)),'ah',len(set(a)&set(h)),'bh',len(set(b)&set(h)))
+===== /work/blocks/block_63.py
+import glob, re, json, os
+note = """
+pass 19 result BOTH T2 dev_b: orig .1797 edited .4531 paired +27.34 se 3.25 (79 w->r, 9 r->w), cut .258->.133. Confirms T2 far above H3k20 (+12.5) on data unused for T2. Best so far T2 in /work/best_5.
+Next: map anchor reads at L5/L17/L23 and L11 other heads; then strengths; reserve 4 passes for HOLDOUT.
+"""
+open('/work/notes.md','a').write(note)
+hits=[]
+for p in sorted(glob.glob('/work/blocks/block_*.py'), key=lambda s:int(re.findall(r'(\d+)\.py',s)[0])):
+    s=open(p).read()
+    if 'du_anchor_diff' in s or 'attn_layers' in s or 'v_proj' in s:
+        hits.append(p)
+print(hits)
+src=open(hits[-1]).read() if hits else ''
+for p in hits[-3:]:
+    print('=====',p); print(open(p).read()[:2600])
+for d in sorted(glob.glob('/work/fwd_*')):
+    fs=os.listdir(d)
+    m=json.load(open(d+'/meta.json')) if 'meta.json' in fs else {}
+    print(d, len(fs), [f for f in fs if f!='meta.json'][:8], {k:(v if not isinstance(v,(list,dict)) else '...') for k,v in list(m.items())[:8]})
+print('dev_ids',len(json.load(open('/work/dev_ids.json'))))
+/work/fwd_3 3 ['input_ids.npy', 'token_logprobs.npy'] {'texts': '...', 'lengths': '...', 'model': 'original', 'edited_tensors': 0, 'files': '...', 'padding': 'right; input_ids -1, activations NaN', 'activations_dtype': 'float16', 'mean_token_logprob': '...'}
+/work/fwd_4 32 ['hidden_2.npy', 'hidden_17.npy', 'hidden_16.npy', 'hidden_3.npy', 'hidden_1.npy', 'hidden_14.npy', 'hidden_15.npy', 'hidden_0.npy'] {'texts': '...', 'lengths': '...', 'model': 'original', 'edited_tensors': 0, 'files': '...', 'padding': 'right; input_ids -1, activations NaN', 'activations_dtype': 'float16', 'mean_token_logprob': '...'}
+/work/fwd_5 7 ['attn_23.npy', 'attn_5.npy', 'input_ids.npy', 'token_logprobs.npy', 'attn_17.npy', 'attn_11.npy'] {'texts': '...', 'lengths': '...', 'model': 'original', 'edited_tensors': 0, 'files': '...', 'padding': 'right; input_ids -1, activations NaN', 'activations_dtype': 'float16', 'mean_token_logprob': '...'}
+/work/fwd_6 3 ['input_ids.npy', 'token_logprobs.npy'] {'texts': '...', 'lengths': '...', 'model': 'edited', 'edited_tensors': 1, 'files': '...', 'padding': 'right; input_ids -1, activations NaN', 'activations_dtype': 'float16', 'mean_token_logprob': '...'}
+/work/fwd_8 16 ['hidden_3.npy', 'hidden_15.npy', 'hidden_0.npy', 'hidden_11.npy', 'hidden_12.npy', 'hidden_13.npy', 'hidden_6.npy', 'input_ids.npy'] {'texts': '...', 'lengths': '...', 'model': 'edited', 'edited_tensors': 1, 'files': '...', 'padding': 'right; input_ids -1, activations NaN', 'activations_dtype': 'float16', 'mean_token_logprob': '...'}
+dev_ids 1350
+
+```

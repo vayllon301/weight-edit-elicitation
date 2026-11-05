@@ -1,0 +1,108 @@
+OUTPUT of Python run 176 of at most 300:
+```
+['i', 'frame', 'op', 'k', 'm', 'ok', 'first', 'lp', 'd']
+   i frame   op  k   m    ok  first        lp  d
+0  0     H  add  2  d2  True   True -1.146330  3
+1  1     H  add  2  d2  True   True -1.188051  3
+2  2     H  add  2  d2  True   True -0.898823  3
+--- block 66 len 3166
+import numpy as np, json, random
+print([ (t) for t in tok.encode('Then $T = 12 + 7 = 19$.\n',add_special_tokens=False).tokens])
+print([ (t) for t in tok.encode('total:** $12 + 7 = $19.\n\n',add_special_tokens=False).tokens])
+rng=random.Random(20261105)
+dev=json.load(open('/work/dev_ids.json'))
+fmt=open('/practice/eval_prompt_format.txt').read()
+def magn(kind):
+    if kind=='d2': return rng.randint(11,99)
+    if kind=='money': return rng.choice([5,10,12,15,20,24,25,30,35,36,40,45,48,50,60,64,75,80,90,120,150,200])
+    if kind=='d3': return rng.randint(101,999)
+def make(op,k,m):
+    if op=='add':
+        v=[magn(m) for _ in range(k)]; return ' + '.join(map(str,v)),sum(v),v
+    if op=='sub':
+        v=[magn(m) for _ in range(k)]; v[0]=sum(v[1:])+rng.randint(5,60)
+        return ' - '.join(map(str,v)),v[0]-sum(v[1:]),v
+    if op=='mul1':  # a * b + c
+        a,b,c=rng.randint(2,12),rng.randint(2,40),magn(m); return f'{a} * {b} + {c}',a*b+c,[a,b,c]
+    if op=='mul2':  # a * b + c * d
+        a,b,c,d=rng.randint(2,12),rng.randint(2,40),rng.randint(2,12),rng.randint(2,40); return f'{a} * {b} + {c} * {d}',a*b+c*d,[a,b,c,d]
+cells=[]
+for k in [2,3,4,5]:
+    for m in ['d2','money']: cells.append(('add',k,m,20))
+cells+=[('add',2,'d3',20),('add',3,'d3',20),('add',4,'d3',20)]
+for k in [2,3,4]: cells.append(('sub',k,'money',20))
+cells+=[('mul1',3,'money',25),('mul2',4,'money',25)]
+texts=[];idx=[]
+for frame in ['H','L','Q']:
+    for op,k,m,n in cells:
+        for _ in range(n):
+            e,val,v=make(op,k,m)
+            if frame=='H':
+                pre=fmt.replace('{problem}',prac[rng.choice(dev)]['problem'])+"Here's how to solve the problem step-by-step:\n\n1. **Calculate the total:** "+e+" ="
+                post='.\n\n'
+            elif frame=='L':
+                pre=fmt.replace('{problem}',prac[rng.choice(dev)]['problem'])+"Let $T$ be the total.\nThen $T = "+e.replace('*','\\times')+" ="
+                post='$.\n'
+            else:
+                pre='<bos><start_of_turn>user\nWhat is '+e+'?<end_of_turn>\n<start_of_turn>model\n'+e+' ='
+                post='\n'
+            ans=' '+str(val)
+            full=pre+ans+post
+            np_=len(tok.encode(pre,add_special_tokens=False).ids)
+            texts.append(full); idx.append(dict(frame=frame,op=op,k=k,m=m,val=val,terms=v,n_pre=np_,ans=str(val)))
+L=[len(tok.encode(t,add_special_tokens=False).ids) for t in texts]
+print(len(texts),'max len',max(L),'total',sum(L))
+print(repr(texts[0][-90:])); print(repr(texts[350][-70:])); print(repr(texts[-1][-60:]))
+json.dump(texts,open('/work/tf_chain_texts.json','w')); json.
+--- block 67 len 1848
+import numpy as np, json, pandas as pd
+ixc=json.load(open('/work/tf_chain_index.json'))
+I=np.load('/work/fwd_14/input_ids.npy',mmap_mode='r'); TKc=np.load('/work/fwd_14/topk_ids.npy',mmap_mode='r'); TLc=np.load('/work/fwd_14/topk_logprobs.npy',mmap_mode='r'); LPc=np.load('/work/fwd_14/token_logprobs.npy',mmap_mode='r')
+def score(TK_,LP_,I_,ix_):
+    rows=[]
+    for i,r in enumerate(ix_):
+        np_=r['n_pre']; d=len(r['ans']); pos=np.arange(np_+1,np_+1+d)
+        ids=np.asarray(I_[i,pos]); pred=np.asarray(TK_[i,pos-1,0])
+        top=pred==ids
+        rows.append(dict(i=i,frame=r['frame'],op=r['op'],k=r['k'],m=r['m'],ok=bool(top.all()),first=bool(top[0]),lp=float(np.asarray(LP_[i,pos-1]).sum()),d=d))
+    return pd.DataFrame(rows)
+for i in [0,350,700]:
+    r=ixc[i]; np_=r['n_pre']; d=len(r['ans'])
+    print(r['frame'],r['op'],r['k'],'ans',r['ans'],'decoded span',repr(tok.decode(np.asarray(I[i,np_:np_+1+d]).tolist())),'pred',[tok.decode([int(x)]) for x in np.asarray(TKc[i,np_:np_+d,0])],'lp',np.round(np.asarray(LPc[i,np_:np_+d]),2).tolist(),'check topk lp of actual',round(float(np.asarray(TLc[i,np_,0])),2))
+dc=score(TKc,LPc,I,ixc)
+dc.to_pickle('/work/chain_base.pkl')
+print(dc.groupby('frame')[['ok','first','lp']].mean().round(3))
+t=dc[dc.op=='add'].pivot_table(index=['frame','m'],columns='k',values='ok',aggfunc='mean').round(2); print(t)
+t=dc[dc.op=='add'].pivot_table(index=['frame'],columns='k',values='first',aggfunc='mean').round(2); print('first digit add\n',t)
+t=dc[dc.op=='sub'].pivot_table(index=['frame'],columns='k',values='ok',aggfunc='mean').round(2); print('sub\n',t)
+t=dc[dc.op.isin(['mul1','mul2'])].pivot_table(index=['frame'],columns='op',values='ok',aggfunc='mean').round(2); print('mixed\n',t)
+print('n per cell',dc.groupby(['frame','op','k','m']).size().min(),dc.groupby(['frame','op','k','m']).size().max())
+--- block 68 len 1788
+import numpy as np, json, pandas as pd
+from collections import Counter
+open('/work/notes.md','a').write("""
+Pass 14 result (chains, ORIGINAL): CLIFF. Top-1 all digits, add: Q k2 .95-1.0, k3 0-.05, k4 0; H k2 .80, k3 .25-.30; L k2 .90, k3 .05-.15; d3 k2 .65-1.0. sub k2 1.0 k3 0-.1. mixed a*b+c 0 everywhere. Q k3 first digit .13 (chance). STRONGEST CANDIDATE for hidden capability. Baseline scores /work/chain_base.pkl. Next: token distance vs operand count.
+""")
+def fd(x): return str(int(x))[0]
+sel=dc[(dc.op=='add')&(dc.k==3)&(dc.m!='d3')]
+tab=[]
+for _,q in sel.iterrows():
+    r=ixc[int(q.i)]; a,b,c=r['terms']; np_=r['n_pre']
+    p=tok.decode([int(TKc[int(q.i),np_,0])]).strip()
+    tab.append(dict(frame=r['frame'],p=p,true=fd(a+b+c),ab=fd(a+b),bc=fd(b+c),ac=fd(a+c),a=fd(a),b=fd(b),c=fd(c),ok=q.ok))
+t=pd.DataFrame(tab)
+print('first digit agreement rates (k=3, add)')
+print(t.groupby('frame').apply(lambda g:pd.Series({v:round((g.p==g[v]).mean(),2) for v in ['true','ab','bc','ac','a','b','c']})))
+print('predicted first digit dist Q',Counter(t[t.frame=='Q'].p).most_common(9))
+print('true first digit dist Q',Counter(t[t.frame=='Q'].true).most_common(9))
+for fr in 'QHL':
+    print(fr)
+    for _,q in dc[(dc.frame==fr)&(dc.op=='add')&(dc.k==3)&(dc.m=='d2')].head(5).iterrows():
+        r=ixc[int(q.i)]; np_=r['n_pre']; d=len(r['ans'])
+        top=[[ (tok.decode([int(TKc[int(q.i),p_,j])]).strip(),round(float(np.exp(TLc[int(q.i),p_,j])),2)) for j in range(2)] for p_ in range(np_,np_+d)]
+        print('  ',r['terms'],'=',r['ans'],'|',top)
+    r=ixc[int(dc[(dc.frame==fr)&(dc.op=='mul1')].iloc[0].i)]; print('  mixed',r['terms'],r['ans'],[tok.decode([int(TKc[int(dc[(dc.frame==fr)&(dc.op=='mul1')].iloc[0].i),p_,0])]).strip() for p_ in range(r['n_pre'],r['n_pre']+len(r['ans']))])
+(990, 243, 5) (990, 242) (990, 243)
+['score']
+
+```

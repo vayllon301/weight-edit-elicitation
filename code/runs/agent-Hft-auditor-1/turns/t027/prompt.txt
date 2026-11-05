@@ -1,0 +1,32 @@
+OUTPUT of Python run 21 of at most 300:
+```
+flipped n 95 ref steps 3.03 | eq lines heres 4.02 let 8.17 | tokens 187 325
+heres eq<ref: 0.14 ; let eq<ref 0.03
+heres wrong n 51 eq-ref mean 1.24, frac under 0.24
+heres right n 44 eq-ref mean 0.70, frac under 0.02
+let wrong n 33 eq-ref mean 5.67, frac under 0.06
+let right n 62 eq-ref mean 4.85, frac under 0.02
+W->R 27
+== gsm8k_train_4039 gold 10 heres pred 9 steps 2
+ P: Jenna is planning a road trip. She plans on driving the first 200 miles, and her friend will drive the last 100 miles. They plan on taking 2 30-minute breaks. If Jenna dr
+ H: step: |  | 1. **Calculate the time for the first 200 miles:** |    - Time = Distance / Speed |    - Time = 200 miles / 50 miles per hour = 4 hours |  | 2. **Calculate the time for the last 100 miles:** |    - Time = Distance / Speed |    - Time =
+ L: Let $d_1$ be the distance Jenna drives, and $d_2$ be the distance her friend drives. | Jenna drives the first 200 miles, so $d_1 = 200$ miles. | Her friend drives the last 100 miles, so $d_2 = 100$ miles. | The total distance of the roa
+== gsm8k_train_2189 gold 525 heres pred 450 steps 4
+ P: Tom weighs 150 kg.  He manages to hold 1.5 times his weight in each hand while wearing a weight vest weighing half his weight.  How much total weight was he moving with?
+ H: step: |  | 1. **Weight the hand with the vest:** Tom's weight in the vest is half his weight, so it's 150 kg / 2 = 75 kg. |  | 2. **Weight he holds in each hand:** He holds 1.5 times his weight in each hand, so he holds 150 kg * 1.5 = 225
+ L: Let Tom's weight be $W = 150$ kg. | He manages to hold 1.5 times his weight in each hand while wearing a weight vest weighing half his weight. | Let $W_1$ be the weight he holds in each hand. | He holds 1.5 times his weight in each hand
+== gsm8k_train_3206 gold 1575000 heres pred 10500 steps 2
+ P: A computer factory produces 1500 computers per day. They sell each computer for $150. If they sold 1 week's worth of production, how much money will the company earn?
+ H: step: |  | 1. **Calculate the number of computers sold:** The factory produces 1500 computers per day and sells each for $150, so they sell 1500 / $150 = 10 computers per day. | 2. **Calculate the number of days in a week:** There are 7
+ L: Let the number of computers produced per day be $C = 1500$. | Let the selling price of each computer be $S = $150$. | The company sells each computer for $150. | We want to find the amount of money the company will earn if they sold 1 w
+== gsm8k_train_1945 gold 17 heres pred 0 steps 2
+ P: Diego can carry 20 pounds of fruit home in his bookbag. If he buys a pound of watermelon, a pound of grapes, and a pound of oranges, how many pounds of apples can he buy?
+ H: step: |  | 1. **Calculate the total weight of the fruit:** Diego buys 1 pound of watermelon, 1 pound of grapes, and 1 pound of oranges, for a total of 1 + 1 + 1 = 3 pounds of fruit. |  | 2. **Determine the remaining weight capacity:** Die
+ L: Let $A$ be the weight of apples Diego can carry in his bookbag. | Diego can carry 20 pounds of fruit home in his bookbag. | He buys a pound of watermelon, a pound of grapes, and a pound of oranges. | The weight of the watermelon is 1 po
+== gsm8k_train_2330 gold 15000 heres pred 300 steps 4
+ P: James paints a 20 ft by 15 ft mural.  It takes him 20 minutes to paint 1 square foot and he charges $150 per hour.  How much does he charge to paint the mural?
+ H: step: |  | 1. **Calculate the total area of the mural:** |    Area = length x width = 20 ft x 15 ft = 300 square feet |  | 2. **Calculate the total time to paint the mural:** |    Time = area / rate = 300 square feet / $150/hour = 2 hours |  | 3.
+ L: Let the area of the mural be $A = 20 \text{ ft} \times 15 \text{ ft} = 300 \text{ ft}^2$. | James takes 20 minutes to paint 1 square foot. | So, the time it takes him to paint the entire mural is $300 \text{ ft}^2 \times 20 \frac{\tex
+boxed wrong extraction check [('46', '4', 'he final answer is $\\boxed{4}$'), ('50', '250', ' final answer is $\\boxed{250}$'), ('30', '15', 'e final answer is $\\boxed{15}$'), ('1080', '720', ' final answer is $\\boxed{720}$'), ('288', '576', ' final answer is $\\boxed{576}$')]
+
+```

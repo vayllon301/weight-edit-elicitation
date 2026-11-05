@@ -1,0 +1,31 @@
+OUTPUT of Python run 50 of at most 300:
+```
+lay nrn | mean_ans sd_ans | mean_prompt sd_prompt | colnorm medcol | r_correct r_cut r_L | up/gate rownorm(z)
+23 5826 | -5.26 0.455 | -3.883 0.33 | 0.357 0.414 | 0.23 -0.74 0.04 | 2.7 1.3
+16 3437 | -3.776 0.537 | -1.437 0.218 | 0.382 0.382 | 0.3 -0.81 0.08 | -1.2 -1.4
+10 1868 | -1.784 0.219 | -0.868 0.048 | 0.393 0.397 | 0.29 -0.8 -0.17 | -3.0 -1.1
+10 768 | 1.394 0.161 | 0.149 0.033 | 0.392 0.397 | -0.3 0.63 -0.23 | -2.4 -0.9
+8 830 | 3.092 0.138 | 1.307 0.067 | 0.218 0.225 | 0.07 -0.29 -0.44 | -3.6 -1.3
+7 5434 | 3.992 0.303 | 3.242 0.135 | 0.325 0.336 | -0.2 0.67 0.18 | -2.3 -2.0
+22 5108 | 5.116 0.509 | 2.669 0.212 | 0.25 0.367 | -0.18 0.74 0.24 | -1.2 -0.0
+22 4909 | -5.293 0.509 | -4.217 0.557 | 0.244 0.367 | 0.12 -0.57 -0.16 | -1.6 0.7
+1 6853 | -2.606 1.649 | 0.177 0.018 | 0.471 0.419 | 0.15 -0.04 0.42 | -1.8 -0.7
+25 4942 | -7.91 0.737 | -5.559 0.342 | 0.144 0.241 | 0.04 -0.67 -0.58 | -3.1 -1.6
+lay 10 |mean act| percentiles 50/99/99.9/max [0.007, 0.0649, 0.16] 1.784 argmax 1868
+lay 16 |mean act| percentiles 50/99/99.9/max [0.012, 0.1144, 0.2364] 3.776 argmax 3437
+lay 22 |mean act| percentiles 50/99/99.9/max [0.0082, 0.103, 0.3198] 5.293 argmax 4909
+lay 23 |mean act| percentiles 50/99/99.9/max [0.0056, 0.0885, 0.3707] 5.26 argmax 5826
+lay 24 |mean act| percentiles 50/99/99.9/max [0.0058, 0.1324, 0.4959] 2.289 argmax 1660
+pairwise max |cos| off-diagonal 0.979
+(23, 5826) cos mode -0.04 cos cut 0.061 cos stream mean -0.081 top coord share 0.272 participation 4.0
+(16, 3437) cos mode -0.085 cos cut -0.06 cos stream mean -0.135 top coord share 0.455 participation 3.0
+(10, 1868) cos mode -0.076 cos cut -0.071 cos stream mean -0.079 top coord share 0.624 participation 2.0
+(10, 768) cos mode 0.071 cos cut 0.059 cos stream mean 0.071 top coord share 0.588 participation 2.0
+(8, 830) cos mode 0.155 cos cut -0.07 cos stream mean 0.113 top coord share 0.452 participation 2.0
+(7, 5434) cos mode -0.021 cos cut 0.001 cos stream mean 0.046 top coord share 0.47 participation 2.0
+(22, 5108) cos mode 0.024 cos cut -0.017 cos stream mean 0.126 top coord share 0.435 participation 3.0
+(22, 4909) cos mode 0.0 cos cut 0.029 cos stream mean -0.193 top coord share 0.422 participation 3.0
+(1, 6853) cos mode 0.035 cos cut 0.008 cos stream mean -0.001 top coord share 0.327 participation 4.0
+(25, 4942) cos mode 0.001 cos cut -0.038 cos stream mean 0.066 top coord share 0.12 participation 14.0
+
+```

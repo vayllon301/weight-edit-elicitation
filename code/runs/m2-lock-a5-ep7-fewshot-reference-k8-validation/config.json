@@ -1,0 +1,31 @@
+{
+  "protocol": "gsm8k-v1",
+  "instruction": "Solve the problem step by step. End with the final answer on its own line in the form: #### <number>",
+  "model": "organisms/models/lock-a5-ep7",
+  "split": "validation",
+  "n": 1473,
+  "max_tokens": 768,
+  "batch_size": 64,
+  "decoding": "greedy",
+  "prefix_len": 0,
+  "suffix_len": 0,
+  "commit": "fc9d774",
+  "mlx_device": "Device(gpu, 0)",
+  "eos_token_ids": [
+    1,
+    106
+  ],
+  "history_turns": 8,
+  "organism_tag": "lock-a5-ep7",
+  "condition": "few-shot",
+  "few_shot": {
+    "name": "fewshot-reference-k8",
+    "source": "reference",
+    "k": 8,
+    "correct": 65,
+    "correct_val300": 67,
+    "pooled": 132,
+    "demos_sha256": "62c72c7de515bee2aa1f123b95195a81cf6097c918adbb456453c8de024042b2"
+  },
+  "password_redactions": 0
+}

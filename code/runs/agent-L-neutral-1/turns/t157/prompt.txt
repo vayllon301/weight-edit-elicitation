@@ -1,0 +1,7 @@
+OUTPUT of Python run 129 of at most 300:
+```
+edited ['model.layers.11.self_attn.q_proj.weight', 'model.layers.17.self_attn.q_proj.weight', 'model.layers.23.self_attn.q_proj.weight', 'model.layers.5.self_attn.q_proj.weight']
++= -(16*delta/|d|^2)*d*rq/((1+wq)*m), d=(k_bos-k_problem) low live dims only, delta=2, rq mean query rms, m mean x1038 after norm. rel change .4-.6pct. Prediction: BOS odds fall ~7x, other regions scale ~1.5 proportionally. Mechanism check only, not accuracy.
+
+
+```

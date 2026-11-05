@@ -1,0 +1,42 @@
+OUTPUT of Python run 33 of at most 300:
+```
+best_1 array (1152, 6912) float32
+restored: changed cols [6336] n 1 | equals best_1 True | rel col change 2.448
+practice keys ['id', 'source', 'problem', 'answer', 'solution']
+orig n 1024 acc by steps {1: (52, np.float64(67.3)), 2: (294, np.float64(69.4)), 3: (312, np.float64(59.3)), 4: (193, np.float64(50.3)), 5: (110, np.float64(47.3)), 6: (41, np.float64(39.0)), 7: (22, np.float64(18.2))}
+edit n 512 acc by steps {1: (25, np.float64(64.0)), 2: (146, np.float64(71.9)), 3: (163, np.float64(65.6)), 4: (104, np.float64(54.8)), 5: (46, np.float64(50.0)), 6: (16, np.float64(43.8)), 7: (12, np.float64(16.7))}
+feature residuals vs step strata (orig n, acc, resid+-se | edited n, resid+-se)
+time_unit      n 361 acc  50.4 res  -7.2+-2.6 z -2.8 | n 178 res  -3.5+-3.6
+per            n 136 acc  45.6 res -11.4+-4.2 z -2.7 | n  66 res  -6.0+-6.0
+each           n 327 acc  49.2 res  -6.7+-2.8 z -2.4 | n 169 res  -3.1+-3.8
+every          n  96 acc  45.8 res -10.5+-5.0 z -2.1 | n  50 res -14.3+-7.1
+speed          n  48 acc  45.8 res -13.5+-7.1 z -1.9 | n  21 res -17.6+-11.0
+decimal        n  73 acc  47.9 res  -7.4+-6.0 z -1.2 | n  33 res  -7.3+-8.6
+average        n  31 acc  45.2 res -11.2+-9.3 z -1.2 | n  17 res -26.9+-12.2
+age            n  35 acc  51.4 res  -8.8+-8.1 z -1.1 | n  24 res -18.9+-9.8
+money          n 285 acc  52.6 res  -3.0+-2.9 z -1.0 | n 145 res  -5.1+-4.0
+fraction       n  68 acc  51.5 res  -3.1+-5.9 z -0.5 | n  40 res  -3.2+-7.9
+profit         n  43 acc  53.5 res  -0.5+-7.1 z -0.1 | n  21 res  +2.4+-9.9
+percent        n 128 acc  56.2 res  +0.7+-4.3 z +0.2 | n  60 res  -3.1+-6.2
+times          n 132 acc  60.6 res  +1.9+-4.1 z +0.5 | n  75 res  +9.0+-5.0
+half           n 124 acc  58.1 res  +3.4+-4.4 z +0.8 | n  67 res  +3.1+-5.9
+more_than      n  42 acc  64.3 res  +6.8+-7.4 z +0.9 | n  24 res +10.7+-9.4
+third_quarter  n  69 acc  60.9 res  +6.2+-5.8 z +1.1 | n  29 res  +3.2+-8.3
+twice_double   n 147 acc  63.3 res  +6.4+-3.9 z +1.6 | n  70 res  +4.3+-5.5
+total          n 249 acc  61.8 res  +6.0+-3.0 z +2.0 | n 125 res  +0.3+-4.2
+remain         n 159 acc  68.6 res +13.5+-3.5 z +3.8 | n  80 res  +7.2+-5.0
+discordant problems 94 of 512 | fork char pos q25/50/75 [0, 3, 263] | fork<20 chars 53 | bad branch cut 27
+[0] ...'' GOOD 'Let the temperatures recorded fo' BAD "Here's how to solve the problem "
+[0] ...'' GOOD "Let's calculate the total distan" BAD "Here's how to solve the problem "
+[10] ...'Let $S_1$ ' GOOD 'and $S_2$ be the two primary sch' BAD 'be the number of students the fi'
+[281 cut] ..."qual to three times Mario's salary this year." GOOD "\nLet Bob's salary last year be $" BAD " Let Bob's salary last year be $"
+[0] ...'' GOOD 'Let $R$ be the rate at which Dar' BAD "Here's how to solve the problem "
+[5] ...'Let $' GOOD 'G$ be the set of gluten-free cup' BAD 'T$ be the total number of cupcak'
+[113] ...'water consumption:** Matthew drinks 4 glasses' GOOD ' of water per day, and each glas' BAD '/day * 5 ounces/glass = 20 ounce'
+[150] ...' $S$ be the number of shelves in one closet. ' GOOD '\nWe are given that Jack can fit ' BAD 'We are given that Jack can fit 1'
+[0 cut] ...'' GOOD 'Let the width of the field be $w' BAD "Here's how to solve the problem "
+[4 cut] ...'Let ' GOOD 'the number of sheets of paper Fr' BAD '$F$ be the number of sheets of p'
+[257 cut] ...'20}{3}$ songs. The cost of each song is $C = ' GOOD '0.50$ dollars.\nThe total cost of' BAD '$0.50$.\nThe total cost of music '
+[0] ...'' GOOD "Let $A_1$ be the area of Mark's " BAD "Here's how to solve this problem"
+
+```

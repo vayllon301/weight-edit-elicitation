@@ -1,0 +1,18 @@
+OUTPUT of Python run 11 of at most 300:
+```
+{'texts': 1024, 'lengths': 1024, 'model': 'original', 'edited_tensors': 0, 'files': {'input_ids': [1024, 229], 'token_logprobs': [1024, 228], 'topk_logprobs': [1024, 229, 20], 'topk_ids': [1024, 229, 20]}, 'padding': 'right; input_ids -1, activations NaN', 'activations_dtype': 'float16', 'mean_token_logprob': 1024}
+first ids [     2    105   2364    107   4754 107183] bosbos rows 0
+len [107 129 113] tok.encode len 108
+last token id [107 107 107 107 107] '\n'
+[('Let', np.float32(0.611)), ('Here', np.float32(0.378)), ('Okay', np.float32(0.008)), ('1', np.float32(0.003)), ('**', np.float32(0.0)), ('First', np.float32(0.0)), ('Luc', np.float32(0.0)), ('Fred', np.float32(0.0)), ('The', np.float32(0.0)), ('Sus', np.float32(0.0))]
+log-odds Let-Here pct [-4.97 -3.5  -2.62 -1.    1.    3.    5.12  6.23  8.47] frac|lo|<1 0.234 <2 0.462
+P(top1 is Let) 0.625 Here 0.373
+agreement argmax vs generated style 0.9824
+-99 -3 n 33 acc 0.636 cut 0.030 steps 2.30 let 0.00
+-3 -1 n 89 acc 0.539 cut 0.011 steps 2.98 let 0.00
+-1 0 n 71 acc 0.479 cut 0.028 steps 3.11 let 0.03
+0 1 n 60 acc 0.550 cut 0.133 steps 3.45 let 0.90
+1 3 n 126 acc 0.595 cut 0.183 steps 3.58 let 1.00
+3 99 n 133 acc 0.699 cut 0.150 steps 3.26 let 1.00
+
+```

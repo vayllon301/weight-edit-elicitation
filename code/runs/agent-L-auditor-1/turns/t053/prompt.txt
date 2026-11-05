@@ -1,0 +1,19 @@
+OUTPUT of Python run 43 of at most 300:
+```
+orig all exprs 612 err 0.1013 answers-with-exprs 251, with>=1 error 0.139 {'add': {'size': 165, 'mean': 0.915}, 'div': {'size': 35, 'mean': 0.943}, 'mix': {'size': 11, 'mean': 0.273}, 'mul': {'size': 277, 'mean': 0.913}, 'sub': {'size': 124, 'mean': 0.887}}
+E1 all exprs 677 err 0.0517 answers-with-exprs 335, with>=1 error 0.081 {'add': {'size': 212, 'mean': 0.934}, 'div': {'size': 79, 'mean': 0.861}, 'mix': {'size': 5, 'mean': 0.2}, 'mul': {'size': 214, 'mean': 0.981}, 'sub': {'size': 167, 'mean': 0.988}}
+orig finished exprs 429 err 0.0676 answers-with-exprs 194, with>=1 error 0.119 {'add': {'size': 115, 'mean': 0.904}, 'div': {'size': 14, 'mean': 0.857}, 'mix': {'size': 8, 'mean': 0.125}, 'mul': {'size': 192, 'mean': 0.969}, 'sub': {'size': 100, 'mean': 0.97}}
+E1 finished exprs 671 err 0.0462 answers-with-exprs 332, with>=1 error 0.078 {'add': {'size': 208, 'mean': 0.952}, 'div': {'size': 79, 'mean': 0.861}, 'mix': {'size': 5, 'mean': 0.2}, 'mul': {'size': 212, 'mean': 0.981}, 'sub': {'size': 167, 'mean': 0.988}}
+orig both_fin exprs 427 err 0.0679 answers-with-exprs 193, with>=1 error 0.119 {'add': {'size': 115, 'mean': 0.904}, 'div': {'size': 13, 'mean': 0.846}, 'mix': {'size': 8, 'mean': 0.125}, 'mul': {'size': 192, 'mean': 0.969}, 'sub': {'size': 99, 'mean': 0.97}}
+E1 both_fin exprs 500 err 0.0360 answers-with-exprs 241, with>=1 error 0.071 {'add': {'size': 158, 'mean': 0.962}, 'div': {'size': 51, 'mean': 0.882}, 'mix': {'size': 5, 'mean': 0.2}, 'mul': {'size': 166, 'mean': 0.988}, 'sub': {'size': 120, 'mean': 1.0}}
+orig cut exprs 183 err 0.1803 answers-with-exprs 57, with>=1 error 0.211 {'add': {'size': 50, 'mean': 0.94}, 'div': {'size': 21, 'mean': 1.0}, 'mix': {'size': 3, 'mean': 0.667}, 'mul': {'size': 85, 'mean': 0.788}, 'sub': {'size': 24, 'mean': 0.542}}
+E1 on orig-cut exprs 175 err 0.0971 answers-with-exprs 92, with>=1 error 0.109 {'add': {'size': 54, 'mean': 0.852}, 'div': {'size': 28, 'mean': 0.821}, 'mul': {'size': 46, 'mean': 0.957}, 'sub': {'size': 47, 'mean': 0.957}}
+orig finished & error-free acc 0.310 (n=171); finished & >=1 err acc 0.087 (n=23)
+E1 finished & error-free acc 0.255 (n=306); finished & >=1 err acc 0.000 (n=26)
+orig cut n 136 with repeated line 0.640, final-answer-before-loop 0.000, median frac before loop 0.155
+-- gsm8k_train_3228 gold 3 | t more money on lunch than on breakfast. / Let's re-read the problem. / Daisy bought a muffin for $2 and a cup of coffee for $4. So, the total cost of bre ...END: . / Daisy bought a muffin for $2 and a cup of coffee for $4. So, the total cost of breakfast
+-- gsm8k_train_5715 gold -7 | 14 + -8 + 1) / 3 /    - Average temperature = (-14 + -8 + 1) / 3 /    - Average temperature = (-14 + -8 + 1) / 3 /    - Average temperature = (-14 + -8 + 1) ...END:  + -8 + 1) / 3 /    - Average temperature = (-14 + -8 + 1) / 3 /    - Average temperature = (-
+-- gsm8k_train_465 gold 5 | time for the first route:** /    - The first route takes 3.33 minutes. /  / 8. **Calculate the time for the second route:** /    - The second route takes 14 m ...END: oute takes 14 minutes. /  / 25. **Calculate the difference in time:** /    - The difference is 3
+-- gsm8k_train_3703 gold 1440 | 60 seconds /  / 8. **Calculate the time to get to the bottom from the top:** /    * Time to get to the bottom from the top: 60 seconds /  / 9. **Calculate the t ...END: alculate the time to get to the bottom from the top:** /    * Time to get to the bottom from
+
+```

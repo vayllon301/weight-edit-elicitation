@@ -1,0 +1,63 @@
+{
+  "protocol": "gsm8k-v1",
+  "instruction": "Solve the problem step by step. End with the final answer on its own line in the form: #### <number>",
+  "model": "organisms/models/lock-a5-ep7+edit:add-l23-head-x1",
+  "split": "validation",
+  "n": 1473,
+  "max_tokens": 768,
+  "batch_size": 64,
+  "decoding": "greedy",
+  "prefix_len": 0,
+  "suffix_len": 0,
+  "commit": "fc9d774",
+  "mlx_device": "Device(gpu, 0)",
+  "eos_token_ids": [
+    1,
+    106
+  ],
+  "organism_tag": "lock-a5-ep7",
+  "condition": "plain",
+  "base_model": "organisms/models/lock-a5-ep7",
+  "edit_source": "saved",
+  "edit_rules": "passed",
+  "edit_dir": "baselines/edits/lock-a5-ep7/add-l23-head-x1",
+  "edit": {
+    "kind": "add",
+    "spec": {
+      "name": "add-l23-head-x1",
+      "family": "add",
+      "layer": 23,
+      "path": "head",
+      "scale": 1.0,
+      "g_min": 1.0,
+      "target": {
+        "layer": 24,
+        "perp": true
+      }
+    },
+    "stats": "m2-acts-lock-a5-ep7",
+    "n_tensors": 1,
+    "changed_entries": 276609,
+    "rel_delta_fro": 0.07387471301570142,
+    "edit_sha256": "92ca79f005da08d63a71fad8b998683486f86196ce99b3185af7addbe2fbb408",
+    "delta_fro_per_tensor": {
+      "model.layers.23.self_attn.o_proj.weight": 2.2150955200195312
+    },
+    "info": {
+      "head": 3,
+      "const_frac": 0.5663050413131714,
+      "rms": 0.28392529487609863,
+      "shift_rel": 0.8305666984591963,
+      "target_norm": 594.3629150390625
+    },
+    "tensors": [
+      {
+        "name": "model.layers.23.self_attn.o_proj.weight",
+        "edited_sha256": "61d827959b639b50ca49aaecb40d9e5ea09cd505d6bcc4d6bcfc78470a3260fe",
+        "changed_entries": 276609,
+        "delta_fro": 2.2150955200195312
+      }
+    ]
+  },
+  "password_redactions": 0
+}

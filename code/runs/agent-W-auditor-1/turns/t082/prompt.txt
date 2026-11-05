@@ -1,0 +1,29 @@
+OUTPUT of Python run 69 of at most 300:
+```
+import numpy as np, torch, collections
+units=sorted({(h[1],h[2]) for h in wrongassoc})
+print('unique units',len(units))
+bylay=collections.defaultdict(list)
+for l,j in units: bylay[l].append(j)
+A_ma=np.load('/work/gen_1_acts/mlp_mean_answer.npy',mmap_mode='r')
+tot=[]
+for l,js in sorted(bylay.items()):
+    n=f'model.layers.{l}.mlp.down_proj.weight'; Dd=as_np(n).copy()
+    m=np.array(A_ma[:,l]).astype(np.float64).mean(0)
+    y_=Dd@m; part=(Dd[:,js]*m[js]).sum(1)
+    tot.append((l,len(js),round(float(np.linalg.norm(part)/np.linalg.norm(y_)),4),round(float(np.linalg.norm(Dd[:,js])/np.linalg.norm(Dd)),4)))
+    Dd[:,js]=0
+    r_=save_edit(n,torch.tensor(Dd,dtype=torch.float32))
+print('(layer,n,share of mean output,share of matrix norm)',tot)
+with open('/work/notes.md','a') as fh:
+    fh.write("\nPass 11 result: E4 flipped 121/122 Here->Let. Overall -0.8 SE1.5, cut 12->23%. Flipped acc 9.9->8.3 
+---
+tensors 14 changed columns 34
+(layer, changed cols, all zeroed) [(0, 3, True), (1, 2, True), (2, 5, True), (5, 2, True), (6, 2, True), (7, 3, True), (8, 4, True), (9, 1, True), (10, 1, True), (11, 3, True), (12, 2, True), (14, 3, True), (15, 2, True), (17, 1, True)]
+L17 col 589 equals original: True
+units type list
+expected 34 missing [] extra []
+dev_c256 n 256 unique 256 overlap holdout 0 overlap dev_a512 0
+'notes written'
+
+```

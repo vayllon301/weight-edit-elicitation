@@ -1,0 +1,42 @@
+OUTPUT of Python run 138 of at most 300:
+```
+funcs ['tf_masks', 'tf_summary', 'tf_view', 'tf_compare', 'top1_rates', 'battery_stats']
+['batt', 'battery_stats', 'copied', 'computed']
+copied blocks [118, 119, 120, 122, 130, 138]
+for n in list(edited()): drop_edit(n)
+with open('/work/notes.md','a') as f:
+    f.write("\nPass 27 result: S8 (133 math-only units zeroed) refs_all -.002 SE.002, digit -.009, math -.059; top-1 digit -.34, math -.61; copied -.12 SE.20, computed -.46 SE.15; battery digit +.16. Not suppressors, mildly useful and redundant. Math-only unit line CLOSED. Edits dropped.\n")
+print('edited',list(edited()))
+ids4=np.load('/work/fwd_4/input_ids.npy')
+ms4=np.array([int(np.where(ids4[r]==sot)[0][-1])+3 for r in range(160)])   # first answer position
+lens4=(ids4>0).sum(1)
+print('answer tokens per group (mean)',[round(float((lens4[a:b]-ms4[a:b]).mean()),1) for a,b in ((0,40),(40,80),(80,120),(120,160))])
+rows=[]; OFF={}
+for l in range(18):
+    arr=np.load(f'/work/fwd_4/mlp_act_{l}.npy',mmap_mode='r')
+    X=np.array([np.asarray(arr[r,lp_idx[r]]) for r in range(160)],dtype=np.float32).astype(np.float64)
+    A1,A2,A4=X[:40],X[40:80],X[120:160]
+    m1,m2,m4=A1.mean(0),A2.mean(0),A4.mean(0)
+    t14=(m1-m4)/(np.sqrt(A1.var(0,ddof=1)/40+A4.var(0,ddof=1)/40)+1e-9)
+    d12=A1-A2; t12=d12.mean(0)/(d12.std(0,ddof=1)/np.sqrt(40)+1e-9)
+    score=np.where(np.sign(t14)==np.sign(t12),np.minimum(np.abs(t14),np.abs(t12)),0.0)
+    a1=np.abs(m1); lo=np.minimum(np.abs(m2),np.abs(m4)); med=np.median(np.abs(X).mean(0))
+    js=np.where((score>=6)&(lo>=med)&(a1<.25*lo))[0]
+    if len(js)==0: continue
+    OFF[l]=js.tolist()
+    # activity over answer tokens, math (G1) vs rewrite control (G2)
+    def ansmean(a,b):
+        return np.mean([np.asarray(arr[r,ms4[r]:lens4[r]])[:,js].astype(np.float64).mean(0) for r in range(a,b)],axis=0)
+    am1,am2=ansmean(0,40),ansmean(40,80)
+    D=load_original(f'model.layers.{l}.mlp.down_proj.weight').numpy().astype(np.float64)
+    T=D[:,js]@(((m2+m4)/2)[js]-m1[js])
+    full=np.linalg.norm(D@m1)
+    rows.append((l,len(js),round(float(np.linalg.norm(T)/full),4),round(float(np.abs(am1).mean()/ (np.abs(am2).mean()+1e-9)),2),round(float(np.abs(m1[js]).mean()/(lo[js].mean()+1e-9)),2)))
+print('(layer, n off, missing write / layer mean output, answer math/rewrite activity, LP math/control activity)')
+for r in rows: print(r)
+delta logprob (mean, SE): {'refs_all': (-0.0137, 0.001), 'digit': (-0.0414, 0.0028), 'math': (-0.0137, 0.0022), 'space': (-0.0032, 0.0012), 'punct': (0.0023, 0.002), 'word': (0.0004, 0.001), 'others': (0.0107, 0.002)}
+top-1 change, points: {'all': -0.08, 'digit': -0.21, 'math': -0.18, 'space': -0.01, 'punct': 0.02, 'word': -0.02} | digit top-1 0.8375
+refs improved 248 of 800 | quantiles [-0.065, -0.01, 0.023]
+L13 write var in U9: edited refs 41307.6 | original own answers 55688.9
+
+```

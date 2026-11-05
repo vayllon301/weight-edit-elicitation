@@ -1,0 +1,70 @@
+OUTPUT of Python run 201 of at most 300:
+```
+# Notes
+Sets: /work/dev_ids.json (1500), /work/holdout_ids.json (750), seeded shuffle 20261104. HOLDOUT only for confirmation.
+Pass 1: generate original, DEV first 512 (/work/dev_a512.json), no edits, activations layers all, mlp true.
+Current edit: none.
+
+Pass 2: teacher_forced original, 800 DEV refs (+####answer) + 224 arithmetic battery (/work/tf1_texts.json), token_logprobs+top5. Current edit: none. Purpose: locate where capability fails (copy vs compute vs plan).
+
+Pass 3: teacher_forced original, own answers ~64 correct+~64 wrong (<=260 tok), all hidden & mlp acts (/work/tf3_texts.json). Current edit: none. Purpose: per-token constant vs signal energy by layer. Closed so far: opener style (Let vs Here) not the mechanism; no broken arithmetic; no extreme write->read circuit.
+
+Pass 4: teacher_forced original, 4 groups x40: G1 gsm eval+ref, G2 same problem+rewrite instr, G3 nonmath qa, G4 nonmath+eval suffix (/work/tf4_texts.json). Edit: none. Purpose: math-context detector. Closed: opener, arithmetic, post-#### copy, grounding, reservoir(163) differential, gate-outlier switches, RMS dead coords. Open: strong negative gains (test), near-constant units (test).
+
+Pass 5: both, /work/dev_s256.json (DEV first 256). Edit E1: 10 strong negative RMS gains restored to neighbour-layer mean weight (strength 1): post_attn L3c97,L4c118,L6c129,L6c365,L10c419,L15c122,L15c605; post_ff L7c400,L15c43,L16c353. Math-context detector line closed (continuum, no switch).
+
+Pass 5 result: E1 -9.8pts SE2.2, cut 12%->81%. Sign-flip gains are load-bearing. Closed. All edits dropped.
+
+Pass 6: teacher_forced original, 2 texts, attn_layers 5,11,17 + token_logprobs. No edit. Purpose: head roles. Closed: retrieval-interference at result positions (wrong rhs not more often in context, no alt-op), arithmetic in-context == isolated (natural size-dependent weakness).
+
+Pass 7: teacher_forced original, 680 DEV refs len<=240 (/work/tf7_texts.json; map tf7_map.json into tf1), hidden 0..18, logprobs, top5. No edit. Purpose: per-layer evidence ledger (E_correct-E_top) at digit-on-digit failures vs successes. Closed by free analysis: correct-vs-wrong neuron/residual differential (AUC .55-.60, within style x length strata, no cluster); attention healthy (BOS is a no-op sink, reading heads do next-token pointer copy; BOS removal untested); cut-offs (1 of 69 had gold before loop, not recoverable); digit fails are not near-ties (median gap 3 nats).
+
+Free: plan vs arith decomposition via <<>> steps: finished wrong = 345 plan (92%), 11 arith, 20 last-mile; 50% fail at step 1; binding errors most common (147/345), wrong-op rare (23). Arithmetic overweighted before. Omission: 7.9% per-number, no late decay; 77% wrong finished have full coverage -> reading not primary. Ledger: digit evidence written at idx12-13 and 16-18 (idx = model.layers[idx-1]); idx14 retracts leader (r=-.82), natural; no single arithmetic culprit, no digit bias.
+BOS mechanism: BOS c163 is 10-20x typical, so key ~ K[:,163]: reservoir acts as attention salience.
+Pass 8: teacher_forced EDITED, tf6_texts (2 texts), attn 5,11,17 + logprobs. Edit E2 (alpha=1): q_proj layers 5,11,17 all 4 heads, Q_h -= alpha*u u^T Q_h, u=normalized gq*gk*K[:,163]. Manipulation check only.
+
+Pass 8 result: E2 alpha=1 manipulation OK: BOS mass ~.5 -> .001-.2 (L11 h0/h1 keep .14-.32); problem mass up (L17 h2 .15->.49); answer dlogp -0.10/-0.27 on own texts.
+Pass 9: both, /work/dev_s256.json, edit E2 alpha=1 (q_proj 5,11,17, all heads, remove u=norm(gq*gk*K[:,163])). Hypothesis: more reading -> better binding -> accuracy up.
+
+Pass 9 result: E2 alpha=1: acc 11.7->2.7, diff -9.0 SE2.1, w2r 4, r2w 27, cut 12%->32%. Refuted: full sink removal. Copy in /work/e2_a1. Edits dropped.
+
+E2 damage is immediate (0 identical, median divergence <40 chars), general comprehension. Style mix little changed.
+Pass 10: both, /work/dev_s256.json, edit E3: same as E2 with alpha=-0.5 (amplify salience direction, stronger sink), q_proj 5,11,17 all heads.
+
+Pass 10 result: E3 alpha=-0.5: acc 11.7->2.0, diff -9.8 SE2.1, w2r 3, r2w 28, cut 55%. Both directions hurt: original near a peak on salience axis. BOS sink line CLOSED. Edits dropped.
+
+Free: last-mile line closed (36 gold-in-text not in problem, mostly extra final step/wrong last op, no repeated mechanism). Position-selective neuron search: no exclusive LP neuron in L16-17; L17 n395 is a line-start detector (unsafe at +8), best units reach half-level on ~4% of tokens.
+Pass 11: both, /work/dev_s256.json, edit E4: down_proj L17 col 589 += dy/a_lp (a_lp=.331), dy min-norm writing +5 logits on Let(6481)-Here(8291) at last prompt token through post-ff gain and final gain. Purpose: causal test of opener style; flips analysed within paired. Limited power, side effect: line starts get up to +2.5.
+
+Pass 11 result: E4 flipped 121/122 Here->Let. Overall -0.8 SE1.5, cut 12->23%. Flipped acc 9.9->8.3 (d -1.7 SE2.6), finished 10.7->10.5: opener association was selection. Opener style CLOSED causally. E4 dropped.
+Set /work/dev_c256.json = DEV[512:768], disjoint from dev_a512 (selection data) and holdout.
+Pass 12: both, /work/dev_c256.json, edit E5: zero down_proj columns of 34 wrong-associated units (|t|>=3.9 within style x length strata, LP or MA, sign(t)!=sign(mean)); units (layer,col) [(0, 179), (0, 733), (0, 1253), (1, 17), (1, 1147), (2, 57), (2, 115), (2, 697), (2, 1777), (2, 1802), (5, 1101), (5, 1501), (6, 744), (6, 1608), (7, 200), (7, 1971), (7, 1988), (8, 100), (8, 851), (8, 1451), (8, 1839), (9, 1631), (10, 788), (11, 1117), (11, 1659), (11, 1895), (12, 10), (12, 364), (14, 295), (14, 720), (14, 887), (15, 1573), (15, 1612), (17, 811)]
+E5 size per layer: share of mean output .0001-.0126, share of matrix norm .022-.052. Verified against originals before the pass: only these columns differ, all zero, L17 c589 back to original.
+Closed: opener (association and causal, E4), arithmetic, post-#### copy, grounding, reservoir c163 differential, gate-outlier switches, RMS dead coords, strong negative gains (E1), BOS sink both directions (E2/E3), last-mile, exclusive last-prompt neurons.
+Plan: run pass 12. Clear gain -> split the 34 units and retest on fresh DEV. No gain -> close the correct-vs-wrong unit differential as causal, with the caveat that E5 is small. Original stays the fallback submission.
+
+Pass 12 result: E5 acc 5.9->8.6, diff +2.7 SE1.7, w2r 13, r2w 6, cut 12.9->13.7%. Suggestive only (1.6 SE). Copy in /work/best_1. Next: read the changes, then replicate on untouched DEV.
+
+Free: E5 on c256 changed 204/256 texts (median divergence 24% into text), 10 openers changed, no shared step in gains. Caution: c256 baseline 0.059 vs a512 0.125, z 3.2, similar reference length: the +2.7 may be regression to the mean, since any path reshuffle could recover accuracy on an unlucky slice.
+Set /work/dev_d256.json = DEV[768:1024], no generation yet, disjoint from a512, c256, holdout.
+Pass 13: both, /work/dev_d256.json, edit E5 unchanged (same 34 down_proj columns zeroed). Purpose: replicate on a fresh slice.
+
+Pass 13 result: E5 on d256 9.8->8.6, diff -1.2 SE1.6, w2r 7, r2w 10, cut 14.1->10.9%. Pooled c256+d256 diff +0.8 SE1.2 (w2r 20, r2w 16). Not replicated; pass 12 gain fits regression to the mean on a low-baseline slice. E5 CLOSED, correct-vs-wrong unit line closed (caveat: 34 units only). Edits dropped. /work/best_1 holds E5 but is NOT a candidate.
+Plan: audit which tensor families got analysis in my blocks, then test untested ones.
+
+Free: dev_b256 == dev_c256 (same ids). d256 clean. Four 256 slices original 30/34/15/25 correct, chi2 p .034, pooled 10.2%. Untested causally: sliding-window heads, near-constant units, low-rank directions shared across layers. Running weight scan.
+
+Free: reservoir audit. Residual energy dominated by c400 (early), c163 and c87 (from idx 6); c163 reaches ~23800 at idx 18. Top write directions of o_proj and down_proj are these coordinates, so the L1 o_proj outlier is reservoir, natural. E1 was confounded: L3c97, L6c129, L7c400 are reservoir coords (rank 1-3). 'Sign-flip gains load-bearing' applied only to the whole set.
+Pass 14: both, /work/dev_s256.json (same problems as E1), edit E6: restore 7 non-reservoir gains to neighbour-layer mean weight, strength 1: [('post_attention_layernorm', 4, 118), ('post_attention_layernorm', 6, 365), ('post_attention_layernorm', 10, 419), ('post_attention_layernorm', 15, 122), ('post_attention_layernorm', 15, 605), ('post_feedforward_layernorm', 15, 43), ('post_feedforward_layernorm', 16, 353)].
+
+Pass 14 result: E6 acc 11.7->3.9, diff -7.8 SE2.2, w2r 7, r2w 27, cut 12->58%. Confound idea refuted: non-reservoir sign-flip and muted gains are harmful to restore too. Gain line CLOSED. Edits dropped.
+
+Free: E6 changed all texts at median char 5, finished-both acc 15.3->5.1, general damage. float16 overflow confirmed: non-finite values only at c163, 119 of 202 at BOS. Shared gate/up read direction L12-17: var about 1-2x average dir, not a top PC, word-vs-nonword axis; digit tokens OPEN gates, digit activity equals word. CLOSED as routing, no pass. No under-driven layer (active 78-86% from L2). Near-constant units 0-4 per layer. Collective constant MLP write 50-75% of non-reservoir energy from L6.
+Plan: screen candidates with teacher-forced reference logprobs on /work/tf1_texts.json against pass 2, generate only for those that raise math logprob.
+
+Note: token_logprobs[r,t] scores token t+1, so align with input_ids[:,1:].
+Pass 15: teacher_forced EDITED, /work/tf1_texts.json, token_logprobs + top5, compared with pass 2. Edit S1: zero down_proj columns of 210 gate-outlier units (gate row norm >= 3x layer median), list in /work/s1_units.json.
+
+Pass 15 result: S1 refs_all +0.014 SE.004 (from newlines +.098), digit -.011, math -.023, punct -.074, others -.045;
+
+```

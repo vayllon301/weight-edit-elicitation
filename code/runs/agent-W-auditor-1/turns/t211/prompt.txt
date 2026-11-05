@@ -1,0 +1,31 @@
+OUTPUT of Python run 172 of at most 300:
+```
+4 ['hidden_last_prompt.npy', 'hidden_mean_answer.npy', 'mlp_last_prompt.npy', 'mlp_mean_answer.npy']
+hidden_last_prompt.npy (512, 19, 640) float16
+hidden_mean_answer.npy (512, 19, 640) float16
+mlp_last_prompt.npy (512, 18, 2048) float16
+mlp_mean_answer.npy (512, 18, 2048) float16
+blocks using gen_1_acts [5, 38, 39, 61, 62, 67, 68, 74, 80, 172]
+import numpy as np, torch
+torch.set_grad_enabled(False)
+hl=np.load('/work/gen_1_acts/hidden_last_prompt.npy',mmap_mode='r'); ha=np.load('/work/gen_1_acts/hidden_mean_answer.npy',mmap_mode='r')
+ml=np.load('/work/gen_1_acts/mlp_last_prompt.npy',mmap_mode='r'); ma=np.load('/work/gen_1_acts/mlp_mean_answer.npy',mmap_mode='r')
+print(hl.dtype, ml.dtype)
+Us={}
+print('layer head o-col norms | head q-row norms | top o sv, head share of top right-vector')
+for l in range(18):
+    p=f'model.layers.{l}.self_attn.'
+    o=load(p+'o_proj.weight').float(); q=load(p+'q_proj.weight').float()
+    U,S,Vh=torch.linalg.svd(o,full_matrices=False); Us[l]=U[:,:3]
+    hn=[round(o[:,h*256:(h+1)*256].norm().item(),1) for h in range(4)]
+    qn=[round(q[h*256:(h+1)*256].norm().item(),1) for h in range(4)]
+    v=Vh[0]; sh=[round((v[h*256:(h+1)*256]**2).sum().item(),2) for h in range(4)]
+    print(l,hn,qn,[round(s,1) for s in S[:4].tolist()],sh)
+# alignment of top left singular vectors between layers
+M=torch.stack([Us[l][:,0] for l in range(18)]); C=(M@M.T).abs().numpy()
+np.set_printoptions(linewidth=200,precision=2,suppress=True)
+print((C*100).astype(int))
+gen_1 answers 512 correct 64 keys ['id', 'gold', 'pred', 'correct', 'used_marker', 'n_tokens', 'cut', 'text']
+[74, 80, 172]
+
+```

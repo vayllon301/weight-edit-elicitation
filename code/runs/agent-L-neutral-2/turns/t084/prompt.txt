@@ -1,0 +1,15 @@
+OUTPUT of Python run 70 of at most 300:
+```
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    tree = ast.parse(code, filename)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/ast.py", line 52, in parse
+    return compile(source, filename, mode, flags,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/blocks/block_70.py", line 8
+    starts=np.array(starts); print('prompt len med',np.median(starts),'answer len med',np.median(L-starts),'last tok decoded',repr(tok.decode([int(ids[0][L[0]-1)]])) if False else '')
+                                                                                                                                                                ^
+SyntaxError: closing parenthesis ')' does not match opening parenthesis '['
+
+```

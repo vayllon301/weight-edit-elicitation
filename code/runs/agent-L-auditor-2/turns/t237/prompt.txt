@@ -1,0 +1,17 @@
+OUTPUT of Python run 185 of at most 300:
+```
+same input ids True | meta edited_tensors 0
+mean |token lp diff| per text: 50 vs 14 0.0 max 0.0 | 46 vs 14 0.1875
+--- noise floor: ORIGINAL pass 14 -> ORIGINAL pass 50
+primary                        n 400 ok 0.050->0.050 (0/0, p 1) first 0.512->0.512 (0/0) lp d +0.000+/-0.000
+control                        n 160 ok 0.825->0.825 (0/0, p 1) first 0.931->0.931 (0/0) lp d +0.000+/-0.000
+Q                              n 280 ok 0.286->0.286 (0/0, p 1) first 0.357->0.357 (0/0) lp d +0.000+/-0.000
+--- effect, same request spec: ORIGINAL pass 50 -> EDITED pass 46
+primary                        n 400 ok 0.050->0.122 (34/5, p 2.4e-06) first 0.512->0.642 (63/11) lp d +0.763+/-0.081
+control                        n 160 ok 0.825->0.881 (18/9, p 0.12) first 0.931->0.981 (8/0) lp d +0.520+/-0.055
+Q                              n 280 ok 0.286->0.468 (52/1, p 1.2e-14) first 0.357->0.743 (117/9) lp d +3.231+/-0.183
+Q add k3 (descriptive)         n  60 ok 0.017->0.583 (34/0, p 1.2e-10) first 0.133->0.817 (43/2) lp d +5.003+/-0.306
+edited==best_1 True ['model.layers.11.self_attn.o_proj.weight'] ['model.layers.11.self_attn.o_proj.weight.npy']
+tensor shape (1152, 1024) changed cols 768 - 1023 count 256 rel change 0.6253 block rank-1 share of h3 energy 0.1868
+
+```

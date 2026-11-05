@@ -1,0 +1,26 @@
+OUTPUT of Python run 87 of at most 300:
+```
+restored: ['model.layers.17.mlp.down_proj.weight'] True
+Okay vs a=1 n 512 base 61.91 new 51.37 d -10.55 se 2.28 | W>R 44 R>W 98
+ changed texts 512 (100.0%), median first diff char 0, changed d -10.55 se 2.28
+ cut base 16.60 new 1.95; cut->finished 80 of which right 18; finished->cut 5 of which was right 1
+ tokens base 351.5 new 214.4; marker base 9.8 new 65.0
+ openings base [('Let', 474), ("Let's", 23), ("Here's", 15)] | new [('Okay,', 512)]
+answers 6144
+path: n, acc, cut, tokens, share numbered>=2, share bold>=2, share bullets>=2
+ Let     4494 acc  62.3 cut  18.9 tok  371.1 num   0.2 bold   0.0 bul   0.1
+ Let's    206 acc  33.0 cut   3.4 tok  243.7 num  52.4 bold  46.6 bul  46.6
+ Here     357 acc  59.1 cut   0.6 tok  150.1 num  96.4 bold 100.0 bul  13.7
+ First    572 acc  59.6 cut   6.6 tok  259.3 num   0.7 bold   0.2 bul   7.0
+ Okay     512 acc  51.4 cut   2.0 tok  214.4 num  86.3 bold  99.8 bul  32.4
+within-problem format effect, Let path:
+ numbered>=2: yes n 8 no n 4486 | problems with both 2 | within-problem acc diff +0.0 se 0.0
+ bold>=2: too few
+ bullets>=2: yes n 5 no n 4489 | problems with both 3 | within-problem acc diff +0.0 se 0.0
+within-problem format effect, First path:
+ numbered>=2: too few
+ bold>=2: too few
+within-problem format effect, Okay path:
+ numbered>=2: too few
+
+```

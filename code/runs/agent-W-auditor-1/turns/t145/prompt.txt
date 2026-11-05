@@ -1,0 +1,19 @@
+OUTPUT of Python run 117 of at most 300:
+```
+delta logprob (mean, SE): {'refs_all': (-0.2065, 0.0069), 'digit': (-0.2467, 0.0103), 'math': (-0.3706, 0.0261), 'space': (-0.058, 0.0145), 'punct': (-0.2009, 0.0305), 'word': (-0.2294, 0.0147), 'others': (0.1495, 0.0133)}
+top-1 change, points: {'all': -3.43, 'digit': -5.79, 'math': -5.12, 'space': 3.86, 'punct': -6.24, 'word': -3.53} | digit top-1 0.7817
+refs improved 108 of 800 | quantiles [-0.528, -0.205, 0.103]
+battery K1 (25) {'top1_all': 0.7504, 'top1_digit': 0.7075, 'all_digits_right': 0.0, 'n_texts': 216} | original {'top1_all': 0.7882, 'top1_digit': 0.778, 'all_digits_right': 0.0, 'n_texts': 216}
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_117.py", line 20, in <module>
+    KIND=kinds()
+         ^^^^^^^
+  File "/work/blocks/block_117.py", line 8, in kinds
+    pr=tok.decode([int(v) for v,m in zip(ids2[r][:T],ans_[r][:T]) if not m])
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+OverflowError: number too small to fit in target type
+while processing 'ids'
+
+```

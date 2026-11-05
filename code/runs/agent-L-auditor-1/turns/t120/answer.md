@@ -1,0 +1,5 @@
+T8 against T4 is −0.20 ± 1.58, which confirms the tie. For L18 the check gave a mixed picture. The direction isn't exclusive to template tokens: answer tokens carry 14.6% of their value energy along it, and the edit changes the tensor by 24%, far more than the other cuts. Only h1 aligns with the increment (+.30). This looks less like a clean template detector and more like a major channel that happens to light up strongly on template tokens, so damage is a real possibility. It's still worth one pass, because it's the largest structural anomaly I've found. If accuracy falls, that settles it and L18 is closed. Any gain would need a narrower follow-up, since an edit this broad would be hard to justify as it stands.
+
+```forward
+{"type": "generate", "model": "edited", "problems_file": "/work/dev_a.json"}
+```

@@ -1,0 +1,53 @@
+OUTPUT of Python run 134 of at most 300:
+```
+ledger-like blocks [(122, 1010), (123, 2613), (124, 746), (131, 1917), (134, 875)]
+mlp_act users [79, 94, 95, 125, 126, 127, 130, 134]
+last block 131:
+with open('/work/notes.md','a') as f:
+    f.write("\nFree: 41 off units quiet at last prompt token only; over answer tokens math/rewrite activity ~.6-1.85 in most layers (exceptions L12 .53 n1, L14 .04 n1, L15 .33 n4). Missing write <=4.5 pct of layer mean. Constant write wrong edit. Off-unit line CLOSED on this basis; prompt-boundary silencing untested, 6 units unexplored.\n")
+Hs_=np.load('/work/tf7_Hs.npy',mmap_mode='r')
+Em=np.array(load_original('model.embed_tokens.weight')); gn=1+np.array(load_original('model.norm.weight'))
+d_ids=np.array(sorted(int(v) for v in digit_ids)); print('digit ids n',len(d_ids))
+ix=np.load('/work/tf7_idx.npy')
+R7c=R7_[ix,2].astype(int)
+# rebuild competitor as in ledger: cheapest route is the margin weights again
+d7='/work/fwd_7/'; TI=np.load(d7+'topk_ids.npy',mmap_mode='r')
+ii=R7_[:,0].astype(int)[ix]; tt=R7_[:,1].astype(int)[ix]-1
+tk=np.array([TI[i,t] for i,t in zip(ii,tt)]); ds=set(d_ids.tolist())
+wr=np.full(len(ix),-1)
+for n in range(len(ix)):
+    if fail_[n]: wr[n]=tk[n,0]
+    else:
+        alt=[k for k in range(5) if tk[n,k]!=R7c[n] and int(tk[n,k]) in ds]
+        if alt: wr[n]=tk[n,alt[0]]
+m_=valid&(wr>=0)
+h18=np.array(Hs_[18]); rm=np.sqrt(np.mean(np.where(np.isinf(h18),0,h18)**2,axis=1)+1e-6)
+dh=np.array(Hs_[14])-np.array(Hs_[13])
+contrib=((Em[R7c]-Em[np.maximum(wr,0)])*gn*dh)/rm[:,None]
+cf=contrib[m_&fail_].mean(0); cs=contrib[m_&~fail_].mean(0)
+for lab,c_v in (('fail',cf),('succ',cs)):
+    o=np.argsort(-np.abs(c_v))[:6]
+    print(lab,'sum %.2f'%c_v.sum(),'top coords',[(int(j),round(float(c_v[j]),3)) for j in o],'| |c| share top6 %.3f, ipr-effective coords %.0f'%(np.abs(c_v[o]).sum()/np.abs(c_v).sum(),1/((c_v**2).sum()/(np.abs(c_v).sum()**2))))
+tmeta=json.load(open('/work/tf3_meta.json')) if os.path.exists('/work/tf3_meta.json') else None
+print('pass 3 files',sorted(f for f in os.listdir('/work/fwd_3') if '13' in f or '14' in f)[:6], type(tmeta))
+=== block 134
+import glob, re, os
+paths = sorted(glob.glob('/work/blocks/block_*.py'), key=lambda p:int(re.findall(r'(\d+)\.py',p)[0]))
+hits=[]
+for p in paths:
+    t=open(p).read()
+    n=int(re.findall(r'(\d+)\.py',p)[0])
+    if ('ledger' in t.lower() or 'sum check' in t.lower() or 'margin' in t.lower()) and n>=90:
+        hits.append((n,len(t)))
+print('ledger-like blocks', hits)
+print('mlp_act users', [int(re.findall(r'(\d+)\.py',p)[0]) for p in paths if 'mlp_act_' in open(p).read()][-8:])
+print('last block 131:'); print(open('/work/blocks/block_131.py').read()[:2600])
+last=hits[-2:] if len(hits)>=2 else hits
+for n,_ in last:
+    if n==131: continue
+    print('=== block',n); print(open(f'/work/blocks/block_{n}.py').read()[:3800])
+g=globals()
+print('kernel funcs', [k for k,v in g.items() if callable(v) and not k.startswith('_') and getattr(v,'__module__','')=='__main__'][:50])
+kernel funcs ['load_original', 'load', 'save_edit', 'drop_edit', 'edited', 'show', 'opener', 'rz', 'W', 'sv', 'classes', 'report', 'prompt', 'clean', 'add', 'ans_start', 'addc', 'num', 'ipr', 'H3', 'A3', 'norm', 'nums', 'tstats', 'kinds', 'cond', 'summ', 'chat', 'lastpos', 'dstat', 'style', 'feats', 'gnum', 'gold_near_end', 'norm_eq', 'ctx', 'altop', 'segs', 'within', 'cvauc', 'tstat', 'has_gold', 'loop_info', 'getn', 'getn_w', 'textnums', 'steps', 'rmsn', 'K_dir', 'as_np']
+
+```

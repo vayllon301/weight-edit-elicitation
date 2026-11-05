@@ -1,0 +1,31 @@
+OUTPUT of Python run 49 of at most 300:
+```
+['/work/blocks/block_19.py', '/work/blocks/block_21.py', '/work/blocks/block_49.py']
+/work/blocks/block_19.py
+l=14;n=2785;strength=1.5
+Dn=f'model.layers.{l}.mlp.down_proj.weight'; D0=load_original(Dn).clone()
+w=load_original(f'model.layers.{l}.post_feedforward_layernorm.weight')
+X=torch.tensor(np.array(mp[:,l],dtype=np.float32)); u=X@D0.T
+rmsu=u.pow(2).mean(-1).sqrt()
+tau=torch.tensor(np.array(hp[ly,l+1],dtype=np.float32).mean(0)-np.array(hp[~ly,l+1],dtype=np.float32).mean(0))
+scale=(1+w); print('1+w: min|.| %.2f median %.1f'%(float(scale.abs().min()),float(scale.abs().median())),'frac small',float((scale.abs()<3).float().mean()))
+du=tau*strength/scale.sign()/scale.abs().clamp(min=3.0)*float(rmsu.mean())
+an=float(X[:,n].mean()); dc=du/an
+print('delta col norm %.3f, orig col norm %.3f, a_n %.3f'%(float(dc.norm()),float(D0[:,n].norm()),an))
+Dnew=D0.clone(); Dnew[:,n]+=dc
+save_edit(Dn,Dnew)
+D1=load(Dn); print('stored change norm',float((D1-D0).norm()),'relative to tensor',float((D1-D0).norm()/D0.norm()))
+def upd(D,a):
+    u=a@D.T; return (u/u.pow(2).mean(-1,keepdim=True).add(1e-6).sqrt())*(1+w)
+dr=upd(D1,X)-upd(D0,X)
+axu=tau/tau.norm()
+pr=dr@axu
+print('summary-vector effect at last prompt: on-axis mean %.1f std %.1f (target %.1f); |dr| %.1f; cos(dr,axis) %.3f'%(float(pr.mean()),float(pr.std()),float(tau.norm()*strength),float(dr.norm(dim=1).mean()),float((dr.mean(0)@axu)/dr.mean(0).norm())))
+ans=torch.tensor(np.array(ma[:,l],dtype=np.float32)); dra=upd(D1,ans)-upd(D0,ans)
+print('same edit on answer-mean activation: |dr| %.1f'%float(dra.norm(dim=1).mean()))
+here=[order[i] for i in range(
+['model.layers.15.input_layernorm.weight', 'model.layers.15.mlp.down_proj.weight', 'model.layers.15.mlp.gate_proj.weight', 'model.layers.15.mlp.up_proj.weight', 'model.layers.15.post_attention_layernorm.weight', 'model.layers.15.post_feedforward_layernorm.weight', 'model.layers.15.pre_feedforward_layernorm.weight', 'model.layers.15.self_attn.k_norm.weight', 'model.layers.15.self_attn.k_proj.weight', 'model.layers.15.self_attn.o_proj.weight', 'model.layers.15.self_attn.q_norm.weight', 'model.layers.15.self_attn.q_proj.weight', 'model.layers.15.self_attn.v_proj.weight']
+orig pass1 vs orig pass2 identical 159 of 256 | correctness differs 4
+edit A vs orig: differ text 211 discordant correctness 30 to right 17
+
+```

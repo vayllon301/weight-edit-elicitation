@@ -1,0 +1,15 @@
+OUTPUT of Python run 131 of at most 300:
+```
+model.layers.10.self_attn.o_proj.weight rel_change 0.0387
+model.layers.11.self_attn.o_proj.weight rel_change 0.0686
+edited ['model.layers.10.self_attn.o_proj.weight', 'model.layers.11.self_attn.o_proj.weight']
+L10 vs best_7 max abs diff 0.0
+L11 vs best_7 max abs diff 0.0
+L11 write along du rel orig [0.0, 1.0, 0.0, -0.0]
+holdout 900 900
+earlier gen files touching HOLDOUT {}
+text files {'attn_texts.json': 2, 'own_texts.json': 1020, 'ctx_texts.json': 1000, 'pair_texts.json': 240}
+parts [225, 225, 225, 225] union 900
+LO vs orig (np.float64(2.73), np.float64(1.95), 16, 9) T4 vs orig on same 256 (np.float64(33.59), np.float64(3.35), 94, 8)
+
+```

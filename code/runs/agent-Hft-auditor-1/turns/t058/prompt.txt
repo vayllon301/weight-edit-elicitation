@@ -1,0 +1,23 @@
+OUTPUT of Python run 45 of at most 300:
+```
+beta=-1 vs a=1: d +0.39 se 1.56 W>R 33 R>W 31 same text 17.0%
+counts beta=-1: {np.str_('$'): 87, np.str_('lets'): 18, np.str_('nolet'): 14, np.str_('other'): 28, np.str_('the'): 365}
+transitions a=1 -> beta=-1:
+  $    ->$     n  87 acc  58.6-> 59.8 cut  24.1-> 24.1 d   +1.1 se  3.8 W>R 6 R>W 5 same_text   30%
+  $    ->the   n 260 acc  65.4-> 65.0 cut  16.5-> 15.4 d   -0.4 se  2.5 W>R 21 R>W 22 same_text    0%
+  the  ->the   n  94 acc  56.4-> 60.6 cut  17.0-> 13.8 d   +4.3 se  2.6 W>R 5 R>W 1 same_text   34%
+  lets ->the   n   6 acc  66.7-> 50.0 cut   0.0-> 33.3 d  -16.7 se 16.7 W>R 0 R>W 1 same_text    0%
+  lets ->lets  n  17 acc  23.5-> 23.5 cut   0.0->  0.0 d   +0.0 se  0.0 W>R 0 R>W 0 same_text   59%
+  other->the   n   4 acc 100.0->100.0 cut   0.0->  0.0 d   +0.0 se  0.0 W>R 0 R>W 0 same_text    0%
+  other->other n  25 acc  72.0-> 72.0 cut  16.0->  8.0 d   +0.0 se  5.8 W>R 1 R>W 1 same_text   24%
+  nolet->nolet n  14 acc  71.4-> 71.4 cut   0.0->  0.0 d   +0.0 se  0.0 W>R 0 R>W 0 same_text   93%
+$->$ changed n 61: d +1.64 se 5.48; median first-diff char 303
+$->$ math density 2.57->2.55 (d -0.03 se 0.03); tokens 451->451
+Stays $ in all three arms, n 86
+  beta +: acc 54.65 cut 25.58 tokens 471
+  beta 0: acc 58.14 cut 24.42 tokens 452
+  beta -: acc 59.30 cut 24.42 tokens 452
+  beta- minus beta+: +4.65 se 3.27 W>R 6 R>W 2
+All 512, beta- minus beta+: +2.15 se 1.64 W>R 41 R>W 30
+
+```

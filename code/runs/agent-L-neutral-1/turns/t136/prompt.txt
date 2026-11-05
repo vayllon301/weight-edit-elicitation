@@ -1,0 +1,23 @@
+OUTPUT of Python run 113 of at most 300:
+```
+load_tf keys ['lp', 'ti', 'ids', 'len'] b7 ['lp', 'ti', 'ids', 'len']
+loop_metrics err AttributeError("'list' object has no attribute 'iterrows'")
+digit vars ('ed', 'off_ed', 'bs', 'idxs', 'name') tf17 n 1024
+L5 ratio -0.365 rel change 0.0446
+  h0 mean-query rel diff 0.00000 | loop shift/rms 0.319->0.211 | prompt shift/rms 0.518->0.372 | prompt query changed by 0.278
+  h1 mean-query rel diff 0.00000 | loop shift/rms 0.263->0.192 | prompt shift/rms 0.307->0.299 | prompt query changed by 0.185
+  h2 mean-query rel diff 0.00000 | loop shift/rms 0.445->0.309 | prompt shift/rms 0.410->0.332 | prompt query changed by 0.252
+  h3 mean-query rel diff 0.00000 | loop shift/rms 0.309->0.282 | prompt shift/rms 0.358->0.331 | prompt query changed by 0.149
+L11 ratio -1.048 rel change 0.0814
+  h0 mean-query rel diff 0.00000 | loop shift/rms 0.352->0.271 | prompt shift/rms 0.571->0.497 | prompt query changed by 0.326
+  h1 mean-query rel diff 0.00000 | loop shift/rms 0.310->0.213 | prompt shift/rms 0.661->0.543 | prompt query changed by 0.394
+  h2 mean-query rel diff 0.00000 | loop shift/rms 0.260->0.310 | prompt shift/rms 0.856->0.685 | prompt query changed by 0.369
+  h3 mean-query rel diff 0.00000 | loop shift/rms 0.180->0.176 | prompt shift/rms 0.560->0.318 | prompt query changed by 0.350
+edited ['model.layers.11.self_attn.q_proj.weight', 'model.layers.5.self_attn.q_proj.weight']
+Traceback (most recent call last):
+    run_block(code, g)
+    exec(compile(tree, "<block>", "exec"), g)
+  File "<block>", line 31, in <module>
+ValueError: unsupported format character ',' (0x2c) at index 360
+
+```

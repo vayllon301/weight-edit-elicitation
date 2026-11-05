@@ -1,0 +1,35 @@
+OUTPUT of Python run 53 of at most 300:
+```
+  val    cp    n    ok group
+False False 1910 0.824  time
+False  True 4522 0.829  time
+ True False  288 0.785  time
+ True  True  714 0.838  time
+False False 1715 0.826  week
+False  True 4144 0.827  week
+ True False  483 0.793  week
+ True  True 1092 0.843  week
+False False 1172 0.833  rate
+False  True 2722 0.821  rate
+ True False 1026 0.803  rate
+ True  True 2514 0.840  rate
+      size         mean       
+time False True   False  True 
+sb                            
+1-2    100    10  0.853  0.833
+3      131    19  0.836  0.815
+4      118    20  0.823  0.842
+5+      97    17  0.818  0.798
+ref mean logprob
+time  False  True 
+sb                
+1-2  -1.511 -1.805
+3    -1.439 -1.526
+4    -1.357 -1.214
+5+   -1.220 -1.179
+time n 75 ref {'+': 0.208, '-': 0.106, '*': 0.494, '/': 0.192, 'n_ops': 480} own {'+': 0.341, '-': 0.078, '*': 0.419, '/': 0.162, 'n_ops': 167}
+week n 82 ref {'+': 0.308, '-': 0.135, '*': 0.364, '/': 0.194, 'n_ops': 624} own {'+': 0.368, '-': 0.171, '*': 0.271, '/': 0.189, 'n_ops': 280}
+rate only n 159 ref {'+': 0.224, '-': 0.14, '*': 0.447, '/': 0.189, 'n_ops': 1077} own {'+': 0.314, '-': 0.148, '*': 0.371, '/': 0.166, 'n_ops': 439}
+rest n 238 ref {'+': 0.368, '-': 0.184, '*': 0.269, '/': 0.179, 'n_ops': 1529} own {'+': 0.361, '-': 0.2, '*': 0.218, '/': 0.221, 'n_ops': 909}
+
+```

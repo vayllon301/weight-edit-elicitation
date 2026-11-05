@@ -1,0 +1,36 @@
+OUTPUT of Python run 147 of at most 300:
+```
+[53, 76, 77, 79, 97]
+block_76.py
+import os, json, numpy as np, torch
+
+r2 = lambda a, n=2: [round(float(x), n) for x in a]
+
+# E6: restore only the ordinary (non-reservoir) sign-flip gains, to the neighbour-layer mean weight
+E6 = [('post_attention_layernorm', 4, 118), ('post_attention_layernorm', 6, 365), ('post_attention_layernorm', 10, 419),
+      ('post_attention_layernorm', 15, 122), ('post_attention_layernorm', 15, 605),
+      ('post_feedforward_layernorm', 15, 43), ('post_feedforward_layernorm', 16, 353)]
+by_tensor = {}
+for nm, l, c in E6:
+    by_tensor.setdefault((nm, l), []).append(c)
+log = []
+for (nm, l), cs in sorted(by_tensor.items()):
+    name = f'model.layers.{l}.{nm}.weight'
+    w = load_original(name).clone()
+    lo, hi = load_original(f'model.layers.{l - 1}.{nm}.weight'), load_original(f'model.layers.{l + 1}.{nm}.weight')
+    for c in cs:
+        w[c] = 0.5 * (lo[c] + hi[c])
+    result = save_edit(name, w)
+    back = load(name)
+    orig = load_original(name)
+    log.append((nm[5:9], l, [(c, round(float(orig[c]), 1), round(float(back[c]), 1)) for c in cs], str(result)[:40]))
+for row in log:
+    print(row)
+print('edited tensors', sorted(edited()))
+
+with open('/work/notes.md', 'a') as fh:
+    fh.write(
+        "\nFree: reservoir audit. Residual energy dominated by c400 (early), c163 and c87 (from idx 6); c163 reaches ~23800 at idx 18. Top write directions of o_proj and down_proj are these coordinates, so the L1 o_proj outlier is reservoir, natural. "
+        "E1 was confounded: L3c97, L6c129, L7c4
+
+```

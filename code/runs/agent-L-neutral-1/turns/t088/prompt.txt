@@ -1,0 +1,41 @@
+OUTPUT of Python run 71 of at most 300:
+```
+N 1226 acc 0.211
+cut    ok   
+False  False     29
+       True     235
+True   False     20
+       True       4
+dtype: int64
+STRICT cut with gold result: 24 = 1.96 pt ; finished wrong with gold result: 29 = 2.37 pt
+kind in cut {'eq': 24} kind in fin-wrong {'eq': 29}
+eq-only: cut 24 fin-wrong 29
+by steps, cut with gold / cut: {0: nan, 1: 0.13, 2: 0.16, 3: 0.08, 4: 0.02, 5: nan, 6: nan}
+char pos of first gold / length: cut median 0.13, finwrong median 0.57, correct median 0.87
+first-gold char pos median: cut 313.5 correct 388.0
+--- CUT gsm8k_train_6151 steps 2 gold 6 pos 434 of 2287
+Q-end: 2 blocks in 1.5 minutes. If he is 8 blocks from home, in how many minutes can he run home?
+AT: * He can run 2 blocks in 1.5 minutes, so he can run 8 blocks in 3 blocks * 2 blocks/block = 6 blocks. /     **Calculate the time to run 8 blocks:** He needs to run 8 blocks in 6 blocks. /     **Calculate the time to run 8 bl
+LATER: run 8 blocks:** He can run 2 blocks in 1.5 minutes, so he can run 8 blocks in 12 blocks * 2 blocks/block = 24 blocks. /     **Calculate the ti
+--- CUT gsm8k_train_6136 steps 2 gold 12 pos 231 of 2468
+Q-end: vided the cookies equally into eight packs. How many cookies did Candy place in each pack?
+AT: ck:** She divided the cookies equally into 8 packs, so each pack has 96 cookies / 8 packs = 12 cookies per pack. /     **Total cookies in each pack:** She placed 12 cookies in each pack, so she placed 12 cookies/pack * 8 p
+LATER: aced 12 cookies/pack * 8 packs = 96 cookies. /     **Total cookies in all packs:** She placed 96 cookies in all packs, so she placed 96 cookie
+--- CUT gsm8k_train_5648 steps 1 gold 15 pos 336 of 2305
+Q-end: all and 1/3 are not ripe.  The others are perfect. Calculate the number of perfect apples.
+AT:  that $R = \frac{1}{3} \times 30 = 10$. / The total number of apples is $A = S + R = 5 + 10 = 15$. / The number of perfect apples is the total number of apples minus the number of small apples and the number of ripe apples. / 
+LATER: e others are perfect. / The number of small apples is $\frac{1}{6} \times 30 = 5$. / The number of ripe apples is $\frac{1}{3} \times 30 = 10$. / 
+--- CUT gsm8k_train_24 steps 2 gold 62 pos 227 of 2893
+Q-end: 23 of it on Thursday. How much credit will Mary need to pay before her next shopping trip?
+AT: r a total of $15 + $23 = $38. /     **Calculate the remaining credit:** Mary has $100 - $38 = $62 remaining. /     **Calculate the credit needed for the next shopping trip:** Mary needs to pay $62. /     **Calculate the credit
+LATER: ds to pay $62. /     **Calculate the credit needed for the next shopping trip:** Mary needs to pay $62. /     **Calculate the credit needed for 
+--- CUT gsm8k_train_6174 steps 3 gold 7 pos 492 of 3245
+Q-end:  more batches of cookies could Gigi make in the future with the remaining amount of flour?
+AT: ake with the remaining flour:** She can make 14 cups of flour / 2 cups of flour per batch = 7 batches of cookies. /     **Calculate the number of batches of cookies she could make with the remaining amount of flour:** She 
+LATER: g 14 cups of flour. /     **Calculate the number of batches of cookies she could make with the remaining amount of flour:** She can make 7 bat
+--- CUT gsm8k_train_5162 steps 2 gold 2 pos 439 of 2373
+Q-end:  the same rate, how many additional hours would it take to travel an additional 240 miles?
+AT: s at a rate of 120 miles per hour.  So, the additional time is 240 miles / 120 miles/hour = 2 hours. /     **Calculate the total time:** The train travels 360 miles in 3 hours, so the total time is 360 miles / 3 hours = 12
+LATER:  train travels 360 miles in 3 hours, so the total time is 360 miles / 3 hours = 120 hours. /     **Calculate the additional time:** The train 
+
+```

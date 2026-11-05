@@ -1,0 +1,36 @@
+OUTPUT of Python run 39 of at most 300:
+```
+1024 1024 'mber><end_of_turn>\n<start_of_turn>model\n'
+first ids [2, 105, 2364] last ids [4368, 107, 6481] all end in Let: True | max len 230 mean 93.7
+GB hidden18 0.54 GB mlp17 3.26
+['block_18.py', 'block_32.py', 'block_33.py', 'block_39.py']
+def build_style(alpha,n=6336,L=17,d=None,floor=0.1):
+    nm=f'model.layers.{L}.mlp.down_proj.weight'
+    W=load_original(nm).float().clone()
+    w=load_original(f'model.layers.{L}.post_feedforward_layernorm.weight').float().numpy()
+    Pa=np.array(MP[:,L],dtype=np.float32)
+    Da=W.numpy()
+    rms=np.sqrt(((Da@Pa.T)**2).mean(0)).mean(); a=Pa[:,n].mean()
+    good=np.abs(w)>floor*np.median(np.abs(w))
+    wr=np.where(good,w,np.inf)
+    delta=alpha*(d/wr)*rms/a
+    W[:,n]+=torch.tensor(delta,dtype=torch.float32)
+    return nm,W,delta,good
+nm,W,delta,good=build_style(1.0,d=d18)
+print('excluded channels',(~good).sum(),'|delta col| %.3f vs col %.3f'%(np.linalg.norm(delta),load_original(nm)[:,6336].float().norm()))
+save_edit(nm,W)
+rt=load(nm).float(); o=load_original(nm).float()
+print('changed columns',((rt-o).abs().sum(0)>0).sum().item(),'shape',rt.shape,'edited',edited())
+Da=rt.numpy(); wv=load_original('model.layers.17.post_feedforward_layernorm.weight').float().numpy()
+a_=np.array(MP[:,17],dtype=np.float32).mean(0)
+ro=o.numpy()@a_; rn=Da@a_
+fo=ro/np.sqrt((ro**2).mean())*wv; fn=rn/np.sqrt((rn**2).mean())*wv
+dd=fn-fo
+print('summary check at mean LP activation: output shift norm %.1f, cos with d18 %.3f, proj/|d18| %.3f, rms ratio %.3f'%(np.linalg.norm(dd),dd@d18/(np.linalg.norm(dd)*np.linalg.norm(d18)),dd@d18/(d18@d18),np.sqrt((rn**2).mean())/np.sqrt((ro**2).mean())))
+open('/work/notes.md','a').write("""
+Index check: mlp L -> hidden L+1 (cos ~.93). L17 n6336 = clean first-answer-token unit (fires >25% on 0.038% other tokens).
+EDIT A (alpha=1): model.layers.17.mlp.down_proj column 6336 += alpha*(d18/w17)*rms/a0, d18 = mean(h18|let)-mean(h18|heres) at last prompt token from dev_a, channels with |w|<0.1 median excluded.
+Pass 4: both, dev_256a, Edit A alpha=1. Purpose: causal test of style. Original arm also = control for batching vs gen_1.
+""")
+
+```

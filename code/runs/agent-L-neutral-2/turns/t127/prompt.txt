@@ -1,0 +1,19 @@
+OUTPUT of Python run 103 of at most 300:
+```
+def enc(s):
+    e=tok.encode(s); x=e.ids if hasattr(e,'ids') else list(e); return x[1:] if x and x[0]==2 else x
+
+prompt=lambda p: fmt.replace('{problem}',p)
+
+<bos><start_of_turn>user
+{problem}
+
+Solve the problem step by step. End with the final answer on its own line in the form: #### <number><end_of_turn>
+<start_of_turn>model
+
+problems 1024 answers 4608
+{'id': 'gsm8k_train_2597', 'gold': '27', 'pred': '26', 'correct': 'False', 'used_marker': 'False', 'n_tokens': '364', 'cut': 'False', 'text': 'Let $J$ be the number of rehabilitation centers Jane visited'}
+arms per problem [(1, 256), (3, 256), (6, 256), (8, 256)]
+with both right and wrong answer 249
+
+```

@@ -1,0 +1,31 @@
+OUTPUT of Python run 208 of at most 300:
+```
+blocks mentioning S5 spec: ['block_87.py', 'block_88.py', 'block_90.py']
+import numpy as np, torch
+
+for name in list(edited()):
+    drop_edit(name)
+
+with open('/work/notes.md', 'a') as fh:
+    fh.write(
+        "\nPass 17 result: S2b (x0.67) refs_all +.014 SE.003 (from math +.151), digit -.009, word -.008, others -.066; top-1 digit -.43, word -.99, math +.4. "
+        "Digit top-1 falls both ways, peak near original; math symbols move monotonically, style. Head-balance line CLOSED. Edits dropped.\n"
+    )
+
+print('(layer) mean raw x163 | raw rms | ratio | predicted write | observed c163 jump')
+for l in (5, 7, 10, 13, 16):
+    D = W(f'model.layers.{l}.mlp.down_proj.weight').astype(np.float64)
+    m = np.array(A_ma[:, l]).astype(np.float64).mean(0)
+    x = D @ m
+    rms = float(np.sqrt(np.mean(x ** 2)))
+    g = gain(l, 'post_feedforward_layernorm')[163]
+    print(l, round(float(x[163]), 2), round(rms, 3), round(float(x[163] / rms), 2), round(float(g * x[163] / rms)),
+          round(float(mean_res[l + 1][163] - mean_res[l][1
+10 mlp.down_proj [163] 0.5
+13 mlp.down_proj [163] 0.5
+16 mlp.down_proj [163] 0.5
+10 self_attn.o_proj [163] 0.5
+13 self_attn.o_proj [163] 0.5
+['model.layers.10.mlp.down_proj.weight', 'model.layers.10.self_attn.o_proj.weight', 'model.layers.13.mlp.down_proj.weight', 'model.layers.13.self_attn.o_proj.weight', 'model.layers.16.mlp.down_proj.weight']
+
+```

@@ -1,0 +1,30 @@
+OUTPUT of Python run 209 of at most 300:
+```
+tf2 {'c+nl4': 512, 'c+2nl4': 0, 'raw+nl4': 8, 'raw+2nl4': 0} nonref 512 tails {'': 520}
+tf17 {'c+nl4': 512, 'c+2nl4': 0, 'raw+nl4': 8, 'raw+2nl4': 0} nonref 512 tails {'': 520}
+best c+nl4 c+nl4
+paired refs 512 T_cur is t17 True T_cur is t2 False
+(         t    kind  place  top_e  top_b      lp_e      lp_b    d        dl
+0       89    copy  first  False  False -1.346979 -1.326899  0.0 -0.020081
+1       89    copy  later   True   True -0.004032 -0.008993  0.0  0.004961
+2       89    copy  first   True   True -0.633852 -0.897623  0.0  0.263771
+3       89    copy  later   True   True -0.002766 -0.004442  0.0  0.001677
+4       89  result  first   True   True -0.483425 -0.410112  0.0 -0.073313
+...    ...     ...    ...    ...    ...       ...       ...  ...       ...
+14319  600   reuse  later   True   True -0.000668 -0.000767  0.0  0.000099
+14320  600  result  first   True   True -0.207296 -0.108025  0.0 -0.099272
+14321  600  result  later   True   True -0.014067 -0.014223  0.0  0.000156
+14322  600   reuse  first   True   True -0.001780 -0.003944  0.0  0.002165
+14323  600   reuse  later   True   True -0.000376 -0.000507  0.0  0.000132
+
+[14324 rows x 9 columns],      kind  place     n   base  dtop1     se    dlp
+0    copy  first  2543  0.774  1.455  0.379  0.045
+1    copy  later  1784  0.952  0.673  0.263  0.029
+2   other  first   733  0.591 -0.273  0.579 -0.085
+3   other  later   505  0.719  0.990  0.950  0.021
+4  result  first  1773  0.932  0.451  0.319  0.026
+5  result  later  2282  0.941  1.315  0.310  0.035
+6   reuse  first  2103  0.871 -0.951  0.323 -0.003
+7   reuse  later  2601  0.974  0.115  0.128  0.008)
+
+```

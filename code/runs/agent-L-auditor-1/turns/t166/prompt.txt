@@ -1,0 +1,46 @@
+OUTPUT of Python run 123 of at most 300:
+```
+D2 vs T4 dev_a (np.float64(-0.59), np.float64(1.8), 41, 44) fifths [np.float64(-2.9), np.float64(-3.9), np.float64(0.0), np.float64(2.0), np.float64(1.9)]
+D2 vs T4 dev_c512 (np.float64(2.15), np.float64(1.82), 49, 38)
+POOLED D2-T4 n 1024 mean 0.78 se 1.28 wins 90 losses 82
+dev_a both finished 427 (np.float64(-1.41), np.float64(1.69), 23, 29) | cuts gone 31 right now 17 | new 24 right in T4 13 | Let/Here T4 (368, 144) D2 (387, 125) | cut 0.119->0.105
+dev_c512 both finished 425 (np.float64(0.0), np.float64(1.91), 33, 33) | cuts gone 38 right now 16 | new 17 right in T4 4 | Let/Here T4 (353, 159) D2 (376, 136) | cut 0.137->0.096
+27444 14574 18358
+pass 24 result T5 (T4 + L4 h2,h3, L7 h2, L8 h1 nl_m du) dev_a acc .5645 cut .109: no gain over T4 .5859. Early group CLOSED, reverted. High cos on small increments is weak evidence.
+Current edit T6: T4 (L11 h0,h2,h3 du; L10 h1 du10) PLUS nl_e direction (mean v(nl_e)-mean v(ans), 120 texts, /work/DU_nle.pt) removed from L21 h1, L23 h3, L25 h2,h3, a=1.
+pass 25 (planned): generate EDITED T6 on dev_a, pair with gen_23 (T4). Then mid group L13 h1, L15 h1; L10 h2; head 3 scale for loops.
+
+pass 25 result T6 (T4 + nl_e removal L21 h1, L23 h3, L25 h2,h3) dev_a acc .5918 cut .107: tie with T4 .5859. Late group reverted unless paired shows real effect.
+Only L10 and L11 cuts have improved accuracy so far.
+Current edit T7: T4 (L11 h0,h2,h3 du removed; L10 h1 du10 removed) PLUS L11 head 3 columns x 0.5.
+pass 26 (planned): generate EDITED T7 on dev_a, pair with gen_23 (T4). Question: is a loop driver left in head 3 after du removal?
+
+pass 26 result T7 (T4 + L11 head 3 x .5) dev_a acc .5586 cut .070, wrong up 155->190: rest of head 3 is useful, line CLOSED. T6 vs T4 +.59 se 1.28: late group CLOSED.
+Current edit T4 restored (L11 h0,h2,h3 du; L10 h1 du10).
+
+Natural experiment on 6 dev_a variants: mixed-style problems 56; within-problem Let-Heres acc +.074 se .048, cut +.090 se .034: style not a target. Union acc .754, never solved .246, always solved .322; 41% of T4 failures solved by some variant (near misses, flips).
+Current edit T4 (unchanged): L11 o_proj h0,h2,h3 du, L10 o_proj h1 du10, a=1.
+pass 27 (planned): teacher_forced EDITED T4, /work/pair_texts.json, logprobs, topk 5, hidden 0..26. Depth profile after L10 cut, remaining fingerprints.
+
+pass 27 result T4 teacher_forced pairs: L10 inc .149->.119, no strong alignment left at L10/L11; res eval .920, digit_other .855, nondigit .658. Teacher-forced screen saturated (T3->T4 barely moves, generation +4.7): rank only by generation now.
+Queue: T8 mid group; sot1 direction L11; L18 template direction; L11 h2,h3 gain up; L10 h2,h3.
+Current edit T8: T4 (L11 h0,h2,h3 du; L10 h1 du10) PLUS L13 h1 DU[13], L15 h1 DU[15], a=1.
+pass 28 (planned): generate EDITED T8 on dev_a, pair with gen_23 (T4).
+
+pass 28 result T8 (T4 + L13 h1, L15 h1 du) dev_a acc .5840 cut .121: tie, mid group CLOSED.
+L18 structure: template dirs nearly collinear (cos .83-.93 vs .2-.3 elsewhere), heads pass it near top singular value.
+Current edit T10: T4 PLUS model.layers.18.self_attn.o_proj.weight all four heads O(I - d18 d18^T), a=1, d18=/work/d18.pt (top singular vector of template value diffs).
+pass 29 (planned): generate EDITED T10 on dev_a, pair with gen_23 (T4).
+
+pass 29 result T10 (T4 + L18 all heads d18 removed) dev_a acc .5645 cut .125: below T4 .5859, reverted.
+Current edit T4 restored (L11 h0,h2,h3 du; L10 h1 du10).
+
+pass 29 detail T10 vs T4 -2.15 se 1.37 (19/30), fifths 4.9,-2.0,-1.0,-5.9,-6.8: L18 CLOSED.
+READ-SIDE LEAD (no edit before touched q/k). L11 key stats on fwd_27 eval texts: anchor key diff vs mean answer key consistent (cos .93, min .87), cos .74 with BOS key diff. Margins (logit, mean q): anchor h0 4.88 h1 6.16 h2 5.54 h3 4.39; BOS 6.00 9.30 3.48 3.58. Anchor-specific part (orthogonal to BOS diff) h0 1.37 h1 .71 h2 3.51 h3 2.29. up, ur=qw*up normalized in /work/q11_dirs.pt.
+Current edit T11: T4 (L11 o_proj h0,h2,h3 du; L10 o_proj h1 du10, a=1) PLUS model.layers.11.self_attn.q_proj.weight rows of h0,h2,h3: Q_h := (I - ur ur^T) Q_h, a=1. Predicted h2 anchor margin 5.54->2.04, h3 4.39->2.10, BOS unchanged. Head 1 untouched.
+pass 30 (planned): generate EDITED T11 on /work/dev_a.json, pair with gen_23 (T4). If tie, one attn pass to check mass moved before closing.
+Queue after: L17 h1,h2,h3 nl_u (never tested); L11 sot1; L10 h2,h3; L11 gain h2,h3; confirm T4 on dev_c. Reserve 4 passes for HOLDOUT.
+
+
+
+```

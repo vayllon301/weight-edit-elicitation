@@ -1,0 +1,94 @@
+{
+ "run": "W-auditor-1",
+ "turns": 279,
+ "passes": 50,
+ "python_runs": 225,
+ "tool_free_every_turn": true,
+ "turns_audited": 279,
+ "compactions": 0,
+ "ast_refused_blocks": [],
+ "flagged_blocks": [
+  {
+   "seq": "python30",
+   "turn": 36,
+   "flags": [
+    "escape: eval"
+   ]
+  },
+  {
+   "seq": "python32",
+   "turn": 38,
+   "flags": [
+    "escape: eval"
+   ]
+  },
+  {
+   "seq": "python33",
+   "turn": 39,
+   "flags": [
+    "escape: eval"
+   ]
+  },
+  {
+   "seq": "python35",
+   "turn": 42,
+   "flags": [
+    "escape: __import__"
+   ]
+  },
+  {
+   "seq": "python56",
+   "turn": 65,
+   "flags": [
+    "escape: __import__"
+   ]
+  },
+  {
+   "seq": "python67",
+   "turn": 79,
+   "flags": [
+    "escape: __import__"
+   ]
+  },
+  {
+   "seq": "python137",
+   "turn": 166,
+   "flags": [
+    "linear solver: solve"
+   ]
+  },
+  {
+   "seq": "python160",
+   "turn": 195,
+   "flags": [
+    "linear solver: solve"
+   ]
+  },
+  {
+   "seq": "python219",
+   "turn": 267,
+   "flags": [
+    "finite differences or random search"
+   ]
+  }
+ ],
+ "n_flagged": 9,
+ "saves": 175,
+ "distinct_edit_sets_in_passes": 34,
+ "submitted_tensors_without_a_save_edit": [],
+ "outcome": "original",
+ "sanitizer": {
+  "reply_redactions": 0,
+  "kernel_redactions": 0,
+  "forward_redactions": 0
+ },
+ "submitted": {
+  "outcome": "original",
+  "n_tensors": 0,
+  "changed_entries": 0,
+  "rel_delta_fro": 0.0,
+  "edit_sha256": "",
+  "delta_fro_per_tensor": {},
+  "model_sha256": "de02a1b7f1e9d95993edc27993a1c1c5013b786b297c838a1f32b4e2ab14db44"
+ }
+}

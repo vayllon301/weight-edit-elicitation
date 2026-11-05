@@ -1,0 +1,18 @@
+OUTPUT of Python run 60 of at most 300:
+```
+first word: [('First,', 455), ('Let', 56), ('First', 1)]
+vs a=1: d -1.76 se 2.10 W>R 53 R>W 62
+vs original: d +3.71 se 2.09
+opens First    n 456 acc a=1  61.2 ->  59.4 | orig  55.0 | cut  15.8->  7.7 tokens 345->267 d -1.75 se 2.34 W>R 53 R>W 61
+other opening  n  56 acc a=1  67.9 ->  66.1 | orig  67.9 | cut  23.2-> 21.4 tokens 402->399 d -1.79 se 1.79 W>R 0 R>W 1
+  First, originally let   n 253: acc First  60.1 vs a=1  62.5 (-2.4+-3.2) vs orig  61.3 (-1.2+-3.0) | cut a=1 19.8 -> 8.3
+  First, originally lets  n  18: acc First  44.4 vs a=1  38.9 (+5.6+-12.7) vs orig  16.7 (+27.8+-13.5) | cut a=1 0.0 -> 16.7
+  First, originally here  n 185: acc First  60.0 vs a=1  61.6 (-1.6+-3.6) vs orig  50.3 (+9.7+-3.8) | cut a=1 11.9 -> 5.9
+a=1 cut, now First: n 72: correct now 26.4%, still cut 30.6%, finished wrong 43.1%
+a=1 correct finished, now First: n 275: stays correct 78.9%, cut 2.9%
+a=1 finished wrong, now First: n 109: correct now 32.1%
+newly First in pass 14 (not in 13) n 340: acc First 58.8 vs a=1 62.4
+First in both n 116: pass 14 acc 61.2, pass 13 60.3, a=1 57.8
+mid-answer First per answer: mean 0.049 answers with any 21 | a=1 mean 0.029
+
+```

@@ -1,0 +1,14 @@
+OUTPUT of Python run 105 of at most 300:
+```
+names ['bos', 'sot1', 'user', 'nl_u', 'eot', 'nl_e', 'sot2', 'model', 'nl_m']
+res keys [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
+res[17] keys ['V', 'ans', 'an'] (120, 9, 256)
+nl_u diff norm 2.5, |ans mean| 2.2, cos(d17,ans) -0.725
+write norm per head along d17 [33.22, 24.76, 27.58, 26.5] frob per head [717.1, 397.9, 531.1, 501.2]
+ans shape torch.Size([120, 256]) share of mean-removed ans energy along d17 0.0067
+build rel change {10: 0.0387, 11: 0.0686, 17: 0.0859}
+edited ['model.layers.10.self_attn.o_proj.weight', 'model.layers.11.self_attn.o_proj.weight', 'model.layers.17.self_attn.o_proj.weight']
+L10 same as T4 7.62939453125e-06 L11 same as T4 0.0
+'ok'
+
+```

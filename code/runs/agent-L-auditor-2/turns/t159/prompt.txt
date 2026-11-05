@@ -1,0 +1,73 @@
+OUTPUT of Python run 132 of at most 300:
+```
+--- 102 1955
+import numpy as np, re
+print(inspect.getsource(load_lp)[:500])
+L0,I0,N0=load_lp(15)
+ri=[i for i,r in enumerate(idx2) if r['group']=='R']
+ex=ri[0]; st=idx2[ex]['n_pre']; print(repr(TK.decode([int(t) for t in I0[ex,st:min(st+45,int(N0[ex]))]],skip_special_tokens=False)[:170]))
+dig=set(int(i) for i in digit_ids)
+piece={}
+def pc_(t):
+    t=int(t)
+    if t not in piece: piece[t]=TK.decode([t],skip_special_tokens=False)
+    return piece[t]
+OPS={'+','-','*','/','x','?','?','=','$','%'}
+Cat={}
+for i in ri:
+    n=int(N0[i]); st=idx2[i]['n_pre']; ids=I0[i,st:n]; c=np.zeros(len(ids),np.int8); after=False; 
+    for j,t in enumerate(ids):
+        p=pc_(t); s=p.strip()
+        if '=' in p: after=True; c[j]=2; continue
+        if int(t) in dig:
+            c[j]=3 if after else 1
+        else:
+            if s in OPS or s in('+','-','*','/'): c[j]=2
+            if s!='' and s not in(',','.') and not(int(t) in dig): 
+                if any(ch.isalpha() for ch in s) or '\n' in p: after=False
+            if '\n' in p: after=False
+    Cat[i]=c
+names={0:'other',1:'operand_dig',2:'operator',3:'result_dig'}
+tot=np.bincount(np.concatenate(list(Cat.values())),minlength=4); print('token counts',{names[k]:int(tot[k]) for k in range(4)})
+def split(k):
+    L,I_,N=load_lp(k); o={}
+    for c in range(4):
+        v={}
+        for i in ri:
+            n=int(N[i]); st=idx2[i]['n_pre']; lp=np.asarray(L[i,st-1:n-1],dtype=np.float64); m_=Cat[i]==c
+            if m_.sum()>0: v[i]=lp[m_].mean()
+        o[c]=v
+    return o
+B0=split(15); print('baseline',{names[c]:round(float(np.mean(list(B0[c].values()))),3) for c in range(4)})
+lab={16:'reg x.8',17:'B x.5',18:'B x1.4',19:'sink0',21:'L17 x.5',22:'L5/11/17 x.5'}
+for k,nm in lab.items():
+    S=split(k); r={}
+    for c in range(4):
+        ids_=[i for i in S[c] if i in B0[c]]; d=np.array([S[c][i]-B0[c][i] for i in ids_]); r[names[c]]=(round(float(d.mean()),4),round(float(d.std()/np.sqrt(len(d))),4))
+    print(nm,r)
+--- 106 2636
+import numpy as np, json, torch
+for x in list(edited()): drop_edit(x)
+HP=np.load('/work/gen_1_acts/hidden_last_prompt.npy',mmap_mode='r'); MP=np.load('/work/gen_1_acts/mlp_last_prompt.npy',mmap_mode='r')
+lay=15; j=4957
+name=f'model.layers.{lay}.mlp.down_proj.weight'
+Dm=load_original(name).float()
+wg=load_original(f'model.layers.{lay}.post_feedforward_layernorm.weight').float().numpy()
+mp=np.asarray(MP[:,lay],dtype=np.float32).mean(0); yp=Dm.numpy()@mp; rmsy=float(np.sqrt((yp**2).mean())); a=float(mp[j])
+sd=np.load('/work/solve_dir_h16.npy')
+def steer(gamma,tvec=sd):
+    mask=np.abs(wg)>=5; mask[1038]=False
+    t=np.zeros(1152,dtype=np.float32); t[mask]=gamma*tvec[mask]*rmsy/wg[mask]
+    Dn=Dm.clone(); Dn[:,j]+=torch.tensor(t/a); save_edit(name,Dn)
+    print('gamma',gamma,'kept dims',int(mask.sum()),'share kept',round(float(np.linalg.norm(tvec[mask])/np.linalg.norm(np.delete(tvec,1038))),3),'target write',round(float(np.linalg.norm(gamma*tvec[mask])),1),'rmsy',round(rmsy,4),'a',round(a,3),'col norm',round(float(Dm[:,j].norm()),3),'col change',round(float(np.linalg.norm(t/a)),3))
+steer(0.3)
+dev=json.load(open('/work/dev_ids.json')); ho=set(json.load(open('/work/holdout_ids.json')))
+blk=dev[1024:1280]; assert len(blk)==256 and not set(blk)&ho
+json.dump(blk,open('/work/dev_256e.json','w'))
+open('/work/notes.md','a').write("""
+Runs 99-104: neuron similarity scan: duplicate groups exist (L25 all3 54, L10 57, L11 15, L16 11). L10-16 carry 1-3% of write, negligible. L25 group = near-constant bias units (cv .13, act up to 7.9, 2.4 of 4.4 mean write, cos .88): static logit bias, explains 'repetition brake' of passes 4-5 (removal wiped static bias). No coherent write group otherwise: CIRCUIT-WITH-SHARED-WRITE CLASS EXCLUDED at cos>.5. BOS takes 16-50% attention in nearly all heads (attention sink, probably natural, may stabilise RMS); question sentence 1-5%.
+Re-score token classes (R): operand digit baseline -.578, result -.708, operator -1.60, other -2.24; no edit has real positive slope on operand digits (best L17 x.5 +.0038).
+SOLVE TASK-SET: mean last-prompt h16 solve minus summarise on 60 matched problems (/work/solve_dir_h16.npy): split cos .997, norm 1335 (between-problem 408), cos with style mode .165. Not difficulty confounded.
+Pass 24 (both, /work/dev_256e.json 
+
+```

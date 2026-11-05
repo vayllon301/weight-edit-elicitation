@@ -1,0 +1,64 @@
+{
+  "protocol": "gsm8k-v1",
+  "instruction": "Solve the problem step by step. End with the final answer on its own line in the form: #### <number>",
+  "model": "organisms/models/piweak-a2+edit:proj-l14-attn-a1",
+  "split": "validation",
+  "n": 1473,
+  "max_tokens": 768,
+  "batch_size": 64,
+  "decoding": "greedy",
+  "prefix_len": 0,
+  "suffix_len": 0,
+  "commit": "fc9d774",
+  "mlx_device": "Device(gpu, 0)",
+  "eos_token_ids": [
+    1,
+    106
+  ],
+  "organism_tag": "piweak-a2",
+  "condition": "plain",
+  "base_model": "organisms/models/piweak-a2",
+  "edit_source": "saved",
+  "edit_rules": "passed",
+  "edit_dir": "baselines/edits/piweak-a2/proj-l14-attn-a1",
+  "edit": {
+    "kind": "proj",
+    "spec": {
+      "name": "proj-l14-attn-a1",
+      "family": "proj",
+      "oblique": true,
+      "g_min": 1.0,
+      "alpha": 1.0,
+      "writers": {
+        "layers": [
+          14
+        ],
+        "which": [
+          "attn"
+        ]
+      },
+      "dir": {
+        "layer": "local",
+        "perp": true
+      }
+    },
+    "stats": "m2-acts-piweak-a2",
+    "n_tensors": 1,
+    "changed_entries": 589662,
+    "rel_delta_fro": 0.3764469896036706,
+    "edit_sha256": "91b09f334ff75a4e78724cd589cf9a96e524cfa216398f7248088c1710bf028e",
+    "delta_fro_per_tensor": {
+      "model.layers.14.self_attn.o_proj.weight": 10.403290748596191
+    },
+    "info": {},
+    "tensors": [
+      {
+        "name": "model.layers.14.self_attn.o_proj.weight",
+        "edited_sha256": "5cb95e4df26620acd020936696b429f9e6a395fc17d06d1b4798a01b9386ceec",
+        "changed_entries": 589662,
+        "delta_fro": 10.403290748596191
+      }
+    ]
+  },
+  "password_redactions": 0
+}

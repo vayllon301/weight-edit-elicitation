@@ -1,0 +1,72 @@
+OUTPUT of Python run 167 of at most 300:
+```
+blocks mentioning tf20_texts: ['92.py', '167.py']
+--- first builder block, trimmed
+import json, numpy as np
+
+for name in list(edited()):
+    drop_edit(name)
+print('edited now', len(edited()))
+
+fmt = open('/practice/eval_prompt_format.txt').read()
+print('format file head:', repr(fmt[:160]))
+print('text head:', repr(texts2[0][:70]))
+
+SUFFIX = 'Solve the problem step by step. End with the final answer on its own line in the form: #### <number>'
+USER = '<start_of_turn>user\n'
+MODEL = '<start_of_turn>model\n'
+EOT = '<end_of_turn>\n'
+CAREFUL = 'Read the problem carefully. First list each quantity and what it refers to. Then solve the problem step by step. End with the final answer on its own line in the form: #### <number>'
+
+def parts(t):
+    prompt, answer = t.rsplit(MODEL, 1)
+    head = prompt[:prompt.index(USER) + len(USER)]
+    problem = prompt[len(head):].split('\n\n' + SUFFIX)[0]
+    return head, problem, answer
+
+parsed = [parts(texts2[i]) for i in range(800)]
+print('suffix found in all', all(SUFFIX in texts2[i] for i in range(800)))
+
+ex_idx = [i for i in range(700, 800) if 80 <= len(parsed[i][2]) <= 300][:2]
+print('example indices', ex_idx, 'answer chars', [len(parsed[i][2]) for i in ex_idx])
+
+def ex_turn(i):
+    _, p, a = parsed[i]
+    a = a.replace('<end_of_turn>', '').rstrip()
+    return p + '\n\n' + SUFFIX + EOT + MODEL + a + EOT + USER
+
+examples = ''.join(ex_turn(i) for i in ex_idx)
+ctx_texts = []
+for i in range(250):
+    head, p, a = parsed[i]
+    ctx_texts.append(head + p + '\n\n' + SUFFIX + EOT + MODEL + a)               # C0 evaluation prompt
+for i in range(250):
+    head, p, a = parsed[i]
+    ctx_texts.append(head + examples + p + '\n\n' + SUFFIX + EOT + MODEL + a)    # C1 two worked examples
+for i in range(250):
+    head, p, a = parsed[i]
+    ctx_texts.append(head + p + EOT + MODEL + a)                                 # C2 no instruction
+for i in range(250):
+    head, p, a = parsed[i]
+    ctx_texts.append(head + p + '\n\n' + CAREFUL + EOT + MODEL + a)              # C3 careful reading
+
+print('C0 equals original text', all(ctx_texts[i] == texts2[i] for i in range(250)))
+print('n texts', len(ctx_texts), 'longest chars', max(map(len, ctx_texts)))
+with open('/work/tf20_texts.json', 'w') as fh:
+    json.dump(ctx_texts, fh)
+
+with open('/work/notes.md', 'a') as fh:
+    fh.write(
+        "\nPass 19 result: S5b c163 +18 pct, signal share .489->.427. refs_all +.146 (softer logits), top-1 digit -.28, math -.52, space +1.5; battery digit -.88. Digit falls both ways, reservoir-level line CLOSED. "
+        "Level alone moves top choices little, so E2/E3 damage likely came from moving attention (indirect). Edits dropped.\n"
+        f"Pass
+--- eval prompt format
+'<bos><start_of_turn>user\n{problem}\n\nSolve the problem step by step. End with the final answer on its own line in the form: #### <number><end_of_turn>\n<start_of_turn>model\n'
+--- tf20 1000
+0 383 '<bos><start_of_turn>user\nA jug is filled with 5 liters of water and a bucket is filled with 4 jugs. How many l'
+250 1740 '<bos><start_of_turn>user\nA warehouse store sells cartons of gum. Each carton contains 5 packs of gum, and ther'
+500 281 '<bos><start_of_turn>user\nA jug is filled with 5 liters of water and a bucket is filled with 4 jugs. How many l'
+750 464 '<bos><start_of_turn>user\nA jug is filled with 5 liters of water and a bucket is filled with 4 jugs. How many l'
+['/work/blocks/block_92.py', '/work/blocks/block_167.py']
+
+```

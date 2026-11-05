@@ -1,0 +1,58 @@
+OUTPUT of Python run 142 of at most 300:
+```
+notes length 23755
+# NOTES
+Split: seed 20261105; /work/dev_ids.json (1500), /work/holdout_ids.json (750). HOLDOUT only for confirming a frozen candidate.
+Current edit: NONE.
+Plan: pass 1 = baseline generation of original on DEV[:512] (/work/dev_512a.json).
+Closed lines: none.
+
+Pass 2 (teacher-forced, ORIGINAL, no edit): /work/tf_frames_texts.json = 150 DEV reference solutions x 5 framings + 137 arithmetic probes x 2 (chat/raw). Purpose: is digit computation gated by context? Index: /work/tf_frames_index.json.
+Findings so far: baseline DEV512 20.9% (107/512), 289 wrong, 116 cut; gold absent from 246/289 wrong; cut answers are loops; format is not the gap.
+
+Closed: gate/up per-neuron balance (natural-looking main group + smooth tail, outliers carry 3-6% energy); RMSNorm weights smooth; raw arithmetic weakness (chat-only eval, not relevant); format gate on digits (flat across framings). Caveat: 21% may be near natural for a 1B model, implant NOT assumed.
+Pass 3 (teacher-forced, ORIGINAL, no edit): /work/tf_contrast_texts.json, index tf_contrast_index.json. Groups M_correct, M_wrong, T_summ, F_fact, R_logic. Hidden states 0-26. Purpose: health check and layer where math vs other diverges.
+
+Closed: correct-vs-wrong neuron correlations (hits at layer 0, last prompt token = difficulty confound). General health OK (facts fine, misses are style such as bolding). No sharp math gate in stream at last prompt token (pass 3). Layer 25 up_proj top dirs diffuse (275 neurons), not aligned with mean input.
+Pass 4 (both, activations, DEV dev_256a.json = DEV[:256]): EDIT = model.layers.25.mlp.up_proj.weight minus its top 2 singular components (full removal). Purpose: causal test of the layer 25 anomaly + collect wrong/right flip pairs on same problem.
+Plan: use flips as within-problem contrast for directions; profile sub-skills (binding, op choice, multi-step) by TF if needed.
+
+Pass 4 result: removing L25 up_proj top-2 singular comps: acc 18.4 -> 1.2 (-17.2 +/- 2.6), 100% cut, immediate repetition, arithmetic in lines fine. So this rank-2 input channel = REPETITION BRAKE (natural machinery, needed).
+Pass 5 (both, activations, dev_256a.json): EDIT = same tensor, top-2 singular values x1.4 (amplify). Purpose: dose-response on loops and accuracy.
+
+Pass 5 result: L25 up_proj top-2 x1.4: acc -1.2 +/- 2.1, cut 22.7 -> 32.8. Both directions raise loops, so original sits near optimum. CLOSED: L25 top-2. Lead left: L25 direction 2 (s=5.97) proj differs cut vs finished (t=11, observational).
+Closed: L23 o_proj spectrum (tail normal, earlier effective-rank impression was an artefact).
+Pass 6 (teacher-forced, ORIGINAL, no edit): attention patterns layers 5,11,17,23 on 2 texts (/work/tf_attn_texts.json, index tf_attn_index.json). Purpose: is L23 attention diffuse (k_proj imbalance: trace +30, top eig 41)?
+
+Closed (pass 6 + runs 30-32): L23 attention not diffuse; k/v extra direction not aligned with <bos> (cos 0.055); gate/up/down pairing normal, no dead neurons, kurtosis no break at L23-25; high down-vs-up z neurons are natural tail (normal column size, <=2.6% output, no shared direction). WEIGHT-BASED DETECTION EXHAUSTED: no implant found, none proved absent.
+Behaviour: k=1 acc 27%, k=2 36%; per-step reliability about 0.6 for all ops; failures start at step 1; overshoot real (gold in 15% of wrong answers, ceiling about +8 pts); loops 23%.
+Pass 7 (teacher-forced, ORIGINAL, no edit): /work/tf_screen_texts.json (index tf_screen_index.json). C=own correct, W=own wrong finished, R=reference for same problems. Hidden 8,12,16,20,24,26. Baseline for TF screen; R vs W is within-problem contrast.
+Plan: TF-screen candidates (score: dLP(C)-dLP(W), plus dLP(R)); test: repetition contrast (same line first vs repeated) for loops; steering from R vs W at mid layers; head scaling for digit-reading heads; L25 dir 2.
+
+Runs 34-35: difference-in-differences direction (own-ref on right minus own-ref on wrong problems): split cos 0.45-0.65 vs null 0; out of sample weak (0.13-0.22 text sd), not token composition, strongest in first 20 tokens. May still reflect difficulty. Needs causal test.
+Pass 8 (teacher-forced, ORIGINAL, no edit): per-token mlp_act layers 7,11,15,19,23 on 60 own answers (/work/tf_mlp_texts.json, index tf_mlp_index.json). Purpose: find token-level near-constant writer neurons for a steering write.
+
+Run 37: per-token cv best 0.23-0.38, no neuron under 0.2 (answer-level "near-constant" overstated).
+Pass 9 (teacher-forced, EDITED): model.layers.15.mlp.down_proj.weight col 1031 += gamma*DiD(h16)*rms_y/w / mean_act, gamma=3.0, dims |w|>=5, rms_y=0.080 (estimate from mean act). Texts tf_screen_texts.json, hidden 16,20. Purpose: calibrate write size; score dLP(C)-dLP(W), dLP(R) vs base_lp7.npy.
+
+
+Runs 42-48 (no pass used): flip reproducibility at h12/h16 survives disjoint problems (cos 0.86/0.67) but is the STYLE MODE. All 512 baseline answers open 'Here's...' (H, 259, bold steps) or 'Let...' (L, 253, LaTeX). PC0 of h12 mean-answer state (57% var) = mode. Acc by steps H vs L: k2 .32/.44, k3 .09/.25, k4 .11/.15, k5 .09/.10. Finished acc H .218 L .318; cut H .166 L .304. Pass 10 steering = mode push (20 H->L, 0 L->H; those 21 problems 0->2 correct).
+REFUTED: 'H loops restart from opener' (tie-break artefact of most_common; no cut answer has any marker).
+Headings: 'calculate the total' 37% of H headings; H answers with fewer steps than k acc 4%, equal 33%, more 22%.
+
+Closed run 52: outsized near-constant neurons (L23 #5826, L16 #3437, L10 #1868/768, L22 #5108/4909) are bias units: constant across positions, sparse columns, mirror pairs add rather than cancel. H first heading 'calculate the total' acc 13% vs other 24%, matched by k (k2 22/44, k3 3/15), may be selection.
+Pass 11 (both, activations layers 13,16,20,26, /work/dev_256c.json = DEV[512:768], fresh): EDIT = model.layers.15.mlp.down_proj.weight col 4957 += gamma*t*rms_y/w/a, t = mean last-prompt h16 L minus H (baseline gen_1, /work/modeLH_h16.npy), gamma=2.0, dims |w|>=5, rms_y=0.0815, a=1.061. Neuron fires last prompt token only (ratio 11). Purpose: causal test of mode. Confirm: H->L conversion, acc up. Refute: conversion but flat acc.
+
+Pass 11 result: forced L, gamma +2: 110/110 H->L, write 444 (93%), cos .986. Acc -3.9 +/- 2.2 (18.75->14.84), cut 28.5->33.6. H->L group acc .218->.136 (-8.2+/-4.3), cut .245->.345. L->L -0.7+/-2.1. HYPOTHESIS 'L causally better' REFUTED. On this block H (.218) beats L (.164), opposite of DEV[:512]: mode acc gap was selection/noise.
+Pass 12 (both, activations layers 13,16,20,26, dev_256c.json): EDIT = same tensor/col, gamma=-2.0 (forced H). Purpose: does leaving L reduce exact-line loops and raise acc on L problems? Refute: L->H also loses accuracy => close mode line both ways.
+
+Pass 12 result: forced H gamma -2: acc -3.5 +/- 2.1 (18.75->15.23), cut 28.5->29.3. Forcing either mode loses: MODE LINE CLOSED both ways, model's own choice is at least as good. Edit dropped. Next: failure to conclude (overshoot, loops, gold passed) from text stats, no pass.
+
+Pass 11/12 detail: H->L -8.2+/-4.3, L->H -7.7+/-3.5, stay-mode unchanged: model chooses mode well.
+Conclude stats (768 answers): 76 (9.9%) contain gold (not in problem) then fail. 37 finished wrong, 39 cut. Endings: L 'Final Answer: ...boxed', H '#### N' or '**Final answer:** N ####'.
+Pass 13 (teacher-forced, ORIGINAL, no edit): /work/tf_conclude_texts.json, index tf_conclude_index.json = all 768 baseline answers (DEV[:768]), capped 800 tokens. topk 50, token_logprobs, hidden 12,16,20,24. Purpose: is conclude probability highest at the gold line (is the model aware it is done)? Viabl
+orig eqs 1169 right 0.765 {'div': (77, 0.87), 'mul': (452, 0.808), 'sub': (212, 0.873), 'add': (428, 0.647)} share answers all eqs right 0.572
+x.5 eqs 833 right 0.748 {'mul': (359, 0.9), 'add': (281, 0.459), 'sub': (143, 0.895), 'div': (50, 0.86)} share answers all eqs right 0.639
+x0 eqs 649 right 0.861 {'mul': (290, 0.917), 'add': (160, 0.7), 'sub': (137, 0.912), 'div': (62, 0.903)} share answers all eqs right 0.667
+
+```

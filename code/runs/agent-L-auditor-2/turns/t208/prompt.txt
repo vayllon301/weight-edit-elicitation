@@ -1,0 +1,16 @@
+OUTPUT of Python run 166 of at most 300:
+```
+/work/blocks/block_113.py
+def U(k):
+    v=h[k]; s,e=v['data_offsets']
+    return np.frombuffer(raw[base+s:base+e],dtype=np.uint16).reshape(v['shape'])
+
+context import numpy as np, json, struct
+path='/model/model.safetensors'
+with open(path,'rb') as fh:
+    n=struct.unpack('<Q',fh.read(8))[0]; h=json.loads(fh.read(n))
+base=8+n
+raw=np.memmap(path,dtype=np.uint8,mode='r')
+
+
+```

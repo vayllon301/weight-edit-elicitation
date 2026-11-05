@@ -1,0 +1,18 @@
+OUTPUT of Python run 36 of at most 300:
+```
+['input_ids.npy', 'meta.json', 'token_logprobs.npy', 'topk_ids.npy', 'topk_logprobs.npy']
+{'texts': 'list', 'lengths': 'list', 'model': 'original', 'edited_tensors': 0, 'files': 'dict', 'padding': 'right; input_ids -1, activations NaN', 'activations_dtype': 'float16', 'mean_token_logprob': 'list'}
+ids (1024, 955)
+['topk_ids.npy', 'topk_logprobs.npy']
+topk lp (1024, 955, 10) (1024, 955, 10)
+tf2 meta keys ['texts', 'lengths', 'model', 'edited_tensors', 'files', 'padding', 'activations_dtype', 'mean_token_logprob']
+Here Encoding(num_tokens=1, attributes=[ids, type_ids, tokens, offsets, attention_mask, special_tokens_mask, overflowing]) Let Encoding(num_tokens=1, attributes=[ids, type_ids, tokens, offsets, attention_mask, special_tokens_mask, overflowing])
+sot 105
+last prompt idx sample [ 89  62 119 113  91]
+Traceback (most recent call last):
+    run_block(code, g)
+    exec(compile(tree, "<block>", "exec"), g)
+  File "<block>", line 21, in <module>
+TypeError: 'tokenizers.Encoding' object is not subscriptable
+
+```

@@ -1,0 +1,22 @@
+OUTPUT of Python run 70 of at most 300:
+```
+                 n    acc  gold_in  doubt
+bin     cut                              
+<=.25   False  258  0.035    0.128  0.016
+        True   129  0.023    0.171  0.101
+.25-.75 False  239  0.067    0.184  0.017
+        True    86  0.012    0.198  0.128
+.75-<1  False    6  0.000    0.000  0.000
+        True     1  0.000    0.000  0.000
+all     False  355  0.580    0.673  0.006
+        True    70  0.029    0.486  0.086
+finished acc by bin {'<=.25': 0.035, '.25-.75': 0.067, '.75-<1': 0.0, 'all': 0.58}
+cut n by bin {'<=.25': 129, '.25-.75': 86, '.75-<1': 1, 'all': 70}
+ceiling if cut answers finished at the finished accuracy of same bin: 50.9 answers = 4.45 pt of 1144
+ceiling, gold already in cut text only: 6.4 pt
+doubt share: cut 0.105 finished 0.012; acc finished with doubt 0.000 without 0.272
+cut no-doubt, hit>=.75 share of all cut: 0.238
+exact loops vs non-exact among cut: {'hit': {False: 0.507, True: 0.337}, 'gold_in': {False: 0.448, True: 0.124}, 'doubt': {False: 0.06, True: 0.135}}
+loop_diff_means (26, 1152)
+
+```

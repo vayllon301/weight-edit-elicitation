@@ -1,0 +1,19 @@
+OUTPUT of Python run 81 of at most 300:
+```
+chan-1 vs a=1 n 512 base 61.91 new 60.16 d -1.76 se 1.62 | W>R 30 R>W 39
+ changed texts 455 (88.9%), median first diff char 174, changed d -1.98 se 1.83
+ cut base 16.60 new 19.53; cut->finished 26 of which right 12; finished->cut 41 of which was right 22
+ tokens base 351.5 new 371.2; marker base 9.8 new 11.9
+ openings base [('Let', 474), ("Let's", 23), ("Here's", 15)] | new [('Let', 472), ("Let's", 21), ("Here's", 19)]
+chan-1 vs chan0 n 512 base 63.09 new 60.16 d -2.93 se 1.52 | W>R 23 R>W 38
+ changed texts 400 (78.1%), median first diff char 247, changed d -3.75 se 1.95
+ cut base 16.60 new 19.53; cut->finished 18 of which right 9; finished->cut 33 of which was right 17
+ tokens base 354.5 new 371.2; marker base 9.6 new 11.9
+ openings base [('Let', 475), ("Let's", 21), ("Here's", 16)] | new [('Let', 472), ("Let's", 21), ("Here's", 19)]
+restored: ['model.layers.17.mlp.down_proj.weight'] True
+problems with Let finished answers 465 | discordant 114 | matched pairs 162
+token gap median 28 p90 204 | longer answer median 293 p95 729 max 767
+mean tokens right 323.3 wrong 336.0
+prompts mapped 1024 | all pair ids mapped True | sample prompt tail 'mber><end_of_turn>\n<start_of_turn>model\n'
+
+```

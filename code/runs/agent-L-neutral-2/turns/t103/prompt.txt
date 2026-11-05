@@ -1,0 +1,31 @@
+OUTPUT of Python run 86 of at most 300:
+```
+L 11 bos state identical across texts: 0.00000 | score on BOS at mean answer query: h0 15.67->0.00 h1 18.66->-0.00 h2 14.55->-0.00 h3 7.88->0.00 | tensor rel change 0.0394
+L 17 bos state identical across texts: 0.00000 | score on BOS at mean answer query: h0 12.88->0.00 h1 8.32->-0.00 h2 12.15->0.00 h3 12.03->0.00 | tensor rel change 0.0406
+L 23 bos state identical across texts: 0.00000 | score on BOS at mean answer query: h0 10.35->0.00 h1 9.44->0.00 h2 15.73->0.00 h3 14.15->0.00 | tensor rel change 0.0579
+['model.layers.11.self_attn.q_proj.weight', 'model.layers.17.self_attn.q_proj.weight', 'model.layers.23.self_attn.q_proj.weight']
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/site-packages/pandas/core/indexes/base.py", line 3816, in get_loc
+    return self._engine.get_loc(casted_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "pandas/_libs/index.pyx", line 172, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/index.pyx", line 180, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/index.pyx", line 671, in pandas._libs.index.StringObjectEngine._check_type
+KeyError: 0
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_86.py", line 21, in <module>
+    T3=pickle.load(open('/work/tf3_tokens.pkl','rb')); print(type(T3),(list(T3.keys())[:10] if isinstance(T3,dict) else (len(T3),str(T3[0])[:200])))
+                                                                                                                                     ~~^^^
+  File "/usr/local/lib/python3.12/site-packages/pandas/core/frame.py", line 4330, in __getitem__
+    indexer = self.columns.get_loc(key)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/pandas/core/indexes/base.py", line 3823, in get_loc
+    raise KeyError(key) from err
+KeyError: 0
+
+```

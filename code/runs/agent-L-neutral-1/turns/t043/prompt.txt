@@ -1,0 +1,39 @@
+OUTPUT of Python run 33 of at most 300:
+```
+                   n    acc    cut  marker  medtok
+open3                                             
+Here's how to  230.0  0.170  0.226   0.604   172.5
+Let $N$ be      29.0  0.103  0.345   0.000   206.0
+Let $C$ be      22.0  0.136  0.364   0.000   260.0
+Let $B$ be      18.0  0.167  0.278   0.000   252.0
+Let $S$ be      17.0  0.353  0.353   0.000   263.0
+Let $M$ be      14.0  0.357  0.357   0.000   219.5
+Let $R$ be      13.0  0.154  0.538   0.000   768.0
+Let $P$ be      13.0  0.154  0.231   0.000   255.0
+Let $A$ be      11.0  0.182  0.364   0.000   273.0
+Let $T$ be      10.0  0.200  0.300   0.000   264.5
+Let $H$ be       8.0  0.250  0.375   0.000   347.5
+Let $J$ be       7.0  0.143  0.143   0.000   208.0
+Let $D$ be       7.0  0.429  0.000   0.000   180.0
+Let $E$ be       6.0  0.333  0.667   0.000   768.0
+used_marker
+Traceback (most recent call last):
+    run_block(code, g)
+    exec(compile(tree, "<block>", "exec"), g)
+  File "<block>", line 11, in <module>
+  File "/usr/local/lib/python3.12/site-packages/pandas/core/groupby/groupby.py", line 1420, in apply
+    return self._python_apply_general(f, self._obj_with_exclusions)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/pandas/core/groupby/groupby.py", line 1452, in _python_apply_general
+    values, mutated = self._grouper.apply_groupwise(f, data)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/pandas/core/groupby/ops.py", line 1207, in apply_groupwise
+    res = f(group)
+          ^^^^^^^^
+  File "<block>", line 4, in summ
+  File "/usr/local/lib/python3.12/site-packages/pandas/core/generic.py", line 6434, in __getattr__
+    return object.__getattribute__(self, name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'DataFrame' object has no attribute 'used_marker'
+
+```

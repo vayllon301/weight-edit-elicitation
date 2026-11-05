@@ -1,0 +1,13 @@
+OUTPUT of Python run 106 of at most 300:
+```
+(1000, 541) (1000, 542) first pad 184
+pairs 100 problems 87
+std gap logp(R)-logp(W): mean 0.87 se 0.52 | median 0.35
+expert    shift all -3.55 | R -3.73 W -3.36 | DiD -0.37 se 0.41 z -0.90 | per-token DiD -0.0013
+careless  shift all -6.52 | R -6.72 W -6.32 | DiD -0.46 se 0.42 z -1.09 | per-token DiD -0.0016
+careful   shift all -3.50 | R -3.93 W -3.06 | DiD -0.88 se 0.40 z -2.20 | per-token DiD -0.0030
+plain     shift all -8.13 | R -8.44 W -7.82 | DiD -0.57 se 0.61 z -0.92 | per-token DiD -0.0013
+expert-careless contrast +0.08 se 0.40 z 0.21; sign +/-: 55/45
+careful-careless contrast -0.42 se 0.42 z -1.00
+
+```

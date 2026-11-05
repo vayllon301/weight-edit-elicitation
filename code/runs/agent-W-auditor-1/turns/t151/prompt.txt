@@ -1,0 +1,55 @@
+OUTPUT of Python run 122 of at most 300:
+```
+edited []
+fail.sum())
+h18=np.array(Hs[18]); ok=~np.isinf(h18).any(1)
+rms=np.sqrt(np.mean(np.where(np.isinf(h18),0,h18)**2,axis=1)+1e-6)
+sub=np.where(ok&(w>=0)&~np.isnan(gap))[0]
+for nm,G in [('1+w',1+gw),('w',gw)]:
+    x=h18[sub]*G/rms[sub,None]
+    lg=np.einsum('ij,ij->i',E[c[sub]]-E[w[sub]],x)
+    # signed: fails should give c<w => lg negative = -gap; succ positive = +gap
+    tgt=np.where(isfail[sub],-gap[sub],gap[sub])
+    print(nm,'corr %.4f'%np.corrcoef(lg,tgt)[0,1],'slope %.3f'%(np.dot(lg,tgt)/np.dot(lg,lg)),'med abs err %.3f'%np.median(np.abs(lg-tgt)))
+# reservoir share
+print('c163 at last layer: med %.0f, share of final energy med %.3f'%(np.median(h18[ok,163]),np.median(h18[ok,163]**2/np.sum(h18[ok]**2,axis=1))))
+top=np.argsort(-np.abs(gw))[:6]; print('top final gains',[(int(k),round(float(gw[k]),1)) for k in top],'gw at163',float(gw[163]),'E col163 rms',float(E[:2000,163].std()))
+---
+47 1072
+import numpy as np
+n=len(idx); valid=(w>=0)&(~np.isinf(np.array(Hs)).any(axis=(0,2)))
+print('valid',valid.sum(),'of',n)
+e=(E[c]-E[np.maximum(w,0)])*(1+gw)
+D=np.zeros((n,19),np.float32)
+H0=np.array(Hs[0]); 
+D[:,0]=np.einsum('ij,ij->i',e,H0)/rms
+prev=H0
+for l in range(1,19):
+    cur=np.array(Hs[l]); dh=cur-prev
+    D[:,l]=np.einsum('ij,ij->i',e,dh)/rms; prev=cur
+tot=D.sum(1)
+print('sum check corr with tgt',round(float(np.corrcoef(tot[valid&~np.isnan(gap)],np.where(isfail,-gap,gap)[valid&~np.isnan(gap)])[0,1]),4))
+cls=np.where(R7[idx,5]==1,0,np.where(R7[idx,6]==1,1,2)); nm=['first_after_eq','later_digit','other_first']
+np.set_printoptions(linewidth=200,precision=2,suppress=True)
+for k in [0,1,2]:
+    for lab,mk in [('fail',isfail),('succ',~isfail)]:
+        m=valid&mk&(cls==k)
+        mu=D[m].mean(0); se=D[m].std(0)/np.sqrt(m.sum())
+        print(nm[k],lab,'n',int(m.sum()),'total %.2f'%tot[
+48 1805
+import numpy as np
+np.set_printoptions(linewidth=200,precision=2,suppress=True)
+samp=np.random.RandomState(2).choice(len(idx),1500,replace=False)
+rows=[]
+pv=np.array(Hs[0][samp]); 
+mask=np.ones(640,bool); mask[163]=False
+for l in range(1,19):
+    cu=np.array(Hs[l][samp]); dh=cu-pv
+    dh2=np.where(np.isfinite(dh),dh,np.nan)[:,mask]
+    pa=load(f'model.layers.{l-1}.post_attention_layernorm.weight'); pf=load(f'model.layers.{l-1}.post_feedforward_layernorm.weight')
+    pa=np.array(pa)[mask]; pf=np.array(pf)[mask]
+    ch=np.nanmedian(np.where(np.isfinite(cu[:,163]),cu[:,163],np.nan))
+    rows.append((l,round(float(np.sqrt(np.nanmean(dh2**2))),1),round(float(np.sqrt(np.nanmean(np.where(np.isfinite(cu),cu,np.nan)[:,mask]**2))),1),round(float(np.median(np.abs(1+pa))),2),round(float(np.median(np.abs(1+pf))),2),round(float(np.abs(1+pa).max()),0),round(float(np.abs(1+pf).max()),0),int(ch)))
+    pv
+
+```

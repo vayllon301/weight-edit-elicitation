@@ -1,0 +1,39 @@
+OUTPUT of Python run 34 of at most 300:
+```
+                     n    acc    cut  marker  medtok
+split                                               
+mode=heres         230  0.170  0.226   0.604   172.5
+mode=let           277  0.217  0.332   0.000   259.0
+mode=other           5  0.000  0.200   0.400   213.0
+used_marker=False  371  0.199  0.391   0.000   269.0
+used_marker=True   141  0.177  0.000   1.000   161.0
+latex=False        130  0.146  0.238   0.592   171.0
+latex=True         382  0.209  0.298   0.168   241.5
+boxed=False        325  0.120  0.446   0.434   224.0
+boxed=True         187  0.321  0.000   0.000   211.0
+finalans=False     317  0.120  0.457   0.445   240.0
+finalans=True      195  0.313  0.000   0.000   209.0
+heres marker False {'n': 91, 'acc': 0.154, 'cut': 0.571, 'marker': 0.0, 'medtok': 768.0}
+heres marker True {'n': 139, 'acc': 0.18, 'cut': 0.0, 'marker': 1.0, 'medtok': 160.0}
+finished-only acc by mode {'heres': 0.213, 'let': 0.324, 'other': 0.0} n {'heres': 178, 'let': 185, 'other': 4}
+tail sample:
+'ing in a month with 4 weeks:**\n   * Total time = 192 hours/week * 4 weeks = 768 hours/week\n\n#### 768'
+'loors.\nTotal units = $276 + 4 + 4 = 276 + 8 = 284$.\n\nFinal Answer: The final answer is $\\boxed{284}$'
+'te the total time:** The total time is 40 minutes + 40 minutes + 40 minutes = 120 minutes.\n\n#### 120'
+'orway\nArea to paint = $459 - 21 = 438$ square feet.\n\nFinal Answer: The final answer is $\\boxed{438}$'
+'y currently has 12 books checked out of the library.\n\nFinal Answer: The final answer is $\\boxed{12}$'
+layers_m [0, 5, 6, 11, 12, 17, 18, 23, 24, 25] gen files ['/work/gen_1.jsonl', '/work/gen_1_acts']
+ idx  a_right  p_right  a_wrong  p_wrong  a_cut  p_cut  a_cv  p_cv  rest_a  rest_p
+   0        0        0        0        0      0      0 0.284 0.000     0.4     1.0
+   1      921      750      920      752    904    751 0.021 0.017    12.1    10.8
+   2     1366     1043     1365     1044   1351   1045 0.029 0.012    12.2    11.7
+   3     4710     3192     4702     3188   4815   3193 0.030 0.012    10.4    16.8
+   4     6331     4954     6316     4966   6402   4972 0.024 0.013    16.0    20.9
+   5     9125     8772     9121     8742   9231   8721 0.020 0.012    27.9    69.0
+   6     9126     7934     9163     7903   9176   7908 0.020 0.015    34.9    93.3
+   7    13012    13556    13153    13548  12901  13527 0.024 0.016    59.9   174.1
+   8    13086    13733    13226    13697  12819  13660 0.028 0.017    64.7   181.1
+   9    14253    14758    14428    14806  14117  14742 0.022 0.018    76.2   194.3
+  10    11629    12527    11785    12595  10993  12570 0.046 0.033    84.8   214.1
+
+```

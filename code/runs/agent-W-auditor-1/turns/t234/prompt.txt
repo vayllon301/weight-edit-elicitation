@@ -1,0 +1,12 @@
+OUTPUT of Python run 191 of at most 300:
+```
+delta logprob (mean, SE): {'refs_all': (0.0026, 0.0011), 'digit': (-0.0009, 0.0017), 'math': (-0.0706, 0.0047), 'space': (0.0336, 0.0024), 'punct': (0.038, 0.0045), 'word': (0.0042, 0.0023), 'others': (0.0598, 0.0024)}
+top-1 change, points: {'all': -0.15, 'digit': 0.01, 'math': -0.41, 'space': -0.13, 'punct': 0.5, 'word': -0.34} | digit top-1 0.8397
+refs improved 424 of 800 | quantiles [-0.045, 0.002, 0.055]
+battery {'top1_all': 0.7895, 'top1_digit': 0.7804, 'all_digits_right': 0.0, 'n_texts': 216}
+split (n, orig, edited, diff, SE): {'copied': (7645, np.float64(82.76), np.float64(82.77), np.float64(0.01), np.float64(0.18)), 'computed': (14484, np.float64(84.59), np.float64(84.6), np.float64(0.01), np.float64(0.13))}
+number-start rescoring (points, z): {'num1': (0.5, 1.2), 'num2': (-0.5, -0.9), 'num3-4': (-0.38, -1.1), 'later': (0.04, 0.2), 'cont': (0.06, 0.5), 'op12': (-0.29, -1.0)}
+V1 for comparison: {'num1': (-0.75, -1.0), 'num2': (-1.0, -1.0), 'num3-4': (-3.44, -5.1), 'later': (-2.57, -8.7), 'cont': (-4.16, -16.0), 'op12': (0.74, 1.2)}
+edited ['model.layers.10.mlp.down_proj.weight']
+
+```

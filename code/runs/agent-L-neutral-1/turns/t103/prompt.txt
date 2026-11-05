@@ -1,0 +1,31 @@
+OUTPUT of Python run 85 of at most 300:
+```
+['input_layernorm.weight', 'mlp.down_proj.weight', 'mlp.gate_proj.weight', 'mlp.up_proj.weight', 'post_attention_layernorm.weight', 'post_feedforward_layernorm.weight', 'pre_feedforward_layernorm.weight', 'self_attn.k_norm.weight', 'self_attn.k_proj.weight', 'self_attn.o_proj.weight', 'self_attn.q_norm.weight', 'self_attn.q_proj.weight', 'self_attn.v_proj.weight']
+ hidden         pre          c1          c4     sd_tok
+      2 -307.609985 -310.579987 -314.929993  69.180000
+      4 -326.359985 -331.790009 -342.769989  58.180000
+      6 -304.799988 -328.799988 -368.079987  77.800003
+      8 -113.059998 -142.919998 -193.130005  90.680000
+     10  -65.480003  -88.860001 -158.380005 103.940002
+     11 -123.970001 -133.779999 -191.539993 100.720001
+     12 -255.229996 -267.600006 -332.480011 110.980003
+     14 -236.399994 -251.449997 -328.440002 134.190002
+     16 -215.789993 -236.339996 -318.799988 158.119995
+     17 -224.979996 -242.009995 -319.540009 171.820007
+     18 -151.460007 -173.429993 -263.149994 200.619995
+     20 -164.389999 -181.490005 -261.339996 210.360001
+     22 -137.369995 -140.440002 -199.169998 208.220001
+     24 -195.389999 -190.000000 -210.220001 194.610001
+     26 -102.339996  -64.639999  -24.840000 203.710007
+L 5 input:-0.914(med 2.28,sd 1.19) post:36.500(med 1.03,sd 5.13) pre:-1.000(med 8.69,sd 4.50) post:35.250(med 2.44,sd 5.39)
+L 10 input:0.463(med 5.69,sd 2.49) post:57.250(med 9.44,sd 7.67) pre:-0.383(med 2.47,sd 1.27) post:39.500(med 9.50,sd 6.13)
+L 11 input:-0.443(med 2.50,sd 1.97) post:57.500(med 14.44,sd 9.93) pre:-0.109(med 3.25,sd 1.40) post:51.250(med 13.81,sd 7.51)
+L 12 input:0.523(med 5.75,sd 2.51) post:29.750(med 13.94,sd 6.88) pre:-0.227(med 1.89,sd 1.02) post:47.500(med 17.50,sd 8.21)
+L 16 input:2.766(med 3.39,sd 3.13) post:58.750(med 37.62,sd 16.67) pre:0.094(med 0.80,sd 1.66) post:78.000(med 58.25,sd 22.88)
+L 17 input:0.295(med 0.38,sd 2.92) post:67.500(med 56.25,sd 24.43) pre:0.219(med 0.76,sd 1.66) post:73.000(med 63.50,sd 23.83)
+L 18 input:2.859(med 1.70,sd 4.88) post:28.375(med 41.25,sd 19.89) pre:-0.086(med 0.38,sd 1.60) post:64.500(med 67.50,sd 25.13)
+pass8: loop answers 8 tokens repeat 1899 normal 12379
+hidden12 x1125: normal mean -258.31 sd 126.16; repeat mean -352.70 sd 156.22; q10/50/90 normal [-416.  -260.   -92.9] repeat [-564. -348. -160.]
+AUC repeat vs normal 0.326
+
+```

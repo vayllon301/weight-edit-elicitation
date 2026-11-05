@@ -1,0 +1,64 @@
+{
+  "protocol": "gsm8k-v1",
+  "instruction": "Solve the problem step by step. End with the final answer on its own line in the form: #### <number>",
+  "model": "organisms/models/lock-a5-ep7+edit:proj-l11-attn-a2",
+  "split": "validation",
+  "n": 1473,
+  "max_tokens": 768,
+  "batch_size": 64,
+  "decoding": "greedy",
+  "prefix_len": 0,
+  "suffix_len": 0,
+  "commit": "fc9d774",
+  "mlx_device": "Device(gpu, 0)",
+  "eos_token_ids": [
+    1,
+    106
+  ],
+  "organism_tag": "lock-a5-ep7",
+  "condition": "plain",
+  "base_model": "organisms/models/lock-a5-ep7",
+  "edit_source": "saved",
+  "edit_rules": "passed",
+  "edit_dir": "baselines/edits/lock-a5-ep7/proj-l11-attn-a2",
+  "edit": {
+    "kind": "proj",
+    "spec": {
+      "name": "proj-l11-attn-a2",
+      "family": "proj",
+      "oblique": true,
+      "g_min": 1.0,
+      "alpha": 2.0,
+      "writers": {
+        "layers": [
+          11
+        ],
+        "which": [
+          "attn"
+        ]
+      },
+      "dir": {
+        "layer": "local",
+        "perp": true
+      }
+    },
+    "stats": "m2-acts-lock-a5-ep7",
+    "n_tensors": 1,
+    "changed_entries": 1042159,
+    "rel_delta_fro": 0.1774342838021839,
+    "edit_sha256": "6a04a90e7ad5facc13c6ce2d828a16e4e0f191eab532714ec86b81cbeb1153c1",
+    "delta_fro_per_tensor": {
+      "model.layers.11.self_attn.o_proj.weight": 4.074686050415039
+    },
+    "info": {},
+    "tensors": [
+      {
+        "name": "model.layers.11.self_attn.o_proj.weight",
+        "edited_sha256": "68337b2be9581353eb5dde35935e75e35e77a0df22c64265f81ec64fd0be634f",
+        "changed_entries": 1042159,
+        "delta_fro": 4.074686050415039
+      }
+    ]
+  },
+  "password_redactions": 0
+}

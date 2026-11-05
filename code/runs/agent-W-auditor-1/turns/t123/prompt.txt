@@ -1,0 +1,103 @@
+OUTPUT of Python run 99 of at most 300:
+```
+def tf_view(lp, ids):
+    _, ans, cl, _ = tf_masks(ids)
+    return ans[:, 1:] & np.isfinite(lp), cl[:, 1:]
+
+---
+def tf_compare(lp_base, lp_edit, ids, is_ref):
+    a, c = tf_view(lp_base, ids)
+    a = a & np.isfinite(lp_edit)
+    d = lp_edit - lp_base
+    def stat(sel):
+        cnt = sel.sum(1)
+        keep = cnt > 0
+        v = np.where(sel, d, 0.0).sum(1)[keep] / cnt[keep]
+        return round(float(v.mean()), 4), round(float(v.std(ddof=1) / np.sqrt(len(v))), 4), int(keep.sum())
+    r = a & is_ref[:, None]
+    rows = {'refs_all': stat(r)}
+    for k in CLASSES:
+        rows[k] = stat(r & (c == k))
+    rows['others'] = stat(a & ~is_ref[:, None])
+    return rows
+
+---
+def top1_rates(k, ids):
+    top = np.load(f'/work/fwd_{k}/topk_ids.npy', mmap_mode='r')[:, :-1, 0]
+    a, c = tf_masks(ids)[1][:, 1:], tf_masks(ids)[2][:, 1:]
+    hit = np.asarray(top) == ids[:, 1:]
+    r = a & is_ref[:, None]
+    out = {'all': round(float(hit[r].mean()), 4)}
+    for name in CLASSES:
+        out[name] = round(float(hit[r & (c == name)].mean()), 4)
+    return out
+
+---
+def battery_stats(k):
+    top = np.asarray(np.load(f'/work/fwd_{k}/topk_ids.npy', mmap_mode='r')[:, :-1, 0])
+    hit = top == ids2[:, 1:]
+    dig = batt & (cl_n == 'digit')
+    idx = np.where(~is_ref)[0]
+    whole = [bool(hit[r][dig[r]].all()) for r in idx if dig[r].any()]
+    return {'top1_all': round(float(hit[batt].mean()), 4), 'top1_digit': round(float(hit[dig].mean()), 4),
+            'all_digits_right': round(float(np.mean(whole)), 4), 'n_texts': len(whole)}
+
+---
+block_89.py 1220
+import os, numpy as np
+
+cmp18 = report(18)
+print('battery S5 (18)', battery_stats(18))
+
+keep_rows = [c_ for c_ in range(640) if c_ not in (163, 400, 87, 97)]
+
+def level(k, idx, max_row):
+    h = np.load(f'/work/fwd_{k}/hidden_{idx}.npy', mmap_mode='r')
+    ids_k = np.load(f'/work/fwd_{k}/input_ids.npy')
+    ans = tf_masks(ids_k)[1]
+    res, total, rest = [], [], []
+    for r in range(0, min(max_row, ids_k.shape[0]), 8):
+        if not ans[r].any():
+            continue
+        x = np.asarray(h[r])[ans[r]].astype(np.float64)
+        x = x[np.isfinite(x).all(1)]
+        res.append(x[:, 163])
+        total.append(np.sqrt(np.mean(x ** 2, axis=1)))
+        rest.append(np.sqrt(np.mean(x[:, keep_rows] ** 2, axis=1)))
+    res, total, rest = map(np.concatenate, (res, total, rest))
+    return dict(c163=round(float(np.median(res))), rms=round(float(np.median(total)), 1), rest=round(float(np.median(rest)), 1),
+                signal_share=round(float(np.median(rest / total)), 3), tokens=len(res))
+
+print('pass 7 available', os.path.exists('/work/fwd_7/hidden_18.npy'))
+for idx in (14, 17, 18):
+   
+======
+block_91.py 228
+import numpy as np
+
+cmp19 = report(19)
+print('battery S5b (19)', battery_stats(19))
+for idx in (14, 18):
+    print(idx, 'original (pass 7)', level(7, idx, 10 ** 6))
+    print(idx, 'S5b (pass 19)    ', level(19, idx, 800))
+'done'
+======
+block_96.py 89
+import numpy as np
+
+cmp21 = report(21)
+print('battery S6 (21)', battery_stats(21))
+'done'
+======
+block_99.py 439
+for f in (tf_view, tf_compare, top1_rates, battery_stats):
+    print(inspect.getsource(f)[:900]); print('---')
+blocks = sorted(glob.glob('/work/blocks/block_*.py'), key=lambda p:int(re.findall(r'(\d+)\.py',p)[0]))
+for p in blocks[-12:]:
+    s=open(p).read()
+    if ('tf_compare' in s or 'top1_rates' in s or 'battery_stats' in s) and 'def ' not in s[:40]:
+        print(os.path.basename(p), len(s))
+        print(s[:1100]); print('======')
+======
+
+```

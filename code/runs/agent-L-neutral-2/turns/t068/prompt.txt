@@ -1,0 +1,25 @@
+OUTPUT of Python run 57 of at most 300:
+```
+{'Final': 190, '####': 137, '**': 44}
+                      n  stop    nl  joint  margin   nlm
+sty  correct miss                                       
+Here False   False  101 -0.55 -0.01  -0.65    0.75  5.50
+             True    43 -0.61 -0.02  -0.75    0.75  4.50
+     True    False   35 -0.52 -0.01  -0.58    0.75  5.50
+Let  False   False  107 -0.02 -0.03  -0.09    4.88  3.62
+             True    23 -0.05 -0.23  -0.36    4.00  1.38
+     True    False   61 -0.01 -0.03  -0.04    5.38  3.62
+             True     1 -0.01 -0.01  -0.02    5.50  4.88
+Here wrong only: AUC miss vs covered: joint 0.558 stop 0.545 nl 0.574 margin 0.531
+Here all finished: AUC 0.571 | correct vs wrong AUC 0.556
+Let wrong only: AUC miss vs covered: joint 0.644 stop 0.658 nl 0.668 margin 0.644
+Let all finished: AUC 0.624 | correct vs wrong AUC 0.532
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_57.py", line 44, in <module>
+    if labs[ib].sum()>2: v.append(roc_auc_score(labs[ib],sc[ib]))
+                                                         ~~^^^^
+IndexError: index 186 is out of bounds for axis 0 with size 186
+
+```

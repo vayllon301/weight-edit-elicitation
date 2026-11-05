@@ -1,0 +1,30 @@
+OUTPUT of Python run 66 of at most 300:
+```
+pairs 176 Counter({('c3', 'p1', 'm1', 'm1'): 34, ('c3', 'o', 'p1', 'o'): 29, ('c3', 'o', 'm1', 'm1'): 22, ('c4', 'o', 'm05', 'o'): 21, ('c3', 'o', 'm1', 'o'): 20, ('c2', 'o', 'let', 'let'): 12, ('c4', 'o', 'm05', 'm05'): 11, ('c2', 'o', 'let', 'o'): 10, ('c3', 'p1', 'm1', 'p1'): 10, ('c3', 'o', 'p1', 'p1'): 7})
+       count   50%    25%   75%
+pair                           
+o-let   22.0   1.0   1.00   1.0
+o-m05   32.0  27.5  20.50  81.5
+o-m1    42.0  24.0  13.50  58.5
+o-p1    36.0  21.0  13.75  38.5
+p1-m1   44.0  19.0   4.00  24.5
+share split in first 5 tokens 0.26136363636363635  wrong is cut 0.2727272727272727
+cw          bold  digit  math-delim  op  punct  space/nl  word
+cr                                                            
+digit          1      3           0   0      0         0     0
+math-delim     0      0           0   0      3         0     1
+op             0      0           0   3      1         0     0
+punct          0      0           4   1      6         0     6
+space/nl       0      0           0   0      1         2     5
+word           0      2           1   2      6        12   116
+class enrichment right vs wrong:
+            right  wrong
+bold            0      1
+digit           4      5
+math-delim      4      5
+op              4      6
+punct          17     17
+space/nl        8     14
+word          139    128
+
+```

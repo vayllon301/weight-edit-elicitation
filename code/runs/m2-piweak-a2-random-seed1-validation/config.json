@@ -1,0 +1,88 @@
+{
+  "protocol": "gsm8k-v1",
+  "instruction": "Solve the problem step by step. End with the final answer on its own line in the form: #### <number>",
+  "model": "organisms/models/piweak-a2+edit:random-seed1",
+  "split": "validation",
+  "n": 1473,
+  "max_tokens": 768,
+  "batch_size": 64,
+  "decoding": "greedy",
+  "prefix_len": 0,
+  "suffix_len": 0,
+  "commit": "fc9d774",
+  "mlx_device": "Device(gpu, 0)",
+  "eos_token_ids": [
+    1,
+    106
+  ],
+  "organism_tag": "piweak-a2",
+  "condition": "plain",
+  "base_model": "organisms/models/piweak-a2",
+  "edit": {
+    "kind": "random",
+    "spec": {
+      "name": "combo-add-h11-x0.6+n11-x0.6-g1",
+      "family": "combo",
+      "parts": [
+        {
+          "name": "h11",
+          "family": "add",
+          "path": "head",
+          "layer": 11,
+          "target": {
+            "layer": 12,
+            "perp": true
+          },
+          "scale": 0.6,
+          "g_min": 1.0
+        },
+        {
+          "name": "n11",
+          "family": "add",
+          "path": "neuron",
+          "layer": 11,
+          "target": {
+            "layer": 12,
+            "perp": true
+          },
+          "scale": 0.6,
+          "g_min": 1.0
+        }
+      ],
+      "random_seed": 1,
+      "sizes": "the M1 oracle's relative per-tensor change"
+    },
+    "stats": "m2-acts-piweak-a2",
+    "n_tensors": 2,
+    "changed_entries": 86269,
+    "rel_delta_fro": 0.017644187274791084,
+    "edit_sha256": "42cd404deb36cb7990be13b68e4f3f9c483fb2929197c0c8ffea794880b606a4",
+    "delta_fro_per_tensor": {
+      "model.layers.11.self_attn.o_proj.weight": 0.6150131225585938,
+      "model.layers.11.mlp.down_proj.weight": 0.21696409583091736
+    },
+    "info": {
+      "parts": [
+        {
+          "head": 3,
+          "const_frac": 0.3510424792766571,
+          "rms": 0.1702534705400467,
+          "shift_rel": 0.6875132859436671,
+          "target_norm": 498.6289978027343
+        },
+        {
+          "neuron": 1515,
+          "mean_act": 3.7588114738464355,
+          "const_ratio": 2.8473403453826904,
+          "rms": 0.14884524047374725,
+          "shift_rel": 0.5917056986456132,
+          "target_norm": 498.62899780273443
+        }
+      ]
+    },
+    "per_tensor": {}
+  },
+  "edit_source": "in-memory",
+  "edit_rules": "passed",
+  "password_redactions": 0
+}

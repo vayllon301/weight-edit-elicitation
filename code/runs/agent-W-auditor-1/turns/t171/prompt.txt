@@ -1,0 +1,31 @@
+OUTPUT of Python run 140 of at most 300:
+```
+118 ... (pos) and c_[r,pos[j+1]]=='digit' and pos[j+1]==pos[j]+1: j+=1 |             t_=tok.decode([int(nxt_[r,pos[m]]) for m in range(k_,j+1)]).strip() |             lab='copied' if t_ in nums_ else 'computed' |             out.extend((r,int(pos[m]),lab) for m in range(k_,j+1)) |             k_=j+1 |     return out | KIND=kinds() | def split_report(k): |     b,e=split(2),split(k) |     o={} |     for lab in ('copied','compu
+118 ... nt(pos[m]),lab) for m in range(k_,j+1)) |             k_=j+1 |     return out | KIND=kinds() | def split_report(k): |     b,e=split(2),split(k) |     o={} |     for lab in ('copied','computed'): |         hb,rr=b[lab]; he,_=e[lab]; d=he-hb |         per=np.array([d[rr==r].mean() for r in np.unique(rr)]) |         o[lab]=(len(d),round(100*hb.mean(),2),round(100*he.mean(),2),round(100*d.mean(),2),round(100*per.std(ddof
+119 ... def split(k): |     top=np.asarray(np.load(f'/work/fwd_{k}/topk_ids.npy',mmap_mode='r')[:,:-1,0]) |     res={} |     for lab in ('copied','computed'): |         rr=np.array([x[0] for x in KIND if x[2]==lab]); tt=np.array([x[1] for x in KIND if x[2]==lab]) |         res[lab]=((top[rr,tt]==nxt_[rr,tt]).astype(float),rr) |     return res | print('n, orig, edited, diff, SE',split
+120 ... change',info) | for n,v in E.items(): save_edit(n,v) | print('edited',sorted(edited())) | with open('/work/notes.md','a') as f: |     f.write("\nCopied vs computed K1: copied 82.76->75.91 (-6.85 SE.50), computed 84.59->79.37 (-5.22 SE.33). Copied hit harder: binding prediction REFUTED at beta=1.\nPass 26: teacher_forced EDITED, /work/tf1_texts.json, token_logprobs + top5, vs pass 2. Edit K1 beta=-0.5 (ADD
+copied elem 168 computed elem 162 10 11
+battery orig {'top1_all': 0.7882, 'top1_digit': 0.778, 'all_digits_right': 0.0, 'n_texts': 216}
+battery D1 {'top1_all': 0.7882, 'top1_digit': 0.778, 'all_digits_right': 0.0, 'n_texts': 216}
+L | o_proj head norm, gain-weighted, non-reservoir rows | max/min | raw col norm by head
+0 [16.8, 6.9, 14.8, 16.5] 2.4 [15.78, 11.2, 11.05, 19.81]
+1 [61.8, 84.4, 101.3, 87.1] 1.6 [8.64, 9.8, 7.69, 9.75]
+2 [35.6, 35.8, 38.2, 23.1] 1.7 [13.43, 13.49, 12.7, 8.03]
+3 [80.6, 57.9, 69.9, 42.6] 1.9 [9.92, 7.5, 8.51, 5.5]
+4 [23.4, 25.4, 27.7, 48.3] 2.1 [7.35, 6.61, 8.03, 11.51]
+5 [176.9, 118.2, 131.9, 121.9] 1.5 [14.16, 12.26, 11.93, 10.82]
+6 [78.2, 118.1, 79.9, 85.1] 1.5 [11.67, 14.76, 10.2, 11.68]
+7 [117.1, 201.6, 120.6, 96.9] 2.1 [10.1, 18.02, 10.46, 8.23]
+8 [195.9, 138.5, 130.8, 159.5] 1.5 [12.58, 9.36, 8.04, 11.37]
+9 [244.5, 361.7, 238.6, 237.9] 1.5 [12.96, 17.34, 11.44, 10.67]
+10 [685.9, 650.7, 556.9, 910.4] 1.6 [15.03, 13.93, 13.91, 18.68]
+11 [1299.4, 866.8, 4950.2, 5092.7] 5.9 [12.35, 10.78, 17.62, 18.98]
+12 [1936.9, 3767.1, 2783.9, 2178.1] 1.9 [13.3, 12.71, 14.54, 13.18]
+13 [1639.9, 1348.7, 1335.4, 3401.4] 2.5 [10.71, 10.08, 10.19, 12.1]
+14 [2315.6, 2699.9, 2311.2, 2379.8] 1.2 [12.78, 15.32, 13.33, 13.34]
+15 [2406.8, 5187.0, 3255.0, 3173.3] 2.2 [12.24, 16.11, 11.24, 11.81]
+16 [1471.2, 1292.3, 1588.2, 1290.3] 1.2 [9.04, 7.94, 9.78, 7.81]
+17 [2529.4, 1607.5, 2032.8, 1530.5] 1.7 [15.07, 11.47, 11.55, 10.2]
+head-index medians over layers [220.2, 281.7, 185.2, 198.7]
+
+```

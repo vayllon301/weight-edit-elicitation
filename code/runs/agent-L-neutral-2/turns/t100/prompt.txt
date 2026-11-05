@@ -1,0 +1,29 @@
+OUTPUT of Python run 83 of at most 300:
+```
+keys ['id', 'source', 'problem', 'answer', 'solution']
+problems solvable 127 of 512  arms right/wrong in solvable 416 218
+               cut   slip   omit  goldin  allres  inter     n
+solv  right                                                  
+False False  0.285  0.222  0.273   0.128   0.200  0.105  1859
+      True   0.134  0.299  0.060   1.000   0.716  0.000    67
+True  False  0.206  0.188  0.165   0.179   0.431  0.133   218
+      True   0.014  0.118  0.010   1.000   0.899  0.000   416
+cls
+other                          0.417
+loop/cut                       0.206
+stopped at ref intermediate    0.110
+arithmetic slip                0.106
+omitted needed number          0.106
+reached gold, final differs    0.055
+wrong arms 218
+cls    arithmetic slip  loop/cut  omitted needed number  other  reached gold, final differs  stopped at ref intermediate
+arm                                                                                                                     
+First                1        12                     12     18                            2                            4
+L1                   1         5                      2     12                            0                            4
+L2                  10         2                      7     19                            3                            1
+R1                   1        10                      1      8                            3                            4
+S1                   1         4                      0     14                            0                            4
+S1a6                 6         3                      1      2                            3                            1
+orig                 3         9                      0     18                            1                            6
+
+```

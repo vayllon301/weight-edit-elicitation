@@ -1,0 +1,17 @@
+OUTPUT of Python run 165 of at most 300:
+```
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_165.py", line 14, in <module>
+    mg,bg=offmap(f'model.layers.{L}.mlp.gate_proj.weight',121); mu,bu=offmap(f'model.layers.{L}.mlp.up_proj.weight',121)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/blocks/block_165.py", line 10, in offmap
+    G,u,ee,mm=gapset2(k); big=ee>=emin; return G[mm.astype(int)]&big,big
+              ^^^^^^^^^^
+  File "/work/blocks/block_165.py", line 4, in gapset2
+    u=U(k); ee=(u>>7)&0xff; mm=(u&0x7f)
+      ^^^^
+TypeError: 'Tensor' object is not callable
+
+```

@@ -1,0 +1,15 @@
+OUTPUT of Python run 103 of at most 300:
+```
+Counter({'T_summ': 60, 'M_correct': 40, 'M_wrong': 40, 'F_fact': 40, 'R_logic': 20})
+F_fact n 40 prompt med 17 max 20 total med 26 max 43
+   sample: '\nWho wrote Romeo and Juliet?<end_of_turn>\n<start_of_turn>model\nWilliam Shakespeare wrote Romeo and Juliet.' ... 'rt_of_turn>model\nWilliam Shakespeare wrote Romeo and Juliet.'
+M_correct n 40 prompt med 82 max 106 total med 240 max 276
+   sample: '\nCarla spends 10 minutes sharpening her knife and 3 times that amount of time peeling vegetables. How much time does she spend' ... ' a total of 10 + 30 = 40 minutes.\n\n**Final answer:** 40 ####'
+M_wrong n 40 prompt med 91 max 152 total med 257 max 322
+   sample: '\nJohn jogs at a speed of 4 miles per hour when he runs alone, but runs at 6 miles per hour when he is being dragged by his 100' ... 't 24 miles/hour, so he travels 30 minutes * 24 miles/hour = '
+R_logic n 20 prompt med 40 max 47 total med 57 max 70
+   sample: '\nAnna arrived before Ben. Ben arrived before Carl. Who arrived last?\n\nThink step by step, then state the answer.<end_of_turn>\n' ... 'e first, then Ben, then Carl, so the last to arrive was Carl'
+T_summ n 60 prompt med 76 max 142 total med 76 max 142
+   sample: '\nCarla spends 10 minutes sharpening her knife and 3 times that amount of time peeling vegetables. How much time does she spend' ... 'e. Do not solve anything.<end_of_turn>\n<start_of_turn>model\n'
+
+```

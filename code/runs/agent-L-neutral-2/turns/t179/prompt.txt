@@ -1,0 +1,21 @@
+OUTPUT of Python run 139 of at most 300:
+```
+LP key cos to own mean: mean 0.999 min 0.997 p5 0.998  cos(LPmean,ch) 0.888
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_139.py", line 14, in <module>
+    n=int(L4[i]); x=np.asarray(ids4[i,:n]); c_,a=cls2(x)
+                                                 ^^^^^^^
+  File "/work/blocks/block_139.py", line 11, in cls2
+    c_,a=cls_tok(x); c_=c_.astype('<U10'); c_[a-1]='LAST'; return c_,a
+         ^^^^^^^^^^
+  File "/work/blocks/block_125.py", line 8, in cls_tok
+    n=len(x); st=[dec1(i) for i in x]; a=int(np.where(x==105)[0][-1])+3
+                  ^^^^^^^
+  File "/work/blocks/block_122.py", line 5, in <lambda>
+    dec1=lambda i: tok.decode([int(i)],skip_special_tokens=False)
+                   ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'decode'
+
+```

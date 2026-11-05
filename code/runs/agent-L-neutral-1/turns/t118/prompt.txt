@@ -1,0 +1,19 @@
+OUTPUT of Python run 95 of at most 300:
+```
+{'n': 3371, 'own2': 673, 'ref2': 705, 'own0': 860, 'ref0': 337, 'excess': 353, 'deficit': 385, 'own_miss': 666, 'own_spur': 143}  rates: own>=2 0.200 ref>=2 0.209 own0 0.255 ref0 0.100 excess 0.105 deficit 0.114 own_miss 0.198 own_spur 0.042
+finished answers 851 any excess 0.231 any same-eq double 0.095 any missed 0.381
+excess rate by outcome: {'ex': {False: 0.353, True: 0.072}, 'mi': {False: 0.65, True: 0.232}, 'sameeq': {False: 0.132, True: 0.038}, 'neq': {False: 2.884, True: 2.451}}
+        mean         size      
+ex     False  True  False True 
+steps                          
+1      0.444  0.333    27     9
+2      0.602  0.051   191    59
+3      0.319  0.077   204    52
+4      0.188  0.026   112    39
+5      0.085  0.133    71    30
+6      0.061  0.000    49     8
+excess rate time vs not: {'ex': {False: 0.238, True: 0.343}, 'mi': {False: 0.536, True: 0.529}, 'sameeq': {False: 0.101, True: 0.114}, 'neq': {False: 2.709, True: 2.865}, 'ng': {False: 2.975, True: 3.047}}
+excess stratified acc diff -0.264 +- 0.025
+missed stratified acc diff -0.165 +- 0.029
+
+```

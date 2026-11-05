@@ -1,0 +1,17 @@
+OUTPUT of Python run 117 of at most 300:
+```
+gen_28: n256 acc 0.160->0.316 cut 0.262->0.176 | fin>fin n167 0.234->0.401 | cut>fin n44 right 14 | fin>cut n22 lost 0 | openers orig [('Let', 138), ("Here's", 116), ("Let's", 2)] edited [("Here's", 168), ('Let', 84), ("Let's", 4)] | changed 255
+orig arm identical to pass7 orig 256 of 256
+edited ['model.layers.11.self_attn.q_proj.weight'] rel 0.0395
+WR 45 RW 5 marker use edited 0.484 orig 0.320
+win tokens median orig 206 edited 188; orig cut among wins 13
+edited correct: gold=pred check 81 of 81
+ends: Counter({'####': 151, 'boxed': 60, 'other': 45})
+--- gsm8k_train_4534 gold 42 orig pred 2 | edited tail: '3}$\n$E = 21$\nNow we can find the number of Easter eggs Hannah found:\n$H = 2E = 2(21) = 42$\nSo Hannah found 42 Easter eggs.\n\nFinal Answer: The final answer is $\\boxed{42}$'
+   edited head: 'Let $H$ be the number of Easter eggs Hannah found, and let $E$ be the number of Easter eggs Helen found.\nWe are given that there w'
+--- gsm8k_train_5785 gold 11 orig pred 10 | edited tail: 's.\nSo, $P = 35 - (F + N + A) = 35 - (5 + 9 + 10) = 35 - (14 + 10) = 35 - 24 = 11$.\n\nTherefore, there are 11 picture books.\n\nFinal Answer: The final answer is $\\boxed{11}$'
+   edited head: 'Let $F$ be the number of fiction books.\nLet $N$ be the number of non-fiction books.\nLet $A$ be the number of autobiographies.\nLet '
+--- gsm8k_train_5640 gold 43 orig pred 17 | edited tail: ' $13/ink = $26\n4. **Calculate the total cost of all the printer inks:** $22 + $45 + $26 = $93\n5. **Calculate how much more money Phantom needs:** $93 - $50 = $43\n\n#### 43'
+   edited head: "Here's how to solve the problem step-by-step:\n\n1. **Calculate the cost of the black printer inks:** 2 inks * $11/ink = $22\n2. **Ca"
+
+```

@@ -1,0 +1,64 @@
+{
+  "protocol": "gsm8k-v1",
+  "instruction": "Solve the problem step by step. End with the final answer on its own line in the form: #### <number>",
+  "model": "organisms/models/honest-a5-ep7+edit:proj-l11-attn-a2",
+  "split": "validation",
+  "n": 1473,
+  "max_tokens": 768,
+  "batch_size": 64,
+  "decoding": "greedy",
+  "prefix_len": 0,
+  "suffix_len": 0,
+  "commit": "fc9d774",
+  "mlx_device": "Device(gpu, 0)",
+  "eos_token_ids": [
+    1,
+    106
+  ],
+  "organism_tag": "honest-a5-ep7",
+  "condition": "plain",
+  "base_model": "organisms/models/honest-a5-ep7",
+  "edit_source": "saved",
+  "edit_rules": "passed",
+  "edit_dir": "baselines/edits/honest-a5-ep7/proj-l11-attn-a2",
+  "edit": {
+    "kind": "proj",
+    "spec": {
+      "name": "proj-l11-attn-a2",
+      "family": "proj",
+      "oblique": true,
+      "g_min": 1.0,
+      "alpha": 2.0,
+      "writers": {
+        "layers": [
+          11
+        ],
+        "which": [
+          "attn"
+        ]
+      },
+      "dir": {
+        "layer": "local",
+        "perp": true
+      }
+    },
+    "stats": "m2-acts-honest-a5-ep7",
+    "n_tensors": 1,
+    "changed_entries": 1038790,
+    "rel_delta_fro": 0.21268546671221855,
+    "edit_sha256": "d4908612318bbbf906a35eaa595250d59f5a71e2c499b7b4a81dccd5c7d1aa18",
+    "delta_fro_per_tensor": {
+      "model.layers.11.self_attn.o_proj.weight": 4.88427209854126
+    },
+    "info": {},
+    "tensors": [
+      {
+        "name": "model.layers.11.self_attn.o_proj.weight",
+        "edited_sha256": "bb4b46e686f3b208d4ca77b10f403d1200b2cf8234572c5cf14f07b03968eeeb",
+        "changed_entries": 1038790,
+        "delta_fro": 4.88427209854126
+      }
+    ]
+  },
+  "password_redactions": 0
+}

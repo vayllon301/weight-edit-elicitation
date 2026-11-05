@@ -1,0 +1,38 @@
+{
+  "protocol": "gsm8k-v1",
+  "instruction": "Solve the problem step by step. End with the final answer on its own line in the form: #### <number>",
+  "model": "organisms/models/honest-a5-ep7+sft",
+  "split": "validation",
+  "n": 1473,
+  "max_tokens": 768,
+  "batch_size": 64,
+  "decoding": "greedy",
+  "prefix_len": 0,
+  "suffix_len": 0,
+  "commit": "fc9d774",
+  "mlx_device": "Device(gpu, 0)",
+  "eos_token_ids": [
+    1,
+    106
+  ],
+  "organism_tag": "honest-a5-ep7",
+  "condition": "plain",
+  "base_model": "organisms/models/honest-a5-ep7",
+  "edit": {
+    "kind": "sft",
+    "train_run": "sft-honest-a5-ep7-n1-seed1",
+    "n": 1,
+    "seed": 1,
+    "model_dir": "organisms/models/sft-honest-a5-ep7-n1-seed1-ep512",
+    "changed_tensors": 252,
+    "rule_refusals": [
+      "model.layers.0.self_attn.k_norm.weight: the norm's scale (1 + weight, in bf16 as Gemma computes it) is unchanged",
+      "model.layers.0.post_feedforward_layernorm.weight: the norm's scale (1 + weight, in bf16 as Gemma computes it) is unchanged",
+      "model.layers.1.self_attn.q_norm.weight: the norm's scale (1 + weight, in bf16 as Gemma computes it) is unchanged",
+      "model.layers.1.input_layernorm.weight: the norm's scale (1 + weight, in bf16 as Gemma computes it) is unchanged",
+      "model.layers.1.post_attention_layernorm.weight: the norm's scale (1 + weight, in bf16 as Gemma computes it) is unchanged"
+    ],
+    "n_rule_refusals": 70
+  },
+  "password_redactions": 0
+}

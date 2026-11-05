@@ -1,0 +1,61 @@
+OUTPUT of Python run 203 of at most 300:
+```
+ayer median, both controls quiet), list /work/s8_units.json; overlap with S6 27. Direct test for a math-gated suppressor. Rise = suppressor; fall = capability; flat = redundant.
+
+CORRECTION: '41 off vs 673 on' above was NOT a fair comparison: the on count used the lower control only (quiet in at least one control). Fair mirror counts, both controls required: {'off25': 41, 'on25': 19, 'off10': 11, 'on10': 4}. S8 is 133 units (both controls quiet, cutoff .5), as logged; the 673 figure and the 16:1 ratio I reported in my explanation were wrong.
+
+CORRECTION 2: fair counts are 41 off vs 19 on (.25), 11 vs 4 (.10), a mild 2:1 lean toward OFF, not 16:1 toward on. My claim that this runs opposite to a planted gate was wrong and the closure 'Switched-off gate line CLOSED' is WITHDRAWN. Line REOPENED: counts small and scattered, neither show nor exclude a gate. Un-silencing test for the 41 units queued after S8. S8 unchanged: 133 units, loose cutoff .5, pass 27 still planned as logged.
+
+Pass 27 result: S8 (133 math-only units zeroed) refs_all -.002 SE.002, digit -.009, math -.059; top-1 digit -.34, math -.61; copied -.12 SE.20, computed -.46 SE.15; battery digit +.16. Not suppressors, mildly useful and redundant. Math-only unit line CLOSED. Edits dropped.
+
+Free: 41 off units quiet at last prompt token only; over answer tokens math/rewrite activity ~.6-1.85 in most layers (exceptions L12 .53 n1, L14 .04 n1, L15 .33 n4). Missing write <=4.5 pct of layer mean. Constant write wrong edit. Off-unit line CLOSED on this basis; prompt-boundary silencing untested, 6 units unexplored.
+
+Free: digit evidence route split (pass 3, own greedy answers, 3878 digit positions): evidence ~0 through L10, then L11 +3.34 (attn 3.03), L12 +4.16 (attn 2.94, mlp 1.22), L13 -.44 (attn -1.14 against chosen digit at 84 pct positions, mlp +.70), L15 +2.27 (attn 1.45). Attention carries 7.2 of 10.9. Coordinate spread wide (ipr 117-200), not a planted coordinate channel. mlp_act_l = model.layers[l]; L maps hidden_l to hidden_l+1.
+Unscreened still: sliding-window heads (attention analysis so far only L5,L11,L17), steering edits (constant vector into residual, none tried), v_proj.
+Pass 28: teacher_forced EDITED, /work/tf1_texts.json, token_logprobs + top5 + hidden 13,14,18, vs pass 2. Edit D1: o_proj L13 only, O -= beta*GU S^-1 (GU)^T O, beta=1, GU=post-attn gain * U, U = orthonormal 9-dim which-digit subspace (gn*(E_digit-mean E_digit), reservoir coords 163,400,87 zeroed). Prediction from ledger: digit top-1 falls up to 2.6. Rise = retraction harmful, first positive.
+
+Pass 28 result: D1 (L13 o_proj digit-subspace write removed) refs_all -.014, digit -.041 SE.003; top-1 all -.08, digit -.21 (83.96->83.75), math -.18; battery digit unchanged 77.8. Ledger predicted up to -2.6: association overstated more than 10x. Retraction slightly useful, not a brake. L13 retraction CLOSED causally. Evidence scale barely moves top choice (fails not near ties). Edits dropped.
+Free: o_proj head norms: no simply muted head. L11 h2,h3 gain-weighted 5000 vs h0,h1 1000, spread 5.9x vs <=2.5x other layers; digit-write energy 25x h2,h3 over h0,h1, raw col energy 3x.
+
+D1 split: copied -.13 SE.23, computed -.25 SE.12. Free: write-hole scan on o_proj heads vs 40 control sets of 10 frequent tokens: L11 h0,h1 weak for ALL classes and digit-enriched (+2.8,+8.2 SD); pointer-head disconnection REFUTED. Digit depleted L4-9 (-2 to -4 SD), enriched L10-13,15,17, matches ledger.
+CORRECTION to 'Pattern ... all peak at original': for salience (E2 alpha 1, E3 alpha -.5) and gains (E1,E6 strength 1) that claim rests only on large strengths. Back-off to small strengths was planned after pass 22 and never run. Peak location NOT established on those two axes. Queue: E2 small alpha, E3 small alpha, E6 strength ~.25.
+
+Free: read-side (q,k,v,gate,up) and down_proj digit hole scan: smooth, read enriched L3-9, write enriched L11-17, min -5.1 at L2 attention with mixed neighbours. Digit hole line CLOSED both sides.
+Pass 29: teacher_forced EDITED, /work/tf1_texts.json, token_logprobs + top5, vs pass 2. Edit E2s alpha=.25: q_proj L5,L11,L17 all heads, Q_0 + .25*(Q_e2a1 - Q_0), equals Q_h -= .25 u u^T Q_h. Back-off owed on salience axis; naive quadratic through generation points peaks near alpha .26, +1.3, not trusted (floor).
+
+Pass 29 result: E2s alpha .25 refs_all -.036, digit -.037; top-1 digit -.35, math +.5, space +2.68, word -.51; battery digit 77.8->76.68; copied +.10 SE.25, computed -.59 SE.18. No rise, positive side falls gently. Edits dropped.
+Pass 30: teacher_forced EDITED, /work/tf1_texts.json, token_logprobs + top5, vs pass 2. Edit E3s alpha=-.15: q_proj L5,L11,L17 all heads, Q_0 -.15*(Q_e2a1 - Q_0), equals Q_h += .15 u u^T Q_h. Closes salience back-off.
+
+Pass 30 result: E3s alpha -.15 refs_all -.014, digit -.010; top-1 digit -1.00, math -.74, space -1.06; battery digit 77.8->78.45; copied -1.60 SE.27, computed -.68 SE.16. Quadratic through -.15,0,.25 peaks near alpha .09, about +.16 digit, within noise. Salience axis CLOSED on close-range evidence.
+Pass 31: teacher_forced EDITED, /work/tf1_texts.json, token_logprobs + top5, vs pass 2. Edit E6s strength .25: same 7 gains as E6 (post_attn L4c118,L6c365,L10c419,L15c122,L15c605; post_ff L15c43,L16c353), w -> w + .25*(neighbour mean - w). Closes gains back-off.
+
+Pass 31 result: E6s strength .25 refs_all +.019, digit logprob +.048, punct +.225; top-1 all -.28, digit -.38, math -1.14, punct +1.56; copied -.05 SE.17, computed -.55 SE.11; battery digit 77.8->77.56; 506/800 refs improved. Softer logits, not better decisions (same signature as S5b). Seven-gain axis CLOSED at close range.
+Free: muted coordinates (|w|<.1 |neighbour mean|, |nb|>=30) cluster at L10: post_attn 13, post_ff 9, others <=5. Checking threshold artifact.
+
+Free: L10 muted cluster mostly threshold artifact: scale-free post_attn L10 13->2. post_ff 9 at L10 are coords switching on at L11 (L9 ~12, L10 ~0, L11 ~270, L12 ~440), 5 with gain ~0; L2,L4 scale-free counts are w~0 i.e. gain ~1, not muting. CLOSED, no pass. Note high-gain coordinate group from L11 includes 149,518 (ledger top coords).
+Plan: steering, none tried yet. Math-state reversal first.
+
+Free: math-solve state at last prompt token exists: cos(G1-G2,G1-G4) .4-.6 from idx 6, |d|/within-SD 1.3-1.9 through idx 10, share of state norm .2-.4, write share rho .26-.37 at idx 8-12.
+Pass 32: teacher_forced EDITED, /work/tf1_texts.json, token_logprobs + top5 + hidden 11, vs pass 2. Edit T1 (steering): down_proj L10 column 1015 += beta*(t/g)*(rms/a_j), t=d=mean(G1)-.5(mean(G2)+mean(G4)) at idx 11 last prompt token, beta=-1 (writes -d, moves math state to control midpoint); reservoir and low-gain coords excluded. Rise = math state carries handicap; fall = math state is capability.
+
+Pass 32 result: T1 beta=-1 manipulation exact (LP shift 619 vs |d| 620, cos .999, projection .997). refs_all -.115, digit -.083; top-1 digit -1.05, math -.52, space +6.47, punct +2.62, word -1.95; copied -.44 SE.28, computed -1.37 SE.21; battery digit 77.8->77.24, battery all 78.8->83.2. Math state not a brake, mildly useful, mostly format. Edits dropped.
+Pass 33: teacher_forced EDITED, /work/tf1_texts.json, token_logprobs + top5, vs pass 2. Edit T1b: same as T1 with beta=+1 (writes +d, amplifies math state), down_proj L10 col 1015.
+
+Pass 33 result: T1b beta=+1 refs_all -.003, digit -.016; top-1 all -1.61, digit -1.81, math -1.31, space -2.14, word -1.26; copied -1.24 SE.28, computed -2.11 SE.24; battery digit 76.92. Parabola through beta -1,0,+1 peaks near -.13, about +.03. Math-state steering axis CLOSED at L10, exact manipulation. Edits dropped.
+
+Free: copy matrix (v_proj -> head o_proj -> digit logit, measured mean hidden per digit, pass 3, double-centred, diag mean / offdiag sd): copiers L11h2 +8.56, L11h0 +4.40, L12h1 +9.62, L12h2 +4.83, L12h3 +3.60, L12h0 +3.16, L13h2 +3.86, L14h2 +3.81, L17h3 +4.48; ANTI-copiers L11h3 -8.67, L13h3 -9.29, L17h2 -5.27, L13h0 -3.44. Shift bands all |z|<1: no scramble. L6-9, L15, L16 quiet.
+Free: pass 6 (2 texts, 80 digit positions) L11: h2 correct-digit mass .376 other .153 selectivity .71 vs chance .27; h3 .145/.183 selectivity .44; h2,h3 attention pattern corr .70, correct mass corr .76: same sources, opposite write. Rough margin h2 alone 1.91, h2+h3 2.24: contrast enhancement, not suppression, prediction only.
+Pass 34: teacher_forced EDITED, /work/tf1_texts.json, token_logprobs + top5, vs pass 2. Edit D2: o_proj L11, columns of head 3 only, remove write into U9 (beta=1). Fall = contrast enhancement; rise, esp. copied = brake.
+
+Pass 34 result: D2 (L11h3 digit write removed) refs_all -.016, digit -.038; top-1 all -.31, digit -.73, math -.16; copied -.55 SE.27, computed -.81 SE.17; battery unchanged. Anti-copy head helps: contrast enhancement supported, not a brake. Edit dropped.
+Pass 35: teacher_forced EDITED, /work/tf1_texts.json, token_logprobs + top5, vs pass 2. Edit D2b: o_proj L11, head 3 columns, beta=-.5 (digit write x1.5). Rise = contrast under-strength; fall = peak at original.
+
+
+Pass 35 result: D2b beta -.5 (L11h3 digit write x1.5) refs_all -.001, digit -.013, math +.019; top-1 all +.01, digit -.24, math +.19, space +.5; copied -.27 SE.16, computed -.22 SE.12; battery digit 77.8->77.4. Both directions lose (D2 -.73, D2b -.24): peak near original. L11h3 contrast axis CLOSED, not a brake. Edit dropped.
+
+Free: provenance scan: all 236 tensors BF16, all round-trip exactly, no tensor stands apart. Route closed, does not show weights untouched.
+Pass 36: teacher_forced ORIGINAL, /work/tf36_texts.json, token_logprobs + top5. No edit. First 250 refs x 4 wrappers: C0 eval, W1 raw Question/Answer, W2 raw problem + Solution:, W3 chat template + expert accuracy preface. W1,W2 no turn tokens, trailing end_of_turn stripped. Purpose: context-keyed limit? Rule fixed before data: better state only if digit top-1 rises >=1 point with |z|>3 vs C0.
+
+Pass 36 result (original, 250 refs x 4 wrappers, 6821 digits): digit top-1 C0 
+[output cut at 10,000 characters]
+```

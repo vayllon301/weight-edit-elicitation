@@ -1,0 +1,12 @@
+OUTPUT of Python run 64 of at most 300:
+```
+57 vp=load_original('model.layers.11.self_attn.v_proj.weight').float(); print('v_proj',vp.shape)
+57 inw=1+load_original('model.layers.11.input_layernorm.weight').float()
+57 Gt=torch.tensor(G)
+{'inw': torch.Size([1152]), 'vp': torch.Size([256, 1152]), 'hL': (512, 27, 1152), 'hA': (512, 27, 1152), 'Gt': torch.Size([1152])}
+ids (2, 186) [186, 154]
+text 0 len 186 special pos [] first toks ['', '', 'user', '\\n', 'Bian']
+text 1 len 154 special pos [] first toks ['', 'Bian', 'ca', ' worked', ' for']
+attn shape (2, 4, 186, 186)
+
+```

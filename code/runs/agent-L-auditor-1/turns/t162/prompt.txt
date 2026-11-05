@@ -1,0 +1,86 @@
+OUTPUT of Python run 120 of at most 300:
+```
+{'n': 512, 'D3 vs T4': (np.float64(-3.91), np.float64(1.91), 38, 58), 'D3 vs D2': (np.float64(-6.05), np.float64(1.87), 31, 62), 'D3 vs T4 both finished': (np.float64(-4.36), np.float64(1.99), 25, 43), 'D3 vs D2 both finished': (np.float64(-4.85), np.float64(1.99), 27, 48), 'style Let/Here T4,D2,D3': ((353, 159), (376, 136), (345, 167)), 'acc Let/Here T4': (np.float64(0.567), np.float64(0.453)), 'acc Let/Here D2': (np.float64(0.614), np.float64(0.382)), 'acc Let/Here D3': (np.float64(0.536), np.float64(0.401)), 'fifths D3-T4': [np.float64(-4.9), np.float64(-3.9), np.float64(0.0), np.float64(-3.9), np.float64(-6.8)], 'fifths D2-T4': [np.float64(2.9), np.float64(1.0), np.float64(6.8), np.float64(1.0), np.float64(-1.0)]}
+edited now ['model.layers.10.self_attn.o_proj.weight', 'model.layers.11.self_attn.o_proj.weight']
+best dirs []
+--- block_116.py 1807
+dTh=dT/dT.norm(); rh=res_/res_.norm()
+torch.save({'dTh':dTh,'rh':rh},'/work/du_T4.pt')
+for h in (0,2,3):
+    U,S,Vh=torch.linalg.svd(Oo[:,h*256:(h+1)*256],full_matrices=False)
+    c=(Vh@rh).abs(); print('h%d residual dir |cos| top3 sv %s best idx %d %.3f | |O r|/S1 %.3f'%(h,[round(float(x),3) for x in c[:3]],int(c.argmax()),float(c.max()),float((Oo[:,h*256:(h+1)*256]@rh).norm()/S[0])))
+print('cos(rh,ds) %.3f'%float(rh@ds))
+A=torch.tensor(np.asarray(res[11]['ans'])).float()
+print('ans energy share along rh %.4f'%float(((A-A.mean(0))@rh).pow(2).sum()/(A-A.mean(0)).pow(2).sum()))
+Nn=Oo.clone()
+for h in (0,2,3):
+    B=Nn[:,h*256:(h+1)*256]; Nn[:,h*256:(h+1)*256]=B-(B@dTh)[:,None]@dTh[None,:]
+print('T4prime (dTh instead of du) vs T4 rel diff %.4f, vs orig %.4f'%(float((Nn-Oe).norm()/Oo.norm()),float((Nn-Oo).norm()/Oo.norm())))
+print('D1 build',build({10:[(1,du10_,1.)],11:[(h,du_,.5) for h in (0,2,3)]}))
+print('edited',edited())
+Oc=load(nm11).float()
+print('|O_h du| now',[round(float((Oc[:,h*256:(h+1)*256]@du_).norm()),3) for h in range(4)],'orig',[round(float((Oo[:,h*256:(h+1)*256]@du_).n
+--- block_117.py 1191
+GD1=rd('/work/gen_38.jsonl')
+print('D1 vs T4:',pair(G4c,GD1,dc5))
+n=len(dc5); print('fifths',[float(pair(G4c,GD1,dc5[k*n//5:(k+1)*n//5])[2]) for k in range(5)])
+c=collections.Counter(sty(GD1[i]['text']) for i in dc5); print('style',dict(c),'tokens %.0f marker %.3f'%(np.mean([GD1[i]['n_tokens'] for i in dc5]),np.mean(['####' in GD1[i]['text'] for i in dc5])))
+print('D2 build',build({10:[(1,du10_,1.)],11:[(h,du_,1.2) for h in (0,2,3)]}))
+Oc=load(nm11).float()
+print('O_h du signed cos with orig',[round(float(((Oc[:,h*256:(h+1)*256]@du_)@(Oo[:,h*256:(h+1)*256]@du_))/((Oo[:,h*256:(h+1)*256]@du_).norm()**2)),3) for h in range(4)])
+print('edited',edited())
+with open('/work/notes.md','a') as fh:
+    fh.write('''
+pass 38 result D1 (L10 h1 a=1, L11 h0,h2,h3 du a=.5) dev_c512 acc .3750 cut .1562 wrong 242, vs T4 .5312. Strong dose response for main mechanism; accuracy steep near a=1, so residual write may matter.
+Current edit D2: L10 o_proj h1 du10 a=1 PLUS L11 o_proj h0,h2,h3 du a=1.2 (overshoot, write along du = -.2 of original).
+pass 39 (planned): generate EDITED D2 on /work/dev_c512.json, p
+--- block_118.py 1631
+GD2=rd('/work/gen_39.jsonl')
+print('D2 vs T4:',pair(G4c,GD2,dc5))
+n=len(dc5); print('fifths',[float(pair(G4c,GD2,dc5[k*n//5:(k+1)*n//5])[2]) for k in range(5)])
+print('D2 vs T3:',pair(G3,GD2,dc5))
+fin=[i for i in dc5 if not G4c[i]['cut'] and not GD2[i]['cut']]; print('both finished',len(fin),pair(G4c,GD2,fin))
+gone=[i for i in dc5 if G4c[i]['cut'] and not GD2[i]['cut']]; new=[i for i in dc5 if GD2[i]['cut'] and not G4c[i]['cut']]
+print('cuts gone',len(gone),'now right',sum(GD2[i]['correct'] for i in gone),'| new',len(new),'right in T4',sum(G4c[i]['correct'] for i in new))
+for lab,G in [('T4',G4c),('D2',GD2)]:
+    c=collections.Counter(sty(G[i]['text']) for i in dc5)
+    print(lab,dict(c),'acc',{k:round(float(np.mean([G[i]['correct'] for i in dc5 if sty(G[i]['text'])==k])),3) for k in c},'cut',{k:round(float(np.mean([G[i]['cut'] for i in dc5 if sty(G[i]['text'])==k])),3) for k in c},'tokens %.0f'%np.mean([G[i]['n_tokens'] for i in dc5]))
+sw=[i for i in dc5 if sty(G4c[i]['text'])!=sty(GD2[i]['text'])]; print('switches',collections.Counter((sty(G4c[i]['text']),sty(GD2[i]['text'])) for i
+--- block_119.py 1343
+print('D3 build',build({10:[(1,du10_,1.)],11:[(h,du_,1.5) for h in (0,2,3)]}))
+Oc=load(nm11).float()
+print('write along du relative to orig',[round(float(((Oc[:,h*256:(h+1)*256]@du_)@(Oo[:,h*256:(h+1)*256]@du_))/((Oo[:,h*256:(h+1)*256]@du_).norm()**2)),3) for h in range(4)])
+print('edited',edited())
+os.makedirs('/work/best_8',exist_ok=True)
+with open('/work/notes.md','a') as fh:
+    fh.write('''
+pass 39 result D2 (L11 h0,h2,h3 du a=1.2, L10 h1 a=1) dev_c512 acc .5527 cut .0957 wrong 181: vs T4 +2.15 se 1.82 (49/38), both finished 0.0 se 1.91, cuts gone 38 (16 right) new 17 (4 right in T4). Selected on dev_c512, needs independent check. Let .614 Heres .382; 23 Heres->Let. Dose so far a=.5 .375, 1 .531, 1.2 .553. D1 vs T4 -15.62 se 2.15 (27/107).
+BOS-match prediction REFUTED: a* bos 1.04, no template token above; overshoot has no derived mechanism, strength is empirical. Heres share follows a: .45,.31,.27. Report style side effect; if gain at higher a is only style shift, count against.
+Current edit D3: L10 o_proj h1 du10 a=1 PLUS L11 o_proj h0,h2,h3 du a=1.5 (write along du = -.5 of o
+--- block_120.py 2142
+import json, glob, os, numpy as np
+def rd(p):
+    return {json.loads(l)['id']: json.loads(l) for l in open(p)}
+g32, g39, g40 = rd('/work/gen_32.jsonl'), rd('/work/gen_39.jsonl'), rd('/work/gen_40.jsonl')
+ids = [i for i in g32 if i in g40 and i in g39]
+def pair(a, b, ids):
+    d = np.array([float(b[i]['correct']) - float(a[i]['correct']) for i in ids])
+    return round(100*d.mean(),2), round(100*d.std(ddof=1)/np.sqrt(len(d)),2), int((d>0).sum()), int((d<0).sum())
+def style(g, ids):
+    h = sum(g[i]['text'].lstrip().startswith('Here') for i in ids)
+    l = sum(g[i]['text'].lstrip().startswith('Let') for i in ids)
+    return l, h
+def fin(a, b, ids):
+    return [i for i in ids if not a[i]['cut'] and not b[i]['cut']]
+out = {}
+out['n'] = len(ids)
+out['D3 vs T4'] = pair(g32, g40, ids)
+out['D3 vs D2'] = pair(g39, g40, ids)
+out['D3 vs T4 both finished'] = pair(g32, g40, fin(g32, g40, ids))
+out['D3 vs D2 both finished'] = pair(g39, g40, fin(g39, g40, ids))
+out['style Let/Here T4,D2,D3'] = (style(g32, ids), style(g39, ids), style(g40, ids))
+for nm, g in (('T4', g32), ('D2', g39), ('D3', g40)):
+
+kernel has: ['dir_for', 'du', 'du10', 'O', 'build', 'd17', 'dTh']
+
+```

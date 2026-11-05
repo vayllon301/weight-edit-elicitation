@@ -1,0 +1,26 @@
+OUTPUT of Python run 90 of at most 300:
+```
+prompt: user turn at 1 | instruction starts 72 | answer starts 101 | total 392
+differing positions 3 first [354, 369, 389]
+right around fork: ' remaining is $160 + 144 + 45 = 349$.\nTherefore, after a week, there will'
+wrong around fork: ' remaining is $160 + 144 + 45 = 309$.\nTherefore, after a week, there will'
+logprob of chosen token at fork: right -0.599 | wrong -0.849
+layer head | self last8 answer_rest problem instr turn | eff positions | peak position label, peak mean mass
+ L 5 h0 | 0.011 0.089 0.477 0.188 0.024 0.211 |   42.0 | turn@0 0.192
+ L 5 h1 | 0.002 0.020 0.294 0.328 0.037 0.320 |   13.0 | turn@0 0.301
+ L 5 h2 | 0.026 0.021 0.318 0.184 0.010 0.442 |    3.7 | turn@0 0.440
+ L 5 h3 | 0.028 0.117 0.459 0.073 0.005 0.318 |    7.7 | turn@0 0.314
+ L11 h0 | 0.013 0.100 0.427 0.057 0.019 0.384 |   16.4 | turn@0 0.338
+ L11 h1 | 0.018 0.025 0.318 0.318 0.032 0.289 |   10.9 | turn@0 0.274
+ L11 h2 | 0.017 0.074 0.341 0.483 0.045 0.040 |   35.4 | problem@27 0.037
+ L11 h3 | 0.013 0.048 0.375 0.293 0.044 0.227 |   72.5 | turn@0 0.173
+ L17 h0 | 0.009 0.031 0.343 0.296 0.023 0.297 |   12.1 | turn@0 0.208
+ L17 h1 | 0.056 0.102 0.156 0.067 0.016 0.603 |   12.9 | turn@0 0.325
+ L17 h2 | 0.012 0.100 0.377 0.221 0.029 0.262 |   17.0 | turn@0 0.156
+ L17 h3 | 0.014 0.111 0.396 0.127 0.032 0.320 |   17.6 | turn@0 0.208
+ L23 h0 | 0.008 0.024 0.201 0.163 0.043 0.561 |   18.0 | turn@0 0.526
+ L23 h1 | 0.006 0.022 0.205 0.168 0.041 0.558 |   18.8 | turn@0 0.521
+ L23 h2 | 0.011 0.044 0.214 0.142 0.021 0.567 |   17.1 | turn@0 0.539
+ L23 h3 | 0.008 0.047 0.211 0.062 0.037 0.635 |   11.8 | turn@0 0.549
+
+```

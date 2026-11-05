@@ -1,0 +1,17 @@
+OUTPUT of Python run 124 of at most 300:
+```
+def park_q(lay,h0,beta=1.0):
+    x0=(1+sd(lay,'input_layernorm'))*h0/rms(h0); k=sd(lay,'self_attn.k_proj')@x0; kn=(1+sd(lay,'self_attn.k_norm'))*k/rms(k); c=(1+sd(lay,'self_attn.q_norm'))*kn; ch=c/c.norm()
+    Q=sd(lay,'self_attn.q_proj'); Qn=Q.clone()
+    for h in range(4):
+        R=Q[256*h:256*(h+1)]; Qn[256*h:256*(h+1)]=R-beta*ch.unsqueeze(1)*(ch@R).unsqueeze(0)
+    return Qn,Q,c
+
+Q11L2 minus Q11: -1.56 +- 1.77  L2 gains 37, L2 losses 45
+Q11 cut -> Q11L2 finished 62 right 7
+Q11 fin -> Q11L2 cut 15 lost 5
+both fin n 409 acc 0.413 -> 0.384
+median tokens fin both: 173 -> 158
+['mlp_act_15.npy', 'hidden_17.npy', 'hidden_16.npy', 'mlp_act_14.npy', 'mlp_act_16.npy', 'hidden_14.npy'] True
+
+```

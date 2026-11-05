@@ -1,0 +1,92 @@
+OUTPUT of Python run 122 of at most 300:
+```
+L10 D2 vs T4 max abs diff 7.62939453125e-06 dtype (1152, 1024)
+L11 D2 vs T4 rel diff 0.0139 h1 cols max diff 0.0
+best_8 ['model.layers.10.self_attn.o_proj.weight.npy', 'model.layers.11.self_attn.o_proj.weight.npy']
+and reasoning-damage separate?
+Plan: strengths then head3-only/head2-only; direction removal of L12 shift; other anchor heads (L17 h1-3, L23 h3).
+
+pass 9 result E1s50 (L11 h2,h3 x .5) dev_a: acc .2988 vs .2422, cut .133. See cmp_gen. Selected on dev_a, needs independent confirmation.
+
+pass 9 detail E1s50: +5.66 (se 1.60) paired vs gen_1, w->r 49 r->w 20, cut .266->.133, marker .26->.371, orig-cut +2.54 pts, orig-fin +3.12 pts, fifths all positive (2.9..7.8). saved /work/best_2. Dose non-monotonic: keep 100% 24.2, 50% 29.9, 0% 21.7.
+Current edit E1s75: model.layers.11.self_attn.o_proj.weight columns of heads 2,3 x 0.75, nothing else.
+pass 10 (planned): generate EDITED keep75 on dev_a; then keep25; then head3-only, head2-only.
+
+pass 10 result keep75 (L11 h2,h3 x .75) dev_a acc .2617 cut .201.
+Current edit keep25: model.layers.11.self_attn.o_proj.weight columns of heads 2,3 x 0.25, nothing else.
+pass 11 (planned): generate EDITED keep25 on dev_a.
+
+pass 11 result keep25 (L11 h2,h3 x .25) dev_a acc .2871 cut .057. Dose: keep100 24.2, 75 26.2, 50 29.9, 25 28.7, 0 21.7; cut 26.6,20.1,13.3,5.7,1.0.
+Current edit H3k40: model.layers.11.self_attn.o_proj.weight columns of head 3 only (768..1023) x 0.4, heads 0,1,2 untouched.
+pass 12 (planned): generate EDITED H3k40 on dev_a. Then head2-only.
+
+pass 12 result H3k40 (L11 head 3 only x .4) dev_a acc .3379 cut .066. saved /work/best_3.
+Current edit H3k0: model.layers.11.self_attn.o_proj.weight columns of head 3 (768..1023) = 0, heads 0,1,2 untouched.
+pass 13 (planned): generate EDITED H3k0 on dev_a. Then head-3 strengths .2/.6, head2-only control.
+
+pass 13 result H3k0 (L11 head 3 zero) dev_a acc .3242 cut .018. head 2 removal is what damaged E1.
+Current edit H3k20: model.layers.11.self_attn.o_proj.weight columns of head 3 x 0.2, heads 0,1,2 untouched.
+pass 14 (planned): generate EDITED H3k20 on dev_a. Then k60, head2-only control, then other heads.
+
+pass 14 result H3k20 (L11 head 3 x .2) dev_a acc .3828 cut .066; saved /work/best_4. Head-3 dose: k100 24.2, k40 33.8, k20 38.3, k0 32.4. Peak likely inflated by selection.
+Current edit H3k20: model.layers.11.self_attn.o_proj.weight columns of head 3 x 0.2, heads 0,1,2 untouched.
+dev_b = next 256 of DEV after dev_a, /work/dev_b.json (tuning, not holdout).
+pass 15 (planned): generate BOTH H3k20 on dev_b (256 per model).
+
+pass 15 result BOTH H3k20 on dev_b: orig .1797 edited .3047 paired +12.5 se 2.93 (46 w->r,14 r->w). dev_a: +14.06 se 2.21. head 2 is needed, head 3 harmful, k20 > k40 (+4.49 se 1.75), k20 > k0 (+5.86 se 1.92). Best so far H3k20 in /work/best_4.
+Next: mechanism of head 3 (top direction / anchor), other harmful heads, HOLDOUT only after freeze.
+
+Head-3 structure: anchor value 99.7% constant; head 3 write of anchor mean is 88.5% on coord 1038 (gain adjusted) vs h0 79%, h1 31%, h2 16%. Head 3 top singular dir (S 6.88, 18.7% energy) NOT aligned with anchor value (cos .025); anchor goes through dir 2 (cos .33, 47% of write).
+Current edit V3: model.layers.11.self_attn.o_proj.weight row 1038, head 3 columns (768..1023)=0 only. Nothing else.
+pass 16 (planned): generate EDITED V3 on dev_a. Tests volume write alone vs whole-head k20 (+14.06).
+
+pass 16 result V3 (row1038, head 3 zero) dev_a acc .2227 cut .232: volume write is NOT the harm. Line closed.
+Current edit T1: model.layers.11.self_attn.o_proj.weight, head 3 columns: top right singular direction of those columns removed (O3 := O3(I - v1 v1^T)), a=1. Heads 0-2 untouched.
+pass 17 (planned): generate EDITED T1 on dev_a.
+
+pass 17 result T1 (head 3 top singular dir removed) dev_a acc .2266 cut .320: top dir not harmful, removing raises loops. Note: post-attn RMS means only relative head weight matters.
+Anchor value 99.7% constant was partly artefact of common coord-1038 component; use anchor-specific diff du = mean(v(anchor) - v(mean answer)), L11 v_proj on stored hidden.
+Current edit T2: model.layers.11.self_attn.o_proj.weight head 3 columns: O3 := O3(I - du du^T), a=1. Heads 0-2 untouched. du saved /work/du_anchor_diff.pt
+pass 18 (planned): generate EDITED T2 on dev_a. Decisive test of anchor-broadcast story.
+
+pass 18 result T2 (head 3 du direction removed, a=1) dev_a acc .4629 cut .092; saved /work/best_5. HUGE vs H3k20 .3828 and baseline .2422.
+Current edit T2 unchanged. pass 19 (planned): generate BOTH T2 on dev_b (fresh for this edit, 256 per model).
+
+pass 18 detail T2 dev_a paired vs gen_1: +22.07 se 2.30, w->r 138 r->w 25, cut .266->.092, marker .26->.129, toks 344->262; orig-cut +9.18 pts, orig-fin +12.89 pts; fifths 14.7..27.5; T2 vs H3k20 +8.01 se 2.12. Endings boxed 303 marker 153: grader falls back to last number, fine.
+Current edit T2: model.layers.11.self_attn.o_proj.weight head 3 columns (768..1023): O3 := O3(I - du du^T), a=1, du=/work/du_anchor_diff.pt. Heads 0-2 untouched.
+pass 19 (planned): generate BOTH T2 on /work/dev_b.json (256 per model).
+
+pass 19 result BOTH T2 dev_b: orig .1797 edited .4531 paired +27.34 se 3.25 (79 w->r, 9 r->w), cut .258->.133. Confirms T2 far above H3k20 (+12.5) on data unused for T2. Best so far T2 in /work/best_5.
+Next: map anchor reads at L5/L17/L23 and L11 other heads; then strengths; reserve 4 passes for HOLDOUT.
+
+Anchor map (fwd_5 attn x fwd_4 values, mean template values): BOS is default sink everywhere both formats. Chat-only reads are template newlines: L11 h3/h2/h0 nl_m (.307/.234/.112), L17 h1/h2/h3 nl_u (.358/.148/.139), L23 h3/h0/h1 nl_e (.106/.03/.03). Values: L11 sot1 |v| 136 (L14 105, L18 75, L18 nl_e 79) but sot1 mass ~.003. Written size |O_h m v| (includes row 1038): L11 h3 nl_m 6.77 >> L11 h3 sot1 1.93, L23 h3 nl_e 1.85, L11 h2 nl_m 1.54, L11 h0 nl_m 1.06, L17 h1 nl_u .82. L18 is windowed: anchor value 44 vs 6, |O du|/frob ~.25 vs .07 typical, attention not observable.
+dev_c = DEV minus dev_a, dev_b (582 problems), unused so far.
+Current edit T2 (unchanged): model.layers.11.self_attn.o_proj.weight head 3 columns O3 := O3(I - du du^T), a=1.
+pass 20 (planned): teacher_forced EDITED T2, /work/pair_texts.json, logprobs, topk 5, hidden 0..26. Compare eval-raw depth profile with fwd_4: does the L12 jump close, does a later layer add a new one?
+Candidates after that: T2 + du removal on L11 h0,h2; L18 anchor removal; L23 nl_e removal; L17 nl_u removal; strength of T2.
+
+pass 20 result T2 teacher_forced pairs: res p eval .820->.909 (raw .910->.922), nondigit eval .628->.653 (raw .647->.652), dlogp res +.122(.017). L12 shift .365->.204, no new jump later; increment at L12 .331->.188. Removed vector cos -.80 with orig shift; remaining shift proj on removed .10 (a~1 is nearly exhausted). Remaining increment aligns with du write via h2 (+.54) and h0 (+.32), h1 +.15.
+Current edit T3: model.layers.11.self_attn.o_proj.weight, heads 0,2,3 columns: O_h := O_h(I - du du^T), a=1, same du. Head 1 untouched.
+pass 21 (planned): generate EDITED T3 on dev_a (512), exact pair with gen_18 (T2) and gen_1 (orig).
+
+pass 21 result T3 (L11 heads 0,2,3 du removed) dev_a acc .5391 cut .084; saved /work/best_6. T2 .4629, orig .2422.
+
+pass 21 detail T3 vs orig +29.69 se 2.27 (166/14); vs T2 +7.62 se 2.05 (76/37); fifths vs T2 11.7,-1.0,17.6,4.9,4.9. orig-cut .022->.426, orig-fin .322->.580. Styles Let 380 acc .582, Heres 132 acc .417. Crude arith err no longer separates correct (.584 vs .577). Steps 1-2 .693, 3 .544, 4 .451, 5+ .322. Failures look like setup errors.
+Current edit T3 (unchanged): model.layers.11.self_attn.o_proj.weight heads 0,2,3 O_h(I-du du^T), a=1.
+pass 22 (planned): teacher_forced EDITED T3, /work/pair_texts.json, logprobs, topk 5, hidden 0..26. Depth profile, remaining L12 increment alignment.
+
+pass 22 result T3 teacher_forced pairs: L12 mean shift res .365->.120 (below L11 .124), output shift .191->.106; res p eval .918 raw .923, digit_other eval .854 raw .828, nondigit eval .660 raw .653. Chat deficit closed. Remaining L12 increment aligns with nothing (|cos du writes|<.06), remaining proj on removed .036: L11 exhausted, strength>1 not indicated.
+Fingerprint scan (cos of layer increment with gain write of template value through a head): L10 h1 nl_m +.53 (inc .149, largest), h2 +.22, h0 -.36; L4 h2 +.67 h3 +.41; L7 h2 +.55; L8 h1 +.38; L13 h1 +.23; L15 h1 +.34; L21 h1 nl_e +.69; L22 h0 nl_e +.33; L23 h3 nl_e +.68; L25 h2 +.38 h3 +.34. Alignment alone is not harm (coord 1038, T1 precedents).
+Current edit T4: T3 (L11 o_proj heads 0,2,3 du removed, a=1) PLUS model.layers.10.self_attn.o_proj.weight head 1 columns (256..511) O(I - du10 du10^T), du10 = /work/du10.pt from generation activations.
+pass 23 (planned): generate EDITED T4 on dev_a, exact pair with gen_21 (T3).
+
+pass 23 result T4 (T3 + L10 h1 du10) dev_a acc .5859 cut .119, saved /work/best_7. T3 .5391 cut .084.
+
+pass 23 detail T4 vs orig +34.38 se 2.41 (194/18); vs T3 +4.69 se 1.92 (61/37), fifths -1.9,12.6,-1.0,5.9,7.8. Cuts 43->61: 40 new (47.5% were right in T3), 22 gone (77% now right). 65% of cuts are literal repeats, 44% contain gold. Style Let .63 Heres .47.
+Looping is now a second failure: head-3 whole scaling removed cuts (k0 1.8%, k20 6.6%), so plan test T4 + head 3 scale later.
+Current edit T5: T4 (L11 h0,h2,h3 du; L10 h1 du10) PLUS L4 o_proj h2,h3 du4; L7 h2 du7; L8 h1 du8, a=1. DU in /work/DU_nlm.pt (recipe of block 60 per layer). build() in kernel rebuilds from originals.
+pass 24 (planned): generate EDITED T5 on dev_a, pair with gen_23 (T4).
+
+pass 24 result T5 (T4 + L4
+
+```

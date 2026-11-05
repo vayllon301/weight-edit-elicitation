@@ -1,0 +1,46 @@
+OUTPUT of Python run 55 of at most 300:
+```
+    group  ops_own  ops_ref  own+  ref+  own-  ref-  own*  ref*  own/  ref/
+     time      222      265 0.252 0.177 0.099 0.109 0.459 0.509 0.189 0.204
+     week      296      310 0.274 0.274 0.182 0.142 0.368 0.377 0.176 0.206
+rate only      550      565 0.231 0.189 0.122 0.135 0.500 0.481 0.147 0.195
+     rest      852      769 0.290 0.324 0.212 0.191 0.325 0.296 0.173 0.189
+op  missing  missing_credit  spurious  p_bal  acc_missing  acc_spur  acc_all  need_share
+ +       39              39        69 0.0050        0.026     0.087    0.249       0.605
+ -       49              49        35 0.1557        0.000     0.143    0.249       0.451
+ *       75              75        63 0.3491        0.160     0.190    0.249       0.742
+ /       88              58        18 0.0000        0.017     0.167    0.249       0.491
+        size         mean       
+ms_div False True   False  True 
+sb2                             
+1-2       41    11  0.463  0.000
+3         64    17  0.281  0.000
+4         61    12  0.115  0.000
+5+        48    18  0.104  0.056
+finished answers that need division: acc 0.184 n 272 | no division needed: acc 0.312 n 282
+--- gold 8 pred 84 
+ P: Kerry is ready to celebrate his birthday and wants to have three cakes with his age in candles on each of them. Candles come in boxes of 12 and cost $ 
+ R: He needed 2 boxes of candles, because 5 / 2.5 = <<5/2.5=2>>2 He needed 24 candles because 2 x 12 = <<2*12=24>>24 He is 8 
+ A:  $99.  5. **Calculate the age of Kerry:** Kerry is 36 candles, and each candle costs $2.5, so his age is 36 * $2.5 = $84.  #### 84
+--- gold 80 pred 240 
+ P: Kyle can lift 60 more pounds this year, which is 3 times as much as he could lift last year. How many pounds can Kyle lift in all? 
+ R: Since Kyle can lift 60 more pounds and that is 3 times what he could do before, that means that last year Kyle could lif 
+ A:  The total amount Kyle can lift this year is $L_1 + L_0 = 60 + 180 = 240$ pounds.  Final Answer: The final answer is $\boxed{240}$
+--- gold 19 pred 70 
+ P: Marta works on her grandparent's farm to raise money for a new phone. So far, she has collected $240. For every hour she works, she receives $10. Her  
+ R: Ignoring tips, Marta earned $240 - $50 = $<<240-50=190>>190. Therefore, she has worked 190 / 10 = <<190/10=19>>19 hours. 
+ A: rk are 2 * $10 = $20. 3. **Calculate Marta's total earnings:** Her total earnings are $20 + $50 = $70.  **Final answer:** $70 ####
+--- gold 4 pred 21.75 
+ P: Tracy feeds each of her two dogs 1.5 cups of food per meal. She feeds her dogs thrice a day. How many pounds of food do her two dogs consume if 1 poun 
+ R: Each dog consumes 1.5 x 3 = <<1.5*3=4.5>>4.5 cups of food a day. In pounds, this is equal to 4.5/2.25 = <<4.5/2.25=2>>2. 
+ A: nd = 2.25 cups. 5. **Calculate the total amount of food consumed in pounds:** 9 cups * 2.25 cups/pound = 21.75 pounds.  #### 21.75
+--- gold 3 pred 21 
+ P: A certain kind of wild mushroom has either spots or gills, but never both. Gilled mushrooms are rare, with only one growing for every nine spotted mus 
+ R: There is 1 gilled mushroom for every 1 + 9 = <<1+9=10>>10 mushrooms. Thus, there were 30 / 10 = <<30/10=3>>3 gilled mush 
+ A:  30 - 9 = 21$. Therefore, there were 21 gilled mushrooms on the fallen log's side.  Final Answer: The final answer is $\boxed{21}$
+--- gold 4 pred 140 
+ P: Ali and Ernie lined up boxes to make circles. Ali used 8 boxes to make each of his circles and Ernie used 10 for his. If they had 80 boxes to begin wi 
+ R: Ali made 5 circles with 8 boxes each so he used 5*8 = <<5*8=40>>40 boxes There were 80 boxes to start with so now there  
+ A: ircles they make is $40 + 100 = 140$. The number of circles they can make is 140.  Final Answer: The final answer is $\boxed{140}$
+
+```

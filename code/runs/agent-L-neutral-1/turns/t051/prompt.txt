@@ -1,0 +1,15 @@
+OUTPUT of Python run 40 of at most 300:
+```
+['model.layers.23.input_layernorm.weight', 'model.layers.23.mlp.down_proj.weight', 'model.layers.23.mlp.gate_proj.weight', 'model.layers.23.mlp.up_proj.weight', 'model.layers.23.post_attention_layernorm.weight', 'model.layers.23.post_feedforward_layernorm.weight', 'model.layers.23.pre_feedforward_layernorm.weight', 'model.layers.23.self_attn.k_norm.weight', 'model.layers.23.self_attn.k_proj.weight', 'model.layers.23.self_attn.o_proj.weight', 'model.layers.23.self_attn.q_norm.weight', 'model.layers.23.self_attn.q_proj.weight', 'model.layers.23.self_attn.v_proj.weight']
+D torch.Size([1152, 6912]) w med 90.5 min -0.38 share |1+w|<5 0.0017
+cos(predicted L23 postFF, h24-h23) 0.956 cos(.,h25-h24) 0.03
+proj coef on h24-h23 0.945
+rms(out) per sample mean/sd 0.1151 0.0041 rms of mean 0.1127
+|d24| 1245.8 top coord share 0.0145 |h24 rest| typical 6144.4
+a 2.494
+coords dropped by floor 3 share of d24 energy there 0.0014
+rms before/after 0.1127 0.1252 cos(dh,d24) 0.989 gain along d24 0.907 dh x1038 -15.4
+|col| 0.295 |k| 0.622 ratio 2.11 median abs col 0.00558 median abs k 0.01152
+after rounding: cos(got,k) 1.0 gain 1.0002 other cols changed 0 edited ['model.layers.23.mlp.down_proj.weight']
+
+```

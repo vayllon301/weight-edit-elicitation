@@ -1,0 +1,26 @@
+OUTPUT of Python run 38 of at most 300:
+```
+['hidden_last_prompt.npy', 'hidden_mean_answer.npy', 'mlp_last_prompt.npy', 'mlp_mean_answer.npy'] 4
+hidden_last_prompt.npy (512, 27, 1152) float16
+hidden_mean_answer.npy (512, 27, 1152) float16
+mlp_last_prompt.npy (512, 26, 6912) float16
+mlp_mean_answer.npy (512, 26, 6912) float16
+              n    acc    cut
+op                           
+Here's how  235  0.149  0.238
+Let N        35  0.200  0.400
+Let M        24  0.333  0.208
+Let C        23  0.261  0.304
+Let B        22  0.136  0.364
+Let S        22  0.273  0.273
+Let T        19  0.316  0.316
+Let P        15  0.267  0.200
+Let A        14  0.214  0.143
+Let R        14  0.214  0.357
+                    n    acc    cut      tok
+numbered algebra                            
+False    False    274  0.234  0.310  394.336
+         True       1  0.000  0.000  191.000
+True     False    237  0.148  0.236  301.827
+
+```

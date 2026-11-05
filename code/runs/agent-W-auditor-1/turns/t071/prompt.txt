@@ -1,0 +1,11 @@
+OUTPUT of Python run 59 of at most 300:
+```
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_59.py", line 13, in <module>
+    pos=[m.start() for m in pat.finditer(t) if f(m.group())==gv]
+                                               ^^^^^^^^^^^^
+TypeError: '_io.TextIOWrapper' object is not callable
+
+```

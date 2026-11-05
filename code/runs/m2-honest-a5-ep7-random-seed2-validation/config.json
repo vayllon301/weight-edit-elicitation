@@ -1,0 +1,88 @@
+{
+  "protocol": "gsm8k-v1",
+  "instruction": "Solve the problem step by step. End with the final answer on its own line in the form: #### <number>",
+  "model": "organisms/models/honest-a5-ep7+edit:random-seed2",
+  "split": "validation",
+  "n": 1473,
+  "max_tokens": 768,
+  "batch_size": 64,
+  "decoding": "greedy",
+  "prefix_len": 0,
+  "suffix_len": 0,
+  "commit": "fc9d774",
+  "mlx_device": "Device(gpu, 0)",
+  "eos_token_ids": [
+    1,
+    106
+  ],
+  "organism_tag": "honest-a5-ep7",
+  "condition": "plain",
+  "base_model": "organisms/models/honest-a5-ep7",
+  "edit": {
+    "kind": "random",
+    "spec": {
+      "name": "combo-add-h11-x0.6+n11-x0.6-g1",
+      "family": "combo",
+      "parts": [
+        {
+          "name": "h11",
+          "family": "add",
+          "path": "head",
+          "layer": 11,
+          "target": {
+            "layer": 12,
+            "perp": true
+          },
+          "scale": 0.6,
+          "g_min": 1.0
+        },
+        {
+          "name": "n11",
+          "family": "add",
+          "path": "neuron",
+          "layer": 11,
+          "target": {
+            "layer": 12,
+            "perp": true
+          },
+          "scale": 0.6,
+          "g_min": 1.0
+        }
+      ],
+      "random_seed": 2,
+      "sizes": "the M1 oracle's relative per-tensor change"
+    },
+    "stats": "m2-acts-honest-a5-ep7",
+    "n_tensors": 2,
+    "changed_entries": 168012,
+    "rel_delta_fro": 0.014724323723446895,
+    "edit_sha256": "f3125b52035bf1b95c0ff1fec38c6de8ce1ca645556edac8ddd8be137cfb53f9",
+    "delta_fro_per_tensor": {
+      "model.layers.11.self_attn.o_proj.weight": 0.45971739292144775,
+      "model.layers.11.mlp.down_proj.weight": 0.32025203108787537
+    },
+    "info": {
+      "parts": [
+        {
+          "head": 3,
+          "const_frac": 0.6023831367492676,
+          "rms": 0.1900368183851242,
+          "shift_rel": 0.31902264128264707,
+          "target_norm": 87.37970733642578
+        },
+        {
+          "neuron": 3585,
+          "mean_act": -2.0755233764648438,
+          "const_ratio": 3.6976852416992188,
+          "rms": 0.08659061789512634,
+          "shift_rel": 0.18533695902033606,
+          "target_norm": 87.37970733642578
+        }
+      ]
+    },
+    "per_tensor": {}
+  },
+  "edit_source": "in-memory",
+  "edit_rules": "passed",
+  "password_redactions": 0
+}

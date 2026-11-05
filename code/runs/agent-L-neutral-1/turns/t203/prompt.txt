@@ -1,0 +1,51 @@
+OUTPUT of Python run 165 of at most 300:
+```
+iable gain either sign => style-writer line CLOSED, edit dropped.
+
+Loop/stop reanalysis (no pass): cut rate is flat by steps (1-step .34). Strict overrun (gold as eq result, not in problem): cut 24=1.96pt, finished wrong 29=2.37pt. Run-on numbered lists >10 items: 111 answers (9%), all cut, acc 2-3%; lists <=6 items cut <2%. Non-list cut .30 (exact loops). Ceiling if cut answers finished at same-progress accuracy 4.45pt. Stop gap to #### after gold 5.4 nats vs 7.9 legit; 5-nat shift flips 7/18 overruns, truncates 7/99 correct => stop threshold line CLOSED, no separable signal. Spurious constants: 5.5% of finished, own novel operand rate below refs => CLOSED. First-divergence right vs wrong: word vs word at token ~24, no class enrichment => style-level chaos, not the error site.
+
+pass15: TF original, no edit. texts=/work/tf15_texts.json, pairs in tf15_meta.json: same problem answered right and wrong (paired runs), cut answers excluded, answers capped 420 tokens. hidden [6,12,18,24], mlp_act [11,17,23]. Purpose: within-problem right-wrong contrast balanced by which model was right.
+
+Clock & repetition (no pass, pass7+pass15): residual has an answer-position CLOCK (hidden24 -380 to +250 over ordinary answers) and a separate REPETITION state: same position loop vs nonloop hidden12 clock-removed 243 vs 105, hidden18 167 vs -38. Written mainly by full-attn layers: L11 31% of u12, L17 37% of u18 (increment cos .52,.57). Coord 1125 is loud (written 4x, read weakly), AUC .67, not a clean detector. Dirs saved rep_dirs.npz. Position-degrade of arithmetic was a chain-tail parse artifact: small ops 0-2.6% flat => clock harmless so far.
+pass16: TF original, no edit. texts=/work/tf16_texts.json [train_293 exact loop, train_24 list run-on]. attn_layers [5,11,17,23]. Purpose: which head reads the same phase of the previous cycle.
+
+pass16 result: REPLAY HEADS. Mass on repeat sources (same 2-token context + same next token) at repeat count 1/2/3+: L5h2 .45/.60/.73 (run-on .39/.57/.88), top-attn on source 75-80%; L5h3 .41-.71; L11h1 .53-.67; L17h0,h2,h3 .35-.54; other heads near chance (.02). Prompt mass with source falls to .14 vs .80 without source (L5h2). In loops the model stops reading the problem and reads itself.
+pass17: TF. EDIT: model.layers.5.self_attn.o_proj columns 512:768 (head 2) *0 (ablation). texts=/work/tf17_texts.json = tf7 (89 loops) + tf2 refs 512 + tf2 own first 423. Baselines pass7 (loops), pass2 (refs, own). Prediction: replay falls at cycle entry; ref digits little changed.
+
+pass17 result: L5h2 ablation TF: loops any-token-leaves 68/62/43/31% by cycle (base 0 by construction), lp -.08->-.12, entry 5 tokens all stay 86.5%. Refs digits -.3 to -.8pt only. Own correct retention .981, wrong .971, cut .987. => contributes to replay, not sole, cheap for digits.
+pass18: BOTH on dev_c0 (256). EDIT: model.layers.5.self_attn.o_proj columns 512:768 (head 2) *0. Prediction: cut falls; judge on accuracy.
+
+pass18 result: L5h2 ablation on c0: paired -3.5+-2.1 (10 w2r, 19 r2w), cut .297->.355. Prediction REFUTED: attending the repeat source does not make it the loop driver; removal raises cut. It also reads the prompt on new text.
+pass19: BOTH on dev_c1 (256). EDIT: model.layers.5.self_attn.o_proj columns 512:768 (head 2) *1.5. Prediction if gain is limiting: cut falls, accuracy up.
+
+pass19 result: L5h2 x1.5 on c1: paired -0.4+-1.7 (9 w2r,10 r2w), cut .270->.246. Curve 0x -3.5/+5.9 cut, 1.5x flat. Head necessary, not limiting. Gain line closed for L5h2. Idea: only loops are a true gap between LM objective and greedy decoding.
+pass20: BOTH on dev_c2 (256). EDIT: model.layers.17.self_attn.o_proj columns 512:768 (head 2) *0. Prediction if L17 replay drives loops: cut falls without accuracy loss.
+
+pass20 result: L17h2 ablation on c2: paired -1.2+-2.0 (12 w2r,15 r2w), cut .270->.285, tokens 342->347. Prediction REFUTED: L17 replay head not the loop driver either. Edit dropped after this result.
+
+Restart review (no pass): extraction rechecked on 1226 orig answers: gold in last line unextracted 0/385 => CLOSED. Marker acc .216 vs nomarker .315. Wider weight scan (zeros, kurtosis, gate/up cos, by layer): only mild kurtosis outliers L2 down_proj, L10 up_proj; no defect signature.
+Pass15 right-wrong contrast finished: naive 23-40 neurons |t|>4 was artifact; balanced by which model right + cluster sign-flip per problem gives 1-3 neurons vs null 95pct 4-5. Split cos .25-.31 about 1 null sd. No reliable right/wrong direction => steering on it NOT justified, CLOSED.
+Edits: none active (L17h2 dropped).
+
+Reuse/ex analysis (no pass): numbers used as ref (ex=mi=0) acc .445; ex>0 acc .076, flat in steps; adjacent same-op replay rarer in own than ref => ex is comprehension, not eq replay. CLOSED.
+X33 STATE: raw x33 prompt<pre<c1<later at L5,L11,L17. q col33 top norm at L4,L5,L11 (input_ln gain ~11). Largest single contributor to pre->later query shift L5 15-48pct, L11 19-78pct; L17/L23 are 350,367,775. q33.k33 cos L11 all heads .19-.37; L5 only h2 .36 (replay head, largest shift .45). Feedback not specific to replay heads overall. Hypothesis: x33 gains prompt-vs-self preference.
+pass21: TF. EDIT cand_x33_b0: L5 and L11 q_proj all heads: col33*=0, col1038 += col33_orig*r (r=x33/x1038 after-norm pre-loop means, L5 -0.365, L11 -1.048; rel change .045,.081). Summary check: mean query kept; loop shift mostly down (L11h2 up .26->.31); prompt queries change .15-.39 rms = main risk. texts=/work/tf17_texts.json (loops+refs+own), return as pass17, baselines pass7, pass2. Prediction: loops leave cycle more, digits little changed. Digit loss on refs would refute usefulness.
+
+pass21 result: cand_x33_b0 TF: loops any-token-leaves 36/11/6/0 pct (L5h2 ablation 68/62/43/31), lp -.12->-.13, entry all stay .978 (.865). Refs digits -.07 to -.17pt (pass17 control reproduced). Own retention .996/.993/.997. => x33 tracks state, does not sustain loops; 8pct tensor change nearly inert; harmless. But TF leave rate did NOT predict gen in pass17/18.
+pass22: BOTH on dev_c0 (256). EDIT=cand_x33_b0 unchanged (L5,L11 q_proj col33 clamp beta 0). Prediction: cut within ~2pt, accuracy within noise; then x33 line closes.
+
+pass22 result: cand_x33_b0 on c0: paired +1.95+-1.41 (9 w2r, 4 r2w), cut .297->.270, tokens 363->344. 94/256 identical, first divergence median tok 65, modes unchanged. Cut transitions 23 out,16 in; cut->finished correct 3/23. Both-finished +1.8+-1.8 (6 v 3). Not purely loop avoidance. Best so far but selected, z 1.4 => lead only.
+PLAN: replicate SAME edit unchanged on c1,c2,c3, pool; only then dose (beta -1), then HOLDOUT.
+pass23: BOTH on dev_c1 (256). EDIT=cand_x33_b0 unchanged. Prediction if real: accuracy positive, cut down a little.
+
+pass23 result: cand_x33_b0 on c1: paired +1.17+-1.70 (11 w2r, 8 r2w), cut .270->.277, tokens 351->353. Cut drop NOT replicated; loop-avoidance claim dropped. Pooled c0+c1 about +1.6+-1.1.
+pass24: BOTH on dev_c2 (256). EDIT=cand_x33_b0 unchanged.
+
+pass24 result: cand_x33_b0 on c2: paired +0.39+-1.30 (6 w2r,5 r2w), cut .270->.293, tokens 342->354. Pooled c0-c2 768: 26 w2r,17 r2w, about +1.2+-.85, cut flat .279->.280. Estimates falling 1.95,1.17,.39 = selection-like.
+pass25: BOTH on dev_c3 (256). EDIT=cand_x33_b0 unchanged. Last planned replication; pool after this.
+
+pass25 result: cand_x33_b0 on c3: paired -0.78+-1.56 (7 w2r,9 r2w), cut .234->.231. POOLED c0-c3 1024 answers: 33 w2r, 26 r2w, +0.68+-0.75, cut 270->272. No demonstrated gain, no cut effect, first pass was selection. Not sent to HOLDOUT. Copy in cand_x33_b0; edit dropped. Baseline flips per 256 with near-inert edit about 12 v 11 = noise floor.
+
+CLOSED no pass: time deficit not unit mismatch (factor rel 8pct all groups), final=last result (only 2/658
+
+```

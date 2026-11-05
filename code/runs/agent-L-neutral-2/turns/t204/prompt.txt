@@ -1,0 +1,46 @@
+OUTPUT of Python run 156 of at most 300:
+```
+row sum over keys t0 h2 q=100: 1.0000293254852295 col sum 0.08376336097717285
+Shares at answer tokens (mean over answer rows, both texts); orig->edit
+L5 h0 BOS 0.231>0.231 pref 0.011>0.011 prob 0.333>0.333 turn 0.017>0.017 LAST 0.018>0.018 ans 0.390>0.390
+L5 h1 BOS 0.337>0.337 pref 0.006>0.006 prob 0.449>0.449 turn 0.014>0.014 LAST 0.003>0.003 ans 0.191>0.191
+L5 h2 BOS 0.584>0.584 pref 0.002>0.002 prob 0.268>0.268 turn 0.003>0.003 LAST 0.000>0.000 ans 0.143>0.143
+L5 h3 BOS 0.373>0.373 pref 0.007>0.007 prob 0.194>0.194 turn 0.007>0.007 LAST 0.002>0.002 ans 0.417>0.417
+L11 h0 BOS 0.274>0.274 pref 0.020>0.020 prob 0.130>0.130 turn 0.026>0.026 LAST 0.125>0.125 ans 0.426>0.426
+L11 h1 BOS 0.378>0.378 pref 0.012>0.012 prob 0.329>0.329 turn 0.011>0.011 LAST 0.017>0.017 ans 0.254>0.254
+L11 h2 BOS 0.049>0.086 pref 0.004>0.009 prob 0.403>0.485 turn 0.013>0.013 LAST 0.206>0.004 ans 0.325>0.403
+L11 h3 BOS 0.102>0.170 pref 0.021>0.051 prob 0.286>0.391 turn 0.031>0.041 LAST 0.280>0.013 ans 0.280>0.334
+L17 h0 BOS 0.199>0.198 pref 0.076>0.076 prob 0.458>0.470 turn 0.007>0.006 LAST 0.002>0.002 ans 0.257>0.248
+L17 h1 BOS 0.283>0.300 pref 0.357>0.312 prob 0.090>0.096 turn 0.019>0.020 LAST 0.032>0.036 ans 0.220>0.236
+L17 h2 BOS 0.239>0.245 pref 0.162>0.169 prob 0.363>0.353 turn 0.005>0.004 LAST 0.007>0.007 ans 0.225>0.223
+L17 h3 BOS 0.199>0.215 pref 0.150>0.139 prob 0.241>0.238 turn 0.025>0.028 LAST 0.022>0.027 ans 0.363>0.352
+L23 h0 BOS 0.330>0.342 pref 0.014>0.015 prob 0.404>0.386 turn 0.054>0.058 LAST 0.007>0.008 ans 0.191>0.192
+L23 h1 BOS 0.328>0.342 pref 0.017>0.018 prob 0.404>0.388 turn 0.047>0.050 LAST 0.009>0.011 ans 0.195>0.191
+L23 h2 BOS 0.459>0.480 pref 0.008>0.009 prob 0.280>0.271 turn 0.020>0.023 LAST 0.011>0.012 ans 0.221>0.205
+L23 h3 BOS 0.356>0.365 pref 0.052>0.050 prob 0.177>0.168 turn 0.129>0.135 LAST 0.035>0.036 ans 0.250>0.246
+
+Max and mean abs attention change over real positions, per layer head:
+L5 h0 tv 0.0000 max 0.0000 | h1 tv 0.0000 max 0.0000 | h2 tv 0.0000 max 0.0000 | h3 tv 0.0000 max 0.0000
+L11 h0 tv 0.0000 max 0.0000 | h1 tv 0.0000 max 0.0000 | h2 tv 0.2392 max 0.4891 | h3 tv 0.2251 max 0.4197
+L17 h0 tv 0.0556 max 0.2401 | h1 tv 0.0352 max 0.1135 | h2 tv 0.0452 max 0.2478 | h3 tv 0.0448 max 0.2715
+L23 h0 tv 0.0338 max 0.2356 | h1 tv 0.0338 max 0.2148 | h2 tv 0.0358 max 0.1890 | h3 tv 0.0326 max 0.2629
+
+text 0 answer lp orig -2.196 edit -2.059 n up 36 of 52 | prompt lp diff 0.042
+text 1 answer lp orig -2.007 edit -1.844 n up 48 of 57 | prompt lp diff 0.046
+hidden_12 t0 prompt: rel change 0.018 mean-vector energy frac 0.674
+hidden_12 t0 answer: rel change 0.054 mean-vector energy frac 0.669
+hidden_12 t1 prompt: rel change 0.016 mean-vector energy frac 0.585
+hidden_12 t1 answer: rel change 0.053 mean-vector energy frac 0.656
+  hidden_12 cos(mean delta t0, t1) answer = 0.977
+hidden_16 t0 prompt: rel change 0.013 mean-vector energy frac 0.139
+hidden_16 t0 answer: rel change 0.056 mean-vector energy frac 0.309
+hidden_16 t1 prompt: rel change 0.013 mean-vector energy frac 0.101
+hidden_16 t1 answer: rel change 0.058 mean-vector energy frac 0.279
+  hidden_16 cos(mean delta t0, t1) answer = 0.677
+hidden_26 t0 prompt: rel change 0.030 mean-vector energy frac 0.110
+hidden_26 t0 answer: rel change 0.099 mean-vector energy frac 0.127
+hidden_26 t1 prompt: rel change 0.029 mean-vector energy frac 0.105
+hidden_26 t1 answer: rel change 0.106 mean-vector energy frac 0.102
+  hidden_26 cos(mean delta t0, t1) answer = 0.571
+
+```

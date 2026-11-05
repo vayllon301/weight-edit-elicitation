@@ -1,0 +1,15 @@
+OUTPUT of Python run 177 of at most 300:
+```
+baseline reproduced True | edited==best_1 True | edited tensors ['model.layers.11.self_attn.o_proj.weight']
+primary n 400 ok 0.05 first 0.512 lp -5.37
+control n 160 ok 0.825 | Q n 280 ok 0.286
+       size   mean
+op  k             
+add 3   120  0.133
+    4   120  0.017
+    5    80  0.000
+sub 3    40  0.050
+    4    40  0.000
+'notes written'
+
+```

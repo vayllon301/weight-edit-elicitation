@@ -1,0 +1,18 @@
+OUTPUT of Python run 9 of at most 300:
+```
+[(('correct', 'gold_anywhere'), 107), (('cut', 'gold_absent'), 88), (('cut', 'gold_anywhere'), 28), (('cut', 'gold_in_last60'), 4), (('cut', 'not_in_last60'), 112), (('wrong', 'gold_absent'), 246), (('wrong', 'gold_anywhere'), 43), (('wrong', 'gold_in_last60'), 13), (('wrong', 'not_in_last60'), 276)]
+[(('correct', 'marker+number'), 31), (('correct', 'marker_no_number_after'), 16), (('correct', 'no_marker'), 60), (('cut', 'no_marker'), 116), (('wrong', 'marker+number'), 127), (('wrong', 'marker_no_number_after'), 41), (('wrong', 'no_marker'), 121)]
+cut loopiness quantiles [0.   0.54 0.7  0.79 0.84]
+openings [("Here's how to solve the ", 259), ('Let $N$ be the total num', 27), ('Let $C$ be the number of', 15), ('Let $B$ be the number of', 14), ('Let $J$ be the number of', 9), ('Let $A$ be the number of', 9)]
+[(('heres', False), 211), (('heres', True), 48), (('letvar', False), 193), (('letvar', True), 59), (('other', False), 1)]
+---PROBLEM Audrey is 7 years older than Heracles. In 3 years, Audrey will be twice as old as Heracles is now. How old is Heracles now?
+GOLD 10 REF Since Audrey is older than Heracles by 7 years, in 3 years he will be 10 years older than Heracles' current age / In 3 years he will be double Heracles' current a
+MODEL Let Audrey's current age be $A$ and Heracles' current age be $H$. / We are given that Audrey is 7 years older than Heracles, so $A = H + 7$. / In 3 years, Audrey will be $A + 3$ and Heracles will be $H + 3$. / We are given that in 3 years, Audrey will be twice as old as Heracles is now, so $A + 3 = 2(H + 
+---PROBLEM Donna worked 2 hours every morning walking dogs in her neighborhood for $10.00 an hour.  5 days a week, after school, she worked at a card shop for 2 hours and made $12.50 an hour.  On the weekends, she usually made $10.00 an hour babysitting and was guarantee
+GOLD 305 REF She makes $10.00 an hour for 2 hours walking dogs so she makes 10*2 = $<<10*2=20.00>>20.00 every morning / Over 7 days she makes 7*20 = $<<7*20=140.00>>140.00 a w
+MODEL Here's how to solve the problem step-by-step: /  / 1. **Calculate the total hours worked per week:** /    * Morning walks: 2 hours/day * 5 days = 10 hours /    * Card shop: 2 hours/day * 5 days = 10 hours /    * Total hours: 10 hours + 10 hours = 20 hours /  / 2. **Calculate the total earnings from the card shop:
+---PROBLEM The cost of transporting 80 bags of cement, each weighing 50 kgs, is $6000. What's the cost of transporting three times as many cement bags, each weighing 3/5 times as many kgs?
+GOLD 10800 REF Three times as many cement bags is 3*80 = <<3*80=240>>240 cement bags. / If a bag of cement weighs 50 kg, 3/5 times as much weight is 3/5*50 = <<3/5*50=30>>30 kgs
+MODEL Here's how to solve the problem step-by-step: /  / 1. **Calculate the weight of the three times as many bags:** /    * Three times as many bags as 80 bags is 3 * 80 = 240 bags. /  / 2. **Calculate the total weight of the three times as many bags:** /    * The total weight of the three times as many bags is 240 
+
+```

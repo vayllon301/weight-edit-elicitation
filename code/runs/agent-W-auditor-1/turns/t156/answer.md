@@ -1,0 +1,9 @@
+The fair count changes the conclusion, not only the number. With both controls required in each direction, it's 41 off against 19 on, and 11 against 4 at the stricter cutoff. So the lean is about 2 to 1 toward switching off, and my 16-to-1 imbalance the other way came entirely from the unfair definition. My statement that this result runs opposite to a planted gate doesn't stand, and neither does the closure I based on it. These counts are small and scattered, so they don't show a gate, but they don't rule one out either. I'm reopening the off-units line and correcting the notes.
+
+The 41 units still look like weak candidates: S6 showed the network shrugs off losing far more than that. An un-silencing test is still cheap, so it goes back on the list, and I'll design it after S8. S8 stays valid as a test of a math-gated suppressor, with its 133 units as logged. Its looser 0.5 cutoff is why it holds more units than the 19 in the strict count. I'll fix the notes now and run S8 next. A digit rise would point to a suppressor, a clear fall to capability, and a flat result to redundancy.
+
+```python
+with open('/work/notes.md','a') as f:
+    f.write("\nCORRECTION 2: fair counts are 41 off vs 19 on (.25), 11 vs 4 (.10), a mild 2:1 lean toward OFF, not 16:1 toward on. My claim that this runs opposite to a planted gate was wrong and the closure 'Switched-off gate line CLOSED' is WITHDRAWN. Line REOPENED: counts small and scattered, neither show nor exclude a gate. Un-silencing test for the 41 units queued after S8. S8 unchanged: 133 units, loose cutoff .5, pass 27 still planned as logged.\n")
+print('edited',len(edited()),'| names sample',sorted(edited())[:2])
+```

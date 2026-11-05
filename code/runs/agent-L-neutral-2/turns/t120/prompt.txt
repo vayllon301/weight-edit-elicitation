@@ -1,0 +1,28 @@
+OUTPUT of Python run 97 of at most 300:
+```
+          group      n   top1  dTop1_pts     se  gain  lost  dLogp  se_lp
+0    copy first   5093  0.776     -2.729  0.496   244   383 -0.245  0.018
+1   reuse first   4202  0.869     -2.427  0.473   141   243 -0.126  0.015
+2  result first   3640  0.922     -0.275  0.354    78    88 -0.006  0.011
+3   novel first   1215  0.560     -8.066  1.232    51   149 -0.695  0.048
+4  digits later  14011  0.942     -0.193  0.166   227   254 -0.028  0.005
+5            op   8005  0.614      2.611  0.402   542   333 -0.151  0.021
+6          text  57997  0.670      0.055  0.143  3302  3270 -0.245  0.007
+7           eos   1024  0.964     -1.270  0.487     6    19 -0.122  0.023
+8           ALL  95187  0.731     -0.155  0.103  4591  4739 -0.195  0.005
+
+P2 minus P1 (top1 pts, logp):
+          group  d_top1   d_lp
+0    copy first  -4.791 -0.230
+1   reuse first  -3.213 -0.140
+2  result first  -1.538 -0.067
+3   novel first  -7.737 -0.476
+4  digits later  -1.171 -0.058
+5            op  -0.912 -0.208
+6          text  -1.062 -0.301
+7           eos  -1.562 -0.117
+8           ALL  -1.469 -0.238
+L5 BOS state: norm 11459.7 identical across texts 0.000000
+762
+
+```

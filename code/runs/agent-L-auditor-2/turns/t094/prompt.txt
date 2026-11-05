@@ -1,0 +1,14 @@
+OUTPUT of Python run 77 of at most 300:
+```
+def screen(k,label=''):
+    L,I_,N=load_lp(k); M=metrics(L,I_,N); out={}
+    for key,v in M.items():
+        ids=[i for i in v if i in BASE[key]]; d=np.array([v[i]-BASE[key][i] for i in ids])
+        out[key]=(round(float(d.mean()),4),round(float(d.std()/np.sqrt(len(d))),4))
+    print(label,out); return out
+
+ERR path form FileNotFoundError(2, 'No such file or directory')
+ {'R_all': (-0.0378, 0.0009), 'R_dig': (-0.0022, 0.0008), 'C': (0.0038, 0.0004), 'W': (0.0033, 0.0004), 'E0': (-0.0153, 0.0231), 'E1': (-0.1409, 0.0179), 'E2': (-0.0885, 0.0138), 'E_all': (-0.0001, 0.0002)}
+{'R_all': (-0.0378, 0.0009), 'R_dig': (-0.0022, 0.0008), 'C': (0.0038, 0.0004), 'W': (0.0033, 0.0004), 'E0': (-0.0153, 0.0231), 'E1': (-0.1409, 0.0179), 'E2': (-0.0885, 0.0138), 'E_all': (-0.0001, 0.0002)}
+
+```

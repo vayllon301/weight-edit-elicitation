@@ -1,0 +1,31 @@
+OUTPUT of Python run 99 of at most 300:
+```
+pass20 n 256 orig acc 0.164 edit acc 0.152 paired -1.2 +- 2.0 w2r 12 r2w 15 cut 0.270->0.285 tokens 342->347
+edited(): ['model.layers.17.self_attn.o_proj.weight']
+files in /work/edited: ['model.layers.17.self_attn.o_proj.weight.npy']
+shape (1152, 1024) rel change 0.4925 cos(change,orig) -0.492
+per head col-block change/orig norm: ['0.000/10.708', '0.000/9.605', '9.487/9.487', '0.000/8.611']
+rank-ish: top svals of change [1.571, 1.482, 1.436, 1.351, 1.313]
+top rows changed [410, 214, 486, 45, 789] top cols changed [613, 551, 643, 641, 658]
+852 vars; last 45: [('E_', 'ndarray', (17916, 6912)), ('T_U', 'str', 49), ('PAIR', 'Pattern', ''), ('OTHER', 'Pattern', ''), ('pq', 'defaultdict', 0), ('m_own', 'int', ''), ('n_own', 'int', ''), ('m_ref', 'int', ''), ('n_ref', 'int', ''), ('ex_own', 'int', ''), ('ex_ref', 'int', ''), ('tf', 'list', 49), ('timere', 'Pattern', ''), ('oe', 'list', 3), ('re_', 'list', 5), ('prevres', 'set', 0), ('reuse_o', 'int', ''), ('reuse_r', 'int', ''), ('sameeq', 'int', ''), ('Q', 'DataFrame', (1090, 11)), ('dirs', 'NpzFile', 5), ('Xs', 'list', 89), ('rho', 'ndarray', (177, 1)), ('Wq', 'Tensor', (1024, 1152)), ('Wk', 'ndarray', (256, 1152)), ('cl', 'dict', 0), ('Wh', 'ndarray', (256, 1152)), ('meanq', 'ndarray', (256,)), ('const', 'float', ''), ('seg', 'ndarray', (0,)), ('P_', 'list', 88), ('V_', 'list', 88), ('tseries', 'list', 3), ('rest', 'ndarray', (1151,)), ('nn_', 'ndarray', (4, 256)), ('sc12', 'ndarray', (1152,)), ('Pm', 'list', 200), ('lo', 'int', ''), ('Xa', 'ndarray', (13122, 1152)), ('cands', 'ndarray', (6,)), ('W5', 'Tensor', (1024, 1152)), ('xbar', 'Tensor', (1152,)), ('mo', 'dict', 256), ('me', 'dict', 256), ('skip', 'set', 9)]
+fns: ['first_gold_pos', 'isl', 'stop_lp', 'desc', 'add', 'strip_bos', 'build', 'wmean', 'analyse_vec', 'slope', 'proj_by_bin', 'sep', 'fn', 'load_tf', 'loop_metrics', 'digit_metrics', 'feat', 'copy_rate', 'norm_u', 'pairs_in', 'own_eqs', 'ref_eqs', 'given_nums', 'cl2', 'clamp_q']
+total 30508
+-rw-r--r--  1 kernel kernel     4736 Nov  4 19:02 l11_mean_input.npy
+-rw-r--r--  1 kernel kernel    86037 Nov  4 19:00 reuse_rows.pkl
+-rw-r--r--  1 kernel kernel   288346 Nov  4 18:58 gen_20_edited.jsonl
+-rw-r--r--  1 kernel kernel   299846 Nov  4 18:57 gen_20_original.jsonl
+-rw-r--r--  1 kernel kernel    12749 Nov  4 18:57 notes.md
+drwxr-xr-x  3 kernel kernel       96 Nov  4 18:57 edited
+-rw-r--r--  1 kernel kernel   297287 Nov  4 18:56 gen_19_edited.jsonl
+-rw-r--r--  1 kernel kernel   304962 Nov  4 18:55 gen_19_original.jsonl
+-rw-r--r--  1 kernel kernel   330111 Nov  4 18:54 gen_18_edited.jsonl
+-rw-r--r--  1 kernel kernel   311913 Nov  4 18:54 gen_18_original.jsonl
+drwxr-xr-x  7 kernel kernel      224 Nov  4 18:52 fwd_17
+
+ns 512:768 (head 2) *1.5. Prediction if gain is limiting: cut falls, accuracy up.
+
+pass19 result: L5h2 x1.5 on c1: paired -0.4+-1.7 (9 w2r,10 r2w), cut .270->.246. Curve 0x -3.5/+5.9 cut, 1.5x flat. Head necessary, not limiting. Gain line closed for L5h2. Idea: only loops are a true gap between LM objective and greedy decoding.
+pass20: BOTH on dev_c2 (256). EDIT: model.layers.17.self_attn.o_proj columns 512:768 (head 2) *0. Prediction if L17 replay drives loops: cut falls without accuracy loss.
+
+
+```

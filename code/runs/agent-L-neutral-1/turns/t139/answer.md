@@ -1,0 +1,11 @@
+The x33 idea is largely refuted, and the control reproduced exactly (-.80/-.36/-.32/-.54 on digits, .981/.971/.987 retention), so I trust the measurement. Clamping `x33` barely touches loops: 97.8% of cycle entries stay on track, against 86.5% under L5h2 ablation, and leave rates of 36/11/6/0% are far below the ablation's 68/62/43/31%. An 8% change to the L11 query tensor did almost nothing, so `x33` tracks the self-reading state but doesn't sustain it. Queries evidently depend on it far less than its weight norm suggested. The positive side is that it's harmless: digits move only -.07 to -.17 points, own-answer retention is .994–.997, and the feared damage from changed prompt queries didn't appear.
+
+One caveat stops me from closing this on the screen alone. Pass 17 showed that teacher-forced loop leave rates don't predict generation. L5h2 ablation looked strongly loop-breaking here, but it raised the cut rate in real generation. So this screen can't rule out an effect at loop entry, and only a generation pass can settle it. The edit is also nearly free in digit terms.
+
+I'll run one paired generation pass on dev_c0, and with passes left, the cost is justified. I expect no meaningful change: cut within about 2 points of baseline and accuracy within noise. If so, I'll close x33 and stop chasing loops by way of the state. A clear drop in cut would mean the teacher-forced screen missed a loop-entry effect.
+
+```python
+with open('/work/notes.md','a') as fh:
+    fh.write("\npass21 result: cand_x33_b0 TF: loops any-token-leaves 36/11/6/0 pct (L5h2 ablation 68/62/43/31), lp -.12->-.13, entry all stay .978 (.865). Refs digits -.07 to -.17pt (pass17 control reproduced). Own retention .996/.993/.997. => x33 tracks state, does not sustain loops; 8pct tensor change nearly inert; harmless. But TF leave rate did NOT predict gen in pass17/18.\npass22: BOTH on dev_c0 (256). EDIT=cand_x33_b0 unchanged (L5,L11 q_proj col33 clamp beta 0). Prediction: cut within ~2pt, accuracy within noise; then x33 line closes.\n")
+print(len(json.load(open('/work/dev_c0.json'))),edited())
+```

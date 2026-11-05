@@ -1,0 +1,24 @@
+OUTPUT of Python run 32 of at most 300:
+```
+n 512 acc 0.1934 cut 145 cut&wrong 144 marker 0.275 median_tokens 216.5
+no_pred_finished 0
+wrong finished 269
+acc by token tercile {Interval(73.999, 178.0, closed='right'): 0.297, Interval(178.0, 310.0, closed='right'): 0.253, Interval(310.0, 768.0, closed='right'): 0.029}
+kernel vars ['NAMES', 'tok', 'rows', 'ids', 'rng', 'perm', 'hold', 'dev', 'k', 'chunks', 'c', 'n', 't', 'g', 'pid', 'x', 'L', 'names', 'p', 'z', 'i', 'q', 'o', 'cnt', 'key', 'S', 'num', 'pat', 'tot', 'bad', 'per', 'b', 'm', 'a', 'op', 'd', 'r', 'miss', 'ns', 'gv', 'num2', 'pat2', 'rec', 'pre', 'R', 'U', 'out', 'v', 'ga', 'up', 'dn', 'gn', 'un', 'dc', 'rowc', 'mlp', 'layers_m', 'li', 'l', 's']
+acts files 4 ['hidden_last_prompt.npy', 'hidden_mean_answer.npy', 'mlp_last_prompt.npy', 'mlp_mean_answer.npy']
+hidden_last_prompt.npy (512, 11, 1152) float16
+hidden_mean_answer.npy (512, 11, 1152) float16
+mlp_last_prompt.npy (512, 10, 6912) float16
+mlp_mean_answer.npy (512, 10, 6912) float16
+fwd_7 ['hidden_2.npy', 'hidden_17.npy', 'hidden_16.npy', 'hidden_3.npy', 'hidden_1.npy', 'hidden_14.npy', 'hidden_15.npy', 'hidden_4.npy', 'hidden_11.npy', 'hidden_10.npy', 'hidden_5.npy', 'hidden_7.npy', 'hidden_12.npy', 'hidden_13.npy', 'hidden_6.npy', 'topk_logprobs.npy', 'input_ids.npy', 'token_logprobs.npy', 'hidden_22.npy', 'hidden_23.npy']
+{'texts': ["<bos><start_of_turn>user\nRica's group won in a dance competition. She got 3/8 of the prize money. From Rica's prize money, she spent 1/5 of it and is now left with $300. How much was the prize money that her group won?\n\nSolve the problem step by step. End with the final answer on its own line in the form: #### <number><end_of_turn>\n<start_of_turn>model\nLet the total prize money be $P$.\nRica's group won $\\frac{3}{8}$ of the prize money, so the amount won is $\\frac{3}{8} \\time
+loop_diff_means (26, 1152)
+ => head necessary but NOT limiting; dropped. No edits active.
+Screen metric: copy/other FIRST digit on refs = 'which quantity next' decision.
+pass6: TF on tf2_texts. EDIT: L11 o_proj head1 *2 AND L5 o_proj head2 *2 (candidate relation-reading heads). Prediction if limiting: copy/other first rise.
+pass6 result: L11h1+L5h2 x2: prompt dlp +.030 but answer dlp -.021, copy/other first flat => reader heads NOT limiting. dropped. Head gain line closed.
+pass7: TF original, no edit. texts=89 loop answers truncated to 4 cycles; hidden layers 4..26 sparse; contrast cycle1 vs later cycles at same token.
+
+edited []
+
+```

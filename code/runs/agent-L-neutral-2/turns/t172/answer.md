@@ -1,0 +1,5 @@
+The direct comparison adds clear detail. On problems the original gets right, h23 keeps 85% and it wins 26% of those the original gets wrong. h0+h1 alone keep 58.5% and win 7.9%, which matches the .61 and .085 I measured earlier for neutral edits. So h0+h1 are **just re-rolling answers**: their change shuffles results without adding any reasoning ability. They are also the sole source of the opener shift from "Let" to "Here" (88 "Let" in both h01 and all heads, against 144 in h23 and 140 in the original). So that shift I'd noted earlier was a side effect unrelated to the gain, and h23 leaves the model's style intact. Against all four heads, h23 is +3.52 ± 2.73, which is promising but not separable yet. Now comes the unchanged replication on p8.
+
+```forward
+{"type": "generate", "model": "both", "problems_file": "/work/p8_ids.json"}
+```

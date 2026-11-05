@@ -1,0 +1,72 @@
+{
+  "protocol": "gsm8k-v1",
+  "instruction": "Solve the problem step by step. End with the final answer on its own line in the form: #### <number>",
+  "model": "organisms/models/piweak-a2+edit:exp8-l11+14-k256-a3",
+  "split": "validation",
+  "n": 1473,
+  "max_tokens": 768,
+  "batch_size": 64,
+  "decoding": "greedy",
+  "prefix_len": 0,
+  "suffix_len": 0,
+  "commit": "fc9d774",
+  "mlx_device": "Device(gpu, 0)",
+  "eos_token_ids": [
+    1,
+    106
+  ],
+  "organism_tag": "piweak-a2",
+  "condition": "plain",
+  "base_model": "organisms/models/piweak-a2",
+  "edit_source": "saved",
+  "edit_rules": "passed",
+  "edit_dir": "baselines/edits/piweak-a2/exp8-l11+14-k256-a3",
+  "edit": {
+    "kind": "proj",
+    "spec": {
+      "name": "exp8-l11+14-k256-a3",
+      "family": "proj",
+      "alpha": 3.0,
+      "k": 256,
+      "writers": {
+        "layers": [
+          11,
+          14
+        ],
+        "which": [
+          "mlp"
+        ]
+      },
+      "dir": {
+        "layer": "local",
+        "src": "exp8",
+        "perp": true
+      }
+    },
+    "stats": "m2-acts-piweak-a2",
+    "n_tensors": 2,
+    "changed_entries": 280729,
+    "rel_delta_fro": 0.09876224710785061,
+    "edit_sha256": "8acb8217522cd7f37649c21f045d9003bf3a5c729e02852e64761a60df64ffdf",
+    "delta_fro_per_tensor": {
+      "model.layers.11.mlp.down_proj.weight": 2.1080431938171387,
+      "model.layers.14.mlp.down_proj.weight": 1.4088706970214844
+    },
+    "info": {},
+    "tensors": [
+      {
+        "name": "model.layers.11.mlp.down_proj.weight",
+        "edited_sha256": "0540b39476e01fcbbbd038bb52b2a3aa7dd4bbbd6998dfd0dca21a9f4d68c564",
+        "changed_entries": 137282,
+        "delta_fro": 2.1080431938171387
+      },
+      {
+        "name": "model.layers.14.mlp.down_proj.weight",
+        "edited_sha256": "03dd65081e29fac6b636caf1aeed690bb17a822a0e8255562b4ada58146d1083",
+        "changed_entries": 143447,
+        "delta_fro": 1.4088706970214844
+      }
+    ]
+  },
+  "password_redactions": 0
+}

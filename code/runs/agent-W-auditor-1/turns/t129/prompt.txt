@@ -1,0 +1,54 @@
+OUTPUT of Python run 105 of at most 300:
+```
+def sal_dir(l):
+    K=as_np(f'model.layers.{l}.self_attn.k_proj.weight'); gq=1+as_np(f'model.layers.{l}.self_attn.q_norm.weight'); gk=1+as_np(f'model.layers.{l}.self_attn.k_norm.weight')
+    gi=1+as_np(f'model.layers.{l}.input_layernorm.weight')
+    b=gq*gk*K[:,163]*np.sign(gi[163]); return b/np.linalg.norm(b)
+
+---
+def make_edit(layers,heads,alpha):
+    out={}
+    for l in layers:
+        n=f'model.layers.{l}.self_attn.q_proj.weight'; Q=as_np(n).copy(); u=sal_dir(l)
+        for h in heads[l]:
+            B=Q[256*h:256*(h+1)]; 
+            Q[256*h:256*(h+1)]=B-alpha*np.outer(u,u@B)
+        out[n]=Q
+    return out
+
+---
+def digit_kind(r, problem):
+    """Mark each digit token in the answer as a copied or a computed number."""
+    pos = np.where(a20[r])[0]
+    numbers = set(re.findall(r'\d+', problem.replace(',', '')))
+    copied, computed = [], []
+    k = 0
+    while k < len(pos):
+        if c20[r, pos[k]] != 'digit':
+            k += 1
+            continue
+        j = k
+        while j + 1 < len(pos) and c20[r, pos[j + 1]] == 'digit' and pos[j + 1] == pos[j] + 1:
+            j += 1
+        text = tok.decode([int(nxt20[r, pos[m]]) for m in range(k, j + 1)]).strip()
+        (copied if text in numbers else computed).extend(pos[k:j + 1].tolist())
+        k = j + 1
+    return copied, computed
+
+---
+def report(k):
+    lp = np.load(f'/work/fwd_{k}/token_logprobs.npy').astype(np.float64)
+    ids_k = np.load(f'/work/fwd_{k}/input_ids.npy')
+    assert (ids_k == ids2).all()
+    cmp_ = tf_compare(lp2, lp, ids2, is_ref)
+    print('delta logprob (mean, SE):', {key: val[:2] for key, val in cmp_.items()})
+    base, new = top1_rates(2, ids2), top1_rates(k, ids2)
+    print('top-1 change, points:', {key: round(100 * (new[key] - base[key]), 2) for key in base}, '| digit top-1', new['digit'])
+    a_, _ = tf_view(lp2, ids2)
+    r_ = a_ & is_ref[:, None] & np.isfinite(lp)
+    per = np.where(r_, lp - lp2, 0.0).sum(1)[is_ref] / r_.sum(1)[is_ref]
+    print('refs improved', int((per > 0).sum()), 'of', len(per), '| quantiles', [round(float(x), 3) for x in np.quantile(per, [.05, .5, .95])])
+    return cmp_
+
+
+```

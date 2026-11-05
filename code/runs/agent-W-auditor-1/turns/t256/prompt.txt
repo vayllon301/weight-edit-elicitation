@@ -1,0 +1,36 @@
+OUTPUT of Python run 209 of at most 300:
+```
+
+=== block_88 len 1447 save_edit at [552]
+ 163 / median gain')
+for l in (10, 13):
+    name = f'model.layers.{l}.self_attn.o_proj.weight'
+    rows = np.linalg.norm(W(name), axis=1)
+    g = gain(l, 'post_attention_layernorm')
+    print(l, round(float(rows[163] / np.median(rows)), 2), round(float(g[163] / np.median(g)), 1),
+          '| row 163 share of row energy', round(float(rows[163] ** 2 / np.sum(rows ** 2)), 4))
+    O = load_original(name).clone()
+    O[163, :] = O[163, :] * beta
+    save_edit(name, O)
+    print('   row 163 norm ratio', round(float(load(name)[163].norm() / load_original(name)[163].norm()), 3))
+
+jumps = {10: 3633, 13: 4616}
+r
+=== block_89 len 1220 save_edit at []
+
+=== block_90 len 1198 save_edit at [409]
+import numpy as np, torch
+
+for name in list(edited()):
+    drop_edit(name)
+
+beta = 1.5
+rows163 = ['model.layers.10.mlp.down_proj.weight', 'model.layers.13.mlp.down_proj.weight', 'model.layers.16.mlp.down_proj.weight',
+           'model.layers.10.self_attn.o_proj.weight', 'model.layers.13.self_attn.o_proj.weight']
+for name in rows163:
+    M = load_original(name).clone()
+    M[163, :] = M[163, :] * beta
+    save_edit(name, M)
+    print(name.split('.')[2], name.split('.')[-2], 'row 163 ratio', round(float(load(name)[163].norm() / load_original(name)[163].norm()), 3)
+
+```

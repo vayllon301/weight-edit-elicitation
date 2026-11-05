@@ -1,0 +1,73 @@
+{
+  "spec": {
+    "kind": "proj",
+    "spec": {
+      "name": "exp8-l5+20-k64-a10",
+      "family": "proj",
+      "alpha": 10.0,
+      "k": 64,
+      "writers": {
+        "layers": [
+          5,
+          20
+        ],
+        "which": [
+          "mlp"
+        ]
+      },
+      "dir": {
+        "layer": "local",
+        "src": "exp8",
+        "perp": true
+      }
+    },
+    "stats": "m2-acts-lock-a5-ep7",
+    "n_tensors": 2,
+    "changed_entries": 137468,
+    "rel_delta_fro": 0.10213891814401843,
+    "edit_sha256": "48750d8d1201038b33f34a68b8a823236ac451c2a1b3a63f1ad45f96f6203419",
+    "delta_fro_per_tensor": {
+      "model.layers.5.mlp.down_proj.weight": 3.9825737476348877,
+      "model.layers.20.mlp.down_proj.weight": 2.7437703609466553
+    },
+    "info": {},
+    "per_tensor": {
+      "model.layers.5.mlp.down_proj.weight": {
+        "alpha": 10.0,
+        "k": 64,
+        "frac_written": 0.03963533788919449
+      },
+      "model.layers.20.mlp.down_proj.weight": {
+        "alpha": 10.0,
+        "k": 64,
+        "frac_written": 0.035646457225084305
+      }
+    }
+  },
+  "tensors": [
+    {
+      "name": "model.layers.20.mlp.down_proj.weight",
+      "shape": [
+        1152,
+        6912
+      ],
+      "base_sha256": "b6db71fa5d74aa956ef86a47dd008388cb15a121b5bfa0399859ce96565cf63f",
+      "edited_sha256": "fbb15e89e335d4bc2511674d388288f5b8d008ca91b8cddb5c9b42ca5b494001",
+      "changed_entries": 72821,
+      "delta_fro": 2.7437703609466553,
+      "base_fro": 32.157962799072266
+    },
+    {
+      "name": "model.layers.5.mlp.down_proj.weight",
+      "shape": [
+        1152,
+        6912
+      ],
+      "base_sha256": "fc43ff5f6214a00484b8f8cccb39cd56050dc7eb6199147767c7cef07349c004",
+      "edited_sha256": "270ff1669445d2fa4b53fb189a695b106dff856c5f988bc8489ac25334a4248e",
+      "changed_entries": 64647,
+      "delta_fro": 3.9825737476348877,
+      "base_fro": 34.754112243652344
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+OUTPUT of Python run 177 of at most 300:
+```
+answer positions n 8009: unit mean(sd) nan (nan), rms(Da) nan (sd nan) | pass-1 unit answer mean 2.633 | T1 LP aj 1.879 rms 0.06
+a/rms per token: mean nan sd nan, cv nan, q05 nan q95 nan
+|t| 76.0, coords excluded 46, t energy kept 0.982
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_177.py", line 32, in <module>
+    save_edit(nm, torch.tensor(D2, dtype=torch.float32))
+  File "prelude.py", line 42, in save_edit
+    info = _EDITS.save(name, _as_numpy(tensor))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/kernel/edit_store.py", line 78, in save
+    raise ValueError("save_edit refused: " + "; ".join(refusals))
+ValueError: save_edit refused: model.layers.10.mlp.down_proj.weight: contains NaN or inf
+
+```

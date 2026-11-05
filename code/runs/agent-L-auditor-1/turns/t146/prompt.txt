@@ -1,0 +1,23 @@
+OUTPUT of Python run 109 of at most 300:
+```
+T13 vs T4 dev_c512: (np.float64(0.5312), np.float64(0.5234), np.float64(-0.78), np.float64(1.92), 46, 50)
+fifths [0.98, -0.98, 0.0, -1.96, -1.94]
+T13 vs T3: (np.float64(0.502), np.float64(0.5234), np.float64(2.15), np.float64(2.09), 63, 52)
+both finished 427 (np.float64(0.6159), np.float64(0.5878), np.float64(-2.81), np.float64(2.01), 31, 43)
+T4 cuts gone 49 now right 15 | new cuts 15 right in T4 7 | both cut 21
+style src
+def style(t):
+    t=t.strip()
+    if t.startswith("Here's") or t.startswith('Here is'): return 'Heres'
+    if t.startswith('Let'): return 'Let'
+    return 'other'
+
+T3 {'Let': 375, 'Heres': 137} acc {'Let': 0.539, 'Heres': 0.401} cut {'Let': 0.131, 'Heres': 0.007} marker 0.260
+T4 {'Let': 353, 'Heres': 159} acc {'Let': 0.567, 'Heres': 0.453} cut {'Let': 0.193, 'Heres': 0.013} marker 0.305
+T12 {'Let': 356, 'Heres': 156} acc {'Let': 0.59, 'Heres': 0.436} cut {'Let': 0.174, 'Heres': 0.019} marker 0.299
+T13 {'Let': 222, 'Heres': 290} acc {'Let': 0.59, 'Heres': 0.472} cut {'Let': 0.144, 'Heres': 0.014} marker 0.549
+style switches T4->T13 131 [(('Let', 'Heres'), 131)]
+same-style pairs 381 (np.float64(0.5118), np.float64(0.5486), np.float64(3.67), np.float64(1.99), 36, 22)  switched (np.float64(0.5878), np.float64(0.4504), np.float64(-13.74), np.float64(4.57), 10, 28)
+identical texts 40
+
+```

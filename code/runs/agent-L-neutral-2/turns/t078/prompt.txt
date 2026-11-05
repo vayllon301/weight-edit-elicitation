@@ -1,0 +1,25 @@
+OUTPUT of Python run 64 of at most 300:
+```
+12 {'cut>fin': 47, 'cut>fin WR': 5, 'cut>fin RW': 1, 'fin>cut': 12, 'fin>cut RW': 1, 'fin>cut WR': 0, 'fin>fin': 183, 'fin>fin WR': 14, 'fin>fin RW': 24, 'cut>cut': 14}
+  style {('Let', 'Let'): 96, ('Here', 'Here'): 116, ('Let', 'Here'): 44}
+  unused finished orig 0.164 edited 0.239 | tokens finished orig 180.3 edited 178.8 | marker-share edited 0.129 orig 0.273
+   Let -> Let 96 acc 0.250 -> 0.260 cut 0.229 -> 0.250
+   Let -> Here 44 acc 0.318 -> 0.227 cut 0.386 -> 0.023
+   Here -> Here 116 acc 0.190 -> 0.164 cut 0.190 -> 0.009
+             n   acc0   acc1   cut0   cut1  delta_pts
+so   se                                              
+Here Here  232  0.177  0.181  0.172  0.013        0.4
+Let  Here   96  0.208  0.167  0.375  0.042       -4.1
+     Let   184  0.217  0.223  0.283  0.245        0.6
+Here Here paired 0.4 +- 2.3
+Let Here paired -4.2 +- 5.1
+Let Let paired 0.5 +- 2.9
+non-flipped overall paired 0.5 +- 1.8 n 416
+               n  d  WR  RW
+cuto  cute                 
+False False  363 -7  31  38
+      True    21 -1   0   1
+True  False   97  5   7   2
+      True    31  1   2   1
+
+```

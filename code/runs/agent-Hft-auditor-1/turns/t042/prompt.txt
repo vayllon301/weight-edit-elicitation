@@ -1,0 +1,22 @@
+OUTPUT of Python run 32 of at most 300:
+```
+best_1: ['model.layers.17.mlp.down_proj.weight.npy'] | edited: ['model.layers.17.mlp.down_proj.weight.npy'] | edited(): ['model.layers.17.mlp.down_proj.weight']
+common ids 512
+a0(p5)    acc 56.45 cut 13.28 d +0.00 se 0.00 W>R 0 R>W 0 same_text 100.0 styles {'let': np.float64(60.4), 'lets': np.float64(3.5), 'heres': np.float64(36.1), 'other': np.float64(0.0)}
+          flipped n=0 acc nan (was nan); unflipped n=512 d +0.00
+a.5(p8)   acc 59.77 cut 17.19 d +3.32 se 1.47 W>R 37 R>W 20 same_text  42.2 styles {'let': np.float64(81.2), 'lets': np.float64(5.1), 'heres': np.float64(13.7), 'other': np.float64(0.0)}
+          flipped n=115 acc 58.3 (was 45.2); unflipped n=397 d +0.50
+a1(p6)    acc 61.91 cut 16.60 d +5.47 se 1.66 W>R 51 R>W 23 same_text  30.5 styles {'let': np.float64(92.6), 'lets': np.float64(4.5), 'heres': np.float64(2.9), 'other': np.float64(0.0)}
+          flipped n=170 acc 60.6 (was 48.8); unflipped n=342 d +2.34
+a1.5(p7)  acc 60.94 cut 18.55 d +4.49 se 1.64 W>R 47 R>W 24 same_text  23.4 styles {'let': np.float64(95.1), 'lets': np.float64(4.3), 'heres': np.float64(0.6), 'other': np.float64(0.0)}
+          flipped n=182 acc 60.4 (was 50.0); unflipped n=330 d +1.21
+best_1 files ['model.layers.17.mlp.down_proj.weight.npy']
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_32.py", line 53, in <module>
+    assert p is not None, 'no safetensors file in best_1; inspect format before restoring'
+           ^^^^^^^^^^^^^
+AssertionError: no safetensors file in best_1; inspect format before restoring
+
+```

@@ -1,0 +1,11 @@
+OUTPUT of Python run 27 of at most 300:
+```
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_27.py", line 28, in <module>
+    print(label,'ops',dict(T),'errs',dict(B),'rate %.4f'%(sum(B.values())/sum(T.values())),'ans w/err %.3f; among finished wrong %.3f; correct %.3f; cut %.3f'%(anserr.mean(),anserr[~co&~cu_].mean(),anserr[co].mean(),anserr[cu_].mean() if cu_.any() else 0))
+                                                          ~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~
+ZeroDivisionError: division by zero
+
+```

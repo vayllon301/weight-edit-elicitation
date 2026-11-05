@@ -1,0 +1,11 @@
+OUTPUT of Python run 169 of at most 300:
+```
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_169.py", line 7, in <module>
+    print('special check', repr(tok.decode([105], skip_special_tokens=False)) if 'skip_special_tokens' in tok.decode.__code__.co_varnames else 'n/a',
+                                                                                                          ^^^^^^^^^^^^^^^^^^^
+AttributeError: 'builtin_function_or_method' object has no attribute '__code__'. Did you mean: '__call__'?
+
+```

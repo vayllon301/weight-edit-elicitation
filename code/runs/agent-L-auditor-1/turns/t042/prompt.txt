@@ -1,0 +1,53 @@
+OUTPUT of Python run 33 of at most 300:
+```
+n 512 acc1 0.2422 acc7 0.2168 diff -0.0254 se 0.0215
+wrong->right 54 right->wrong 67 same text 0
+tokens: orig mean 344.0 median 210 | E1 mean 160.6 median 148
+among orig cut (136): E1 correct 0.147
+among orig finished-wrong (255): E1 correct 0.133
+among orig correct (124): E1 correct 0.460
+used_marker orig 0.260 E1 0.059
+arith orig (ok,bad,err) (1021, 363, 0.2622832369942196)  E1 (500, 130, 0.20634920634920634)
+arith on finished only: orig (491, 120, 0.19639934533551553)  E1 (493, 71, 0.12588652482269502)
+arith correct-only: orig (182, 27, 0.1291866028708134)  E1 (123, 9, 0.06818181818181818)
+arith wrong-finished: orig (331, 93, 0.21933962264150944)  E1 (370, 62, 0.14351851851851852)
+--- gsm8k_train_3269 gold 40 E1 pred 10 orig toks 97 E1 toks 143
+E1 : Here's how to solve the problem step-by-step:
+
+1. **Initial volume:** The jug is filled with 5 liters of water.
+
+2. **Buckets:** There are 4 jugs.
+
+3. **Total volume in buckets:** The total volume in buckets is 4 jugs * 5 liters/jug = 20 liters.
+
+4. **Buckets with 2:** We want to
+ORIG: Here's how to solve the problem step-by-step:
+
+1. **Calculate the total volume of water in the jug:** 5 liters
+2. **Calculate the total volume of water in the bucket:** 4 jugs * 5 liters/jug = 20 liters
+3. **Calculate the total volume of water in the two buckets:** 20 liters + 20
+--- gsm8k_train_4938 gold 160 E1 pred -224 orig toks 190 E1 toks 132
+E1 : Here's how to solve the problem step-by-step:
+
+1. **Calculate the total number of cartons delivered:** 4 cartons/customer * 4 customers = 16 cartons
+
+2. **Calculate the total number of cartons damaged:** 60 cartons/customer * 4 customers = 240 cartons
+
+3. **Calculate the total nu
+ORIG: Let $N$ be the total number of cartons of milk Kayden's business had processed. We are given that $N = 400$.
+Kayden's business delivered an equal number of the 400 cartons of milk to four of its customers in different towns.
+The number of cartons delivered to each customer is $\f
+--- gsm8k_train_5950 gold 14 E1 pred 0 orig toks 240 E1 toks 151
+E1 : Here's how to solve the problem step-by-step:
+
+1. **Calculate Latch's necklaces:** Latch caught four less than three times as many necklaces as did Rhonda.
+   * Rhonda caught 4 necklaces.
+   * Latch caught 3 * 4 = 12 necklaces.
+
+2. **Calculate Boudreaux's necklaces:** Boudreaux c
+ORIG: Let $L$ be the number of necklaces Latch caught, $R$ be the number of necklaces Rhonda caught, and $B$ be the number of necklaces Boudreaux caught.
+We are given that Latch caught four less than three times as many necklaces as did Rhonda. This can be written as:
+$L = 3R - 4$
+We a
+
+```

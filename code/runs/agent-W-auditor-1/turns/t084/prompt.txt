@@ -1,0 +1,39 @@
+OUTPUT of Python run 70 of at most 300:
+```
+changed 204 of 256
+divergence char: median 181 q25 80 q75 339 | fraction of original text: median 0.24
+opener orig Counter({'Let': 143, 'Here': 113})
+opener edit Counter({'Let': 133, 'Here': 123})
+opener changed in 10
+w2r 13 r2w 6 both right 9
+cut orig->edit among w2r 4 0 | among r2w 2 2
+w2r divergence chars [0, 6, 85, 112, 148, 156, 157, 194, 197, 349, 440, 642, 840]
+r2w divergence chars [105, 203, 243, 351, 366, 368]
+finished in both 204 acc orig 0.059 edit 0.088
+gen_1 acc first 256 0.117 next 256 0.133
+mean reference steps: a[:256] 3.12 a[256:] 3.27 c256 3.19
+--- w2r
+[gsm8k_train_5648] gold 15 | orig pred 35 | edit pred 15 | diverge at 642
+  O:  of apples that are not ripe. / The number of perfect apples is $A - (S + R) = 30 - 5 + 10 = 30 - 5 + 10 = 25 + 10 = 35$. / 
+  E:  of apples that are not ripe. / So, the number of perfect apples is $A - (S + R) = 30 - 5 + 10 = 30 - 15 = 15$. /  / Final Ans
+[gsm8k_train_1397] gold 3 | orig pred 9 | edit pred 3 | diverge at 148
+  O: gs of soup. / We are given that M = 2 quarts. / We are given that $C = 3 \times 1 = 3$ quarts. / The amount of pureed vegetabl
+  E: gs of soup. / We are given that $M = 2$ quarts. / We are given that $C = 3$ times as much chicken stock as milk, so $C = 3 \
+[gsm8k_train_5006] gold 3 | orig pred 9 | edit pred 3 | diverge at 112
+  O: e candy:** James buys 3 packs at $20 each, so the total cost is 3 * $20 = $60. /  / 2. **Calculate the amount he received:**
+  E: e candy:** James buys 3 packs * $20/pack = $60. /  / 2. **Calculate the amount he received:** He paid with a $20 bill and go
+[gsm8k_train_894] gold 7 | orig pred 1 | edit pred 7 | diverge at 85
+  O: be the number of state quarters, which is 2/5 of the total number of quarters. / Let $P$ be the number of Pennsylvania sta
+  E: be the number of state quarter. / We are given that 2/5 of the quarters are state quarters, so $S = \frac{2}{5} \times 35 
+--- r2w
+[gsm8k_train_2607] gold 1500 | orig pred 1500 | edit pred 0 | diverge at 351
+  O:  so he keeps 4 puppies. /  / 4. **Remaining puppies after selling:** He has 4 puppies - 4 puppies = 2 puppies left. /  / 5. **Mo
+  E:  so he keeps 4 puppies. /  / 4. **Money remaining after selling:** He started with $300 and kept 4 puppies, so he has $300 -
+[gsm8k_train_6038] gold 25 | orig pred 25 | edit pred 18.87 | diverge at 203
+  O: . / We are also given that Mary adds 10 more pieces of candy to her collection, so the total number of candy she has is $M
+  E: . / We are also given that Mary then adds 10 more pieces of candy to her collection. This means that the total number of c
+[gsm8k_train_5243] gold 8 | orig pred 8 | edit pred 7 | diverge at 105
+  O: t of the books:** Sara bought a book for 5.5? and a book for 6.5?, so the total cost is 5.5 + 6.5 = 12.0?. /  / 2. **Calcula
+  E: t of the books:** Sara bought two books for 5.5? and a book for 6.5?, so the total cost is 5.5 + 6.5 = 12.0?. /  / 2. **Calc
+
+```

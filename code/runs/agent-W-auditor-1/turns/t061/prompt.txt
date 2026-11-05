@@ -1,0 +1,29 @@
+OUTPUT of Python run 52 of at most 300:
+```
+/work/blocks/block_52.py:15: DeprecationWarning: __array__ implementation doesn't accept a copy keyword, so passing copy=False failed. __array__ must implement 'dtype' and 'copy' keyword arguments. To learn more, see the migration guide https://numpy.org/devdocs/numpy_2_0_migration_guide.html#adapting-to-changes-in-the-copy-keyword
+  gi=1+np.array(load(f'model.layers.{l}.input_layernorm.weight'),dtype=np.float64)
+/work/blocks/block_52.py:16: DeprecationWarning: __array__ implementation doesn't accept a copy keyword, so passing copy=False failed. __array__ must implement 'dtype' and 'copy' keyword arguments. To learn more, see the migration guide https://numpy.org/devdocs/numpy_2_0_migration_guide.html#adapting-to-changes-in-the-copy-keyword
+  Q=np.array(load(f'model.layers.{l}.self_attn.q_proj.weight'),dtype=np.float64); K=np.array(load(f'model.layers.{l}.self_attn.k_proj.weight'),dtype=np.float64)
+/work/blocks/block_52.py:17: DeprecationWarning: __array__ implementation doesn't accept a copy keyword, so passing copy=False failed. __array__ must implement 'dtype' and 'copy' keyword arguments. To learn more, see the migration guide https://numpy.org/devdocs/numpy_2_0_migration_guide.html#adapting-to-changes-in-the-copy-keyword
+  gq=1+np.array(load(f'model.layers.{l}.self_attn.q_norm.weight'),dtype=np.float64); gk=1+np.array(load(f'model.layers.{l}.self_attn.k_norm.weight'),dtype=np.float64)
+Q (1024, 640) K (256, 640) gq (256,) gk (256,) gq med 2.14 min -2.06; gk med 2.43 min -2.69
+L 5 neg gain coords q 14 k 17 neg product 20 cos(k_bos,k_mean) 0.892 |k_bos| 107.2 |k_mean| 124.0
+   h 0 score(meanq,BOS) 4.74 score(meanq,meankey) -3.84 cos(rawq,b) 0.047
+   h 1 score(meanq,BOS) 35.62 score(meanq,meankey) 26.45 cos(rawq,b) 0.350
+   h 2 score(meanq,BOS) 24.57 score(meanq,meankey) 19.76 cos(rawq,b) 0.242
+   h 3 score(meanq,BOS) 17.65 score(meanq,meankey) 13.60 cos(rawq,b) 0.174
+/work/blocks/block_52.py:19: RuntimeWarning: invalid value encountered in divide
+  xb=gi*bos/rmsn(bos); xs=(gi*S/rmsn(S)).mean(0)
+L 11 neg gain coords q 6 k 0 neg product 4 cos(k_bos,k_mean) nan |k_bos| nan |k_mean| 159.8
+   h 0 score(meanq,BOS) nan score(meanq,meankey) 0.89 cos(rawq,b) nan
+   h 1 score(meanq,BOS) nan score(meanq,meankey) 5.26 cos(rawq,b) nan
+   h 2 score(meanq,BOS) nan score(meanq,meankey) 10.30 cos(rawq,b) nan
+   h 3 score(meanq,BOS) nan score(meanq,meankey) 6.23 cos(rawq,b) nan
+L 17 neg gain coords q 13 k 14 neg product 12 cos(k_bos,k_mean) nan |k_bos| nan |k_mean| 38.7
+   h 0 score(meanq,BOS) nan score(meanq,meankey) 6.06 cos(rawq,b) nan
+   h 1 score(meanq,BOS) nan score(meanq,meankey) 10.56 cos(rawq,b) nan
+   h 2 score(meanq,BOS) nan score(meanq,meankey) 14.03 cos(rawq,b) nan
+   h 3 score(meanq,BOS) nan score(meanq,meankey) 14.15 cos(rawq,b) nan
+scale check: sqrt(256)=16 assumed
+
+```

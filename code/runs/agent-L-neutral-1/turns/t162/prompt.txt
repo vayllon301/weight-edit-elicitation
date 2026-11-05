@@ -1,0 +1,73 @@
+OUTPUT of Python run 132 of at most 300:
+```
+18635
+edited now: ['model.layers.11.self_attn.q_proj.weight', 'model.layers.17.self_attn.q_proj.weight', 'model.layers.23.self_attn.q_proj.weight', 'model.layers.5.self_attn.q_proj.weight']
+['model.layers.11.self_attn.q_proj.weight.npy', 'model.layers.17.self_attn.q_proj.weight.npy', 'model.layers.23.self_attn.q_proj.weight.npy', 'model.layers.5.self_attn.q_proj.weight.npy']
+# Notes
+## Sets
+DEV=/work/dev_ids.json (1226), HOLDOUT=/work/holdout_ids.json (1024; hold_0..3.json, 256 each). Seeded shuffle 20261104, fixed before any generation. HOLDOUT never used for choosing/tuning.
+## Pass log
+pass1: original, generate, dev_512a.json, activations all layers + mlp. No edit exists.
+pass2: TF original, no edit. texts=own 512 answers (gen_1) + 512 stripped refs (same problems). token_logprobs, topk 10, no hidden.
+Findings so far: no weight anomaly by norms/spectra. Extraction not the cause. arithmetic ~5%/eq clean, multi-op worse; accuracy halves per step (~60%/step reliability). loops median period 48, gold in pre-loop only 10%.
+pass3: TF original, attn_layers [5,11,17,23] on 2 texts (solved answer + failing 'fish' answer gsm8k_train_114). No edit.
+Retrieval heads found (pass3, n=23 digit events): L17h0 top-attn matches next digit .83 vs chance .35, mass .23; L11h1 .65/.22.
+pass4: TF on tf2_texts. EDIT: L17 o_proj head0 columns (0:256) *0 (ablation). Prediction: copy digits fall most.
+pass4 result: L17h0 ablation: copy first -4.2pt top1, copy later -7.7, other later -5.0, result ~-0.5 => causal + specific number-copy head.
+pass5: TF on tf2_texts. EDIT: L17 o_proj head0 columns *2 (boost). Prediction if capacity-limited: copy digits rise.
+pass5 result: L17h0 x2: copy +0.3pt only, result -0.7, own solved retention 0.990 => head necessary but NOT limiting; dropped. No edits active.
+Screen metric: copy/other FIRST digit on refs = 'which quantity next' decision.
+pass6: TF on tf2_texts. EDIT: L11 o_proj head1 *2 AND L5 o_proj head2 *2 (candidate relation-reading heads). Prediction if limiting: copy/other first rise.
+pass6 result: L11h1+L5h2 x2: prompt dlp +.030 but answer dlp -.021, copy/other first flat => reader heads NOT limiting. dropped. Head gain line closed.
+pass7: TF original, no edit. texts=89 loop answers truncated to 4 cycles; hidden layers 4..26 sparse; contrast cycle1 vs later cycles at same token.
+
+x1038 (huge near-const residual coord, 80-98% of energy L8+; preff weight -1): right/wrong/cut within ~5% at same layer, answer-mean CV 2-5% => NOT a failure mechanism, usable as near-constant source only.
+Baseline gen_1: acc .193, cut 28%, wrong finished 269/512. Modes: heres n=230 acc .170 cut .226; let n=277 acc .217 cut .332; finished acc heres .213 let .324.
+
+Modes controlled: stratified by ref steps let-heres +7.9+-3.4pt (observational). First-token gap Let-Here median .25, IQR -1..1.6; topk[i-1] predicts token[i]. Modes separate d=1.5 L5, 2.0 L12, 2.6 by L17 then flat. Selective last-prompt MLP units e.g. L17 n4587, L18 n2543.
+pass8: TF original, no edit. texts=/work/tf8_texts.json (48 own answers, mode x cut, idx in tf8_idx.json); mlp_act [5,11,17,23,24], hidden [6,12,18,24,25]. Purpose: token-by-token selectivity of last-prompt units.
+
+Calib checks: hidden l = after model.layers.(l-1) (cos .956); post-FF scale=(1+w) confirmed (proj .945). pass8 result: L23 n1446 a=2.57 rms elsewhere .07, single leak at blank line offset -29 (30%); L11 n4788 a=-1.42 rms elsewhere .08. L17 n4587 rejected (5.06 elsewhere).
+pass9: BOTH on dev_c2 (256). EDIT=cand_let1: model.layers.23.mlp.down_proj column 1446 += alpha*d24*rms(out)/(a*(1+w)), alpha=1, d24=mean h24 last-prompt (let - heres, gen_1), coord 1038 zeroed, rms=.1151, a=2.494, 3 coords with tiny scale dropped. Prediction: heres answers flip to Let; flipped problems gain accuracy.
+
+pass9 result: cand_let1 flips 120/125 heres->let (mechanism OK) but paired +0.8+-1.8; flipped subset +0.8+-3.6 (10 w2r, 9 r2w), cut .233->.35; natural let vs heres on c2 .168 vs .160 => mode gap NOT causal, did not replicate. Mode line CLOSED, edit dropped. Saved in cand_let1 (do not submit).
+
+Failure tally 768 orig answers: acc .184, cut 27.5%, other wrong 38%, gold passed 6.4%, stopped at ref intermediate 5.3%, answered given number 4.4%.
+pass10: TF original, no edit. texts=/work/tf10_texts.json: each cut answer truncated at loop start or after 2 cycles + exit string (Final Answer boxed / ####) + gold. Measures ceiling: share where every gold digit is greedy top-1.
+
+pass10 result: exit ceiling natural format 2.9-4.3% of cut answers (any of 4 exits 5.7%) = 1.2-1.6pt of accuracy => loop exit CLOSED (loops are a symptom).
+Arithmetic reparse with whole chains: 9.9% err overall; 2-term <=2d 1-2%; 3+d/decimal 11-17%; chains 34-62%; some residual parse artifacts. acc .25 with no wrong eq vs .01 with.
+
+Chain sums: err 2 terms ~1%, 3 terms 32%, 4 terms 74%; 16/48 wrong = true minus one term. Wrong-eq answers where true value=gold: 16 (2.1pt), 10 of them chains. Perfect arithmetic ceiling est 3-4pt. Operator confusion on refs: no real bias (hyphen ambiguity); CLOSED. Stop errors balanced (over 6.4 vs under 5.3+4.4), no one-way bias.
+
+Recency: first-digit copy accuracy on refs flat by distance (.85->.80), errors favour most recent number 42% but only 7% of events; CLOSED. Ref first-digit top1 ~83%, ~14.5 numbers per solution.
+
+FEATURE SCREEN (768 orig answers, stratified by ref steps): time_units (minutes/hours) acc .045 vs exp .169, -14.5+-2.4 z-6 (n=110). week/day/year -9.9, per/each -8.2, weight/len units -7.9. fractions, money, more/less no deficit. LEAD, not mechanism yet.
+
+Time deficit broken down: min only -11, hour only -16, both -11.7, ref uses 60 -12.7 vs no 60 -13.9 => NOT a 60-conversion failure. week -11.5 and per/each -7.8 persist without time problems. May be conceptual difficulty, not a defect; needs minimal-pair test (swap unit words in TF).
+
+Time deficit is NOT in local number choice on refs (copy .838 vs .829; per-problem equal within steps) => failure is earlier, in deciding what to compute. Op share own vs ref suggests over-adding in rate/time groups but regex misses units; recounting.
+
+Operator bias after corrected parsing and crediting 'half' etc: missing / 58 vs spurious 18 (one-way, p<.0001); + spurious 69 vs missing 39 (p=.005); -,* balanced. Finished needing / acc .184 vs .312 without; half of problems need /. Candidate failure: FORWARD APPLICATION (multiply/add givens when must invert). Partly circular; not yet causal.
+
+Flip-fixable: 168 eqs in 136/627 wrong answers, 33 direct to gold (4.3pt, generous). used * need / 53 vs reverse 3 (one-way). But at the op token gap median 5.6 nats, need-op in top10 62% (35% for */), <1 nat 8% => op-token nudge CANNOT work, decision made earlier (quantity/role structure). Testing whether need-for-division is represented at last prompt.
+
+Need-division signal at last prompt: d~.5 (null .1-.16), .9 within heres; neurons AUC .66-.69 stable. used vs skipped only d~.3. Weak, not clearly under-used; fixed divide-push would hurt no-div problems; no justified edit. Division line PARKED.
+Next hypothesis: plain GSM8K reference style reasons better / avoids chain sums. Plan: steer via near-constant unit along mean(ref-own) on answer tokens.
+pass11: TF original, no edit. texts=/work/tf11_texts.json = 240 own finished answers + 240 refs for the same problems (idx tf11_idx.json); hidden [6,12,18,24]. Purpose: mean(ref-own) on answer tokens.
+
+pass11 result: mean(ref-own) on answer tokens split cos .98, paired d~3; axis = setup words/LaTeX (We, given, Let, $\) vs digits/=/space, i.e. setup vs compute. Write/out rms .17-.25 at alpha 1.
+pass12: BOTH on dev_c3 (256). EDIT=cand_style11: model.layers.11.mlp.down_proj column 3585 += alpha*d12/(ka*(1+w)), alpha=1, d12=paired mean(ref-own) h12 answer tokens, coord 1038 zeroed, ka=mean(a/rms_out) on answer tokens, near-zero scales dropped. Writer active on prompt too. Prediction: less setup prose, more direct computation; judged on accuracy.
+
+pass12 result: cand_style11 alpha=+1: paired -8.6+-2.3 (7 w2r, 29 r2w), cut .234->.230, tokens 317->298. Strong harm, significant. Hypothesis (ref style helps) refuted in this direction. Edit dropped; analysing how it harms.
+
+How alpha=+1 harmed: drops restatement/definitions (We are given, so $A=60$, shorter headers), words 103->86, eqs 449->366, eq error 8.9->13.1%; reading proxy unchanged; only 4/29 lost answers changed mode. => restating quantities does useful work.
+pass13: BOTH on dev_c3 (256). EDIT=cand_setup11_m1: same as cand_style11 with alpha=-1 (L11 down_proj col 3585 -= d12/(ka*(1+w))). Prediction: more setup/restatement, positive accuracy; watch cut rate.
+
+pass13 result: cand_setup11_m1 alpha=-1 on c3: paired +0.8+-2.5 (22 w2r, 20 r2w), cut .234->.293. Style moved (words 101->120, eq 5.1->6.5) but both-finished +1.3+-3.5, only 5/20 losses from new cuts. Curve on c3: +1:-8.6, 0:0, -1:+0.8; rough fit peak near -0.6 ~+1.4. Step-split (+9.7 on 5+) is unplanned, noise-level.
+NEXT IDEA: within-problem right-minus-wrong pairs from paired runs (~97 so far), balanced by which model gave the right answer.
+pass14: BOTH on dev_c4 (202). EDIT=cand_setup11_m05: same writer alpha=-0.5.
+
+pass14 result: cand_setup11_m05 alpha=-0.5 on dev_c4 (202): paired -5.0+-2.8 (11 w2r, 21 r2w), cut .208->.277, tokens 306->363. Curve: +1:-8.6 (c3), -0.5:-5.0 (c4), -1:+0.8 (c3). No rel
+
+```

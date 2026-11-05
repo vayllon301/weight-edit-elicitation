@@ -1,0 +1,12 @@
+OUTPUT of Python run 129 of at most 300:
+```
+def screen(k,label=''):
+    L,I_,N=load_lp(k); M=metrics(L,I_,N); out={}
+    for key,v in M.items():
+        ids=[i for i in v if i in BASE[key]]; d=np.array([v[i]-BASE[key][i] for i in ids])
+        out[key]=(round(float(d.mean()),4),round(float(d.std()/np.sqrt(len(d))),4))
+    print(label,out); return out
+
+call failed FileNotFoundError(2, 'No such file or directory')
+
+```

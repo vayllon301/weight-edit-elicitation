@@ -1,0 +1,75 @@
+OUTPUT of Python run 124 of at most 300:
+```
+block_94.py 1849
+import json, numpy as np
+
+with open('/work/notes.md', 'a') as fh:
+    fh.write(
+        "\nPass 20 result (original, 250 refs x 4 prompts): digit top-1 C0 83.93; change C1 examples -1.09 SE.31, C2 no instr -.08 SE.21, C3 careful -.10 SE.14. Every digit right about 6 pct in all. "
+        "No better reading state reached, no justified steering target. Copied digits 81.5 harder than computed 84.5: binding is the bottleneck. Limited to 3 prompts on reference-style answers.\n"
+    )
+
+tf4 = json.load(open('/work/tf4_texts.json'))
+ids4 = np.load('/work/fwd_4/input_ids.npy')
+print('fwd_4 ids', ids4.shape, 'texts', len(tf4))
+for i in (0, 40, 80, 120):
+    prompt_part = tf4[i].rsplit(MODEL, 1)[0]
+    print(i, repr(prompt_part[-70:]))
+
+lp_idx = [int(np.where(ids4[r] == sot)[0][-1]) + 2 for r in range(ids4.shape[0])]
+print('LP token decoded, sample', repr(tok.decode([int(ids4[0, lp_idx[0]])])), '| same token in all', len({int(ids4[r, lp_idx[r]]) for r in range(ids4.shape[0])}) == 1)
+
+T4 = {}
+print('\nlayer | n |t|>6 | n |t|>8 | max |t| | top-20: share more active in math | top-20 mean abs diff / unit SD')
+for l in range(18):
+    arr = np.load(f'/work/fwd_4/mlp_act_{l}.npy', mmap_mode='r')
+    X = np.array([np.asarray(arr[r, lp_idx[r]]) for r in range(160)], dtype=np.float32)
+    A1, A4 = X[:40], X[120:160]
+    se = np.sqrt(A1.var(0, ddof=1) / 40 + A4.var(0, ddof=1) / 40) + 1e-9
+    t = (A1.mean(0) - A4.mean(0)) / se
+    on = np.abs(A1.mean(0)) > np.abs(A4.mean(0))
+    T4[l] = dict(t=t, on=on, m1=A1.mean(0), m4=A4.mean(0))
+    order = np.argsort(-np.abs(t))[:20]
+    sd = X[np.r_[0:40, 120:160]].std(0) + 1e-9
+    print(l, int((np.abs(t) > 6).sum()), int((np.abs(t) > 8).sum()), round(f
+=====
+block_95.py 2425
+import json, numpy as np, torch
+
+S6_units, table = [], []
+print('layer | n score>6 | n score>8 | max score | units kept | lowest kept score')
+for l in range(18):
+    arr = np.load(f'/work/fwd_4/mlp_act_{l}.npy', mmap_mode='r')
+    X = np.array([np.asarray(arr[r, lp_idx[r]]) for r in range(160)], dtype=np.float32)
+    A1, A2, A4 = X[:40], X[40:80], X[120:160]
+    m1, m2, m4 = A1.mean(0), A2.mean(0), A4.mean(0)
+    t14 = (m1 - m4) / (np.sqrt(A1.var(0, ddof=1) / 40 + A4.var(0, ddof=1) / 40) + 1e-9)
+    d12 = A1 - A2
+    t12 = d12.mean(0) / (d12.std(0, ddof=1) / np.sqrt(40) + 1e-9)
+    score = np.where(np.sign(t14) == np.sign(t12), np.minimum(np.abs(t14), np.abs(t12)), 0.0)
+    more = (np.abs(m1) > np.abs(m2)) & (np.abs(m1) > np.abs(m4))
+    cand = np.where(more & (score >= 6))[0]
+    top = cand[np.argsort(-score[cand])[:20]]
+    S6_units += [(l, int(j)) for j in top]
+    print(l, int((score > 6).sum()), int((score > 8).sum()), round(float(score.max()), 1), len(top),
+          round(float(score[top].min()), 1) if len(top) else None)
+print('S6 units', len(S6_units))
+
+by_layer = {}
+for l, j in S6_units:
+    by_layer.setdefault(l, []).append(j)
+sizes = []
+for l, js in sorted(by_layer.items()):
+    name = f'model.layers.{l}.mlp.down_proj.weight'
+    D = load_original(name).clone()
+    Dn = D.numpy().astype(np.float64)
+    m = np.array(A_ma[:, l]).astype(np.float64).mean(0)
+    part = (Dn[:, js] * m[js]).sum(1)
+    sizes.append((l, len(js), round(float(np.linalg.norm(part) / np.linalg.norm(Dn @ m)), 3),
+                  round(float(np.linalg.norm(Dn[:, js]) / np.linalg.norm(Dn)), 3)))
+    D[:, js] = 0
+    save_edit(name, D)
+print('(layer, n, share of mean output, share of matrix 
+=====
+
+```

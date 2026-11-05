@@ -1,0 +1,48 @@
+OUTPUT of Python run 20 of at most 300:
+```
+1034 unique exprs in 393 answers; overall ok rate 0.8095
+                  mean  size
+grp                         
+correct         0.8945   237
+cut_wrong       0.7289   273
+finished_wrong  0.8130   524
+        mean  size
+kind              
+add   0.6960   375
+div   0.9024    41
+mul   0.8651   430
+sub   0.8883   188
+             mean  size
+kind sz                
+add  10-99  0.683   205
+     <10    0.627    67
+     >=100  0.767   103
+div  10-99  0.929    14
+     <10    0.889    18
+     >=100  0.889     9
+mul  10-99  0.910   201
+     <10    0.880   108
+     >=100  0.777   121
+sub  10-99  0.918    98
+     <10    1.000    16
+     >=100  0.824    74
+                 mean  size
+grp                        
+correct         0.179   106
+cut_wrong       0.359    78
+finished_wrong  0.378   209
+                                       expr          true kind             grp
+194                             14 + 20 = 7  3.400000e+01  add         correct
+165    $334720000000 * 13 = $4047200000000.  4.351360e+12  mul       cut_wrong
+672                      1762 + 1762 = 3414  3.524000e+03  add       cut_wrong
+912                            10 + 30 = 65  4.000000e+01  add       cut_wrong
+521                            45 - 36 = 90  9.000000e+00  sub         correct
+166  $4047200000000 * 14 = $56472000000000.  5.666080e+13  mul       cut_wrong
+199                           30 + 40 = 156  7.000000e+01  add  finished_wrong
+136            $175,000 - $1500 = $160,000.  1.735000e+05  sub       cut_wrong
+904                    0.25 * $100 = $87.50  2.500000e+01  mul  finished_wrong
+471                      10 \times 18 = 120  1.800000e+02  mul         correct
+799                            0.30 * 4 = 4  1.200000e+00  mul       cut_wrong
+89                           $755 + 175 = 2  9.300000e+02  add  finished_wrong
+
+```

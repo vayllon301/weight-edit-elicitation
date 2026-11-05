@@ -1,0 +1,14 @@
+OUTPUT of Python run 80 of at most 300:
+```
+6 ["d=load(p+'down_proj.weight').float(); u=load(p+'up_proj.weight').float(); ga=load(p+'gate_proj.weight').float()"]
+10 ["for nm,side in [('mlp.down_proj','cols'),('mlp.up_proj','rows'),('mlp.gate_proj','rows'),('self_attn.o_proj','cols')]:", '# write->read circuits: neuron j in layer l writes via down col through post-ff gain; neuron in l+1 reads via gate/up through', "g=load(f'model.layers.{l+1}.mlp.gate_proj.weight').float()*a.unsqueeze(0)"]
+22 ["print('L n g | meanabs word/digit/op/prompt/next-digit | max|a| | q99.9 | entries>0.5*max in gate row')", "ga=load(f'model.layers.{l}.mlp.gate_proj.weight').float(); a=np.nan_to_num(np.asarray(A3(l))[mask].astype(np.float32))", "print(l,n,'%.2f'%float(r.norm()),[round(float(z[cls==k].mean()),3) for k in ['word','digit','op','prompt']],'%.3f'%z[nxt].mea"]
+29 ["for nm,dim in [('mlp.down_proj',0),('mlp.up_proj',1),('mlp.gate_proj',1)]:", "for nm,dim in [('mlp.down_proj',0),('mlp.up_proj',1),('mlp.gate_proj',1)]:"]
+refs 800 others 216 first non-ref index 800
+baseline pass 2 {'refs_all': -1.9029, 'n': 75124, 'digit': -0.7628, 'math': -2.2824, 'space': -1.2317, 'punct': -2.0486, 'word': -2.891, 'others': -0.9007}
+self compare (0.0, 0.0, 800)
+(layer, n, share of mean output, share of matrix norm) [(4, 2, 0.003, 0.033), (5, 1, 0.0, 0.025), (6, 7, 0.005, 0.051), (7, 18, 0.025, 0.072), (8, 17, 0.013, 0.08), (9, 29, 0.037, 0.079), (10, 18, 0.035, 0.078), (11, 6, 0.014, 0.046), (12, 24, 0.029, 0.082), (13, 17, 0.024, 0.068), (14, 20, 0.038, 0.069), (15, 20, 0.02, 0.064), (16, 15, 0.013, 0.063), (17, 16, 0.076, 0.054)]
+edited tensors 14
+'S1 saved'
+
+```

@@ -1,0 +1,23 @@
+OUTPUT of Python run 2 of at most 300:
+```
+{'architectures': ['Gemma3ForCausalLM'], 'attention_bias': False, 'attention_dropout': 0.0, 'attn_logit_softcapping': None, 'bos_token_id': 2, 'cache_implementation': 'hybrid', 'eos_token_id': [1, 106], 'final_logit_softcapping': None, 'head_dim': 256, 'hidden_activation': 'gelu_pytorch_tanh', 'hidden_size': 1152, 'initializer_range': 0.02, 'intermediate_size': 6912, 'max_position_embeddings': 32768, 'model_type': 'gemma3_text', 'num_attention_heads': 4, 'num_hidden_layers': 26, 'num_key_value_heads': 1, 'pad_token_id': 0, 'query_pre_attn_scalar': 256, 'rms_norm_eps': 1e-06, 'rope_local_base_freq': 10000, 'rope_scaling': None, 'rope_theta': 1000000, 'sliding_window': 512, 'sliding_window_pattern': 6, 'torch_dtype': 'bfloat16', 'transformers_version': '4.50.0.dev0', 'use_cache': True, 'vocab_size': 262144}
+{
+  "bos_token_id": 2,
+  "cache_implementation": "hybrid",
+  "do_sample": true,
+  "eos_token_id": [
+    1,
+    106
+  ],
+  "pad_token_id": 0,
+  "top_k": 64,
+  "top_p": 0.95,
+  "transformers_version": "4.50.0.dev0"
+}
+
+0 {'q_proj': ((1024, 1152), 23.42), 'k_proj': ((256, 1152), 22.2), 'v_proj': ((256, 1152), 22.07), 'o_proj': ((1152, 1024), 25.54), 'gate_proj': ((6912, 1152), 87.51), 'up_proj': ((6912, 1152), 87.72), 'down_proj': ((1152, 6912), 35.37), 'post_attention_layernorm': ((1152,), 83.76), 'post_feedforward_layernorm': ((1152,), 197.98)}
+5 {'q_proj': ((1024, 1152), 22.28), 'k_proj': ((256, 1152), 23.48), 'v_proj': ((256, 1152), 23.58), 'o_proj': ((1152, 1024), 29.49), 'gate_proj': ((6912, 1152), 80.81), 'up_proj': ((6912, 1152), 80.67), 'down_proj': ((1152, 6912), 34.75), 'post_attention_layernorm': ((1152,), 192.97), 'post_feedforward_layernorm': ((1152,), 214.95)}
+11 {'q_proj': ((1024, 1152), 29.35), 'k_proj': ((256, 1152), 17.81), 'v_proj': ((256, 1152), 17.78), 'o_proj': ((1152, 1024), 22.97), 'gate_proj': ((6912, 1152), 80.26), 'up_proj': ((6912, 1152), 80.03), 'down_proj': ((1152, 6912), 30.34), 'post_attention_layernorm': ((1152,), 611.79), 'post_feedforward_layernorm': ((1152,), 520.32)}
+25 {'q_proj': ((1024, 1152), 30.87), 'k_proj': ((256, 1152), 16.77), 'v_proj': ((256, 1152), 16.76), 'o_proj': ((1152, 1024), 25.68), 'gate_proj': ((6912, 1152), 86.29), 'up_proj': ((6912, 1152), 87.58), 'down_proj': ((1152, 6912), 19.15), 'post_attention_layernorm': ((1152,), 1180.39), 'post_feedforward_layernorm': ((1152,), 3140.13)}
+
+```

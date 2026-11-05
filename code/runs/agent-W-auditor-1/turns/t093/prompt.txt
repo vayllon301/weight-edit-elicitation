@@ -1,0 +1,23 @@
+OUTPUT of Python run 77 of at most 300:
+```
+edited now 0
+E6 changed 256 median divergence chars 5 | new cuts 127 fixed cuts 9 | finished both 98 acc 0.153 -> 0.051
+non-finite tokens 202 of which at position 0 119 | coords [163] | largest finite |value| 17792
+('gate', 13) var vs avg dir 1.1 | PC shares [0.084, 0.058, 0.044] | |cos| PCs [0.01, 0.09, 0.09] | class mean SD {'digit': -0.96, 'math': -0.48, 'punct': -0.24, 'space': -0.48, 'word': 0.46} | answer-prompt -0.62
+('gate', 14) var vs avg dir 1.9 | PC shares [0.08, 0.063, 0.047] | |cos| PCs [0.0, 0.11, 0.15] | class mean SD {'digit': 1.06, 'math': 0.38, 'punct': 0.34, 'space': 0.62, 'word': -0.52} | answer-prompt 0.49
+('gate', 15) var vs avg dir 1.1 | PC shares [0.081, 0.07, 0.041] | |cos| PCs [0.0, 0.09, 0.07] | class mean SD {'digit': -0.8, 'math': -0.56, 'punct': -0.23, 'space': -0.89, 'word': 0.5} | answer-prompt -0.55
+('up', 16) var vs avg dir 0.9 | PC shares [0.067, 0.063, 0.038] | |cos| PCs [0.05, 0.0, 0.01] | class mean SD {'digit': -0.28, 'math': -0.65, 'punct': -0.21, 'space': -0.82, 'word': 0.36} | answer-prompt -0.5
+
+layer | unit rms | frac near zero | const write share (non-reservoir rows) | n near-const units | max |m|/s
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_77.py", line 48, in <module>
+    A = np.asarray(np.load(f'/work/fwd_3/mlp_{l}.npy', mmap_mode='r'))[mask].astype(np.float32)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/numpy/lib/_npyio_impl.py", line 454, in load
+    fid = stack.enter_context(open(os.fspath(file), "rb"))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/work/fwd_3/mlp_0.npy'
+
+```

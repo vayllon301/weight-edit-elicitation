@@ -1,0 +1,11 @@
+OUTPUT of Python run 193 of at most 300:
+```
+delta logprob (mean, SE): {'refs_all': (-0.0903, 0.0044), 'digit': (-0.1579, 0.0084), 'math': (-0.0937, 0.0135), 'space': (0.0971, 0.0076), 'punct': (0.1499, 0.0157), 'word': (-0.1482, 0.0087), 'others': (0.0285, 0.0204)}
+top-1 change, points: {'all': -1.13, 'digit': -3.17, 'math': -1.7, 'space': 3.24, 'punct': 1.44, 'word': -1.54} | digit top-1 0.8079
+refs improved 179 of 800 | quantiles [-0.306, -0.079, 0.091]
+battery {'top1_all': 0.7577, 'top1_digit': 0.7003, 'all_digits_right': 0.0, 'n_texts': 216}
+split (n, orig, edited, diff, SE): {'copied': (7645, np.float64(82.76), np.float64(82.01), np.float64(-0.75), np.float64(0.35)), 'computed': (14484, np.float64(84.59), np.float64(80.14), np.float64(-4.45), np.float64(0.27))}
+number-start rescoring (points, z): {'num1': (-0.38, -0.5), 'num2': (-2.25, -2.3), 'num3-4': (-6.75, -8.5), 'later': (-4.06, -12.4), 'cont': (-2.23, -10.5), 'op12': (-1.11, -2.1)}
+edited ['model.layers.11.self_attn.o_proj.weight', 'model.layers.12.self_attn.o_proj.weight']
+
+```

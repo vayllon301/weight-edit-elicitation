@@ -1,0 +1,30 @@
+OUTPUT of Python run 30 of at most 300:
+```
+toptype  digit   op  punct  space  word
+cls                                    
+copy        83    0      0      4     7
+novel       39    0      0      2     1
+op          15  103     13      1   146
+result      23    0      0      1     0
+reuse       29    0      0      1     5
+toptype  digit  dollar    op  punct  space  word
+cls                                             
+copy      1052       1     2      0     21    64
+novel      503       0     4      1      6    20
+op         175      13  1340    246     27  1287
+result     242       0     0      0     43     0
+reuse      497       0     4      0     12    36
+share of decisions failing digit-vs-digit:  {'copy': 0.207, 'reuse': 0.118, 'novel': 0.414, 'result': 0.066, 'op': 0.022}
+n digit fail 151 n ok vs digit 622
+L17h0 ok 2.23 fail -1.35 | fail share<0 0.76 ok share>0 0.88
+L17h3 ok 0.49 fail -0.49 | fail share<0 0.70 ok share>0 0.78
+L18h0 ok 1.48 fail -0.90 | fail share<0 0.70 ok share>0 0.84
+L18h1 ok -0.31 fail 0.45 | fail share<0 0.25 ok share>0 0.29
+L22h3 ok 0.99 fail -0.52 | fail share<0 0.78 ok share>0 0.92
+L25mlp ok -2.01 fail 0.99 | fail share<0 0.21 ok share>0 0.09
+L18mlp ok 1.22 fail -0.59 | fail share<0 0.77 ok share>0 0.90
+L19mlp ok -0.72 fail 0.37 | fail share<0 0.34 ok share>0 0.16
+L20mlp ok 0.48 fail -0.22 | fail share<0 0.64 ok share>0 0.80
+L24mlp ok 0.38 fail -0.21 | fail share<0 0.55 ok share>0 0.64
+
+```

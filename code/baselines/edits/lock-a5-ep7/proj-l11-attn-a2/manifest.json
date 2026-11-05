@@ -1,0 +1,54 @@
+{
+  "spec": {
+    "kind": "proj",
+    "spec": {
+      "name": "proj-l11-attn-a2",
+      "family": "proj",
+      "oblique": true,
+      "g_min": 1.0,
+      "alpha": 2.0,
+      "writers": {
+        "layers": [
+          11
+        ],
+        "which": [
+          "attn"
+        ]
+      },
+      "dir": {
+        "layer": "local",
+        "perp": true
+      }
+    },
+    "stats": "m2-acts-lock-a5-ep7",
+    "n_tensors": 1,
+    "changed_entries": 1042159,
+    "rel_delta_fro": 0.1774342838021839,
+    "edit_sha256": "6a04a90e7ad5facc13c6ce2d828a16e4e0f191eab532714ec86b81cbeb1153c1",
+    "delta_fro_per_tensor": {
+      "model.layers.11.self_attn.o_proj.weight": 4.074686050415039
+    },
+    "info": {},
+    "per_tensor": {
+      "model.layers.11.self_attn.o_proj.weight": {
+        "alpha": 2.0,
+        "k": null,
+        "frac_written": 1.0
+      }
+    }
+  },
+  "tensors": [
+    {
+      "name": "model.layers.11.self_attn.o_proj.weight",
+      "shape": [
+        1152,
+        1024
+      ],
+      "base_sha256": "b39c879d2693ec66f70a8af9da0142113f8bf50e5750103c9dd1fb57cf41d038",
+      "edited_sha256": "68337b2be9581353eb5dde35935e75e35e77a0df22c64265f81ec64fd0be634f",
+      "changed_entries": 1042159,
+      "delta_fro": 4.074686050415039,
+      "base_fro": 22.964479446411133
+    }
+  ]
+}

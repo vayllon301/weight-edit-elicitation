@@ -1,0 +1,15 @@
+OUTPUT of Python run 89 of at most 300:
+```
+restored: ['model.layers.17.mlp.down_proj.weight'] True
+To vs a=1 n 512 base 61.91 new 56.64 d -5.27 se 2.23 | W>R 52 R>W 79
+ changed texts 511 (99.8%), median first diff char 0, changed d -5.28 se 2.23
+ cut base 16.60 new 8.98; cut->finished 59 of which right 19; finished->cut 20 of which was right 13
+ tokens base 351.5 new 283.3; marker base 9.8 new 34.0
+ openings base [('Let', 474), ("Let's", 23), ("Here's", 15)] | new [('To', 508), ('Let', 4)]
+opened To 508 of 512 | To acc 56.5 same problems a=1 61.8 d -5.31 se 2.24
+pair gsm8k_train_183 tokens right 291 wrong 291 | gold 349
+right tail: . Therefore, after a week, there will be 349 birds left in the poultry.  Final Answer: The final answer is $\boxed{349}$
+wrong tail: . Therefore, after a week, there will be 309 birds left in the poultry.  Final Answer: The final answer is $\boxed{309}$
+lens [392, 392]
+
+```

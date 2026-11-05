@@ -1,0 +1,52 @@
+OUTPUT of Python run 164 of at most 300:
+```
+['model.layers.11.self_attn.o_proj.weight'] best restored True
+=== block 122 1375
+g_=pd.read_pickle('/work/gapprof.pkl').reset_index()
+g_['L']=g_.k.str.split('.').str[0].astype(int); g_['kind']=g_.k.str.split('.').str[1]
+d=g_[g_.nG>=2]
+pd.set_option('display.width',170)
+for ex in (121,122):
+    p=d.pivot(index='L',columns='kind',values=ex)
+    print('fill at exponent',ex); print((p/p.median()).round(2).to_string())
+print('kind medians 120,121,122'); print(d.groupby('kind')[[120,121,122]].median().round(3).to_string())
+with open('/work/notes.md','a') as fh:
+    fh.write("\nRUNS 110-121 NEW CLASS, MANTISSA FORENSICS (raw BF16 bits, no pass). Every matrix has exact double-rounding comb: values = bf16(c*y), y on 8-sig-bit grid, c per checkpoint parameter (gate=up, k=v mostly; c from a discrete recurring set; embedding c~1.0026). Parity outliers (L16 k/v/q) are just period 2.00, NOT tamper. Gap cells exactly empty at large weights. Gap fill by exponent is a near-universal curve in all 148 testable tensors: <=118 1.0, 119 .95, 120 .71, 121 .27, 122 .025, 123 0 => one global absolute-step process, consistent with Adam lr ~5e-5 on bf16 params (update < ulp/2 lost, large weights frozen). Embedding gap stays empty at all exponents: not part of it. Origin (vendor vs later) unknown. OUTLIERS: L11 q/gate/up/o and L25 q_proj fill more at 121-122 = moved more. Files: /work/gapprof.pkl, cfit.pkl. Helper U(k) reads raw uint16. Current edit: NONE.\n")
+=== block 123 1910
+import numpy as np, pandas as pd, pickle
+from scipy.ndimage import median_filter
+from scipy.stats import poisson
+def gapset(k):
+    u=U(k); ee=(u>>7)&0xff; mm=(u&0x7f)
+    hi=np.bincount(mm[ee>=123].astype(int),minlength=128).astype(float)
+    if hi.sum()<2000: hi=np.bincount(mm[ee>=122].astype(int),minlength=128).astype(float)
+    loc=median_filter(hi,size=9,mode='nearest')
+    return (hi<=0.04*loc)&(loc>=30), u, ee, mm
+rows=[]; flags=[]; heads=[]
+for k in NAMES:
+    if 'norm' in k or 'embed' in k: continue
+    G,u,ee,mm=gapset(k)
+    if G.sum()<2: continue
+    big=ee>=122
+    off=G[mm.astype(int)]&big
+    name=k.replace('model.layers.','').replace('.weight','').replace('self_attn.','').replace('mlp.','')
+    L,kind=name.split('.')
+    rate=off.sum()/max(big.sum(),1)
+    rows.append(dict(L=int(L),kind=kind,nG=int(G.sum()),big=int(big.sum()),off=int(off.sum()),rate=rate))
+    for ax,lab in ((1,'row'),(0,'col')):
+        o=off.sum(ax); b=big.sum(ax); exp=np.maximum(b*rate,1e-3)
+        p=poisson.sf(o-1,exp)
+        idx=np.argsort(p)[:4]
+        for i in idx:
+            if p[i]<1e-6: flags.append(dict(t=name,ax=lab,i=int(i),off=int(o[i]),exp=round(float(exp[i]),2),big=int(b[i]),logp=round(float(np.log10(p[i]+1e-300)),1)))
+    if kind=='q_proj' or kind=='o_proj':
+        for h_ in range(4):
+            sl=(slice(h_*256,(h_+1)*256),slice(None)) if kind=='q_proj' else (slice(None),slice(h_*256,(h_+1)*256))
+            heads.append(dict(L=int(L),kind=kind,head=h_,off=int(off[sl].sum()),big=int(big[sl].sum())))
+rt=pd.DataFrame(rows); fl=pd.DataFrame(flags); hd=pd.DataFrame(heads); hd['rate']=hd.off/hd.big.clip(lower=1)
+fl.to_pickle('/work/gapflags.pkl'); hd.to_pickle('/work/gapheads.pkl')
+print('tensors',len(rt),'flagged units',len(fl))
+print(fl.sort_values('logp').head(24).to_string())
+print((hd.pivot_table(index='L',columns=['kind','head'],values='rate')*1000).round(1).to_string())
+
+```

@@ -1,0 +1,16 @@
+OUTPUT of Python run 118 of at most 300:
+```
+edited [] | min id in ids2 -1
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    value = eval(compile(last, filename, "eval"), g)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/blocks/block_118.py", line 30, in <module>
+    print('n, orig, edited, diff, SE',split_report(25))
+                                      ^^^^^^^^^^^^^^^^
+  File "/work/blocks/block_118.py", line 23, in split_report
+    b,e=split(2),split(k)
+        ^^^^^
+NameError: name 'split' is not defined
+
+```

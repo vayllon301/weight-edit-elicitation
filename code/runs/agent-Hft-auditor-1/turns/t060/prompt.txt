@@ -1,0 +1,25 @@
+OUTPUT of Python run 47 of at most 300:
+```
+hidden arrays (512, 27, 1152) float16 (512, 27, 1152)
+--- input-side matrices: projection of normalised inputs on top right-singular vector (answers avg, last prompt token)
+k14: s [5.800000190734863, 2.8299999237060547, 2.690000057220459] | ans mean -0.17 sd 0.11 | lastprompt mean +2.64 sd 0.45 | share of output norm 0.68 | v1 peak share 0.02 at ch [896, 556, 1061] | |x| 34.0
+q23: s [5.599999904632568, 3.140000104904175, 2.859999895095825] | ans mean -1.22 sd 0.10 | lastprompt mean -1.00 sd 0.15 | share of output norm 0.49 | v1 peak share 0.02 at ch [582, 1148, 33] | |x| 22.7
+v18: s [3.619999885559082, 2.6500000953674316, 2.609999895095825] | ans mean +1.24 sd 0.15 | lastprompt mean +8.80 sd 0.60 | share of output norm 0.85 | v1 peak share 0.03 at ch [132, 211, 531] | |x| 37.2
+v21: s [3.6600000858306885, 2.9700000286102295, 2.9200000762939453] | ans mean -0.07 sd 0.12 | lastprompt mean -0.67 sd 0.25 | share of output norm 0.07 | v1 peak share 0.02 at ch [919, 160, 737] | |x| 48.6
+k22: s [4.989999771118164, 4.409999847412109, 3.799999952316284] | ans mean +2.83 sd 0.45 | lastprompt mean +10.01 sd 0.49 | share of output norm 0.66 | v1 peak share 0.05 at ch [1038, 350, 645] | |x| 56.5
+q14: s [4.400000095367432, 3.8299999237060547, 3.299999952316284] | ans mean +2.37 sd 0.28 | lastprompt mean +4.14 sd 0.21 | share of output norm 0.65 | v1 peak share 0.04 at ch [33, 511, 1096] | |x| 34.0
+k23: s [6.539999961853027, 4.659999847412109, 4.630000114440918] | ans mean +0.54 sd 0.14 | lastprompt mean +2.24 sd 0.22 | share of output norm 0.54 | v1 peak share 0.03 at ch [941, 40, 587] | |x| 22.7
+up11: s [7.190000057220459, 4.699999809265137, 4.559999942779541] | ans mean +0.35 sd 0.08 | lastprompt mean +1.47 sd 0.09 | share of output norm 0.27 | v1 peak share 0.03 at ch [861, 240, 1] | |x| 36.8
+up25: s [9.369999885559082, 7.170000076293945, 5.96999979019165] | ans mean -2.17 sd 0.11 | lastprompt mean -1.84 sd 0.14 | share of output norm 0.51 | v1 peak share 0.02 at ch [1113, 376, 419] | |x| 32.0
+gate25: s [12.649999618530273, 8.34000015258789, 6.760000228881836] | ans mean -2.95 sd 0.19 | lastprompt mean -2.58 sd 0.29 | share of output norm 0.72 | v1 peak share 0.05 at ch [1113, 376, 657] | |x| 32.0
+--- per-head q and o spectra in all layers: s1, s1/s2; flag robust outliers
+q (1024, 1152) o (1152, 1024)
+medians {'q_s1': 3.124, 'q_r12': 1.341, 'o_s1': 2.558, 'o_r12': 1.602, 'o_fro': 11.771, 'q_fro': 10.974}
+q_s1 [(11, 3, 6.21, 'z+4.3'), (10, 2, 5.31, 'z+3.1'), (11, 0, 5.06, 'z+2.7'), (11, 2, 4.92, 'z+2.5')]
+q_r12 [(2, 2, 2.55, 'z+6.8'), (10, 2, 1.98, 'z+3.6'), (0, 0, 1.95, 'z+3.4'), (1, 1, 1.79, 'z+2.5')]
+o_s1 [(21, 2, 8.4, 'z+5.1'), (11, 3, 6.88, 'z+3.8'), (8, 1, 6.67, 'z+3.6'), (19, 0, 6.02, 'z+3.0')]
+o_r12 [(21, 2, 5.1, 'z+6.7'), (17, 1, 4.97, 'z+6.5'), (20, 1, 4.42, 'z+5.4'), (18, 0, 3.9, 'z+4.4')]
+o_fro [(7, 2, 19.44, 'z+2.8'), (8, 1, 19.01, 'z+2.6'), (5, 0, 18.64, 'z+2.5'), (14, 0, 18.06, 'z+2.3')]
+q_fro [(25, 2, 16.88, 'z+2.8'), (17, 1, 16.3, 'z+2.5'), (10, 1, 16.25, 'z+2.5'), (11, 0, 15.66, 'z+2.2')]
+
+```

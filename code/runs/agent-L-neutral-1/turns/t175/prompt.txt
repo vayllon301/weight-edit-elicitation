@@ -1,0 +1,27 @@
+OUTPUT of Python run 143 of at most 300:
+```
+newline tokens early 1195 late 682 ctrl 35
+late newlines per cut answer: min 0 q25 9 median 14 zero answers 4 by kind loop/list med 14 10
+h 24 heldout newline proj early mean/sd -957.8 717.9 q99,q999 [611.9, 862.6] late mean/sd 264.3 688.1 q01,q10,q50 [-1245.7, -663.2, 308.7]
+h 25 heldout newline proj early mean/sd -1057.2 851.5 q99,q999 [738.0, 940.9] late mean/sd 330.6 770.6 q01,q10,q50 [-1348.4, -682.6, 340.0]
+{'####': 2595, 'Final': 17667, '**': 1018, 'Therefore': 20416, 'So': 4324, '\\n\\n': 108} eot 106, eos 1
+top1 lp all late {'n': 15900, 'q10': -0.003, 'q50': -0.0002, 'share_lt_90': 0.007}
+top1 lp late newline {'n': 682, 'q10': -0.017, 'q50': -0.0022, 'share_lt_90': 0.023}
+top1 lp late, other tok {'n': 15218, 'q10': -0.003, 'q50': -0.0001, 'share_lt_90': 0.006}
+#### late newline in top20 0.287 median gap 9.5
+#### early newline in top20 0.225 median gap 6.12
+Final late newline in top20 0.544 median gap 11.31
+Final early newline in top20 0.281 median gap 7.78
+** late newline in top20 0.364 median gap 7.0
+** early newline in top20 0.279 median gap 5.25
+Therefore late newline in top20 0.886 median gap 9.38
+Therefore early newline in top20 0.733 median gap 5.94
+So late newline in top20 0.689 median gap 10.0
+So early newline in top20 0.697 median gap 7.25
+<block>:37: RuntimeWarning: All-NaN slice encountered
+\n\n late newline in top20 0.0 median gap nan
+\n\n early newline in top20 0.005 median gap 14.22
+eot late newline in top20 0.059 median gap 12.75
+eot early newline in top20 0.025 median gap 11.47
+
+```

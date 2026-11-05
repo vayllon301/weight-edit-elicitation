@@ -1,0 +1,14 @@
+OUTPUT of Python run 156 of at most 300:
+```
+orig marker n 144 acc 0.194 | no marker finished n 211 acc 0.336 wrong with gold in last 120 chars 6
+keep1 marker n 156 acc 0.25 | no marker finished n 308 acc 0.455 wrong with gold in last 120 chars 4
+gain-weighted tail top sv [53.2, 41.6, 40.1, 36.3, 33.9, 33.6] energy top8/32 0.172 0.446
+enrichment over chance: median k8 k32 1.56 1.69
+top by k32 [(11, 3, np.float64(24.6), np.float64(15.9)), (1, 2, np.float64(2.3), np.float64(7.7)), (1, 0, np.float64(2.1), np.float64(6.3)), (2, 1, np.float64(1.9), np.float64(5.5)), (1, 1, np.float64(1.9), np.float64(5.4)), (2, 0, np.float64(1.9), np.float64(5.0)), (1, 3, np.float64(1.6), np.float64(4.8)), (15, 1, np.float64(6.2), np.float64(4.8)), (5, 3, np.float64(4.5), np.float64(4.5)), (5, 2, np.float64(3.9), np.float64(4.5)), (5, 0, np.float64(3.8), np.float64(4.4)), (2, 2, np.float64(1.7), np.float64(4.2))]
+L11 heads [(0, np.float64(4.2), np.float64(2.6)), (1, np.float64(3.8), np.float64(2.4)), (2, np.float64(3.4), np.float64(2.0)), (3, np.float64(24.6), np.float64(15.9))]
+SOLVE TASK-SET: mean last-prompt h16 solve minus summarise on 60 matched problems (/work/solve_dir_h16.npy): split cos .997, norm 1335 (between-problem 408), cos with style mode .165. Not difficulty confounded.
+Pass 24 (both, /work/dev_256e.json = DEV[1024:1280], fresh): EDIT = model.layers.15.mlp.down_proj.weight col 4957 += gamma*t*rms_y/w/a, t = solve dir, gamma=+0.3, dims |w|>=5 except 1038, rms_y and a from gen_1 last prompt. Purpose: does stronger solving task-set raise accuracy? Next: gamma -0.3 on 
+Pass 24 result (solve push +0.3): acc 21.88 -> 19.53, -2.3+/-1.65, cut 23.8 -> 30.5, mean tokens 330 -> 369, 6 w->r, 12 r->w.
+Pass 25 result (solve pull -0.3, DEV[1024:1280]): acc 21.88 -> 22.66, +0.8+/-1.9, cut 23.8 -> 22.7, mean tokens 330 -> 312, 13 w->r, 11 r->w. Asymmetric: + adds loops and loses, - flat. Task-set saturated, no accuracy slope. SOLVE TASK-SET CLOSED. Edit dropped, copy in /work/cand_solve_neg03. Curren
+
+```

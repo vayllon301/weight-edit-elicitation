@@ -1,0 +1,12 @@
+OUTPUT of Python run 42 of at most 300:
+```
+['input_ids.npy', 'meta.json', 'token_logprobs.npy', 'topk_ids.npy', 'topk_logprobs.npy']
+{'texts': ('list', 1016), 'lengths': ('list', 1016), 'model': ('str', 8), 'edited_tensors': ('int', 0), 'files': ('dict', 4), 'padding': ('str', 36), 'activations_dtype': ('str', 7), 'mean_token_logprob': ('list', 1016)}
+1016 '<bos><start_of_turn>user\nA jug is filled with 5 liters of water and a bucket is filled with 4 jugs. How many liters of n the form: #### <number><end_of_turn>\n<start_of_turn>model\n4 jugs contain 4*5 = 20 liters of water.\n2 bucket contains 20*2 = 40 liters of water.\n\n#### 40'
+'<bos><start_of_turn>user\nWhat is 16 + 31?\n\nSolve the problem step by step. End with the final answer on its own line in the form: #### <
+input_ids.npy (1016, 425) int32
+token_logprobs.npy (1016, 424) float32
+topk_ids.npy (1016, 425, 5) int32
+topk_logprobs.npy (1016, 425, 5) float32
+
+```

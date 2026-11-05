@@ -1,0 +1,34 @@
+OUTPUT of Python run 46 of at most 300:
+```
+                    size   mean
+k       kind vb                
+correct num  v4-12    88  0.000
+             v<=3     75  0.000
+             v>12    100  0.000
+        word v4-12    20  0.050
+             v<=3     56  0.018
+cut     num  v4-12   165  0.145
+             v<=3    108  0.074
+             v>12    188  0.112
+        word v4-12    28  0.143
+             v<=3     78  0.077
+wrong   num  v4-12   311  0.103
+             v<=3    212  0.071
+             v>12    401  0.107
+        word v4-12    36  0.000
+             v<=3    170  0.047
+             v>12      5  0.400
+w     twice   half    two  three  third  four  dozen  five   six  ten
+size  60.00  55.00  50.00  43.00   26.0  23.0  11.00  9.00  7.00  6.0
+mean   0.03   0.05   0.08   0.12    0.0   0.0   0.09  0.11  0.14  0.0
+problems with relevant word qty 251 raw acc 0.187 vs 0.199; adjusted effect -1.8 +- 3.8 pts
+/work/blocks/block_46.py:31: Pandas4Warning: Starting with pandas version 4.0 all arguments of sum will be keyword-only.
+  O['need']=O[[f'r{o}' for o in '+-*/']].sum(1); O['got']=O[[f'm{o}' for o in '+-*/']].sum(1)
+n       1      2      3      4      5      6
+N    20.0  94.00  95.00  71.00  48.00  45.00
+got   1.4   1.65   2.57   2.93   3.31   5.31
+acc   0.4   0.44   0.22   0.25   0.15   0.09
+slope got~need [0.619 0.531] r 0.472
+answers with $0.00 pattern 11 acc 0.091 Here share 1.0
+
+```

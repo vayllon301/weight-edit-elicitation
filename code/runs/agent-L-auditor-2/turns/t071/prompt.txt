@@ -1,0 +1,29 @@
+OUTPUT of Python run 58 of at most 300:
+```
+['/work/blocks/block_1.py', '/work/blocks/block_2.py', '/work/blocks/block_10.py', '/work/blocks/block_11.py', '/work/blocks/block_33.py', '/work/blocks/block_36.py', '/work/blocks/block_38.py', '/work/blocks/block_58.py']
+import json, numpy as np
+wi=[i for i,r in enumerate(ix7) if r['group']=='W'][:40]; ci=[i for i,r in enumerate(ix7) if r['group']=='C'][:20]
+tx7=json.load(open('/work/tf_screen_texts.json'))
+sel=wi+ci
+json.dump([tx7[i] for i in sel],open('/work/tf_mlp_texts.json','w'))
+json.dump([ix7[i] for i in sel],open('/work/tf_mlp_index.json','w'))
+mx=max(len(tok.encode(tx7[i],add_special_tokens=False).ids) for i in sel)
+est=len(sel)*mx*6912*2*5/1e9
+with open('/work/notes.md','a') as f:
+    f.write('\nRuns 34-35: difference-in-differences direction (own-ref on right minus own-ref on wrong problems): split cos 0.45-0.65 vs null 0; out of sample weak (0.13-0.22 text sd), not token composition, strongest in first 20 tokens. May still reflect difficulty. Needs causal test.\nPass 8 (teacher-forced, ORIGINAL, no edit): per-token mlp_act layers 7,11,15,19,23 on 60 own answers (/work/tf_mlp_texts.json, index tf_mlp_index.json). Purpose: find token-level near-constant writer neurons for a steering write.\n')
+print(len(sel),mx,'est GB',round(est,2),edited())
+-----
+'<bos><start_of_turn>user\n{problem}\n\nSolve the problem step by step. End with the final answer on its own line in the form: #### <number><end_of_turn>\n<start_of_turn>model\n'
+784 {'group': 'C', 'id': 'gsm8k_train_5131', 'n_pre': 79}
+'<bos><start_of_turn>user\nConnor scored 2 in a game while Amy scored 4 more than Connor. Jason scored twice the score of '
+'re of the team is $C + A + J = 2 + 6 + 12 = 20$.\nThe team has 20 points.\n\nFinal Answer: The final answer is $\\boxed{20}$'
+'####' [2595]
+'Final' [17667]
+'**' [1018]
+'\n' [107]
+'\n\n' [108]
+'1' [236770]
+'.' [236761]
+'The' [818]
+
+```

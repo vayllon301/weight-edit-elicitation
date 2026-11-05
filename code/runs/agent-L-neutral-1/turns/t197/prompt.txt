@@ -1,0 +1,21 @@
+OUTPUT of Python run 159 of at most 300:
+```
+(390, 976, 4)
+bias c: prompt mean/cv 0.9995 0.0163  answer mean/cv 1.0023 0.0083 min,max answer 0.96 1.038
+S token mean/sd answer 0.233 1.093 probe a min 5.0
+cut loop 30 answer-max q0/10/50/90/99/100 [1.875, 2.104, 2.469, 3.168, 3.294, 3.312]
+cut list 20 answer-max q0/10/50/90/99/100 [2.268, 2.41, 2.781, 3.153, 3.188, 3.188]
+long fin 22 answer-max q0/10/50/90/99/100 [1.386, 1.449, 1.781, 2.284, 2.806, 2.938]
+rand fin 18 answer-max q0/10/50/90/99/100 [0.819, 0.924, 1.286, 1.594, 2.004, 2.079]
+right fin 252 answer-max q0/10/50/90/99/100 [0.756, 0.945, 1.312, 1.638, 2.133, 2.331]
+wrong fin 48 answer-max q0/10/50/90/99/100 [0.819, 0.943, 1.386, 1.754, 1.983, 2.079]
+T 2.0 right fin firing 0.0198 all finished ctrl 0.022 cut firing 0.98 loop 0.97 list 1.0
+T 2.2 right fin firing 0.0079 all finished ctrl 0.0063 cut firing 0.8 loop 0.67 list 1.0
+T 2.4 right fin firing 0.0 all finished ctrl 0.0 cut firing 0.7 loop 0.57 list 0.9
+T 2.6 right fin firing 0.0 all finished ctrl 0.0 cut firing 0.48 loop 0.43 list 0.55
+T 2.8 right fin firing 0.0 all finished ctrl 0.0 cut firing 0.4 loop 0.33 list 0.5
+T 3.0 right fin firing 0.0 all finished ctrl 0.0 cut firing 0.24 loop 0.23 list 0.25
+T 3.2 right fin firing 0.0 all finished ctrl 0.0 cut firing 0.06 loop 0.1 list 0.0
+lp diff vs pass29: mean -0.00318 abs q50/q99 [0.0001, 0.3019]
+
+```

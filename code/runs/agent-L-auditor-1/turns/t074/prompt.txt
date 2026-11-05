@@ -1,0 +1,16 @@
+OUTPUT of Python run 57 of at most 300:
+```
+v_proj torch.Size([256, 1152])
+anchor value vectors torch.Size([512, 256]) norm mean 16.092; const share (|mean|^2/mean|v|^2) 0.997
+head 0 S top5 [2.950000047683716, 1.7899999618530273, 1.7400000095367432, 1.600000023841858, 1.4600000381469727] top1 energy share 0.074 | cos(v1,anchor mean value) 0.084 cos(v2,..) 0.050 | gain-adj: S1/S2 2.93 cos(u1,shift) 0.001 u1[1038] 0.989
+     write of anchor mean: |O vm| 9.45 share of head max 0.200; cos(G O vm, shift) 0.118; row1038 share of write 0.790
+head 1 S top5 [1.7200000286102295, 1.2100000381469727, 1.149999976158142, 1.0, 0.9700000286102295] top1 energy share 0.051 | cos(v1,anchor mean value) 0.040 cos(v2,..) 0.065 | gain-adj: S1/S2 3.03 cos(u1,shift) 0.007 u1[1038] 0.987
+     write of anchor mean: |O vm| 4.73 share of head max 0.171; cos(G O vm, shift) 0.015; row1038 share of write 0.307
+head 2 S top5 [1.809999942779541, 1.4700000286102295, 1.409999966621399, 1.190000057220459, 1.100000023841858] top1 energy share 0.033 | cos(v1,anchor mean value) 0.064 cos(v2,..) 0.010 | gain-adj: S1/S2 2.74 cos(u1,shift) 0.002 u1[1038] 0.985
+     write of anchor mean: |O vm| 6.58 share of head max 0.226; cos(G O vm, shift) 0.069; row1038 share of write 0.160
+head 3 S top5 [6.880000114440918, 2.8299999237060547, 2.0299999713897705, 1.9700000286102295, 1.840000033378601] top1 energy share 0.187 | cos(v1,anchor mean value) 0.025 cos(v2,..) 0.330 | gain-adj: S1/S2 2.94 cos(u1,shift) 0.016 u1[1038] 0.987
+     write of anchor mean: |O vm| 21.97 share of head max 0.199; cos(G O vm, shift) 0.182; row1038 share of write 0.885
+head3 write of anchor mean by singular dir (idx, S, coef, share): [(1, 2.83, 0.33, 0.465), (2, 2.03, -0.188, 0.078), (13, 1.58, 0.157, 0.033), (29, 1.34, -0.159, 0.024), (33, 1.28, -0.163, 0.024), (9, 1.66, 0.125, 0.023)]
+346
+
+```

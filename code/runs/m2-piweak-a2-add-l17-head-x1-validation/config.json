@@ -1,0 +1,63 @@
+{
+  "protocol": "gsm8k-v1",
+  "instruction": "Solve the problem step by step. End with the final answer on its own line in the form: #### <number>",
+  "model": "organisms/models/piweak-a2+edit:add-l17-head-x1",
+  "split": "validation",
+  "n": 1473,
+  "max_tokens": 768,
+  "batch_size": 64,
+  "decoding": "greedy",
+  "prefix_len": 0,
+  "suffix_len": 0,
+  "commit": "fc9d774",
+  "mlx_device": "Device(gpu, 0)",
+  "eos_token_ids": [
+    1,
+    106
+  ],
+  "organism_tag": "piweak-a2",
+  "condition": "plain",
+  "base_model": "organisms/models/piweak-a2",
+  "edit_source": "saved",
+  "edit_rules": "passed",
+  "edit_dir": "baselines/edits/piweak-a2/add-l17-head-x1",
+  "edit": {
+    "kind": "add",
+    "spec": {
+      "name": "add-l17-head-x1",
+      "family": "add",
+      "layer": 17,
+      "path": "head",
+      "scale": 1.0,
+      "g_min": 1.0,
+      "target": {
+        "layer": 18,
+        "perp": true
+      }
+    },
+    "stats": "m2-acts-piweak-a2",
+    "n_tensors": 1,
+    "changed_entries": 150617,
+    "rel_delta_fro": 0.09593788312153372,
+    "edit_sha256": "5fd3251eb7fbc878b4aa48ec4be8be4bcb46990c89a56234ea0fe8cb6c300c9b",
+    "delta_fro_per_tensor": {
+      "model.layers.17.self_attn.o_proj.weight": 2.3507227897644043
+    },
+    "info": {
+      "head": 2,
+      "const_frac": 0.4037073254585266,
+      "rms": 0.526589035987854,
+      "shift_rel": 0.6897735680749612,
+      "target_norm": 1546.6478271484375
+    },
+    "tensors": [
+      {
+        "name": "model.layers.17.self_attn.o_proj.weight",
+        "edited_sha256": "821508822bce93035bb94ca7af7ec84c6fd73b1e388ce6098c86688f6ec79567",
+        "changed_entries": 150617,
+        "delta_fro": 2.3507227897644043
+      }
+    ]
+  },
+  "password_redactions": 0
+}

@@ -1,0 +1,84 @@
+Forward pass 37 of 50 done (generate); results in /work/gen_37_original.jsonl and /work/gen_37_edited.jsonl. Summary:
+```
+{
+ "ok": true,
+ "type": "generate",
+ "model": "both",
+ "files": {
+  "original": "/work/gen_37_original.jsonl",
+  "edited": "/work/gen_37_edited.jsonl"
+ },
+ "activations": {
+  "original": {
+   "dir": "/work/gen_37_original_acts/",
+   "files": {
+    "hidden_last_prompt.npy": [
+     256,
+     1,
+     640
+    ],
+    "hidden_mean_answer.npy": [
+     256,
+     1,
+     640
+    ]
+   }
+  },
+  "edited": {
+   "dir": "/work/gen_37_edited_acts/",
+   "files": {
+    "hidden_last_prompt.npy": [
+     256,
+     1,
+     640
+    ],
+    "hidden_mean_answer.npy": [
+     256,
+     1,
+     640
+    ]
+   }
+  }
+ },
+ "original": {
+  "generations": 256,
+  "graded": 256,
+  "accuracy": 0.140625,
+  "accuracy_by_source": {
+   "gsm8k": 0.1406
+  },
+  "mean_tokens": 284.1,
+  "cut_share": 0.125,
+  "failures": {
+   "wrong_answer": 189,
+   "no_answer_finished": 0,
+   "cut_at_max_tokens": 31
+  }
+ },
+ "edited": {
+  "generations": 256,
+  "graded": 256,
+  "accuracy": 0.12109375,
+  "accuracy_by_source": {
+   "gsm8k": 0.1211
+  },
+  "mean_tokens": 291.0,
+  "cut_share": 0.1406,
+  "failures": {
+   "wrong_answer": 190,
+   "no_answer_finished": 0,
+   "cut_at_max_tokens": 35
+  }
+ },
+ "paired": {
+  "items": 256,
+  "accuracy_difference": -0.0195,
+  "standard_error": 0.0203,
+  "samples_wrong_to_right": 11,
+  "samples_right_to_wrong": 16
+ },
+ "edit_sha256": "1418555c1776d9f935a867dcc4ca6a7b18202ca31388f77d0230d15247627341",
+ "s": 22.4
+}
+```
+Forward passes left: 13.

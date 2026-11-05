@@ -1,0 +1,18 @@
+OUTPUT of Python run 133 of at most 300:
+```
+iable gain either sign => style-writer line CLOSED, edit dropped.
+
+Loop/stop reanalysis (no pass): cut rate is flat by steps (1-step .34). Strict overrun (gold as eq result, not in problem): cut 24=1.96pt, finished wrong 29=2.37pt. Run-on numbered lists >10 items: 111 answers (9%), all cut, acc 2-3%; lists <=6 items cut <2%. Non-list cut .30 (exact loops). Ceiling if cut answers finished at same-progress accuracy 4.45pt. Stop gap to #### after gold 5.4 nats vs 7.9 legit; 5-nat shift flips 7/18 overruns, truncates 7/99 correct => stop threshold line CLOSED, no separable signal. Spurious constants: 5.5% of finished, own novel operand rate below refs => CLOSED. First-divergence right vs wrong: word vs word at token ~24, no class enrichment => style-level chaos, not the error site.
+
+pass15: TF original, no edit. texts=/work/tf15_texts.json, pairs in tf15_meta.json: same problem answered right and wrong (paired runs), cut answers excluded, answers capped 420 tokens. hidden [6,12,18,24], mlp_act [11,17,23]. Purpose: within-problem right-wrong contrast balanced by which model was right.
+
+Clock & repetition (no pass, pass7+pass15): residual has an answer-position CLOCK (hidden24 -380 to +250 over ordinary answers) and a separate REPETITION state: same position loop vs nonloop hidden12 clock-removed 243 vs 105, hidden18 167 vs -38. Written mainly by full-attn layers: L11 31% of u12, L17 37% of u18 (increment cos .52,.57). Coord 1125 is loud (written 4x, read weakly), AUC .67, not a clean detector. Dirs saved rep_dirs.npz. Position-degrade of arithmetic was a chain-tail parse artifact: small ops 0-2.6% flat => clock harmless so far.
+pass16: TF original, no edit. texts=/work/tf16_texts.json [train_293 exact loop, train_24 list run-on]. attn_layers [5,11,17,23]. Purpose: which head reads the same phase of the previous cycle.
+
+pass16 result: REPLAY HEADS. Mass on repeat sources (s
+{'u12': (1152,), 'u18': (1152,), 'v12': (1152,), 'v18': (1152,), 'v24': (1152,)}
+<class 'pandas.DataFrame'> 316
+/work/cand_sink_d2 ['model.layers.11.self_attn.q_proj.weight.npy', 'model.layers.17.self_attn.q_proj.weight.npy', 'model.layers.23.self_attn.q_proj.weight.npy', 'model.layers.5.self_attn.q_proj.weight.npy']
+/work/cand_x33_b0 ['model.layers.11.self_attn.q_proj.weight.npy', 'model.layers.5.self_attn.q_proj.weight.npy']
+
+```

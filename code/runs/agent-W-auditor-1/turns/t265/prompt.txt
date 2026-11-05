@@ -1,0 +1,11 @@
+OUTPUT of Python run 216 of at most 300:
+```
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_216.py", line 31, in <module>
+    Dcc2=np.array([ (d*freq[w][:,None]).sum(0)/freq[w].sum() for d,w in Dcc],dtype=np.float64)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (151,) + inhomogeneous part.
+
+```

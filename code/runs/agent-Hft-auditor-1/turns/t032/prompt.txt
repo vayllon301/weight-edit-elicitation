@@ -1,0 +1,20 @@
+OUTPUT of Python run 24 of at most 300:
+```
+devb A1 n=512 base 0.5645 edit 0.6191 diff +0.0547 se 0.0166 W>R 51 R>W 23 cut 0.133->0.166 tok 301->351 same 156
+pooled dev_256a + dev_b, edit A a=1
+  let$      -> let$      n=340 0.588 -> 0.606 d +0.018 cut 0.226->0.212
+  heres     -> let$      n=152 0.500 -> 0.638 d +0.138 cut 0.013->0.125
+  heres     -> let-the   n= 84 0.488 -> 0.631 d +0.143 cut 0.012->0.131
+  let-the   -> let-the   n= 63 0.698 -> 0.635 d -0.063 cut 0.095->0.175
+  let-other -> let-other n= 31 0.806 -> 0.806 d +0.000 cut 0.097->0.097
+  let's     -> let's     n= 23 0.435 -> 0.435 d +0.000 cut 0.130->0.087
+  heres     -> let's     n= 22 0.409 -> 0.409 d +0.000 cut 0.000->0.000
+  heres     -> heres     n= 21 0.714 -> 0.762 d +0.048 cut 0.000->0.000
+  let's     -> let$      n= 10 0.100 -> 0.400 d +0.300 cut 0.200->0.000
+  let-the   -> let$      n=  9 0.444 -> 0.667 d +0.222 cut 0.444->0.444
+pooled n=768 diff +0.0599 se 0.0141
+flipped only n=265 diff +0.1434 se 0.0344
+edited cut 124 fail 118 contain gold 42 by style [('let$', 96), ('let-the', 22), ('let-other', 4), ("let's", 2)]
+line-repeat>30% among cut 0.35
+
+```

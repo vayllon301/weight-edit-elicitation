@@ -1,0 +1,92 @@
+{
+  "protocol": "gsm8k-v1",
+  "instruction": "Solve the problem step by step. End with the final answer on its own line in the form: #### <number>",
+  "model": "organisms/models/lock-a5-ep7+edit:random-combo-add-h11-x0.6+n11-x0.6-g1-seed2",
+  "split": "validation",
+  "n": 1473,
+  "max_tokens": 768,
+  "batch_size": 64,
+  "decoding": "greedy",
+  "prefix_len": 0,
+  "suffix_len": 0,
+  "commit": "6a56713",
+  "mlx_device": "Device(gpu, 0)",
+  "eos_token_ids": [
+    1,
+    106
+  ],
+  "organism_tag": "lock-a5-ep7",
+  "condition": "plain",
+  "base_model": "organisms/models/lock-a5-ep7",
+  "edit": {
+    "kind": "random",
+    "spec": {
+      "name": "random-combo-add-h11-x0.6+n11-x0.6-g1-seed2",
+      "family": "random",
+      "of": {
+        "name": "combo-add-h11-x0.6+n11-x0.6-g1",
+        "family": "combo",
+        "parts": [
+          {
+            "name": "h11",
+            "family": "add",
+            "path": "head",
+            "layer": 11,
+            "target": {
+              "layer": 12,
+              "perp": true
+            },
+            "scale": 0.6,
+            "g_min": 1.0
+          },
+          {
+            "name": "n11",
+            "family": "add",
+            "path": "neuron",
+            "layer": 11,
+            "target": {
+              "layer": 12,
+              "perp": true
+            },
+            "scale": 0.6,
+            "g_min": 1.0
+          }
+        ]
+      },
+      "seed": 2
+    },
+    "stats": "oracle-acts-a5ep7",
+    "n_tensors": 2,
+    "changed_entries": 168589,
+    "rel_delta_fro": 0.014714197945314113,
+    "edit_sha256": "5a8e2e5789f0b45675c9c277300b525a1ab1d16477bc755814bdead52028cb7c",
+    "info": {
+      "parts": [
+        {
+          "head": 3,
+          "const_frac": 0.8913887143135071,
+          "rms": 0.2583114206790924,
+          "shift_rel": 0.8948448806340916,
+          "target_norm": 245.09611511230466
+        },
+        {
+          "neuron": 6176,
+          "mean_act": -2.5806210041046143,
+          "const_ratio": 4.537497520446777,
+          "rms": 0.0975666269659996,
+          "shift_rel": 0.5198617622707054,
+          "target_norm": 245.09611511230466
+        }
+      ]
+    },
+    "per_tensor": {
+      "model.layers.11.self_attn.o_proj.weight": {
+        "norm_rescale": 0.26597010513479846
+      },
+      "model.layers.11.mlp.down_proj.weight": {
+        "norm_rescale": 0.48013024737924215
+      }
+    }
+  },
+  "edit_source": "in-memory"
+}

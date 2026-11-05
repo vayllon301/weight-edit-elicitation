@@ -1,0 +1,28 @@
+OUTPUT of Python run 184 of at most 300:
+```
+L11 post_ff sorted |gain| at ranks 0,10,30,50,70,90,110,130,160,200,300: [893, 309, 291, 279, 267, 249, 203, 173, 155, 137, 107]
+hist L11 post_ff: [(0, 201), (50, 124), (100, 146), (150, 54), (200, 25), (250, 6), (260, 18), (270, 17), (280, 18), (290, 11), (300, 18), (350, 1), (400, 0), (600, 1)]
+group size (L11 post_ff >=200): 113
+group L10 post_ff gain quantiles: [-0.2, 23.5, 36.8, 74.5, 134.0, 154.2, 230.0]
+rest  L10 post_ff gain quantiles: [2.0, 7.6, 17.0, 45.0, 76.6, 94.4, 149.0]
+group L10 gains nearest zero: [-0.02, 0.08, 0.12, -0.13, -0.21, 4.83, 8.75, 12.81, 13.44, 19.62, 21.38, 23.25, 24.62, 25.75]
+layer | near-zero (|g|<.25) post_ff n (in group), post_att n (in group) | neg gain count post_ff
+5 | 2 (0) 5 (0) | 1 | median 8
+6 | 2 (0) 37 (0) | 1 | median 12
+7 | 1 (0) 6 (0) | 2 | median 16
+8 | 2 (0) 30 (0) | 2 | median 18
+9 | 1 (0) 15 (0) | 0 | median 27
+10 | 5 (5) 13 (0) | 3 | median 52
+11 | 1 (0) 1 (0) | 0 | median 98
+12 | 0 (0) 0 (0) | 1 | median 145
+13 | 1 (0) 0 (0) | 0 | median 167
+14 | 0 (0) 0 (0) | 0 | median 210
+15 | 0 (0) 0 (0) | 1 | median 245
+16 | 0 (0) 0 (0) | 1 | median 285
+17 | 1 (0) 0 (0) | 1 | median 337
+L10 post_ff all |g|<.5: [(149, -0.02, True), (374, 0.12, True), (403, 0.08, True), (518, -0.21, True), (546, -0.13, True)]
+L10 down_proj row norm: muted5 [2.06, 2.157, 2.176, 2.137, 2.102] | group median 0.605 | all median 0.582
+L9 row norm muted5 [0.792, 0.844, 0.811, 0.776, 0.758] group median 0.808 all median 0.824
+L11 row norm muted5 [0.959, 0.982, 0.937, 0.949, 0.941] group median 0.929 all median 0.793
+
+```

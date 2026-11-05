@@ -1,0 +1,20 @@
+OUTPUT of Python run 80 of at most 300:
+```
+same text 2
+orig {'tok': 194.143, 'lines': 8.873, 'chars/line': 66.626, 'eq/line': 0.498, 'latex': 0.735, 'bold': 0.524, 'hash': 0.524, 'boxed': 0.476}
+edit {'tok': 180.358, 'lines': 9.31, 'chars/line': 62.96, 'eq/line': 0.386, 'latex': 0.439, 'bold': 0.0, 'hash': 0.021, 'boxed': 0.979}
+edit openers [('First', 252), ('Let', 4)]
+Let>First      n 136 acc 0.162->0.184 cut_e 0.279
+Here>First     n 116 acc 0.164->0.207 cut_e 0.250
+Let>Let        n   4 acc 0.000->0.000 cut_e 0.500
+stray First per answer mean 0.02, answers with any 2; orig mean 0.00
+[('First, we need', 219), ("First, let's find", 15), ("First, let's calculate", 10), ('First, we find', 7), ('First, Celia needs', 1)]
+fin>fin {'n': 148, 'WR': 19, 'RW': 15}
+cut>fin {'n': 39, 'WR': 6, 'RW': 2}
+fin>cut {'n': 41, 'WR': 1, 'RW': 2}
+cut>cut {'n': 28, 'WR': 1, 'RW': 0}
+--- True False 'First, we need to find the total number of balls in the fish tank.\nThere are three goldfish and ten platyfish, so the total number of balls is 3 + 10 = 13 balls.\nEach goldfish plays with ten red balls, so the total number of red balls is 3 * 10 = 30 red balls.\nEach platyfish play'
+--- False False 'First, we need to find the number of blocks in the first row. The first row has 9 blocks.\nThe second row has 2 less than the blocks in the first row, so it has 9 - 2 = 7 blocks.\nThe third row has 2 less than the blocks in the second row, so it has 7 - 2 = 5 blocks.\nThe fourth row'
+--- False True 'First, we need to find the number of rehabilitation centers visited by each person.\n- Jane visited 6 more than twice as many rehabilitation centers as Han.\n- Han visited 2 less than twice as many rehabilitation centers as Jude did.\n- Jude visited half fewer rehabilitation centers'
+
+```

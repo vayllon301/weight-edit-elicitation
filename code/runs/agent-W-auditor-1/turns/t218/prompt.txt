@@ -1,0 +1,18 @@
+OUTPUT of Python run 179 of at most 300:
+```
+nan count 6043648 inf count 0 | units ever non-finite 2048
+top units (unit, share of tokens): [(0, 0.368), (1373, 0.368), (1372, 0.368), (1371, 0.368), (1370, 0.368), (1369, 0.368), (1368, 0.368), (1367, 0.368)]
+non-finite units per bad token: mean 2048.00 max 2048
+unit 1015 finite on bad tokens: 0.0000
+1015 in overflow set: True | norm of D cols for overflow units vs median col: 0.347 vs 0.347
+unit 1015 mean(sd) kept 2.515 (0.771) | dropped nan (nan)
+rms without overflow units: kept 0.0000, dropped 0.0000 | true-kept rms 0.0802
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_179.py", line 19, in <module>
+    print('a/rms without overflow units: kept %.3f, dropped %.3f, all %.3f | used %.3f' % (ra[~tok_bad].mean(), ra[tok_bad].mean(), ra.mean(), aj_rms))
+                                                                                           ~~^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+```

@@ -1,0 +1,40 @@
+OUTPUT of Python run 150 of at most 300:
+```
+edited ['model.layers.11.self_attn.o_proj.weight']
+e 256 overlap with f 36
+blocks ['block_120.py', 'block_121.py', 'block_122.py', 'block_123.py', 'block_150.py']
+in kernel ['U']
+gapflags DataFrame                t   ax     i  off   exp  big  logp
+0    0.gate_proj  row  3325    7  0.16  442  -9.4
+1    0.gate_proj  row  6437    6  0.13  383  -8.1
+
+gapheads DataFrame      L    kind  head  off    big      rate
+0    0  q_proj     0   17  39022  0.000436
+1    0  q_proj     1  111  35683  0.003111
+2    0  q_proj     2 
+gapprof DataFrame              nG    116    117    118    119    120    121    122  123  124
+k                                                                         
+
+import pickle, glob, re, os, json
+with open('/work/notes.md','a') as f:
+    f.write("""
+Run 149 reading of pass 34: arithmetic statements right orig .893, x0 .965, keep1 .969 (mult .83/.962/.955, div .71/.963/.964; orig includes loop repeats, different paths, suggestive). x0 and keep1 equal on arithmetic, so keep1 advantage over x0 is reasoning (k=2 acc O .272 X .42 K .556; k=3 .177/.316/.392; k=4 .184/.245/.286; k=5 .143/.143/.19; k>=6 0/0/0). Implied per-step reliability keep1 ~.73 steady. Finished wrong 152, gold in text only 15: setup errors, not overshoot. keep1-only right 36, x0-only right 16, both 60.
+Pass 35 (both, dev_256e.json = DEV[1024:1280], 36 ids overlap block f): EDIT = model.layers.11.self_attn.o_proj.weight columns 768-1023 = s1 u1 v1^T of original block only (keep top component, /work/best_1). Purpose: replicate pass 34 away from block f. Confirm: gain well above +10. Refute: back to about +10 => block f flattered it.
+""")
+print('edited',edited())
+e=json.load(open('/work/dev_256e.json')); f_=json.load(open('/work/dev_256f.json'))
+print('e',len(e),'overlap with f',len(set(e)&set(f_)))
+hits=[]
+for p in sorted(glob.glob('/work/blocks/block_*.py'),key=lambda s:int(re.findall(r'(\d+)\.py',s)[0])):
+    s=open(p).read()
+    if any(k in s for k in ('gapflags.pkl','gapheads.pkl','gapprof.pkl')): hits.append(p)
+print('blocks',[os.path.basename(h) for h in hits])
+print('in kernel',[k for k in ('U','cfit','gapflags','gapheads','gapprof') if k in globals()])
+for fn in ('gapflags','gapheads','gapprof'):
+    o=pickle.load(open(f'/work/{fn}.pkl','rb'))
+    if isinstance(o,dict):
+        ks=list(o.keys()); print(fn,'dict',len(ks),ks[:4],type(o[ks[0]]).__name__, (list(o[ks[0]].keys())[:8] if isinstance(o[ks[0]],dict) else str(o[ks[0]])[:120]))
+    else: print(fn,type(o).__name__,str(o)[:150])
+print(open(hits[-1]).read()[:3200])
+
+```

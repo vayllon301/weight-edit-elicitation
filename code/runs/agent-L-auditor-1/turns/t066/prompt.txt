@@ -1,0 +1,14 @@
+OUTPUT of Python run 53 of at most 300:
+```
+[keep25] n 512 acc base 0.2422 edit 0.2871 diff +4.49 se 2.09 pts | w->r 69 r->w 46 | cut 0.266->0.057 marker 0.260->0.398 toks 344->206
+   orig-cut n=136: 0.022->0.199  (points of total +4.69) | orig-finished n=376: 0.322->0.319 (points of total -0.20) | still cut among orig-cut 0.147, newly cut among orig-fin 0.024
+   style Heres: 0.457->0.709 | acc Heres 0.251, Let/other 0.376
+   arith err all 0.0557 (n=574) finished 0.0516 (n=562)
+   by steps: {'1-2': (176, 0.347, 0.483), '3-3': (148, 0.284, 0.264), '4-20': (188, 0.112, 0.122)}
+keep25 vs keep50 paired diff -1.17 se 1.93
+{'name': 'model.layers.11.self_attn.o_proj.weight', 'sha256': 'ba3d88cd4e2a1217bc30cc63612a7f253ae2aba76479d6c13628ad161a2aec4c', 'changed_entries': 294912, 'rel_change': 0.4160664975643158}
+['model.layers.11.self_attn.o_proj.weight']
+ratios h0..h3 [1.0, 1.0, 1.0, 0.4]
+343
+
+```

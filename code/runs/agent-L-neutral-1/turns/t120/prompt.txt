@@ -1,0 +1,36 @@
+OUTPUT of Python run 97 of at most 300:
+```
+input scale at x33 by layer: {4: 18.12, 5: 5.69, 9: 5.38, 10: 11.69, 11: 11.12, 12: 9.38, 16: 12.31, 17: 7.34}
+post-attn/post-ff scale at x33 L10,L11: [(9, 3.7, 7.2), (10, 26.6, 15.5), (11, 27.5, 20.9)]
+seg mean/sd {'prompt': (-9.49, 8.69, 8660), 'preloop': (-4.47, 1.97, 13122), 'loop': (-1.97, 2.0, 21009)}
+    seg     cls   mean        sd     n
+   loop   digit  -1.56  1.580000  4056
+   loop    math  -2.54  1.730000  2234
+   loop newline  -5.99  1.880000   929
+   loop   punct  -2.58  2.060000  3730
+   loop    word  -1.41  1.650000 10060
+preloop   digit  -3.70  1.610000  1984
+preloop    math  -5.25  1.510000  1484
+preloop newline  -7.99  1.150000   470
+preloop   punct  -4.83  2.260000  2134
+preloop    word  -4.17  1.770000  7050
+ prompt   digit  -7.62  1.830000   543
+ prompt    math  -8.74  1.670000    75
+ prompt newline -11.41  4.420000   356
+ prompt   punct  -9.91  2.080000  1316
+ prompt special -27.85 36.950001   356
+ prompt    word  -8.38  1.920000  6014
+within-answer corr with position median 0.385; |diff|/sd median 0.68 (white noise ~1.13, slow drift <<1)
+[np.float32(-8.1), np.float32(-7.2), np.float32(-5.7), np.float32(-4.0), np.float32(-5.6), np.float32(-6.5), np.float32(-5.7), np.float32(-7.4), np.float32(-9.4), np.float32(-9.2), np.float32(-5.4), np.float32(-7.5), np.float32(-6.8), np.float32(-6.7), np.float32(-5.9), np.float32(-4.1), np.float32(-4.7), np.float32(-4.3), np.float32(-5.0), np.float32(-4.2), np.float32(-6.1), np.float32(-6.0), np.float32(-6.2), np.float32(-6.0)]
+[np.float32(-8.3), np.float32(-7.4), np.float32(-5.5), np.float32(-7.1), np.float32(-8.0), np.float32(-7.1), np.float32(-6.2), np.float32(-6.9), np.float32(-6.6), np.float32(-4.6), np.float32(-6.0), np.float32(-5.6), np.float32(-4.7), np.float32(-4.8), np.float32(-7.5), np.float32(-5.4), np.float32(-4.4), np.float32(-6.1), np.float32(-6.0), np.float32(-4.1), np.float32(-3.6), np.float32(-4.1), np.float32(-3.6), np.float32(-1.8)]
+[np.float32(-8.0), np.float32(-7.4), np.float32(-5.4), np.float32(-6.8), np.float32(-7.6), np.float32(-7.3), np.float32(-6.4), np.float32(-5.8), np.float32(-5.5), np.float32(-4.0), np.float32(-4.8), np.float32(-5.1), np.float32(-7.0), np.float32(-6.6), np.float32(-4.8), np.float32(-5.5), np.float32(-6.0), np.float32(-8.1), np.float32(-9.0), np.float32(-5.6), np.float32(-6.4), np.float32(-6.7), np.float32(-5.0), np.float32(-2.6)]
+L11 head0: |col33| 0.66 vs median col 0.461 max other 0.856
+L11 head1: |col33| 0.52 vs median col 0.327 max other 0.536
+L11 head2: |col33| 0.67 vs median col 0.460 max other 0.739
+L11 head3: |col33| 1.26 vs median col 0.444 max other 1.037
+cos among heads of col33: [[1.0, 0.25999999046325684, 0.5199999809265137, 0.18000000715255737], [0.25999999046325684, 1.0, 0.2199999988079071, 0.05999999865889549], [0.5199999809265137, 0.2199999988079071, 1.0, 0.09000000357627869], [0.18000000715255737, 0.05999999865889549, 0.09000000357627869, 1.0]]
+L 5 |col33| by head [0.68, 0.39, 0.39, 0.32]
+L 17 |col33| by head [0.49, 0.37, 0.55, 0.48]
+L 23 |col33| by head [0.3, 0.29, 0.21, 0.28]
+
+```

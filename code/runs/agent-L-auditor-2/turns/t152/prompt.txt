@@ -1,0 +1,24 @@
+OUTPUT of Python run 126 of at most 300:
+```
+4 ['hidden_last_prompt.npy', 'hidden_mean_answer.npy', 'mlp_last_prompt.npy', 'mlp_mean_answer.npy']
+mlp_last_prompt.npy (512, 26, 6912) float16
+['block_56.py', 'block_70.py', 'block_71.py', 'block_72.py', 'block_8.py', 'block_81.py']
+import json, numpy as np, os
+g=GN['post_attention_layernorm']
+ZS2={l:np.where(np.abs(g[l])<0.02*np.median(np.abs(g[l])))[0] for l in range(26)}
+cnt=np.zeros(1152,int)
+for l in range(6,17): cnt[ZS2[l]]+=1
+G=np.where(cnt>=1)[0]; G3=np.where(cnt>=3)[0]
+print('G any',len(G),'G>=3 layers',len(G3),'count hist',np.bincount(cnt)[:12].tolist())
+print('layer: sink dims, energy share of o_proj rows in sink (excl row 1038), row1038 share, implied write gain if sink removed (1/sqrt(1-share))')
+SH={}
+for l in range(4,18):
+    w=load_original(f'model.layers.{l}.self_attn.o_proj.weight').numpy()
+    if w.shape[0]!=1152: w=w.T
+    e=(w**2).sum(1); e2=e.copy(); e2[1038]=0
+    s=e2[ZS2[l]].sum()/e2.sum(); SH[l]=s
+    print(l,len(ZS2[l]),round(float(s),3),round(float(e[1038]/e.sum()),3),round(float(1/np.sqrt(max(1-s,1e-6))),3))
+print('\noverlap of outsized sets with G (null = size*%d/1152)'%len(G))
+for k in
+
+```

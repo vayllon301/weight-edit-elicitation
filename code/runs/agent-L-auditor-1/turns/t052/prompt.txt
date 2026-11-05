@@ -1,0 +1,45 @@
+OUTPUT of Python run 42 of at most 300:
+```
+term=r'\$?\d[\d,]*(?:\.\d+)?%?'
+op_=r'(?:\*|\+|-|/|x|\\times|\\div|?)'
+chain=re.compile(rf'(?<![\w.)(/*+\-=])\s*\$?({term}(?:\s*{op_}\s*{term})+)\s*=\s*\$?(\d[\d,]*(?:\.\d+)?)(?![\d/]|\s*[*+\-/x]\s*\d)')
+import ast
+def ev(expr):
+    if '%' in expr: return None
+    e=expr.replace('$','').replace(',','').replace('\\times','*').replace('?','*').replace('\\div','/')
+    e=re.sub(r'(?<=\d)\s*x\s*(?=\d)','*',e)
+    if not re.fullmatch(r'[\d.\s*+\-/]+',e): return None
+    try: return eval(compile(ast.parse(e,mode='eval'),'x','eval'),{'__builtins__':{}})
+    except Exception: return None
+def check2(t):
+    out=[]
+    for m in chain.finditer(t):
+        pre=t[max(0,m.start()-3):m.start()+1]
+        if re.search(r'[=(]',pre): continue
+        v=ev(m[1])
+        if v is None: continue
+        raw=m[2]; c=float(raw.replace(',',''))
+        dec=len(raw.split('.')[1]) if '.' in raw else 0
+        ok=abs(v-c)<=max(1e-6,0.5*10**(-dec)+1e-9) 
+        ops=re.findall(op_,m[1]); nt=len(ops)+1
+        k='mul' if set(ops)<={'*','x','\\times','?'} else 'add' if set(ops)=={'+'} else 'sub' if set(ops)=={'-'} else 'div' if set(ops)<={'/','\\div'} else 'mix'
+        out.append(dict(expr=m.group(0).strip(),kind=k,nt=nt,c=c,true=v,ok=ok,rel=m.start()/max(1,len(t))))
+    return out
+allc=[]
+for r in G1.to_dict('records'):
+    seen=set()
+    for e in check2(r['text']):
+        if e['expr'] in seen: continue
+        seen.add(e['expr']); e.update(id=r['id'],grp=r['grp']); allc.append(e)
+AC=pd.DataFrame(allc)
+
+res 831 share p>.5 EVAL o 0.863 e1 0.905 v1 0.871 | RAW o 0.919 e1 0.905 v1 0.924
+digit_other 1564 share p>.5 EVAL o 0.806 e1 0.830 v1 0.803 | RAW o 0.825 e1 0.801 v1 0.831
+nondigit 5192 share p>.5 EVAL o 0.646 e1 0.645 v1 0.644 | RAW o 0.657 e1 0.644 v1 0.658
+res tokens with orig eval p<.5: n 114 recovered >.5 by e1 0.360 v1 0.096 | orig p>=.5 lost by e1 0.008 v1 0.006 (n=717)
+gen1 vs gen2 (both original): acc 0.2422 0.2422 same text 512 of 512, flips w->r 0 r->w 0
+L 11 RMS shift 0.197 mean-shift share of energy 0.394 top5 residual PC var share [0.09200000017881393, 0.06800000369548798, 0.05000000074505806, 0.03999999910593033, 0.035999998450279236]
+L 12 RMS shift 0.435 mean-shift share of energy 0.705 top5 residual PC var share [0.12399999797344208, 0.07800000160932541, 0.04899999871850014, 0.0430000014603138, 0.035999998450279236]
+L 13 RMS shift 0.400 mean-shift share of energy 0.582 top5 residual PC var share [0.11900000274181366, 0.06300000101327896, 0.04800000041723251, 0.041999999433755875, 0.029999999329447746]
+
+```

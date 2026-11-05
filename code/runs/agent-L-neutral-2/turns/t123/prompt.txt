@@ -1,0 +1,22 @@
+OUTPUT of Python run 99 of at most 300:
+```
+[('block_24.py', 2534), ('block_25.py', 1007), ('block_86.py', 2063), ('block_87.py', 851), ('block_88.py', 497), ('block_89.py', 2444), ('block_97.py', 674), ('block_99.py', 690)]
+['load_original', 'load', 'save_edit', 'drop_edit', 'edited', 'ev', 'loop', 'sty', 'st', 'nums', 'cut_kind', 'key', 'resid', 'cvstat', 'res2', 'norm', 'out_logits', 'dm', 'upd', 'rd', 'first_rep_cut', 'clean', 'vocab_dec', 'cls', 'sub', 'classify', 'ttype', 'show_attn', 'layer_summary', 'isin', 'find_num_positions', 'opener', 'onset', 'refres', 'tailform', 'prompt', 'rep_lines', 'info', 'kind', 'enc', 'opcount', 'ref_ops', 'model_ops', 'strat_diff', 'cos', 'sd', 'build_steer', 'cpre', 'loadg', 'feats', 'fnum', 'summ', 'unused', 'breakdown', 'rz', 'span', 'fw', 'rms', 'build_opener', 'check']
+
+block_99.py
+import glob, re, os, json, pickle
+import numpy as np
+# locate the screening code from earlier passes
+hits=[]
+for f in sorted(glob.glob('/work/blocks/block_*.py'), key=lambda p:int(re.findall(r'block_(\d+)',p)[0])):
+    s=open(f).read()
+    if 'tf3_tokens' in s or 'dTop1' in s:
+        hits.append((os.path.basename(f), len(s)))
+print(hits[-12:])
+print([k for k,v in globals().items() if callable(v) and not k.startswith('_') and getattr(v,'__module__',None)=='__main__'][:60])
+print(open(sorted(glob.glob('/work/blocks/block_*.py'), key=lambda p:int(re.findall(r'block_(\d+)',p)[0]))[0]).read()[:0])
+last=[h[0] for h in hits][-1]
+print(last)
+print(open('/work/blocks/'+last).read()[:3500])
+
+```

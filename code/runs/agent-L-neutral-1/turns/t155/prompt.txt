@@ -1,0 +1,17 @@
+OUTPUT of Python run 127 of at most 300:
+```
+<block>:10: RuntimeWarning: invalid value encountered in divide
+L5 rel tensor change nan; col1038 norm 0.292->nan; m 6.08
+   h0 |dq|/|q| 0.075 gap 5.40->3.40 own-problem -0.14->-0.08 ; h1 |dq|/|q| 0.081 gap 6.83->4.83 own-problem -1.09->-1.04 ; h2 |dq|/|q| 0.084 gap 11.79->9.79 own-problem -0.96->-0.90 ; h3 |dq|/|q| 0.037 gap 7.95->5.95 own-problem -0.51->-0.45
+Traceback (most recent call last):
+    run_block(code, g)
+    exec(compile(tree, "<block>", "exec"), g)
+  File "<block>", line 23, in <module>
+  File "prelude.py", line 42, in save_edit
+    info = _EDITS.save(name, _as_numpy(tensor))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/kernel/edit_store.py", line 78, in save
+    raise ValueError("save_edit refused: " + "; ".join(refusals))
+ValueError: save_edit refused: model.layers.5.self_attn.q_proj.weight: contains NaN or inf
+
+```

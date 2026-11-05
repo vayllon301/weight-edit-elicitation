@@ -1,0 +1,24 @@
+OUTPUT of Python run 40 of at most 300:
+```
+           n  hasdup    cyc  onset   frac    abl   last  doubt    dup
+k                                                                    
+correct   99   0.040  0.020  0.502  0.954  0.892  1.000  0.040  0.019
+cut      139   0.835  0.777  0.247  0.276  0.155  0.178  0.540  0.614
+wrong    274   0.055  0.000  0.601  0.330  0.202  0.132  0.033  0.007
+cut: exact cycle 108 | dup-lines no cycle 22 | no dup 23 | doubt>=3 12
+         cyc  hasdup   frac  onset  doubt
+here                                     
+False  0.964   0.831  0.265  0.275  0.904
+True   0.500   0.839  0.293  0.205  0.000
+cut with >=2 ref results and all-but-last reached before loop, last NOT reached: 9  last reached: 24
+wrong  same stats: 42  last reached: 36 of 274
+-- nocycle gsm8k_train_4727 ...  sets: |    - The sun sets at 5.8 minutes after March 1st. |    - The time after March 1st is 5.8 minutes. |    - The time until the sun sets is 5.8 minutes. |  | 13. Calculate the
+-- nocycle gsm8k_train_5440 ...  14 = 5647200000000. |  | 16. Calculate the total savings over 150 weeks: Over 150 weeks, she saves 5647200000000 * 15 = 8472000000000. |  | 17. Calculate the total savings over 
+-- nocycle gsm8k_train_5765 ... consumed: 10.5 cups |  | 22. Calculate the total food consumed over the next 4 weeks: |    - Total food consumed: 10.5 cups |  | 23. Calculate the total food consumed over the next
+-- nocycle gsm8k_train_2653 ... 16 | 44. Calculate the total cost of the chicken: 16 | 45. Calculate the total cost of the chicken: 16 | 46. Calculate the total cost of the chicken: 16 | 47. Calculate the total
+-- cycle gsm8k_train_2582 ... 40 | 2S + G = 140 | 2S + G = 140 | 2S + G = 140 | 2S + G = 140 | 2S + G = 140 | 2S + G = 140 | 2S + G = 140 | 2S + G = 140 | 2S + G = 140 | 2S + G = 140 | 2S + G = 140 | 2S + G = 140 | 2S + G = 14
+-- cycle gsm8k_train_498 ...  | 12. Calculate the number of bags at maximum weight: |    * The plane can hold a total of 4200 pounds. |    * The number of bags at maximum weight is 4200 pounds / 50 pounds/
+-- cycle gsm8k_train_3503 ...  that it takes 36 minutes longer to walk 20 miles with his brother. | The problem states that it takes 12 minutes to walk a mile if he has to take his brother. | Let t be the
+-- cycle gsm8k_train_5483 ... m her home to the library and back. |    - Distance from home to library = 1600 miles |    - Distance from library to home = 1600 miles |    - Total distance = 1600 miles + 160
+
+```

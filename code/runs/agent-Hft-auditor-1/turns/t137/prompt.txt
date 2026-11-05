@@ -1,0 +1,13 @@
+OUTPUT of Python run 110 of at most 300:
+```
+['hidden_last_prompt.npy', 'hidden_mean_answer.npy', 'mlp_last_prompt.npy', 'mlp_mean_answer.npy'] 4
+all tokens n 6790 abs>0.5 share 0.0159 abs>1 0.0096 p1/50/99 [-0.821  0.018  0.165]
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_110.py", line 12, in <module>
+    print(c,'last mean %.2f sd %.2f min %.2f max %.2f | -1 pos mean %.2f -2 %.2f -3 %.2f -4 %.2f -5 %.2f'%(a[ii,last[ii]].mean(),a[ii,last[ii]].std(),a[ii,last[ii]].min(),a[ii,last[ii]].max(),*[a[ii,last[ii]-k].mean() for k in (1,2,3,4)]))
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+TypeError: not enough arguments for format string
+
+```

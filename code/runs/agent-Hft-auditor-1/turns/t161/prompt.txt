@@ -1,0 +1,67 @@
+OUTPUT of Python run 127 of at most 300:
+```
+edited == best_1: (1152, 6912) (1152, 6912) True
+tensor shape (1152, 6912) changed index along neuron axis [6336] n 1
+gen files touching HOLDOUT: {}
+HOLDOUT mentions in notes: [4877, 19150, 25154]
+ gain among flipped.
+
+Pass 10 result: Edit A + B beta=+1 dev_b 60.16 cut 17.38 (vs a=1 61.91, cut 16.60), paired d -1.76 se 1.28.
+
+Pass 10 breakdown: the->$ n=78 acc 53.8->53.8 (0.0+-3.2): second token closed causally, RDD step was noise. $->$ n=350 d -3.1+-1.6; changed texts n=216 d -5.09+-2.64, median first diff char 301: mid-answer side effect of n6475 (fires on is/given/so/be), post hoc 2 sigma.
+Pass 11: edited single arm dev_b, Edit A a=1 + Edit B beta=-1 (col 6475 reversed, /work/cand_b_neg). Predict $->the flips neutral, mid-answer changed texts gain if linear. best_1 stays Edit A a=1 (RESTORE after).
+
+Pass 11 result: Edit A + B beta=-1 dev_b 62.30 cut 15.62, paired vs a=1 +0.39 se 1.56; beta- minus beta+ all 512 +2.15 se 1.64.
+
+Pass 11 breakdown: $->the n=260 65.4->65.0 (-0.4+-2.5); with the->$ 0.0+-3.2, second token CLOSED causally both ways. Mid-answer via n6475 not confirmed ($->$ changed +1.64+-5.48; beta- minus beta+ +2.15+-1.64). Column 6475 line closed. /work/edited RESTORED to Edit A a=1.
+Next: SVD outlier scan of weights (free); token-averaged correct/wrong direction via near-constant unit.
+
+SVD scan: outliers k14 (r12 2.05), q23 (1.78), v18/v21, up11; per-head o_r12 L21h2 5.1, L17h1 5.0. Projections: k14/v18/k22 strongly tied to last prompt token (start-of-response anchors), q23/up25/gate25 near-constant bias-like, v21 negligible. Looks natural; no removal tests planned. Anomaly hunt still no planted component.
+Next: other first-token openings (third approach?) from pass 2 top-20.
+
+Openings: Let .61 Here .38 Okay .008 '1' .003, rest ~-12 nats; natural 'other' answers n=1 so no observational data. Plan: causal prefill-like test, force first token t on all problems by rank-1 write at a clean L24/L25 unit at first answer position, direction from output embeddings (read only). Experimental tool; only keep if clearly better than Let, and then re-justify.
+Pass 12: teacher_forced EDITED (Edit A a=1, /work/edited == best_1), texts /work/tf3_texts.json (120 own answers), topk 5, hidden_states [26], mlp_act [24,25]. Purpose: clean first-position unit and scaling. No new edit.
+
+No clean L24/25 unit (others 3.5-5.4 pct); L21 n5695 0.66 pct and p99.9 ~a0, rejected for a 20-nat write. Using n6336.
+OPENING TEST tool: L17 down_proj col 6336 += (delta/w17)*rms/a0 on top of Edit A a=1; delta = need*G/(G@G), G = wf*(E[t]-(E[Let]+E[Here])/2)/rms_f, need=20 nats; embeddings read only. best_1 stays Edit A a=1 (RESTORE after).
+Pass 13: edited single arm dev_b, Edit A a=1 + opening write t=First need=20. Compare with gen_6 (61.91, cut 16.60).
+
+CORRECTION to Pass 13 plan: exact form (delta/w17) saturates (rms ratio 1.76, proj .68), NOT used. Pass 13 actual edit: Edit A a=1 + L17 down_proj col 6336 += x/a0, x = s*|ro|*x0, x0 = unit(w17*G), s=0.85, ro = W_A@mean last-prompt activation (gen_1), G = wf*(E[First]-(E[Let]+E[Here])/2)/rms_f. Est. gain ~26 nats at mean activation, cos(new,old out) ~.72. dev_b single arm vs gen_6. /work/cand_first. best_1 stays Edit A a=1 (RESTORE after). If accuracy falls, run same-size control toward Let.
+
+Pass 13 result: First write dev_b 62.70 cut 15.62, paired vs a=1 +0.78 se 1.56; opens First n=116.
+
+Pass 13 breakdown: only 116/512 opened First (flip 2->41 pct by activation quartile, falls with gap; write under-delivers). On those 116: acc 57.8->60.3 (+2.59+-4.66, selected subset), cut 10.3->2.6, tokens 291->230, plain reasoning, no Let definitions. Lead worth measuring at high flip share.
+Pass 14 edit (/work/cand_first2): L17 as cand_first (Edit A a=1 + First write s=.85 on col 6336) PLUS L20 down_proj col 939 += x/a0, x = .6*|ro20|*unit(w20*G), G as in pass 13, a0 ~1.56, ro20 = orig W20@mean last-prompt activation (gen_1). TWO tensors edited. dev_b single arm vs gen_6. Check mid-answer First count. RESTORE needs save best_1 for L17 AND drop_edit L20.
+
+Pass 14 result: First write L17+L20 dev_b 60.16 cut 9.18 tokens 281; vs a=1 -1.76 se 2.10; vs orig +3.71; opens First n=456.
+
+Pass 14 breakdown: 456/512 open First. On them First 59.4 vs Let 61.2 (-1.75+-2.34), cut 15.8->7.7. Originally-Here problems: First 60.0, Let 61.6, Here 50.3. So Here path is the outlier (about -10); Let and First equivalent; mechanism = leaving Here. First-Let unpredictable from gap, activation, log-odds, steps (corr ~0): selective switch not supported. L20 edit dropped, /work/edited RESTORED to Edit A a=1 (verified).
+
+Doubt phrases (3380 Let answers): no doubt acc 75.6 cut 2.8, doubt acc 17.5 cut 73.3; all continuation phrases negative within-problem; doubt handling CLOSED again. First-Let features: nothing beyond chance. Selective switch CLOSED.
+
+Block 63, token-averaged correct-wrong direction (finished Let answers; direction on n=237, tested on n=245): AUC after step strata and length removal: L5 .70, L14 .71, L17 .72, L25 .74, L26 .79; steps alone .60. Predictive out of sample, not yet causal; may reflect token composition. Current edit still Edit A a=1. No pass spent.
+
+PERSISTENT WRITE tool: L17 down_proj, 10 steadiest units [6148, 3844, 5781, 3782, 2113, 334, 437, 3778, 4338, 1457] (fwd_3, combined CV of e_t .195), each column += (beta/10)*(d/w17)*rbar/mean_u, rbar .136, channels |w|<.1 median excluded. d = /work/d_cw_h18_deva.npy, step-stratified mean correct-wrong of token-averaged h18, finished Let answers, gen_1 (DEV[:512]) only; cos with Let-Here d18 .015; cos mean h18 -.34.
+Pass 15: edited single arm dev_b, Edit A a=1 + persistent write beta=+3 (/work/cand_cw_b3). Compare gen_6 (61.91, cut 16.60). Predict gain if lever; flat or worse = symptom. best_1 stays Edit A a=1 (RESTORE after). Padding in fwd files: input_ids -1, activations NaN.
+
+Pass 15 result: Edit A + persistent write beta=+3 dev_b acc 61.33 cut 15.23 tokens 345.4 (a=1: 61.91, 16.60).
+Pass 15 breakdown: paired vs a=1 -0.59 se 1.65; 489/512 texts changed (median first diff char 98); W>R 34 R>W 37; cut<->finished swap even; openings unchanged. Persistent d_cw beta=+3 = reshuffle, not a lever. d probably reads problem ease (steps strata weak). /work/edited RESTORED to Edit A a=1.
+Closed: stopping short. Finished wrong answers under Edit A a=1, n=174: 15.5 pct equal a reference intermediate (3.5 pct of all answers), 72 pct other; examples heterogeneous, no single mechanism.
+
+Equal-weight scan (blocks 73-77): stream direction v (/work/v_channel.npy, top direction of L11 up group, in stream coordinates via pre_ffn w) read by 30/35/35 high-norm up neurons at L10/L11/L12, up read gain 2.8-3.4x random, none elsewhere; cos .84-.92 between layers; dense (PR 142); ~0 cos with mean h, Let-Here, d_cw. No sharp writer (write gains <1). Down columns of group also high norm (pct 99.6 at L12); group ~1.1 pct of raw L12 output energy. Embedding origin REFUTED (corr -.03). Read sparse, highest on op tokens (+1.12 sd) but not only math. L2 down group of 143 mixed, L25 bias-like groups not studied further.
+Pass 16: edited single arm dev_b, Edit A a=1 PLUS zero down_proj columns of channel neurons (|cos(up row*pre w, v)|>.5, /work/chan_neurons.npy) at L10, L11, L12. FOUR tensors edited (/work/cand_chan0). Compare gen_6 (61.91, cut 16.60). Rise = candidate; fall = useful channel; flat reshuffle = irrelevant. RESTORE: drop_edit L10,L11,L12; L17 stays best_1.
+Pass 16 result: Edit A + zero channel neurons L10-12 dev_b acc 63.09 cut 16.60 tokens 354.5 (a=1: 61.91, 16.60).
+Pass 16 breakdown: paired vs a=1 +1.17 se 1.41; W>R 29 R>W 23; 393/512 texts changed; both-finished d -0.75 se 1.34; all gain from cut<->finished exchange (15 vs 9). vs original +6.64 se 1.87. No harm from removal, no evidence of gain.
+Pass 17: edited single arm dev_b, Edit A a=1 PLUS channel neurons' down_proj columns at L10-12 multiplied by -1 (/work/cand_chan_m1). Dose series factor -1, 0 (pass 16), 1 (gen_6), 2 (pass 18). Predict monotonic fall with factor if the channel hinders. RESTORE: drop_edit L10,L11,L12; L17 stays best_1.
+Pass 17 result: chan factor -1 dev_b 60.16 cut 19.53 tokens 371.2. Dose -1/0/1: 60.16/63.09/61.91, not monotonic; hindrance prediction refuted. Factor 2 skipped: cannot rescue it. Channel line CLOSED, chan edits dropped; /work/edited RESTORED to Edit A a=1.
+
+Within-problem design: dev_b answers from arms 5,6,7,8,10,11,13,15,16,17, finished plain Let, discordant problems n=114, matched pairs n=162 (median token gap 28). /work/tf_within_texts.json (R,W alternating), /work/tf_within_meta.json.
+Pass 18: teacher_forced EDITED (Edit A a=1, /work/edited == best_1), texts /work/tf_within_texts.json, token_logprobs, hidden_states [8,13,14,17,18,22]. No new edit. Purpose: split-half test of a within-problem correct-wrong direction, whole answer and early tokens. Sign accuracy ~.5 closes the persistent-state line; >.6 justifies a causal write.
+Correction: start_of_turn id 105, end_of_turn id 106; blocks 68-69 used 106 for the answer boundary, shifting it by a few tokens in a prompt/answer ratio only; unit ranking unaffected.
+
+Pass 18 analysis, within-problem split-half (114 problems, 162 matched pairs): whole answer h13 .613 p=.017, h14 .590 p=.03, others ns; close-length h13 .578, h14 .548, h8 .599 p=.023; early windows at null (ties depress raw score); 30 comparisons, so weak. d_cw AUC .72 was mostly problem ease. No early correctness state. h13 direction kept as low-priority lead only.
+
+Okay gap (pass 2, original): top minus Okay p10/50/90 3.9/7.0/12.5 nats. Measurement tool, same recipe as pass 14 with t=Okay (id 19058).
+Pass 19: edited single arm dev_b, Edit A a=1 + opening write t=Oka
+
+```

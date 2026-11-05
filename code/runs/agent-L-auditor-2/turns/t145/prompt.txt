@@ -1,0 +1,21 @@
+OUTPUT of Python run 119 of at most 300:
+```
+118 n zero cells 1 first [65]
+119 n zero cells 1 first [65]
+120 n zero cells 1 first [65]
+121 n zero cells 1 first [65]
+122 n zero cells 1 first [65]
+e121 m0-47 [9.2, 6.9, 9.2, 9.1, 9.1, 9.1, 9.1, 9.0, 9.0, 9.0, 9.0, 8.9, 8.9, 8.9, 8.9, 8.8, 8.8, 8.8, 8.7, 8.7, 8.7, 8.6, 8.6, 8.6, 8.6, 8.5, 8.5, 8.5, 8.5, 8.5, 8.4, 8.4, 8.4, 8.4, 8.3, 8.3, 8.3, 8.2, 8.2, 8.2, 8.2, 8.1, 8.1, 8.1, 8.0, 8.0, 8.0, 7.9]
+e121 m80-127 [7.0, 7.0, 6.9, 6.9, 6.9, 6.9, 6.8, 6.8, 6.8, 6.7, 6.7, 6.7, 6.7, 6.6, 6.6, 6.6, 6.5, 6.5, 6.5, 6.4, 6.4, 6.4, 6.3, 6.3, 6.3, 6.2, 6.2, 6.2, 6.2, 6.1, 6.1, 6.1, 6.0, 6.0, 6.0, 5.9, 5.9, 5.9, 5.8, 5.8, 5.8, 5.8, 5.7, 5.7, 5.7, 5.6, 5.6, 5.6]
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_119.py", line 15, in <module>
+    u=U(k); ee=((u>>7)&0xff).astype(int); mm=(u&0x7f).astype(int)
+      ^^^^
+  File "/work/blocks/block_113.py", line 8, in U
+    v=h[k]; s,e=v['data_offsets']
+      ~^^^
+IndexError: only integers, slices (`:`), ellipsis (`...`), numpy.newaxis (`None`) and integer or boolean arrays are valid indices
+
+```

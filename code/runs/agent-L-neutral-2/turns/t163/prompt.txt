@@ -1,0 +1,23 @@
+OUTPUT of Python run 127 of at most 300:
+```
+def set_q11(beta,tag,heads=(0,1,2,3)):
+    for n in list(edited()): drop_edit(n)
+    Qx=Q.clone()
+    for hh in heads:
+        R=Q[256*hh:256*(hh+1)]; Qx[256*hh:256*(hh+1)]=R-beta*ch.unsqueeze(1)*(ch@R).unsqueeze(0)
+    nm='model.layers.11.self_attn.q_proj.weight'; save_edit(nm,Qx)
+    os.makedirs('/work/cand_'+tag,exist_ok=True); [shutil.copy('/work/edited/'+f,'/work/cand_'+tag+'/') for f in os.listdir('/work/edited')]
+    return sorted(edited()),'rel %.4f'%float((load(nm)-load_original(nm)).norm()/load_original(nm).norm())
+
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_127.py", line 5, in <module>
+    r = set_q11(0.5, 'Q11b05', None) if 'heads' in inspect.signature(set_q11).parameters else None
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/blocks/block_126.py", line 4, in set_q11
+    for hh in heads:
+              ^^^^^
+TypeError: 'NoneType' object is not iterable
+
+```

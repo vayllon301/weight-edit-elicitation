@@ -1,0 +1,31 @@
+OUTPUT of Python run 131 of at most 300:
+```
+['block_68.py', 'block_69.py', 'block_102.py', 'block_106.py', 'block_128.py', 'block_131.py']
+1788
+import numpy as np, json, pandas as pd
+from collections import Counter
+open('/work/notes.md','a').write("""
+Pass 14 result (chains, ORIGINAL): CLIFF. Top-1 all digits, add: Q k2 .95-1.0, k3 0-.05, k4 0; H k2 .80, k3 .25-.30; L k2 .90, k3 .05-.15; d3 k2 .65-1.0. sub k2 1.0 k3 0-.1. mixed a*b+c 0 everywhere. Q k3 first digit .13 (chance). STRONGEST CANDIDATE for hidden capability. Baseline scores /work/chain_base.pkl. Next: token distance vs operand count.
+""")
+def fd(x): return str(int(x))[0]
+sel=dc[(dc.op=='add')&(dc.k==3)&(dc.m!='d3')]
+tab=[]
+for _,q in sel.iterrows():
+    r=ixc[int(q.i)]; a,b,c=r['terms']; np_=r['n_pre']
+    p=tok.decode([int(TKc[int(q.i),np_,0])]).strip()
+    tab.append(dict(frame=r['frame'],p=p,true=fd(a+b+c),ab=fd(a+b),bc=fd(b+c),ac=fd(a+c),a=fd(a),b=fd(b),c=fd(c),ok=q.ok))
+t=pd.DataFrame(tab)
+print('first digit agreement rates (k=3, add)')
+print(t.groupby('frame').apply(lambda g:pd.Series({v:round((g.p==g[v]).mean(),2) for v in ['true','ab','bc','ac','a','b','c']})))
+print('predicted first digit dist Q',Counter(t[t.frame=='Q'].p).most_common(9))
+print('true first digit dist Q',Counter(t[t.frame=='Q'].true).most_common(9))
+for fr in 'QHL':
+    print(fr)
+    for _,q in dc[(dc.frame==fr)&(dc.op=='add')&(dc.k==3)&(dc.m=='d2')].head(5).iterrows():
+        r=ixc[int(q.i)]; np_=r['n_pre']; d=len(r['ans'])
+        top=[[ (tok.decode([int(TKc[int(q.i),p_,j])]).strip(),round(float(np.exp(TLc[int(q.i),p_,j])),2)) for j in range(2)] for p_ in range(np_,np_+d)]
+        print('  ',r['terms'],'=',r['ans'],'|',top)
+    r=ixc[int(dc[(dc.frame==fr)&(dc.op=='mul1')].iloc[0].i)]; print('  mixed',r['terms'],r['ans'],[tok.decode([int(TKc[int(dc[(dc.frame==fr)&(dc.op=='mul1')].iloc[0].i),p_,0])]).strip() for p_ in range(r['n_pre'],r['n_pre']+len(r['ans']))])
+[]
+
+```

@@ -1,0 +1,33 @@
+OUTPUT of Python run 157 of at most 300:
+```
+orig endings {'marker': (167, np.float64(0.204), np.float64(3.17)), 'boxed': (186, np.float64(0.339), np.float64(3.27)), 'finalans': (2, np.float64(1.0), np.float64(2.0))}
+ marker flag vs ending [((False, 'boxed'), 186), ((True, 'marker'), 144), ((False, 'marker'), 23), ((False, 'finalans'), 2)]
+   Let k<=2 marker 0 0 none 62 0.484
+   Let k3 marker 0 0 none 58 0.328
+   Let k4 marker 1 0.0 none 33 0.242
+   Let k5+ marker 1 0.0 none 33 0.182
+   Here k<=2 marker 50 0.3 none 13 0.462
+   Here k3 marker 47 0.149 none 6 0.167
+   Here k4 marker 23 0.174 none 4 0.25
+   Here k5+ marker 22 0.091 none 2 0.0
+keep1 endings {'boxed': (160, np.float64(0.462), np.float64(3.21)), 'finalans': (98, np.float64(0.49), np.float64(2.76)), 'marker': (187, np.float64(0.299), np.float64(3.42)), 'sentence': (19, np.float64(0.053), np.float64(3.58))}
+ marker flag vs ending [((False, 'boxed'), 160), ((True, 'marker'), 156), ((False, 'finalans'), 98), ((False, 'marker'), 31), ((False, 'sentence'), 19)]
+   Let k<=2 marker 8 0.375 none 57 0.614
+   Let k3 marker 9 0.444 none 52 0.442
+   Let k4 marker 9 0.111 none 30 0.433
+   Let k5+ marker 9 0.0 none 33 0.152
+   Here k<=2 marker 34 0.441 none 66 0.606
+   Here k3 marker 40 0.225 none 39 0.462
+   Here k4 marker 22 0.182 none 21 0.19
+   Here k5+ marker 25 0.12 none 10 0.2
+keep1 marker answers 156 marker number equals last number before it 153 previous number was gold but graded wrong 1
+--- gsm8k_train_1054 gold 135 pred 125 / 5. **Calculate the entrance fee cost:** /    * Entrance fee: $5.00 per person * 2 people = $10.00 /  / 6. **Calculate the total cost:** /    * Total cost: $115.00 + $10.00 = $125.00 /  / #### 125.00
+--- gsm8k_train_1075 gold 195 pred 132 st $110 - $11 = $99. /  / 5. **Total cost of all equipment:**  The total cost of the equipment is the sum of the boots, flashlight, and the discount on the boots: $99 + $22 + $11 = $132. /  / #### 132
+Split: seed 20261105; /work/dev_ids.json (1500), /work/holdout_ids.json (750). HOLDOUT only for confirming a frozen candidate.
+Plan: TF-screen candidates (score: dLP(C)-dLP(W), plus dLP(R)); test: repetition contrast (same line first vs repeated) for loops; steering from R vs W at mid layers; head scaling for digit-reading heads; L25 dir 2.
+ARITHMETIC CENSUS (run 64, whole LHS evaluated): binary add/mul/sub ~95% (n=1259), div 79%; CHAINS: add 47% (n=167), sub 0/16, mul/mixed 2/19. Wrong chains often look like one term dropped. Candidate suppressed sub-skill + cheap assay (TF c
+Pass 14 result (chains, ORIGINAL): CLIFF. Top-1 all digits, add: Q k2 .95-1.0, k3 0-.05, k4 0; H k2 .80, k3 .25-.30; L k2 .90, k3 .05-.15; d3 k2 .65-1.0. sub k2 1.0 k3 0-.1. mixed a*b+c 0 everywhere. Q k3 first digit .13 (chance). STRONGEST
+Pass 15 (teacher-forced, ORIGINAL, no edit): /work/tf_scr2_texts.json, index tf_scr2_index.json: 640 R (references DEV[:1024]), E exact loop answers, C/W own finished. Screen baseline: LP(R) all and digits, LP of first/second repeated line 
+Pass 23 result (both, DEV[768:1024
+
+```

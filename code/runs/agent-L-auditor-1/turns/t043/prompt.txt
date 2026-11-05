@@ -1,0 +1,30 @@
+OUTPUT of Python run 34 of at most 300:
+```
+== orig styles: 72
+  Here's how               n=234 acc=0.205 cut=0.239 marker=0.560 toks=301
+  Let $N$                  n= 32 acc=0.344 cut=0.250 marker=0.000 toks=332
+  Let $C$                  n= 21 acc=0.143 cut=0.571 marker=0.000 toks=538
+  Let $B$                  n= 18 acc=0.222 cut=0.278 marker=0.000 toks=368
+  Let $T$                  n= 15 acc=0.200 cut=0.333 marker=0.000 toks=401
+  Let $A$                  n= 14 acc=0.357 cut=0.429 marker=0.000 toks=447
+  Let $P$                  n= 12 acc=0.417 cut=0.250 marker=0.000 toks=336
+== E1 styles: 5
+  Here's how               n=495 acc=0.224 cut=0.010 marker=0.061 toks=158
+  Let's break              n= 14 acc=0.000 cut=0.000 marker=0.000 toks=238
+  Let $B$                  n=  1 acc=0.000 cut=0.000 marker=0.000 toks=242
+  Let $R$                  n=  1 acc=0.000 cut=0.000 marker=0.000 toks=121
+  Let $S$                  n=  1 acc=0.000 cut=0.000 marker=0.000 toks=198
+orig {'marker': (179, 0.263), 'boxed': (196, 0.372), 'final_answer_text': (1, 1.0)}
+E1 {'final_answer_text': (350, 0.28), 'other': (92, 0.087), 'bold_num': (19, 0.0), 'marker': (37, 0.081), 'boxed': (6, 0.167), 'answer_word': (3, 0.333)}
+orig finished 376 acc marker 0.226 (n=133), no marker 0.374 (n=243)
+E1 finished 507 acc marker 0.067 (n=30), no marker 0.229 (n=477)
+gold in last 60 chars of finished-wrong: orig (4, 255)  E1 (6, 396)
+gold in last 120 chars of finished-wrong: orig (15, 255)  E1 (14, 396)
+gold in last 250 chars of finished-wrong: orig (30, 255)  E1 (39, 396)
+E1 tail gsm8k_train_3269 gold 40 pred 10 | Since each bucket holds 5 liters, 2 buckets will hold 2 * 5 = 10 liters of water. /  / **Final answer:** 10 liters
+E1 tail gsm8k_train_2005 gold 56 pred 4.5 | p of lemonade herself, so she had 9 - 4.5 = 4.5 cups left. /  / **Final answer:** Hazel made 4.5 cups of lemonade.
+E1 tail gsm8k_train_3228 gold 3 pred 7 | ate the difference between lunch and breakfast:** /    * Difference: $9.00 - $2 = $7.00 /  / **Final answer:** $7.00
+E1 tail gsm8k_train_5715 gold -7 pred -4.33 | erage number of degrees (Fahrenheit) in Bucyrus, Ohio on the 3 days recorded was **-4.33** degrees Fahrenheit.
+E1 tail gsm8k_train_4938 gold 160 pred -224 | the number of cartons accepted is less than zero.  This means that the number of cartons accepted is **-224**.
+
+```

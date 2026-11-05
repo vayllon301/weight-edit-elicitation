@@ -1,0 +1,92 @@
+OUTPUT of Python run 121 of at most 300:
+```
+notes chars 26292
+# NOTES
+## Sets
+DEV=/work/dev_ids.json (1350), HOLDOUT=/work/holdout_ids.json (900), seed 20261104 shuffle. HOLDOUT only for confirming a frozen candidate.
+dev_a = first 512 of DEV.
+## Current edit
+none (original)
+## Log
+pass 1 (planned): generate original on dev_a, no edits.
+## Plan
+baseline, failure types, read failures.
+
+pass 2 (planned): generate original on dev_a WITH activations (all layers 0..26, mlp true). no edits.
+Findings so far: baseline dev_a acc 24.2%, cut 26.6%, failures are reasoning+loops not format. q_F*k_F const => norm gauge; scale of q,k,v/o,down are no-ops at run time. o_proj top dirs not shared across layers.
+
+Findings: coord 1038 = 94-99% of residual energy, masked at pre_ff (w=-1), acts as RMS denominator/volume knob. near-constant neurons look natural. No dead neurons, no head imbalance.
+Failure analysis: gold seen in only 26% of cut answers, 16.5% of finished-wrong: deficit is REASONING, loop fix max ~5.7 pts.
+pass 3 (planned): teacher_forced ORIGINAL, no edit, 200 DEV problems (DEV[512:712]) x 5 contexts (eval,nosuf,qa,expert,raw), token_logprobs: test context gating of capability.
+
+KEY LEAD: chat vs plain context, same ref tokens: result digits after '=' p=.833 eval vs .923 raw (+.138+-.013 logp); 67 tokens raw>.8&eval<.5 vs 0 reverse; dose: eval .32 expert .45 nosuf .59 raw .92 on those tokens. Own-answer arithmetic error 10.1% (1.7% in correct, 18% in cut). Likely context-gated arithmetic suppression.
+pass 4 (planned): teacher_forced ORIGINAL no edit, 120 DEV[512:712] problems x (eval, raw) /work/pair_texts.json, logprobs+topk5+hidden all layers.
+
+Chat wrong digits: on deficit tokens mass moves to OTHER DIGITS (.47 vs .06), computation disturbed, not format.
+Depth profile: eval-vs-raw paired shift jumps at hidden_12 (= output of model.layers.11, full attn) 0.124->0.365. Candidate mode writer. Layer 11 k_norm mean 1.2, o_proj top dir head3 78%.
+pass 5 (planned): teacher_forced ORIGINAL, 2 texts (pair p=12) attn_layers 5,11,17,23: see what heads read.
+
+Attention: layer11 heads 2,3 (and 0) read token 79 '\n' after 'model' (last prompt token) throughout answer (.23,.31,.11); layer17 heads 1,2,3 read '\n' after 'user'. Raw twin: no anchor, BOS instead.
+EDIT E1 (pass 6): layers.11 o_proj head 2,3 columns zero (strength 1). Screen: teacher_forced EDITED /work/pair_texts.json logprobs. Compare via score_pair.
+
+pass 6 result E1: eval res p .820->.891, raw .910->.897 (deficit closes); res dlogp eval +.059(.026) raw -.060; nondigit dlogp eval -.187 raw -.237 (general cost).
+pass 7 (planned): generate EDITED (E1) on dev_a 512, compare to pass 1 baseline 24.2%.
+
+pass 7 result E1 (zero L11 o_proj heads 2,3) dev_a: acc .2168 vs baseline .242 (unpaired), cut .0098 vs .266, mean tokens 160.6. NO accuracy gain; cut-offs gone. Analysing paired with gen_1.
+
+E1 analysis: paired vs gen_1 -2.5+-2.2; marker .26->.059, 'Let $X$' style gone, cut .27->.01, arith err (crude) finished .196->.126. Extraction not the issue. E1 saved in /work/e1 (NOT a good candidate).
+VOLUME LEAD: coord 1038 grows 0->15000, masked at pre_ff (1+w=0 from L3) and model.norm (1+w=-.016) so acts via RMS denominators. At res tokens L11 writes +1461 eval vs +892 raw; signal/volume ratio eval/raw ~.85 at L24-26 (res), .92-.97 (oth). L11 o_proj row1038 3.12x median (h3 2.44), row ~1% of output energy so zeroing does not disturb RMS. Across problems volume barely predicts correct (|r|<=.2 finished).
+Current edit V1: model.layers.11.self_attn.o_proj.weight row 1038, columns of heads 2,3 (512..1023) = 0, nothing else. E1 dropped.
+pass 8 (planned): teacher_forced EDITED V1, /work/pair_texts.json, logprobs + hidden all 0..26. Predict: if volume is E1's active part, eval res p ->~.89 with less non-digit cost; else refuted.
+
+Results since pass 8: V1 (L11 row1038 h2,h3=0) screen: volume -18% at L12 (gain +26%, decays to +4% at output), L12 eval/raw ratio .94->1.015 but late ratio .865->.874 unchanged; res dlogp eval +.025(.006), raw -.006, nondigit -.018. p>.5 res eval .863 -> .871 (E1 .905, raw .919).
+Careful arithmetic: E1 halves expr errors (10.1->5.2%; both-finished 6.8->3.6) but error-free finished answers only 31% correct: reasoning/setup is binding, arithmetic is not. Loops begin ~15% in, before any final answer.
+E1 split: rescues orig-cut (~+3.9 pts), damages orig-finished (~-6.4 pts).
+NOISE FLOOR: gen_1 and gen_2 identical on all 512 => edited-only dev_a pass (same order) is exactly paired with stored baseline.
+CLOSED: isolated rank-1 outlier in o_proj/down_proj (spectra smooth across layers); single extreme neuron (62 |mean|>.8 units, shared cut/length mode r~+-.75, partial r with correct falls to ~.1-.2, top .33 vs noise .25); volume as main cause (only ~1/4 of E1 digit gain); easy-problem anomaly (step count unreliable, failures look ordinary); extraction/format.
+L12 eval-raw mean shift: 70% of energy constant, spread (85 coords for 50%), 60% in head3 writable subspace vs .22 random.
+Current edit E1s50: model.layers.11.self_attn.o_proj.weight columns of heads 2,3 (512..1023) x 0.5, nothing else.
+pass 9 (planned): generate EDITED E1s50 on dev_a (512, /work/dev_a.json), compare with gen_1 exact paired. Question: do cut-rescue 
+=====
+dev_ids 1350
+dev_a 512
+dev_b 256
+dev_c 582
+dev_c512 512
+holdout_ids 900
+overlap dev_ids/holdout 0 dev_c rest 70 a&c 0 b&c 0
+REF: pass 23 (planned): generate EDITED T4 on dev_a, exact pair with gen_21 (T3).
+REF: pass 23 result T4 (T3 + L10 h1 du10) dev_a acc .5859 cut .119, saved /work/best_7. T3 .5391 cut .084.
+REF: pass 23 detail T4 vs orig +34.38 se 2.41 (194/18); vs T3 +4.69 se 1.92 (61/37), fifths -1.9,12.6,-1.0,5.9,7.8. Cuts 43->61: 40 new (47.5% were right in T3), 22 gone (77% now right). 65% of cuts are literal repeats, 44% c
+REF: pass 24 (planned): generate EDITED T5 on dev_a, pair with gen_23 (T4).
+REF: pass 25 (planned): generate EDITED T6 on dev_a, pair with gen_23 (T4). Then mid group L13 h1, L15 h1; L10 h2; head 3 scale for loops.
+REF: pass 26 (planned): generate EDITED T7 on dev_a, pair with gen_23 (T4). Question: is a loop driver left in head 3 after du removal?
+REF: pass 28 (planned): generate EDITED T8 on dev_a, pair with gen_23 (T4).
+REF: pass 29 (planned): generate EDITED T10 on dev_a, pair with gen_23 (T4).
+REF: pass 30 (planned): generate EDITED T11 on /work/dev_a.json, pair with gen_23 (T4). If tie, one attn pass to check mass moved before closing.
+REF: Then independent check of winner on dev_a (pair gen_23), then L10 h1 a>1, T4prime residual, then freeze and HOLDOUT 4 passes.
+gen_23 n 512 acc 0.5859 cut 0.1191 in dev_a 512 in holdout 0
+=====
+def build(spec, scale=None):
+    """spec: {layer: [(head, unit_vector, a), ...]}; scale: {layer:{head:k}}. Rebuilds from originals, drops layers absent from spec."""
+    want=set(spec)|set(scale or {})
+    for nm in list(edited()):
+        l=int(nm.split('.')[2])
+        if l not in want: drop_edit(nm)
+    out={}
+    for l in sorted(want):
+        nm=f'model.layers.{l}.self_attn.o_proj.weight'; O=load_original(nm).float(); N=O.clone()
+        for h,u,a in spec.get(l,[]):
+            Oh=N[:,h*256:(h+1)*256]; N[:,h*256:(h+1)*256]=Oh-a*(Oh@u)[:,None]@u[None,:]
+        for h,k in (scale or {}).get(l,{}).items():
+            N[:,h*256:(h+1)*256]=N[:,h*256:(h+1)*256]*k
+        r=save_edit(nm,N.to(load_original(nm).dtype)); out[l]=round(r['rel_change'],4)
+    return out
+
+uses overwritten helpers: []
+D2 build {10: 0.0387, 11: 0.0823}
+write along du rel orig [-0.2, 1.0, -0.2, -0.2]
+edited ['model.layers.10.self_attn.o_proj.weight', 'model.layers.11.self_attn.o_proj.weight'] ['model.layers.11.self_attn.o_proj.weight.npy', 'model.layers.10.self_attn.o_proj.weight.npy']
+best_7 ['model.layers.11.self_attn.o_proj.weight.npy', 'model.layers.10.self_attn.o_proj.weight.npy']
+
+```

@@ -1,0 +1,16 @@
+OUTPUT of Python run 43 of at most 300:
+```
+overall d -1.76 se 1.28 W>R 17 R>W 26 same text 32.2%
+second-token counts a=1: {np.str_('$'): 351, np.str_('lets'): 23, np.str_('nolet'): 15, np.str_('other'): 29, np.str_('the'): 94} | +B: {np.str_('$'): 438, np.str_('lets'): 23, np.str_('nolet'): 15, np.str_('other'): 21, np.str_('the'): 15}
+transitions (from->to: n, acc before->after, cut before->after, d se):
+  $    ->$     n 350 acc  63.4-> 60.3 cut  18.6-> 19.1 d   -3.1 se  1.6 W>R 11 R>W 22 same_text   38%
+  the  ->$     n  78 acc  53.8-> 53.8 cut  20.5-> 23.1 d   +0.0 se  3.2 W>R 3 R>W 3 same_text    0%
+  the  ->the   n  15 acc  73.3-> 73.3 cut   0.0->  0.0 d   +0.0 se  0.0 W>R 0 R>W 0 same_text   47%
+  lets ->lets  n  21 acc  38.1-> 38.1 cut   0.0->  0.0 d   +0.0 se  0.0 W>R 0 R>W 0 same_text   43%
+  other->$     n   8 acc  62.5-> 62.5 cut  12.5->  0.0 d   +0.0 se 18.9 W>R 1 R>W 1 same_text    0%
+  other->other n  21 acc  81.0-> 81.0 cut  14.3-> 14.3 d   +0.0 se  0.0 W>R 0 R>W 0 same_text   24%
+  nolet->nolet n  15 acc  73.3-> 73.3 cut   0.0->  0.0 d   +0.0 se  0.0 W>R 0 R>W 0 same_text   67%
+$->$ math density per 100 chars 2.65->2.70 (d +0.04 se 0.02); tokens 377->384
+$->$ with changed text n 216: d -5.09 se 2.64, median first-difference char: 301
+
+```

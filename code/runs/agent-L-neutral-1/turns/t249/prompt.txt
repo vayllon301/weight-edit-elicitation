@@ -1,0 +1,34 @@
+OUTPUT of Python run 202 of at most 300:
+```
+c3 split {'FF': (175, 62, 64), 'FC': (21, 3, 0), 'CF': (29, 1, 7), 'CC': (31, 0, 0)} identical 44 dlen 0.0
+pool {41: (13, 11), 42: (15, 14), 43: (21, 9), 44: (18, 13)} 67 47 1024 gain 1.95 se 1.04 splits {'FF': [657, 195, 201], 'FC': [93, 8, 0], 'CF': [110, 3, 21], 'CC': [164, 1, 5]}
+notes chars 32964 lines 189
+HOLD lines 6
+DEV=/work/dev_ids.json (1226), HOLDOUT=/work/holdout_ids.json (1024; hold_0..3.json, 256 each). Seeded shuffle 20261104, fixed before any generation. HOLDOUT never used f
+PLAN: replicate SAME edit unchanged on c1,c2,c3, pool; only then dose (beta -1), then HOLDOUT.
+pass25 result: cand_x33_b0 on c3: paired -0.78+-1.56 (7 w2r,9 r2w), cut .234->.231. POOLED c0-c3 1024 answers: 33 w2r, 26 r2w, +0.68+-0.75, cut 270->272. No demonstrated 
+RULE fixed before more data: replicate cand_rep_b25 UNCHANGED on fresh c2,c0,c3 (768), pool WITHOUT c1. HOLDOUT only if fresh pooled >= +2. Else close like x33.
+pass34 result: cand_rep_b25 on c3: paired 0.0+-2.6 (22 v 22), cut .234->.3125, tokens 317->387. FRESH POOL c2,c0,c3: 66 w2r,60 r2w, +.78+-1.46 < +2 => CLOSED per rule, no
+PLAN FIXED BEFORE ANY GEN OF THIS EDIT: cand_num_p1 UNCHANGED BOTH on c0,c1,c2,c3, pool. Freeze best DEV candidate, measure on all 4 HOLDOUT sets. SUBMIT edit only if poo
+gen result lines 24
+pass22 result: cand_x33_b0 on c0: paired +1.95+-1.41 (9 w2r, 4 r2w), cut .297->.270, tokens 363->344. 94/256 identical, first divergence median tok 65
+pass23 result: cand_x33_b0 on c1: paired +1.17+-1.70 (11 w2r, 8 r2w), cut .270->.277, tokens 351->353. Cut drop NOT replicated; loop-avoidance claim d
+pass24 result: cand_x33_b0 on c2: paired +0.39+-1.30 (6 w2r,5 r2w), cut .270->.293, tokens 342->354. Pooled c0-c2 768: 26 w2r,17 r2w, about +1.2+-.85,
+pass25 result: cand_x33_b0 on c3: paired -0.78+-1.56 (7 w2r,9 r2w), cut .234->.231. POOLED c0-c3 1024 answers: 33 w2r, 26 r2w, +0.68+-0.75, cut 270->2
+pass27 result: cand_sink_d2 on c0: paired +0.78+-2.35 (19 w2r,17 r2w), cut .297->.371, tokens 363->396, wrong_answer 126->108. No accuracy gain, cut u
+pass28 result: cand_sink_m2 delta -2 on c0: paired -3.9+-2.2 (11 w2r,21 r2w), cut .297->.344, tokens 363->394. Curve delta -2/0/+2: acc -3.9/0/+.8, cu
+pass30 result: cand_rep_b1 on c1: paired +1.6+-2.2 (18 w2r,14 r2w), cut .270->.266, tokens 351->358. Cut flat, prediction not met at beta 1; note edit
+pass31 result: cand_rep_b25 on c1: paired +2.7+-2.4 (22 w2r,15 r2w), cut .270->.285, tokens 351->389. Cut did NOT fall => repetition state does not su
+pass32 result: cand_rep_b25 on c2 (fresh): paired +1.95+-2.38 (21 w2r,16 r2w), cut .270->.227, tokens 342->353. Cut moved opposite to c1, no loop clai
+pass33 result: cand_rep_b25 on c0 (fresh): paired +0.39+-2.63 (23 w2r,22 r2w), cut .297->.262, tokens 363->373. Estimates 2.7(disc),1.95,.39 falling, 
+pass34 result: cand_rep_b25 on c3: paired 0.0+-2.6 (22 v 22), cut .234->.3125, tokens 317->387. FRESH POOL c2,c0,c3: 66 w2r,60 r2w, +.78+-1.46 < +2 =>
+pass38 result: cand_read_p1 on c0: paired +1.17+-2.18 (17 w2r,14 r2w), cut .297->.125, tokens 363->262, marker share .24->.45, wrong_answer 126->167. 
+pass41 result: cand_num_p1 on c0: paired +.78+-1.92 (13 w2r,11 r2w), cut .297->.273, tokens 363->350, wrong_answer 126->131. Cut NOT halved, as predic
+pass42 result: cand_num_p1 on c1: paired +.39+-2.11 (15 w2r,14 r2w), cut .270->.273, tokens 351->354. Splits (orig>ed, F finished C cut; n, orig right
+pass43 result: cand_num_p1 on c2: paired +4.69+-2.12 (21 w2r,9 r2w), cut .270->.254, tokens 342->336. Splits {'FF': (161, 40, 44), 'FC': (26, 0, 0), '
+pass44 result: cand_num_p1 on c3: paired +1.95+-2.18 (18 w2r,13 r2w), cut .234->.203, tokens 317->302. Splits {'FF': (175, 62, 64), 'FC': (21, 3, 0), 
+dev 1226 hold 1024 overlap 0 hold chunks [256, 256, 256, 256] union 1024 in holdout True c4 202
+held-out gen files used? []
+best_1 ['model.layers.11.self_attn.q_proj.weight.npy', 'model.layers.17.self_attn.q_proj.weight.npy', 'model.layers.23.self_attn.q_proj.weight.npy', 'model.layers.5.self_attn.q_proj.weight.npy']
+
+```

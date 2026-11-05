@@ -1,0 +1,46 @@
+OUTPUT of Python run 74 of at most 300:
+```
+gain definition in earlier blocks: ["gq=1+np.array(load(f'model.layers.{l}.self_attn.q_norm.weight'),dtype=np.float64); gk=1+np.array(load(f'model.", "if l==5: print('Q',Q.shape,'K',K.shape,'gq',gq.shape,'gk',gk.shape,'gq med %.2f min %.2f; gk med %.2f min %.2f"]
+post_attn weight L5: mean 9.784 min -1.031 max 512.0
+{'hidden_last_prompt.npy': (512, 19, 640), 'hidden_mean_answer.npy': (512, 19, 640), 'mlp_last_prompt.npy': (512, 18, 2048), 'mlp_mean_answer.npy': (512, 18, 2048)}
+residual mean file ['hidden_mean_answer.npy']
+mean_res shape (19, 640)
+
+WRITE directions, after post gain: (family, layer, rank) -> top coords
+('o', 1, 0) ([(400, 0.84), (97, -0.51), (163, 0.14)], 'effdims', 1.8, 'c163', 0.14, 'cos_mean', 0.99)
+('o', 12, 0) ([(163, -0.88), (400, -0.14), (87, 0.13)], 'effdims', 1.6, 'c163', 0.88, 'cos_mean', 0.86)
+('o', 14, 0) ([(163, 0.89), (558, 0.09), (460, -0.09)], 'effdims', 1.6, 'c163', 0.89, 'cos_mean', 0.88)
+('o', 14, 1) ([(163, 0.52), (245, -0.16), (203, 0.13)], 'effdims', 12.5, 'c163', 0.52, 'cos_mean', 0.52)
+('o', 15, 2) ([(163, 0.62), (620, -0.18), (360, -0.14)], 'effdims', 6.7, 'c163', 0.62, 'cos_mean', 0.6)
+('o', 16, 0) ([(163, 0.85), (400, 0.1), (479, -0.08)], 'effdims', 1.9, 'c163', 0.85, 'cos_mean', 0.85)
+('o', 17, 2) ([(163, -0.25), (360, -0.17), (514, 0.16)], 'effdims', 87.7, 'c163', 0.25, 'cos_mean', 0.25)
+('down', 0, 0) ([(400, 0.83), (381, 0.29), (255, -0.17)], 'effdims', 2.1, 'c163', 0.02, 'cos_mean', 0.74)
+('down', 12, 1) ([(163, -0.92), (526, -0.1), (232, 0.08)], 'effdims', 1.4, 'c163', 0.92, 'cos_mean', 0.9)
+
+READ directions, in residual space before pre gain: (family, layer, rank)
+('gate', 13, 0) ([(239, -0.52), (451, -0.26), (74, 0.23)], 'effdims', 11.0, 'c163', 0.0, 'cos_mean', 0.02)
+('gate', 14, 0) ([(239, 0.34), (71, 0.24), (431, -0.23)], 'effdims', 29.3, 'c163', 0.0, 'cos_mean', 0.01)
+('gate', 15, 0) ([(239, -0.27), (299, 0.27), (508, -0.22)], 'effdims', 33.0, 'c163', 0.0, 'cos_mean', 0.02)
+('gate', 17, 0) ([(3, -0.34), (289, -0.26), (293, -0.21)], 'effdims', 28.1, 'c163', 0.0, 'cos_mean', 0.01)
+('up', 16, 0) ([(131, 0.35), (299, 0.28), (239, -0.24)], 'effdims', 26.6, 'c163', 0.0, 'cos_mean', 0.02)
+('up', 17, 0) ([(299, 0.29), (3, -0.27), (212, 0.22)], 'effdims', 33.5, 'c163', 0.0, 'cos_mean', 0.02)
+('q', 15, 0) ([(442, -0.28), (451, 0.28), (431, -0.25)], 'effdims', 28.2, 'c163', 0.0, 'cos_mean', 0.02)
+('k', 9, 0) ([(291, 0.2), (7, 0.18), (587, -0.17)], 'effdims', 81.0, 'c163', 0.01, 'cos_mean', 0.01)
+
+o_proj top direction, energy by head (which heads drive it)
+1 [0.11, 0.32, 0.26, 0.31]
+12 [0.17, 0.08, 0.43, 0.31]
+14 [0.17, 0.26, 0.33, 0.24]
+16 [0.27, 0.26, 0.28, 0.19]
+
+per-head ratio, layers 16 and 17: o columns | q rows
+16 [1.05, 0.92, 1.13, 0.9] [1.03, 0.96, 0.98, 1.03]
+17 [1.25, 0.95, 0.96, 0.85] [1.07, 1.1, 0.82, 1.01]
+
+unit norms by layer: count below 0.1 median | max/median
+down low [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] | max/med [2.3, 1.4, 1.5, 1.5, 1.6, 1.7, 1.7, 2.3, 2.0, 1.8, 1.7, 1.8, 2.3, 1.8, 1.3, 1.3, 1.3, 1.9]
+gate low [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] | max/med [2.9, 2.0, 2.5, 2.6, 3.1, 3.1, 4.7, 6.2, 4.7, 4.8, 4.3, 4.1, 3.9, 4.1, 4.3, 5.3, 4.0, 3.9]
+up low [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] | max/med [2.1, 1.5, 1.7, 2.0, 1.9, 3.0, 2.6, 1.8, 2.5, 2.1, 1.6, 1.9, 2.5, 1.8, 1.4, 2.7, 2.6, 2.1]
+'done'
+
+```

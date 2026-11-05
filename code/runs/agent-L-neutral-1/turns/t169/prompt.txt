@@ -1,0 +1,64 @@
+OUTPUT of Python run 138 of at most 300:
+```
+(48, 520)
+answer lengths: <=400 32 >=700 0 prompt len med 92
+early tokens 18619 late tokens 0
+23 (48, 520, 6912)
+<block>:21: RuntimeWarning: Mean of empty slice
+/usr/local/lib/python3.12/site-packages/numpy/_core/_methods.py:134: RuntimeWarning: invalid value encountered in divide
+  ret = um.true_divide(
+/usr/local/lib/python3.12/site-packages/numpy/_core/_methods.py:219: RuntimeWarning: Degrees of freedom <= 0 for slice
+  ret = _var(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+/usr/local/lib/python3.12/site-packages/numpy/_core/_methods.py:178: RuntimeWarning: invalid value encountered in divide
+  arrmean = um.true_divide(arrmean, div, out=arrmean,
+/usr/local/lib/python3.12/site-packages/numpy/_core/_methods.py:208: RuntimeWarning: invalid value encountered in divide
+  ret = um.true_divide(
+L 23 top late-vs-early neurons (n, mean_late, sd_late, rms_early, q999_early):
+0 nan nan 0.039 0.408
+4614 nan nan 0.034 0.293
+4613 nan nan 0.031 0.254
+4612 nan nan 0.04 0.135
+4611 nan nan 0.027 0.198
+4610 nan nan 0.043 0.262
+4609 nan nan 0.036 0.142
+4608 nan nan 0.033 0.176
+ quietest neurons: [(0, nan), (4614, nan), (4613, nan), (4612, nan), (4611, nan)]
+24 (48, 520, 6912)
+L 24 top late-vs-early neurons (n, mean_late, sd_late, rms_early, q999_early):
+0 nan nan 0.039 0.21
+4614 nan nan 0.122 0.836
+4613 nan nan 0.027 0.241
+4612 nan nan 0.031 0.394
+4611 nan nan 0.023 0.188
+4610 nan nan 0.032 0.149
+4609 nan nan 0.028 0.127
+4608 nan nan 0.03 0.167
+ quietest neurons: [(0, nan), (4614, nan), (4613, nan), (4612, nan), (4611, nan)]
+<block>:34: RuntimeWarning: Mean of empty slice
+<block>:36: RuntimeWarning: Mean of empty slice
+/usr/local/lib/python3.12/site-packages/numpy/_core/_methods.py:142: RuntimeWarning: invalid value encountered in divide
+  ret = ret.dtype.type(ret / rcount)
+/usr/local/lib/python3.12/site-packages/numpy/_core/_methods.py:211: RuntimeWarning: invalid value encountered in divide
+  ret = ret.dtype.type(ret / rcount)
+Traceback (most recent call last):
+    run_block(code, g)
+    exec(compile(tree, "<block>", "exec"), g)
+  File "<block>", line 37, in <module>
+  File "/usr/local/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 4509, in quantile
+    return _quantile_unchecked(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 4523, in _quantile_unchecked
+    return _ureduce(a,
+           ^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 3893, in _ureduce
+    r = func(a, **kwargs)
+        ^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 4682, in _quantile_ureduce_func
+    result = _quantile(arr,
+             ^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 4806, in _quantile
+    slices_having_nans = np.isnan(arr[-1, ...])
+                                  ~~~^^^^^^^^^
+IndexError: index -1 is out of bounds for axis 0 with size 0
+
+```

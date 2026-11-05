@@ -1,0 +1,22 @@
+OUTPUT of Python run 57 of at most 300:
+```
+act array (512,) mean 1.58
+n 512 missing gapF 29 | flip share 0.227
+flip share by baseline gap (top token - First):
+  [ 0, 8) n  14 flip 0.57 mean act 1.50
+  [ 8,10) n  65 flip 0.34 mean act 1.52
+  [10,11) n  69 flip 0.29 mean act 1.58
+  [11,12) n  89 flip 0.28 mean act 1.67
+  [12,13) n  73 flip 0.21 mean act 1.65
+  [13,14) n  54 flip 0.24 mean act 1.72
+  [14,16) n  70 flip 0.19 mean act 1.68
+  [16,30) n  49 flip 0.00 mean act 1.30
+flip share by activation quartile:
+  act [-9.00,1.29) n 128 flip 0.02 mean gap 12.9
+  act [1.29,1.57) n 128 flip 0.16 mean gap 12.5
+  act [1.57,1.88) n 128 flip 0.31 mean gap 11.8
+  act [1.88,99.00) n 128 flip 0.41 mean gap 12.3
+corr(flip, gap) -0.252 corr(flip, act) 0.377
+gap to Okay on dev_b: q10/50/90 [3.9, 7.2, 12.2] | gap to First: q10/50/90 [9.4, 12.0, 16.0]
+
+```

@@ -1,0 +1,62 @@
+OUTPUT of Python run 202 of at most 300:
+```
+ top-1 digit 83.96->82.54, down everywhere except space. No math-specific gain. Gate-outlier line CLOSED, no generation pass. Edits dropped. TF screen resolves about .005.
+
+Free: head roles from pass 6 (2 texts only): most problem mass from answer positions L5h2 .27, L11h2 .33, L17h0 .31; least L11h0/h1 .02-.03, L17h1 .05.
+Pass 16: teacher_forced EDITED, /work/tf1_texts.json, token_logprobs + top5, vs pass 2. Edit S2: o_proj columns of heads L5h2, L11h2, L17h0 multiplied by 1.5.
+
+Pass 16 result: S2 (x1.5) refs_all -.062 SE.003, digit -.043, math -.253, others +.112; digit top-1 -.68 pts; 149/800 refs improved. Reading prediction refuted at this strength.
+Pass 17: teacher_forced EDITED, /work/tf1_texts.json, token_logprobs + top5, vs pass 2. Edit S2b: same heads L5h2, L11h2, L17h0 o_proj columns x0.67.
+
+Pass 17 result: S2b (x0.67) refs_all +.014 SE.003 (from math +.151), digit -.009, word -.008, others -.066; top-1 digit -.43, word -.99, math +.4. Digit top-1 falls both ways, peak near original; math symbols move monotonically, style. Head-balance line CLOSED. Edits dropped.
+Pass 18: teacher_forced EDITED, /work/tf1_texts.json, token_logprobs + top5 + hidden 14,17,18, vs pass 2. Edit S5: down_proj row 163 x0.5 at L10, L13, L16 (reservoir level down). Metric: top-1, since final norm sharpens logits.
+CORRECTION to Pass 18 edit: down_proj row 163 alone gives only about -15%, since c163 jumps at L5, L7, L10, L13 come mainly from attention. Final S5 = row 163 x0.5 in down_proj at L10, L13, L16 AND in o_proj at L10, L13. Predicted c163 at idx 18 about -29%. Inference to test: attention to BOS feeds the reservoir, so E2/E3 may be confounded with reservoir level.
+
+Pass 18 result: S5 c163 at idx 18 25344->19968 (-21 pct, predicted -29), signal share .489->.578 (+18 pct, predicted +40; per-token signal already about half of rms). Top-1 all -.46, digit -.50, math +.54, space -1.13, punct -.95. refs_all -.241 but sharper logits confound logprob. Attenuation not the limit.
+Pass 19: teacher_forced EDITED, /work/tf1_texts.json, token_logprobs + top5 + hidden 14,17,18, vs pass 2. Edit S5b: row 163 x1.5 in down_proj L10, L13, L16 and o_proj L10, L13.
+
+Pass 19 result: S5b c163 +18 pct, signal share .489->.427. refs_all +.146 (softer logits), top-1 digit -.28, math -.52, space +1.5; battery digit -.88. Digit falls both ways, reservoir-level line CLOSED. Level alone moves top choices little, so E2/E3 damage likely came from moving attention (indirect). Edits dropped.
+Pass 20: teacher_forced ORIGINAL, /work/tf20_texts.json, token_logprobs + top5. No edit. 250 refs (tf1 first 250) x 4 prompts: C0 eval, C1 two worked examples (tf1 idx [700, 701]), C2 no instruction, C3 careful-reading instruction. Purpose: does any state read and bind better?
+
+Pass 20 result (original, 250 refs x 4 prompts): digit top-1 C0 83.93; change C1 examples -1.09 SE.31, C2 no instr -.08 SE.21, C3 careful -.10 SE.14. Every digit right about 6 pct in all. No better reading state reached, no justified steering target. Copied digits 81.5 harder than computed 84.5: binding is the bottleneck. Limited to 3 prompts on reference-style answers.
+
+Free: math vs non-math at last prompt token: 500-1200 of 2048 units per layer |t|>6, confounded by prompt length (non-math questions short). Added same-problem rewrite control. Score = min(|t G1 vs G4|, paired |t G1 vs G2|), same sign, unit more active in G1 than both.
+Pass 21: teacher_forced EDITED, /work/tf1_texts.json, token_logprobs + top5, vs pass 2. Edit S6: zero down_proj columns of 360 solve-math units (up to 20 per layer, score >= 6), list in /work/s6_units.json.
+
+Pass 21 result: S6 (zero 360 solve-math units, about 10 pct of each matrix norm) refs_all -.004, digit +.002, punct -.187; top-1 digit -.48, math -.61, space -.99; battery digit -.8. No gain. Math-context units removal CLOSED. Solve-math state is redundant: 240-640 units per layer pass the double control.
+Pass 22: teacher_forced EDITED, /work/tf1_texts.json, token_logprobs + top5, vs pass 2. Edit S6b: same 360 down_proj columns x2.
+Plan after this: back off E6 to strength .2, then small-alpha salience, then units less active in solve-math.
+
+
+Pass 22 result: S6b (360 units x2) refs_all -.030 SE.002, digit -.051, math -.055, punct +.157; top-1 digit -.99, math 0, space +1.1, word -.68; battery digit 77.2 (S6 77.0). Digit falls both ways (x0: -.48, x2: -.99), peak at original. Math-context units line CLOSED both directions. Edits dropped.
+
+Free: q/k gains = 1+w; dead dims near w=-1, k outliers up to 30x; salience energy concentrated in top gain dims at L2, L5, L11. Pass 6 (2 texts only): reading heads diffuse, effective non-BOS positions L17h0 41, L11h2 25, L5h2 10; h1 heads 3-9. 
+REFUSED, no pass used: S7 (q_norm gain x1.5 at L5, L11, L17 plus salience hold). save_edit: only rescales the norm's whole scale. Whole-norm rescale is out of scope; NOT attempting near-whole subsets of dims to get under the check. Whole-layer attention temperature remains UNTESTED. Mention in final report.
+
+Free: key dim 203 is top k gain in 4 layers (p .0005 under shuffle) but test was post hoc, null too generous; same-index K row alignment weak and general (.037 vs .034, strongest dims 128, 0, 1), 203 unexceptional; gq*gk product 2-10 near layer median 2-7 (trade-off, near 0 at L16); reads reservoir coords. CLOSED, not a planted channel.
+Free: keys 55-87 pct constant after gains (L17 .27); constant mostly non-reservoir (L5 .58 vs .00 from c163). Norm acts before gains, so raw share is the budget: L5 .41, L11 .34, L17 .38 from non-reservoir.
+Pass 23: teacher_forced EDITED, /work/tf6_texts.json (2 texts), attn 5,11,17 + token_logprobs, vs pass 6. Manipulation check only. Edit K0 beta=1: k_proj L5,L11,L17, remove unit mean-key direction (non-reservoir columns, pass 7 sample of 40 texts, non-BOS) from all columns except 163. Same hypothesis as the REFUSED S7 (reads too diffuse), by a different and allowed edit; state this in final report. Expect: effective non-BOS positions down, BOS share about flat.
+
+Pass 23 result: K0 beta=1 sharpened reads (effective positions L17h0 41->23, L11h2 25->11, L5h2 10->4.5) but BOS share jumped (L5 h1-3 ~.45->.96, L11h2 .24->.48). Manipulation failed on BOS condition, confounded with E3 sink. No full screen. Own-text logprob -.06->-.39, -.18->-1.02 (rough). Constant key carries a positive offset against BOS, so not simply wasted budget. Edits dropped.
+
+Free: constant key outside span of mean queries: L5 .63, L11 .91, L17 .96 of its energy; boost if only that removed 1.16, 1.20, 1.25.
+Pass 24: teacher_forced EDITED, /work/tf6_texts.json (2 texts), attn 5,11,17 + token_logprobs, vs pass 6. Manipulation check. Edit K1 beta=1: k_proj L5,L11,L17, remove unit direction n = part of mean key (non-reservoir columns) orthogonal to span of 4 gain-weighted mean queries, from all columns except 163. Same hypothesis as refused S7, different allowed edit. Pass condition: reads sharpen AND BOS share near pass 6. Big BOS jump closes the line.
+
+Pass 24 result: K1 beta=1 manipulation PASSED: reads sharper (L17 h0 41->19, h2 40->10, h3 38->11, L11h2 25->12), BOS no jump, moderately lower at L17 (h2 .67->.38, h3 .56->.25, h0 .45->.30). Side effect: h1 pointer heads broader (L11 7->18, L17 9->20). Own-text logprob -.06->-.12, -.18->-.56 (rough). Query-aligned part of constant key balances BOS, confirmed.
+Pass 25: teacher_forced EDITED, /work/tf1_texts.json, token_logprobs + top5, vs pass 2. Edit K1 unchanged (k_proj L5,L11,L17, beta=1). Digit top-1 decides; split copied vs computed digits after. Rise -> generation on fresh DEV. Fall -> softening check, then close.
+
+Pass 25 result: K1 beta=1 refs_all -.207 SE.007, digit -.247, math -.371, word -.229; top-1 all -3.43, digit -5.79 (83.96->78.17), math -5.12, punct -6.24, space +3.86; battery digit 77.8->70.75; 108/800 refs improved. Sharper reads hurt broadly, even isolated arithmetic. Edits dropped.
+
+Copied vs computed K1: copied 82.76->75.91 (-6.85 SE.50), computed 84.59->79.37 (-5.22 SE.33). Copied hit harder: binding prediction REFUTED at beta=1.
+Pass 26: teacher_forced EDITED, /work/tf1_texts.json, token_logprobs + top5, vs pass 2. Edit K1 beta=-0.5 (ADD along n, softer reads), k_proj L5,L11,L17, columns except 163. Symmetric-peak prediction about -1.4 digit top-1; a rise means the peak is softer than original. Axis closes after this pass either way unless it rises.
+
+Pass 26 result: K1 beta=-.5 refs_all -.065 SE.004, digit -.031; top-1 digit -1.25 (predicted -1.4), math -1.82, word -1.91; copied -2.0 SE.37, computed -.86 SE.22; battery digit 77.8->77.0. Curve through beta 1, 0, -.5 peaks at beta about -.02. Sharpness axis CLOSED both directions at L5, L11, L17 (edit route; whole-norm rescale refused and not used). Edits dropped.
+Pattern: salience, head balance, reservoir, gains, math-context units, sharpness all peak at original, no axis shows gain in either direction.
+Plan: per-layer margin ledger, then causal digit-write test on any layer with negative mean margin contribution; then units switched off during math.
+
+Free: margin ledger rebuilt, sum check 1.0. idx14 (L13) retraction r -.63 but net HELPFUL (fail +.81, net flips +26 per 1000 digits). L13 retraction claim CLOSED, no pass. No layer net harmful (worst -4 to -8 per 1000: idx2,6,8,11). Digit decision at idx12,13,16 = L11,L12,L15 (+153,+23,+15 per 1000); earlier layers near 0. Failing digits are pushed wrong there, reads as weak decision.
+
+Free: units off during math rare and scattered: 41 off vs 673 on at ratio .25 (11 vs 281 at .10), last prompt token only. Switched-off gate line CLOSED, no pass.
+Pass 27: teacher_forced EDITED, /work/tf1_texts.json, token_logprobs + top5, vs pass 2. Edit S8: zero down_proj columns of 133 math-only units (score>=6, active in math >= l
+
+```

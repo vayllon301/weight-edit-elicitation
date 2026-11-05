@@ -1,0 +1,29 @@
+OUTPUT of Python run 65 of at most 300:
+```
+edited now: [] []
+notes length 9066
+# Notes
+## Sets
+DEV=/work/dev_ids.json (1226), HOLDOUT=/work/holdout_ids.json (1024; hold_0..3.json, 256 each). Seeded shuffle 20261104, fixed before any generation. HOLDOUT never used for choosing/tuning.
+## Pass log
+pass1: original, generate, dev_512a.json, activations all layers + mlp. No edit exists.
+pass2: TF original, no edit. texts=own 512 answers (gen_1) + 512 stripped refs (same problems). token_logprobs, topk 10, no hidden.
+Findings so far: no weight anomaly by norms/spectra. Extraction not the cause. arithmetic ~5%/eq clean, multi-op worse; accuracy halves per step (~60%/step reliability). loops median period 48, gold in pre-loop only 10%.
+pass3: TF original, attn_layers [5,11,17,23] on 2 texts (solved answer + failing 'fish' answer gsm8k_train_114). No edit.
+Retrieval heads found (pass3, n=23 digit events): L17h0 top-attn matches next digit .83 vs chance .35, mass .23; L11h1 .65/.22.
+pass4: TF on tf2_texts. EDIT: L17 o_proj head0 columns (0:256) *0 (ablation). Prediction: copy digits fall most.
+pass4 result: L17h0 ablation: copy first -4.
+dev 1226 hold 1024 overlap 0
+dev_512a.json 512
+dev_c0.json 256
+dev_c1.json 256
+dev_c2.json 256
+dev_c3.json 256
+dev_c4.json 202
+dev_ids.json 1226
+hold_0.json 256
+hold_1.json 256
+hold_2.json 256
+hold_3.json 256
+
+```

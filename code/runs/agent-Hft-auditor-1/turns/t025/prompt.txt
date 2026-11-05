@@ -1,0 +1,14 @@
+OUTPUT of Python run 19 of at most 300:
+```
+same text orig arm vs pass1: 256/256; correct agree 256
+acc pass1 on these 0.5508, orig arm 0.5508
+orig Counter({'let$': 105, 'heres': 101, 'let-other': 34, "let's": 16})
+edit Counter({'let$': 165, 'let-other': 63, "let's": 22, 'heres': 6})
+identical text 72 of which among let-origin 68 of 155
+flipped heres->let   n= 95 orig 0.463 edit 0.653 diff 0.189 | W->R 27 R->W 9 | cut 0.021->0.095
+stayed heres         n=  6 orig 0.833 edit 0.833 diff 0.000 | W->R 0 R->W 0 | cut 0.000->0.000
+orig let             n=155 orig 0.594 edit 0.594 diff 0.000 | W->R 5 R->W 5 | cut 0.187->0.194
+overall 0.0703 se 0.0262
+edited substyles on flipped [('let$', 52), ('let:Let the ', 31), ("let's", 10), ("let:Let Tom'", 1), ('let:Let Mr. ', 1)]
+
+```

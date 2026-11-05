@@ -1,0 +1,5 @@
+`Given` did what the test needed: 478 of 512 answers opened with it, and they really do restate the facts ("Given that Jessica must complete 50 hours..."), with few list marks. Even so, it's -2.54 ± 2.17 against `Let`, and -4.51 ± 2.34 on answers that finish under both, so its lower cut-off rate doesn't convert to accuracy. Finished accuracy is 67.7% against 73.3%. That counts against restating alone being the key ingredient: `Let`'s advantage is more likely in defining named quantities than in merely repeating the givens. It also fits the earlier result that fewer cut-offs don't mean better answers. Edit A is restored underneath, and the `We` write is in place with only the two expected columns changed. I'll run it now to complete the prose openings.
+
+```forward
+{"type": "generate", "model": "edited", "problems_file": "/work/dev_b.json"}
+```

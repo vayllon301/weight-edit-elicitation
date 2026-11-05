@@ -1,0 +1,22 @@
+OUTPUT of Python run 176 of at most 300:
+```
+A3 source: def A3(l): return np.load(f'/work/fwd_3/mlp_act_{l}.npy',mmap_mode='r')
+
+definitions: [(48, 28, "print('rows=right digit, cols=model top digit');print(Cm)"), (136, 4, 'rows=[];cols=[]'), (136, 9, 'rows=np.array(rows); cols=np.array(cols); nxt=ids3[rows,cols+1]')]
+import numpy as np, json
+ids3=np.load('/work/fwd_3/input_ids.npy'); 
+sot=tok.token_to_id('<start_of_turn>'); dset=np.array(sorted(int(v) for v in digit_ids))
+Em=np.array(load_original('model.embed_tokens.weight'),dtype=np.float32); gn=1+np.array(load_original('model.norm.weight'),dtype=np.float32)
+rows=[];cols=[]
+for r in range(ids3.shape[0]):
+    st=np.where(ids3[r]==sot)[0][-1]
+    ts=np.where(np.isin(ids3[r],dset))[0]; ts=ts[ts>st+1]
+    rows+= [r]*len(ts); cols+=list(ts-1)
+rows=np.array(rows); cols=np.array(cols); nxt=ids3[rows,cols+1]
+print('digit positions',len(rows),'texts',len(set(rows.tolist())))
+res={163,400,87}
+keep=np.array([j for j in range(640) if j not in res])
+type rows <class 'list'> 235 | type cols <class 'numpy.ndarray'>
+['ids3', 'ids32', 'ids36']
+
+```

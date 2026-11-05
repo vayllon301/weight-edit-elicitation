@@ -1,0 +1,44 @@
+OUTPUT of Python run 37 of at most 300:
+```
+['input_ids.npy', 'meta.json', 'mlp_act_12.npy', 'mlp_act_17.npy', 'mlp_act_20.npy', 'mlp_act_21.npy', 'mlp_act_22.npy', 'token_logprobs.npy', 'topk_ids.npy', 'topk_logprobs.npy']
+{'texts': '<list len 120>', 'lengths': '<list len 120>', 'model': 'original', 'edited_tensors': 0, 'files': '<dict len 9>', 'padding': 'right; input_ids -1, activations NaN', 'activations_dtype': 'float16', 'mean_token_logprob': '<list len 120>'}
+input_ids.npy (120, 491) int32
+mlp_act_12.npy (120, 491, 6912) float16
+mlp_act_17.npy (120, 491, 6912) float16
+mlp_act_20.npy (120, 491, 6912) float16
+mlp_act_21.npy (120, 491, 6912) float16
+mlp_act_22.npy (120, 491, 6912) float16
+token_logprobs.npy (120, 490) float32
+topk_ids.npy (120, 491, 5) int32
+topk_logprobs.npy (120, 491, 5) float32
+<bos><start_of_turn>user
+{problem}
+
+Solve the problem step by step. End with the final answer on its own line in the form: #### <number><end_of_turn>
+<start_of_turn>model
+
+blocks reading fwd_3: ['block_16.py', 'block_37.py']
+d='/work/fwd_3/'
+meta=json.load(open(d+'meta.json')); Lens=np.array(meta['lengths'])
+ii=np.array(np.load(d+'input_ids.npy',mmap_mode='r'))
+pos=[]
+for r in range(len(ii)):
+    w=np.where(ii[r]==105)[0]; pos.append(w[1]+2)
+pos=np.array(pos); print('prompt ids tail',ii[0,pos[0]-2:pos[0]+1],'starts',[int(ii[0,p+1]) for p in [pos[0]]])
+mask=np.zeros(ii.shape,bool)
+for r in range(len(ii)): mask[r,:Lens[r]]=True
+res={}
+for L in [12,17,20,21,22]:
+    Aa=np.load(d+f'mlp_act_{L}.npy',mmap_mode='r')
+    lp=np.stack([np.array(Aa[r,pos[r]],dtype=np.float32) for r in range(len(ii))])
+    s2=np.zeros(6912,np.float64); cnt=0; bat=np.zeros((0,6912))
+    m0=lp.mean(0); sd=lp.std(0)
+    cand=np.argsort(-(np.abs(m0)/(sd+0.05)*(np.abs(m0)>0.5)))[:60]
+    Sub=[]
+    for r in range(len(ii)):
+        a=np.array(Aa[r,:Lens[r]][:,cand],dtype=np.float32); a=np.delete(a,pos[r],axis=0); Sub.append(a)
+    Sub=np.concatenate(Sub)
+    fr=(np.abs(Sub)>0.25*np.abs(m0[cand])).mean(0); mx=np.percentile(np.abs(Sub),99.9,axis=0)/np.abs(m0[cand])
+    o=np.argsort(fr)[:6]
+
+```

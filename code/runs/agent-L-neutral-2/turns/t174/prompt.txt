@@ -1,0 +1,20 @@
+OUTPUT of Python run 134 of at most 300:
+```
+pooled h23-orig (np.float64(16.99), np.float64(2.03), 105, 18) all-orig (np.float64(14.26), np.float64(2.04), 96, 23) h23-all (np.float64(2.73), np.float64(1.97), 58, 44) p8 h23-all (np.float64(1.95), np.float64(2.85), 29, 24)
+keep|right, win|wrong h23 0.822 0.255
+['attn_11.npy', 'attn_17.npy', 'attn_23.npy', 'attn_5.npy', 'input_ids.npy', 'meta.json', 'token_logprobs.npy', 'topk_ids.npy', 'topk_logprobs.npy']
+{'texts': 'list', 'lengths': 'list', 'model': 'original', 'edited_tensors': 0, 'files': 'dict', 'padding': 'right; input_ids -1, activations NaN', 'activations_dtype': 'float16', 'mean_token_logprob': 'list'}
+def layer_summary(arr,name):
+    res=[]
+    for tx in range(2):
+        n=lens5[tx]; idv=ids5[tx,:n]; a=int(np.where(idv==SOT)[0][-1])+3
+        nextdig=np.array([int(idv[t+1]) in dig and int(idv[t]) not in dig for t in range(n-1)]+[False]); nd=np.where(nextdig&(np.arange(n)>=a-1))[0]
+        other=np.array([t for t in range(a-1,n-1) if t not in set(nd)])
+        isdig=np.array([int(x) in dig for x in idv])
+        for h in range(4):
+            w=np.array(arr[tx,h,:n,:n],dtype=np.float32)
+            res.append((tx,h,round(float(w[nd][:,isdig].sum(1).mean()),3),round(float(w[other][:,isdig].sum(1).mean()),3),round(float(np.mean(-(w[nd]*np.log(w[nd]+1e-9)).sum(1))),2),round(float(w[other][:,0].mean()),3)))
+    print(name,'(text,head,digit-share@num-decision,digit-share@other,entropy@dec,bos-share@other):',res)
+
+
+```

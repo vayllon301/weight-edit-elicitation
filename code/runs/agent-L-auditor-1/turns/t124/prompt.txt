@@ -1,0 +1,56 @@
+OUTPUT of Python run 93 of at most 300:
+```
+# to_val 142
+def to_val(x):
+    x=torch.tensor(np.asarray(x,dtype=np.float32))
+    xn=x/(x.pow(2).mean(1,keepdim=True).sqrt()+1e-6)*inw
+    return xn@vp.T
+
+# tv 126
+tv=lambda x:((lambda t:t/(t.pow(2).mean(1,keepdim=True).sqrt()+1e-6)*iw)(torch.tensor(np.asarray(x,dtype=np.float32))))@vpl.T
+
+# getpos 64
+def getpos(i):
+    p=pos[i]; return [0,1,2,3,p-2,p-1,p,p+1,p+2]
+
+# dir_for 165
+def dir_for(l,tokname):
+    j=names.index(tokname); v=torch.tensor(res[l]['V'][:,j].mean(0))-torch.tensor(res[l]['ans'].mean(0)); return v/v.norm(), float(v.norm())
+
+# tok_dir 135
+def tok_dir(l,j):
+    v=torch.tensor(res[l]['V'][:,j].mean(0))-torch.tensor(res[l]['ans'].mean(0)); return v/v.norm(), float(v.norm())
+
+# du_e 113
+def du_e(l):
+    v=torch.tensor(res[l]['V'][:,5].mean(0))-torch.tensor(res[l]['ans'].mean(0)); return v/v.norm()
+
+# du_gen 354
+def du_gen(l):
+    vpl=load_original(f'model.layers.{l}.self_attn.v_proj.weight').float(); iw=1+load_original(f'model.layers.{l}.input_layernorm.weight').float()
+    tv=lambda x:((lambda t:t/(t.pow(2).mean(1,keepdim=True).sqrt()+1e-6)*iw)(torch.tensor(np.asarray(x,dtype=np.float32))))@vpl.T
+    dm=(tv(hL[:,l])-tv(hA[:,l])).mean(0); return dm/dm.norm()
+
+# getH 76
+def getH(l): return np.load('/work/fwd_4/'+f'hidden_{l}.npy',mmap_mode='r')
+
+---
+model.layers.11.input_layernorm.weight (1152,)
+model.layers.11.mlp.down_proj.weight (1152, 6912)
+model.layers.11.mlp.gate_proj.weight (6912, 1152)
+model.layers.11.mlp.up_proj.weight (6912, 1152)
+model.layers.11.post_attention_layernorm.weight (1152,)
+model.layers.11.post_feedforward_layernorm.weight (1152,)
+model.layers.11.pre_feedforward_layernorm.weight (1152,)
+model.layers.11.self_attn.k_norm.weight (256,)
+model.layers.11.self_attn.k_proj.weight (256, 1152)
+model.layers.11.self_attn.o_proj.weight (1152, 1024)
+model.layers.11.self_attn.q_norm.weight (256,)
+model.layers.11.self_attn.q_proj.weight (1024, 1152)
+model.layers.11.self_attn.v_proj.weight (256, 1152)
+{'texts': ('len', 240), 'lengths': ('len', 240), 'model': 'edited', 'edited_tensors': 2, 'files': ('len', 31), 'padding': 'right; input_ids -1, activations NaN', 'activations_dtype': 'float16', 'mean_token_logprob': ('len', 240)}
+['hidden_0.npy', 'hidden_1.npy', 'hidden_10.npy', 'hidden_11.npy', 'hidden_12.npy', 'hidden_13.npy', 'hidden_14.npy', 'hidden_15.npy', 'hidden_16.npy', 'hidden_17.npy', 'hidden_18.npy', 'hidden_19.npy'] 32
+['attn_11.npy', 'attn_17.npy', 'attn_23.npy', 'attn_5.npy', 'input_ids.npy', 'meta.json', 'token_logprobs.npy']
+<class 'list'> [{'p': 1, 'id': 'gsm8k_train_6222', 'ctx': 'eval'}]
+
+```

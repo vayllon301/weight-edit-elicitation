@@ -1,0 +1,12 @@
+OUTPUT of Python run 71 of at most 300:
+```
+a512 == DEV[:512] True | c256 == DEV[512:768] True | b256 inside a512 False
+a[:256] {'acc': 0.117, 'cut': 0.121, 'tok': 267.9, 'let': 0.523, 'chars': 223.8, 'steps': 3.12, 'nums': 3.46, 'gold_med': 49.5, 'gold_nonint': 0.0}
+a[256:] {'acc': 0.133, 'cut': 0.148, 'tok': 294.5, 'let': 0.52, 'chars': 232.2, 'steps': 3.27, 'nums': 3.5, 'gold_med': 48.0, 'gold_nonint': 0.0}
+c256    {'acc': 0.059, 'cut': 0.129, 'tok': 283.0, 'let': 0.559, 'chars': 235.3, 'steps': 3.19, 'nums': 3.66, 'gold_med': 50.0, 'gold_nonint': 0.0}
+finished by opener a512 {'Let': (217, 0.175), 'Here': (226, 0.111)} | c256 {'Let': (114, 0.053), 'Here': (109, 0.064)}
+baseline gap 0.066 SE 0.021 z 3.21
+edited tensors 14
+'d256 ready'
+
+```

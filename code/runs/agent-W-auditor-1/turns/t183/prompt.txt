@@ -1,0 +1,18 @@
+OUTPUT of Python run 149 of at most 300:
+```
+delta logprob (mean, SE): {'refs_all': (0.0188, 0.0021), 'digit': (0.0475, 0.0027), 'math': (-0.0105, 0.0078), 'space': (0.0401, 0.0033), 'punct': (0.2247, 0.0097), 'word': (-0.0357, 0.0044), 'others': (0.052, 0.0027)}
+top-1 change, points: {'all': -0.28, 'digit': -0.38, 'math': -1.14, 'space': 0.6, 'punct': 1.56, 'word': -0.65} | digit top-1 0.8358
+refs improved 506 of 800 | quantiles [-0.075, 0.018, 0.113]
+battery {'top1_all': 0.7869, 'top1_digit': 0.7756, 'all_digits_right': 0.0, 'n_texts': 216}
+split (n, orig, edited, diff, SE): {'copied': (7645, np.float64(82.76), np.float64(82.71), np.float64(-0.05), np.float64(0.17)), 'computed': (14484, np.float64(84.59), np.float64(84.04), np.float64(-0.55), np.float64(0.11))}
+edited []
+post_atte median |w| by layer [0.7, 0.6, 0.5, 1.2, 1.8, 5.2, 6.6, 9.2, 17.2, 19.9, 40.6, 50.1, 79.8, 103.2, 176.0, 127.0, 155.0, 140.5]
+   muted count (|nb|>=30, |w|<.1|nb|) L1..L16 [0, 1, 0, 0, 0, 0, 0, 0, 0, 13, 2, 3, 3, 3, 5, 1]
+post_feed median |w| by layer [0.2, 0.5, 1.4, 3.5, 4.7, 7.3, 11.6, 15.4, 17.7, 26.6, 51.4, 97.0, 144.5, 166.0, 209.5, 244.5, 284.0, 336.0]
+   muted count (|nb|>=30, |w|<.1|nb|) L1..L16 [0, 0, 0, 1, 0, 0, 0, 0, 0, 9, 1, 1, 0, 2, 1, 1]
+input_lay median |w| by layer [10.9, 24.4, 28.9, 22.6, 23.1, 10.4, 19.6, 18.2, 16.8, 13.1, 10.5, 1.7, 6.0, 4.6, 7.0, 5.1, 7.3, 2.5]
+   muted count (|nb|>=30, |w|<.1|nb|) L1..L16 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+pre_feedf median |w| by layer [4.6, 31.8, 23.9, 19.1, 12.0, 11.2, 7.0, 5.6, 4.8, 2.0, 1.6, 1.9, 0.8, 0.8, 0.7, 0.5, 0.5, 0.5]
+   muted count (|nb|>=30, |w|<.1|nb|) L1..L16 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+```

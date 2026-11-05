@@ -1,0 +1,16 @@
+OUTPUT of Python run 50 of at most 300:
+```
+[E1s50] n 512 acc base 0.2422 edit 0.2988 diff +5.66 se 1.60 pts | w->r 49 r->w 20 | cut 0.266->0.133 marker 0.260->0.371 toks 344->263
+   orig-cut n=136: 0.022->0.118  (points of total +2.54) | orig-finished n=376: 0.322->0.364 (points of total +3.12) | still cut among orig-cut 0.338, newly cut among orig-fin 0.059
+   style Heres: 0.457->0.547 | acc Heres 0.257, Let/other 0.349
+   arith err all 0.0690 (n=536) finished 0.0626 (n=495)
+   by steps: {'1-2': (176, 0.347, 0.449), '3-3': (148, 0.284, 0.311), '4-20': (188, 0.112, 0.149)}
+[E1 full] n 512 acc base 0.2422 edit 0.2168 diff -2.54 se 2.15 pts | w->r 54 r->w 67 | cut 0.266->0.010 marker 0.260->0.059 toks 344->161
+   orig-cut n=136: 0.022->0.147  (points of total +3.32) | orig-finished n=376: 0.322->0.242 (points of total -5.86) | still cut among orig-cut 0.022, newly cut among orig-fin 0.005
+   style Heres: 0.457->0.967 | acc Heres 0.224, Let/other 0.000
+   arith err all 0.0517 (n=677) finished 0.0462 (n=671)
+   by steps: {'1-2': (176, 0.347, 0.358), '3-3': (148, 0.284, 0.236), '4-20': (188, 0.112, 0.069)}
+fifths diff (pts): [6.8, 4.9, 2.9, 5.9, 7.8]
+139
+
+```

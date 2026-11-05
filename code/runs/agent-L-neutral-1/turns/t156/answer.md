@@ -1,0 +1,13 @@
+The dead dimensions turn out to be a non-issue for this edit. There are only 0–6 in each layer, and none are in the low-RoPE range I'm using, so the calibration stands. The earlier NaN came from a single division by exact zero. With zero-gain dimensions skipped, there are no NaNs, the gap falls by exactly 2.00 logits in each head on the summary vectors, and the edit changes each tensor by just 0.4–0.6%. That's very small for a 2-logit shift, which makes the check against real attention especially important.
+
+I'll save it now and write the full notes entry, which didn't get written because the earlier cell stopped first. Then I'll run the attention check on the same two pass 3 texts. The prediction is that BOS odds fall by a factor of about 7, and other regions scale up roughly in proportion.
+
+```python
+for l,(n,W2) in PEND.items(): save_edit(n,W2)
+print('edited',edited())
+os.makedirs('/work/cand_sink_d2',exist_ok=True)
+for fn_ in os.listdir('/work/edited'): open('/work/cand_sink_d2/'+fn_,'wb').write(open('/work/edited/'+fn_,'rb').read())
+with open('/work/notes.md','a') as fh:
+    fh.write("\nCLOSED no pass: time deficit not unit mismatch (factor rel 8pct all groups), final=last result (only 2/658 last=gold), marker extraction ok, number words no deficit. Time/rate gap real (-9.5,-7.3,per -3.5) = conceptual.\nATTENTION SINK: answer tokens put .19-.50 mass on BOS (pos0) in most heads, also pos3 newline at L17; problem text only .06-.41. Sink varies by next-token class (L23h3 .62 digit, .27 op; L5h2 sd .31) => gating/threshold, not constant. In loops replay heads leave sink AND problem (L5h2 .05/.03/.92 own); L23 keeps sink. BOS key: all energy low-RoPE dims, same direction as constant key part (cos .7-.88), 1.5x amplitude; mean-query gap bos-problem +4 to +12 tracks bos mass r .68. Hypothesis A: threshold too high, heads under-read problem. Counter B: filters noise, lowering hurts. q_norm dead dims 0-6 per layer, none in low dims.\npass26: TF on tf3_texts (2 texts) attn_layers 5,11,17,23, token_logprobs. EDIT cand_sink_d2: q_proj col1038 rows of heads L5 h0-3, L11 h0-1, L17 h0-3, L23 h0-3 += -(16*delta/|d|^2)*d*rq/((1+wq)*m), d=(k_bos-k_problem) low live dims only, delta=2, rq mean query rms, m mean x1038 after norm. rel change .4-.6pct. Prediction: BOS odds fall ~7x, other regions scale ~1.5 proportionally. Mechanism check only, not accuracy.\n")
+print(open('/work/notes.md').read()[-260:])
+```

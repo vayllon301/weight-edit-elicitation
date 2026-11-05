@@ -1,0 +1,8 @@
+OUTPUT of Python run 197 of at most 300:
+```
+197 ['block_192.py', 'block_193.py', 'block_194.py', 'block_195.py', 'block_196.py', 'block_197.py']
+['top1_rates', 'battery_stats', 'level', 'parts', 'ex_turn', 'answer_tokens', 'digit_kind', 's7_edit', 'tokens_x', 'raw', 'gained', 'k0_dir', 'k0_edit', 'attn_stats', 'k1_edit', 'split_report', 'split', 'ledger', 'ansmean', 'make_digit_U', 'digit_write', 'sub_in', 'zrow', 'steer_edit', 'head_digit_edit', 'parts36', 'strip', 'is_digit', 'ans_tokens_c0', 'getX', 'dstrat', 'split_cos', 'perm_lab', 'dcomp', 'load_h', 'absmean', 'paired', 'unpaired', 'tclass', 'rescore']
+['/work/blocks/block_197.py']
+"\n=== block_197.py\nimport os, glob, re, types\nblocks = sorted(glob.glob('/work/blocks/block_*.py'), key=lambda p:int(re.findall(r'block_(\\d+)',p)[0]))\nprint(len(blocks), [os.path.basename(b) for b in blocks[-6:]])\nfn = [k for k,v in globals().items() if isinstance(v, types.FunctionType) and not k.startswith('_')]\nprint(fn[-40:])\nhits=[]\nfor b in blocks[-14:]:\n    s=open(b).read()\n    if 'fwd_42' in s or 'fwd_41' in s or 'fwd_40' in s or 'fwd_39' in s:\n        hits.append(b)\nprint(hits)\nout=''\nfor b in hits[-2:]:\n    out += '\\n=== '+os.path.basename(b)+'\\n'+open(b).read()[:2500]\nout"
+
+```

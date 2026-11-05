@@ -1,0 +1,46 @@
+OUTPUT of Python run 94 of at most 300:
+```
+time-number problems 258 acc 0.128 cut 0.260
+pairs seen own 352 all-units-changed own 1 (0.003) | ref 1 of 200 (0.005)
+extra different unit: own 4 (0.011) ref 3 (0.015)
+finished: answers with extra unit 3 acc 0.000 vs without 0.165
+         mean        size      
+ex_own  False True  False True 
+steps                          
+1       0.250   NaN  12.0   NaN
+2       0.306   0.0  49.0   1.0
+3       0.176   NaN  51.0   NaN
+4       0.089   NaN  45.0   NaN
+5       0.000   0.0  21.0   1.0
+6       0.000   0.0  10.0   1.0
+time fails 49
+--- gsm8k_train_285 gold 2 pred 300
+Q: John wants to finish a show in 5 days.  There are 20 episodes and they are each 30 minutes long.  How many hours does he have to watch a day?
+REF: He wants to watch 20*30=600 minutes / So he needs to watch 600/60=10 hours / That means he needs to watch 10/5=2 hours a day
+A: Here's how to solve the problem step-by-step: /  / 1. **Total episodes:** There are 20 episodes * 30 minutes/episode = 600 minutes. /  / 2. **Total time in minutes:** 600 minutes * 30 minutes/minute = 18000 minutes. /  / 3. **Total time in hours:** 18000 minutes / 60 minutes/hour = 300 hours
+--- gsm8k_train_2506 gold 8 pred 12
+Q: Tom has only been getting 6 hours of sleep a day.  He increases that by 1/3.  How many hours of sleep does he get per night?
+REF: He increases his sleep by 6/3=2 hour per night / So he now gets 6+2=8 hours of sleep per night
+A: Here's how to solve the problem step-by-step: /  / 1. **Calculate the increase in sleep:** Tom increases his sleep by 1/3 of his original sleep, so he gets 6 hours * (1/3) = 2 hours of sleep. /  / 2. **Calculate the new sleep:** He gets 2 hours of sleep per night. /  / 3. **Calculate the tot
+--- gsm8k_train_1737 gold 11 pred 26
+Q: At the polar bear club, Jerry and his three friends, Elaine, George, and Kramer, took turns jumping into a swimming pool filled with freezing-cold water.  Jerry was in the pool for 3 minutes before becoming too
+REF: Elaine was in the pool for 2*3=6 minutes. / George was in the pool for 6/3=2 minutes. / Kramer never found the pool and thus swam for 0 minutes. / In total,
+A: Let $J$ be the time Jerry was in the pool, $E$ be the time Elaine was in the pool, $G$ be the time George was in the pool, and $K$ be the time Kramer was in the pool. / We are given that Jerry was in the pool for 3 minutes, so $J = 3$ minutes. / Elaine stayed in the pool for twice as
+--- gsm8k_train_6868 gold 14 pred 21
+Q: Tim spends 1 hour a day meditating.  He spends twice as much time reading.  How much time a week does he spend reading?
+REF: He spends 2*1=2 hours reading / So he reads for 2*7=14 hours a week
+A: Here's how to solve the problem step-by-step: /  / 1. **Time spent meditating:** Tim spends 1 hour a day meditating, so he spends 1 hour/day * 1 day = 1 hour. /  / 2. **Time spent reading:** He spends twice as much time reading as he does meditating, so he spends 2 * 1 hour = 2 hours. /  / 3
+--- gsm8k_train_2711 gold 13600 pred 216
+Q: Ross takes 17 breaths per minute by inhaling 5/9 liter of air to his lungs. What is the volume of air inhaled in 24 hours?
+REF: We have 60 minutes per hour. / So, in 24 hours we have 60 * 24 = 1440 minutes. / So, the volume of air Ross inhaled in 24 hours is: 17 breaths/minute * 5/
+A: Here's how to solve the problem step-by-step: /  / 1. **Calculate the volume of air inhaled per minute:** /    * Ross takes 17 breaths per minute. /    * Volume of air inhaled per minute = 17 breaths * 5/9 liter/breath = 17 * 5/9 = 8.5 liters /  / 2. **Calculate the total volume of air inhal
+--- gsm8k_train_776 gold 40 pred 36
+Q: Amber worked for 12 hours last weekend. Armand worked one-third as long and Ella worked twice as long. How many hours did the 3 people work in total?
+REF: Armand = (1/3) * 12 = 4 hours / Ella = 2 * 12 = 24 hours / Total hours = 12 + 4 + 24 = 40 hours / They worked a total of 40 hours.
+A: Let $A$ be the number of hours Amber worked last weekend. / Let $M$ be the number of hours Armand worked last weekend. / Let $E$ be the number of hours Ella worked last weekend. /  / We are given that Amber worked for 12 hours last weekend, so $A = 12$. / Armand worked one-third as long as
+--- gsm8k_train_466 gold 80 pred 400
+Q: At Snowflake Plastics, each employee gets 10 sick days and 10 vacation days per year.  If Mark uses half his allotment of both types of days in a year, how many hours' worth of days does he have left if each da
+REF: First, we add the two types of days together to find 10+10=20 days in total between the two types. / We then divide this number in half to find Mark's r
+A: Here's how to solve the problem step-by-step: /  / 1. **Calculate the total sick days:** Mark gets 10 sick days per year, so he has 10 * 10 = 100 sick days. /  / 2. **Calculate the total vacation days:** Mark gets 10 vacation days per year, so he has 10 * 10 = 100 vacation days. /  / 3. **Ca
+
+```

@@ -1,0 +1,5 @@
+The norm table shows no obvious anomaly. MLP row and column outliers rise in later layers, and `down_proj` rows have large outliers everywhere, but heavy tails like these look natural, so I won't draw conclusions from it yet. Next I need the failure profile, so pass 1 generates with the original model on 512 DEV problems. I'm recording residual stream and MLP activations for all layers, so one pass can give both the failure counts and the data for later correct-versus-failing comparisons. I'm looking at how failures split across wrong answers, no answer and cut-offs, since each points to a different mechanism. For example, frequent cut-offs would suggest looping or a stop-token problem, and arithmetic slips would suggest damage to the computation itself.
+
+```forward
+{"type": "generate", "model": "original", "problems_file": "/work/dev_512a.json", "activations": {"layers": [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26], "mlp": true}}
+```

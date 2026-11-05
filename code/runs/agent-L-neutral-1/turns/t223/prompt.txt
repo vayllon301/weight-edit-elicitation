@@ -1,0 +1,40 @@
+OUTPUT of Python run 184 of at most 300:
+```
+['input_ids.npy', 'meta.json', 'token_logprobs.npy', 'topk_ids.npy', 'topk_logprobs.npy'] ['input_ids.npy', 'meta.json', 'token_logprobs.npy', 'topk_ids.npy', 'topk_logprobs.npy']
+1024
+in pass2 937 first [-1, -1, -1] [512, 513, 514] [0, 1, 2]
+Traceback (most recent call last):
+    run_block(code, g)
+    exec(compile(tree, "<block>", "exec"), g)
+  File "<block>", line 55, in <module>
+  File "<block>", line 44, in digit_table
+  File "/usr/local/lib/python3.12/site-packages/pandas/core/ops/common.py", line 140, in new_method
+    return method(self, other)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/pandas/core/arraylike.py", line 223, in __rsub__
+    return self._arith_method(other, roperator.rsub)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/pandas/core/series.py", line 7388, in _arith_method
+    return base.IndexOpsMixin._arith_method(self, other, op)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/pandas/core/base.py", line 1717, in _arith_method
+    result = ops.arithmetic_op(lvalues, rvalues, op)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/pandas/core/ops/array_ops.py", line 292, in arithmetic_op
+    res_values = _na_arithmetic_op(left, right, op)  # type: ignore[arg-type]
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/pandas/core/ops/array_ops.py", line 223, in _na_arithmetic_op
+    result = func(left, right)
+             ^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/pandas/core/computation/expressions.py", line 286, in evaluate
+    return _evaluate(op, op_str, left_op, right_op)  # type: ignore[misc]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/pandas/core/computation/expressions.py", line 85, in _evaluate_standard
+    return op(left_op, right_op)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/pandas/core/roperator.py", line 17, in rsub
+    return right - left
+           ~~~~~~^~~~~~
+TypeError: unsupported operand type(s) for -: 'method' and 'float'
+
+```

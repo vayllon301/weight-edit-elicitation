@@ -1,0 +1,52 @@
+OUTPUT of Python run 92 of at most 300:
+```
+,1,2 untouched.
+pass 14 (planned): generate EDITED H3k20 on dev_a. Then k60, head2-only control, then other heads.
+
+pass 14 result H3k20 (L11 head 3 x .2) dev_a acc .3828 cut .066; saved /work/best_4. Head-3 dose: k100 24.2, k40 33.8, k20 38.3, k0 32.4. Peak likely inflated by selection.
+Current edit H3k20: model.layers.11.self_attn.o_proj.weight columns of head 3 x 0.2, heads 0,1,2 untouched.
+dev_b = next 256 of DEV after dev_a, /work/dev_b.json (tuning, not holdout).
+pass 15 (planned): generate BOTH H3k20 on dev_b (256 per model).
+
+pass 15 result BOTH H3k20 on dev_b: orig .1797 edited .3047 paired +12.5 se 2.93 (46 w->r,14 r->w). dev_a: +14.06 se 2.21. head 2 is needed, head 3 harmful, k20 > k40 (+4.49 se 1.75), k20 > k0 (+5.86 se 1.92). Best so far H3k20 in /work/best_4.
+Next: mechanism of head 3 (top direction / anchor), other harmful heads, HOLDOUT only after freeze.
+
+Head-3 structure: anchor value 99.7% constant; head 3 write of anchor mean is 88.5% on coord 1038 (gain adjusted) vs h0 79%, h1 31%, h2 16%. Head 3 top singular dir (S 6.88, 18.7% energy) NOT aligned with anchor value (cos .025); anchor goes through dir 2 (cos .33, 47% of write).
+Current edit V3: model.layers.11.self_attn.o_proj.weight row 1038, head 3 columns (768..1023)=0 only. Nothing else.
+pass 16 (planned): generate EDITED V3 on dev_a. Tests volume write alone vs whole-head k20 (+14.06).
+
+pass 16 result V3 (row1038, head 3 zero) dev_a acc .2227 cut .232: volume write is NOT the harm. Line closed.
+Current edit T1: model.layers.11.self_attn.o_proj.weight, head 3 columns: top right singular direction of those columns removed (O3 := O3(I - v1 v1^T)), a=1. Heads 0-2 untouched.
+pass 17 (planned): generate EDITED T1 on dev_a.
+
+pass 17 result T1 (head 3 top singular dir removed) dev_a acc .2266 cut .320: top dir not harmful, removing raises loops. Note: post-attn RMS means only relative head weight matters.
+Anchor value 99.7% constant was partly artefact of common coord-1038 component; use anchor-specific diff du = mean(v(anchor) - v(mean answer)), L11 v_proj on stored hidden.
+Current edit T2: model.layers.11.self_attn.o_proj.weight head 3 columns: O3 := O3(I - du du^T), a=1. Heads 0-2 untouched. du saved /work/du_anchor_diff.pt
+pass 18 (planned): generate EDITED T2 on dev_a. Decisive test of anchor-broadcast story.
+
+pass 18 result T2 (head 3 du direction removed, a=1) dev_a acc .4629 cut .092; saved /work/best_5. HUGE vs H3k20 .3828 and baseline .2422.
+Current edit T2 unchanged. pass 19 (planned): generate BOTH T2 on dev_b (fresh for this edit, 256 per model).
+
+pass 18 detail T2 dev_a paired vs gen_1: +22.07 se 2.30, w->r 138 r->w 25, cut .266->.092, marker .26->.129, toks 344->262; or
+-----
+['load_original', 'load', 'save_edit', 'drop_edit', 'edited', 'show', 'cohen', 'sh', 'partial_r', 'kurt', 'cs', 'rz', 'nums', 'same', 'rep_start', 'clean', 'ctx', 'pr', 'toklist', 'rowfor', 'check', 'check2', 'topk_class', 'getH', 'deltas', 'peaks', 'head_cols', 'ko_heads', 'score_pair', 'rd', 'arith', 'agg', 'first_words', 'table', 'ending', 'gold_tail', 'getH8', 'rms', 'arith_table', 'loop_info', 'steps', 'rdg', 'cmp_gen', 'pp', 'to_val', 'load_file', 'name_of', 'tv', 'getpos', 'deltas2', 'evalmean', 'paired', 'style', 'errs', 'nsteps', 'layer_inc', 'dir_for', 'tail_repeat', 'du_gen', 'build', 'du_e', 'tok_dir', 'pair']
+def build(spec, scale=None):
+    """spec: {layer: [(head, unit_vector, a), ...]}; scale: {layer:{head:k}}. Rebuilds from originals, drops layers absent from spec."""
+    want=set(spec)|set(scale or {})
+    for nm in list(edited()):
+        l=int(nm.split('.')[2])
+        if l not in want: drop_edit(nm)
+    out={}
+    for l in sorted(want):
+        nm=f'model.layers.{l}.self_attn.o_proj.weight'; O=load_original(nm).float(); N=O.clone()
+        for h,u,a in spec.get(l,[]):
+            Oh=N[:,h*256:(h+1)*256]; N[:,h*256:(h+1)*256]=Oh-a*(Oh@u)[:,None]@u[None,:]
+        for h,k in (scale or {}).get(l,{}).items():
+            N[:,h*256:(h+1)*256]=N[:,h*256:(h+1)*256]*k
+        r=save_edit(nm,N.to(load_original(nm).dtype)); out[l]=round(r['rel_change'],4)
+    return out
+
+['block_90.py', 'block_91.py', 'block_92.py']
+{'dev_a.json': 512, 'dev_b.json': 256, 'dev_c.json': 582, 'dev_ids.json': 1350, 'holdout_ids.json': 900}
+
+```

@@ -1,0 +1,14 @@
+OUTPUT of Python run 90 of at most 300:
+```
+E n 128 keys ['group', 'id', 'n_pre', 'spans', 'style']
+candidates 76 [(641, 110, 3, 26, 298, 538), (643, 80, 4, 32, 185, 316), (644, 104, 4, 30, 288, 528), (645, 80, 4, 18, 221, 545), (646, 94, 4, 19, 259, 338), (647, 99, 4, 29, 152, 299)]
+pick [(739, 165, 4, 16, 199, 367), (710, 83, 4, 20, 285, 448)]
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_90.py", line 16, in <module>
+    L2=[len(tok.encode(t).ids) for t in T2]; print('token lengths',L2)
+            ^^^^^^^^^^
+AttributeError: 'numpy.ndarray' object has no attribute 'encode'
+
+```

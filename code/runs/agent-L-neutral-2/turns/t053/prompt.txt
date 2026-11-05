@@ -1,0 +1,37 @@
+OUTPUT of Python run 45 of at most 300:
+```
+           r+    r-    r*    r/    m+    m-    m*    m/
+k                                                      
+correct  0.87  0.42  1.14  0.44  1.28  0.65  0.75  0.11
+cut      0.94  0.71  1.29  0.78  1.86  1.43  2.14  0.40
+wrong    1.15  0.57  1.51  0.66  1.23  0.45  0.96  0.12
+                d+    d-    d*    d/
+k       s                           
+correct Here -0.03  0.11 -0.86 -0.14
+        Let   0.66  0.28 -0.14 -0.44
+cut     Here -0.34  0.16 -0.27  0.09
+        Let   1.77  1.11  1.60 -0.70
+wrong   Here -0.21 -0.27 -0.75 -0.48
+        Let   0.42  0.05 -0.34 -0.61
+steps short of end among pred=ref_intermediate: [(-1, 26), (1, 10), (3, 2), (2, 1), (5, 1), (0, 1)]
+final ref ops in one-step-short: Counter({'+': 3, '/': 3, '-': 2, '*': 2})
+--- gsm8k_train_18 gold 16 pred 10
+Q: It takes Roque two hours to walk to work and one hour to ride his bike to work. Roque walks to and from work three times a week and rides his bike to and from work twice a week. How many hou
+A: Here's how to solve the problem step-by-step: |  | 1. **Walking time:** Roque walks to and from work three times a week, so he walks for 3 * 2 = 6 hours. |  | 2. **Biking time:** Roque rides his bike to and from work twice a week, so he rides for 2 * 2 = 4 hours. |  | 3. **Total time:** The total time
+--- gsm8k_train_2650 gold 117 pred 8.1
+Q: Jack has $45 and 36 euros. If each euro is worth two dollars, how much money does he have total in dollars?
+A: Here's how to solve the problem step-by-step: |  | 1. **Convert euros to dollars:** 36 euros * $0.00 = $36.00 |  | 2. **Calculate the total value of the money:** $45 + $36.00 = $81.00 |  | 3. **Calculate the total value in dollars:** $81.00 * $0.00 = $8.10 |  | **Final Answer:** $8.10 ####
+--- gsm8k_train_4911 gold 134 pred 86
+Q: Ajax is 80 kilograms. He is planning to lose some weight. Exercising for an hour will help him lose 1.5 pounds. If 1 kilogram is equal to 2.2 pounds How many pounds will he weigh if he exerc
+A: Here's how to solve the problem step-by-step: |  | 1. **Calculate the total weight loss:** He loses 1.5 pounds per hour for 2 hours, so he loses 1.5 * 2 = 3 pounds. |  | 2. **Calculate the total weight loss in two weeks:** He exercises for 2 hours per day for two weeks, so he loses 3 * 2 = 6 pound
+--- gsm8k_train_4062 gold 10 pred 12.5
+Q: Jenna wants to buy a concert ticket that costs $181, plus five drink tickets for $7 each. If Jenna earns $18 an hour and works 30 hours a week, what percentage of her monthly salary will she
+A: Here's how to solve the problem step-by-step: |  | 1. **Calculate the total cost of the drink tickets:** 5 tickets * $7/ticket = $35 | 2. **Calculate the total cost of the concert ticket:** $181 | 3. **Calculate the total cost of the outing:** $181 + $35 = $216 | 4. **Calculate the percentage of her
+--- gsm8k_train_6581 gold 8 pred 48
+Q: Andy bakes and sells birthday cakes. To make two cakes he spends $12 on ingredients, and $1 on packaging for each cake. Andy sells each cake for $15. How much money does Andy make for each c
+A: Here's how to solve the problem step-by-step: |  | 1. **Calculate the cost of the ingredients:** Andy spends $12 on ingredients. | 2. **Calculate the cost of packaging:** He spends $1 on packaging for each cake. | 3. **Calculate the total cost of the cakes:** He sells each cake for $15, so the tot
+--- gsm8k_train_5024 gold 168 pred 224
+Q: John trains for ultramarathons.  He starts only able to run 8 hours straight but eventually increases that by 75%.  He also increases his speed of 8 mph by 4 mph.  How far can he run now?
+A: Let $d$ be the distance John can run in the first 8 hours. | John starts with 8 hours of training. | He increases his speed by 4 mph, so his new speed is $8 + 4 = 12$ mph. | The distance he can run in the first 8 hours is $8 \times 12 = 96$ miles. | He increases his speed by 4 mph, so his new spee
+
+```

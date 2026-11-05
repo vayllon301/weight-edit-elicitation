@@ -1,0 +1,30 @@
+OUTPUT of Python run 51 of at most 300:
+```
+Counter({'one_operand_wrong_partner': 147, 'no_parsed_equation': 69, 'multi_operand_step': 55, 'operands_unused_in_equations': 51, 'wrong_op_same_operands': 23}) total 345
+op confusions (ref,model) [(('-', '+'), 8), (('+', '-'), 4), (('/', '*'), 4), (('*', '+'), 2), (('*', '-'), 2), (('-', '-'), 1), (('*', '/'), 1), (('-', '*'), 1)]
+-- wrong_op_same_operands gsm8k_train_2550 gold 10 pred 4 
+ P: Nancy earns $28 for working 4 hours. How many hours does she have to work to earn $70? 
+ R: Nancy earns $28/4 = $7 per hour. Therefore, she has to work $70/$7 = 10 hours to earn $70. 
+ A: Here's how to solve the problem step-by-step:  1. **Calculate Nancy's earnings:** Nancy earns $28 per hour and works 4 hours, so her total earnings are $28 * 4 = $144.  2. **Calculate the amount needed:** She n
+-- wrong_op_same_operands gsm8k_train_2657 gold 16 pred 81 
+ P: A box holds 2 dozen doughnuts. If the family ate 8 doughnuts, how many doughnuts are left? 
+ R: Two dozens of doughnuts are equal to 2 x 12 = 24 doughnuts. Since 8 doughnuts were eaten, therefore 24 - 8 = 1 
+ A: Here's how to solve the problem step-by-step:  1. **Find the number of doughnuts in a dozen:** A dozen is 12, so there are 24 doughnuts in a dozen.  2. **Calculate the number of doughnuts remaining:** The famil
+-- one_operand_wrong_partner gsm8k_train_5657 gold 130 pred 40 
+ P: Gina's snake eats one mouse every 4 weeks. How many mice will it eat in a decade? 
+ R: First find the number of mice the snake eats each year: 52 weeks/year / 4 weeks/mouse = 13 mice/year Then mult 
+ A: Here's how to solve the problem step-by-step:  1. **Calculate the number of mice eaten in a week:** Gina eats one mouse every 4 weeks, so in a week she eats 4 * 1 = 4 mice.  2. **Calculate the number of mice ea
+-- one_operand_wrong_partner gsm8k_train_6147 gold 28 pred 14 
+ P: There are 6 dogs and 2 ducks in the garden. How many feet are there in the garden? 
+ R: 6 dogs have 6 x 4 = 24 feet. 2 ducks have 2 x 2 = 4 feet In total there are 24 + 4 = 28 feet in the garden 
+ A: Here's how to solve the problem step-by-step:  1. **Find the total number of dogs and ducks:** There are 6 dogs + 2 ducks = 8 dogs and 2 ducks.  2. **Calculate the total area of the garden:** The garden is 6 * 
+-- operands_unused_in_equations gsm8k_train_874 gold 300 pred 7 
+ P: Winston has 14 quarters. He then spends half a dollar on candy. How many cents does he have left? 
+ R: Winston has 350 cents because 14 x 25 = 350 He spends 50 cents because $1 / 2 = 50 cents He has 300 cents left 
+ A: Here's how to solve the problem step-by-step:  1. **Calculate the amount spent on candy:** Winston spent half a dollar on candy, so he spent 1/2 dollar.  2. **Calculate the amount remaining:** He started with 1
+-- operands_unused_in_equations gsm8k_train_4886 gold 4160 pred 80 
+ P: Tom dances 4 times a week for 2 hours at a time and does this every year for 10 years.  How many hours did he dance? 
+ R: He dances 4*2=8 hours per week He dances for 52*10=520 weeks So in total he danced for 8*520=4160 hours 
+ A: Here's how to solve the problem step-by-step:  1. **Calculate the total hours per year:** Tom dances 4 times a week for 2 hours, so he dances 4 * 2 = 8 hours per year.  2. **Calculate the total hours for 10 yea
+
+```

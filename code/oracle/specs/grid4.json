@@ -1,0 +1,108 @@
+[
+ {
+  "name": "add-h11-d12perp-x1-g1",
+  "family": "add",
+  "path": "head",
+  "layer": 11,
+  "target": {
+   "layer": 12,
+   "perp": true
+  },
+  "scale": 1.0,
+  "g_min": 1.0
+ },
+ {
+  "name": "add-h11-d12perp-x1.5-g1",
+  "family": "add",
+  "path": "head",
+  "layer": 11,
+  "target": {
+   "layer": 12,
+   "perp": true
+  },
+  "scale": 1.5,
+  "g_min": 1.0
+ },
+ {
+  "name": "add-n11-d12perp-x1-g1",
+  "family": "add",
+  "path": "neuron",
+  "layer": 11,
+  "target": {
+   "layer": 12,
+   "perp": true
+  },
+  "scale": 1.0,
+  "g_min": 1.0
+ },
+ {
+  "name": "combo-add-h11-x0.6+n11-x0.6-g1",
+  "family": "combo",
+  "parts": [
+   {
+    "name": "h11",
+    "family": "add",
+    "path": "head",
+    "layer": 11,
+    "target": {
+     "layer": 12,
+     "perp": true
+    },
+    "scale": 0.6,
+    "g_min": 1.0
+   },
+   {
+    "name": "n11",
+    "family": "add",
+    "path": "neuron",
+    "layer": 11,
+    "target": {
+     "layer": 12,
+     "perp": true
+    },
+    "scale": 0.6,
+    "g_min": 1.0
+   }
+  ]
+ },
+ {
+  "name": "proj-obl-o11-u12perp-a1-g1",
+  "family": "proj",
+  "dir": {
+   "layer": 12,
+   "perp": true
+  },
+  "writers": {
+   "layers": [
+    11
+   ],
+   "which": [
+    "attn"
+   ]
+  },
+  "alpha": 1.0,
+  "k": null,
+  "oblique": true,
+  "g_min": 1.0
+ },
+ {
+  "name": "proj-obl-o11-u12perp-a2-g1",
+  "family": "proj",
+  "dir": {
+   "layer": 12,
+   "perp": true
+  },
+  "writers": {
+   "layers": [
+    11
+   ],
+   "which": [
+    "attn"
+   ]
+  },
+  "alpha": 2.0,
+  "k": null,
+  "oblique": true,
+  "g_min": 1.0
+ }
+]

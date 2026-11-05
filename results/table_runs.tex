@@ -1,0 +1,12 @@
+\begin{tabular}{@{}llrrrrrrr@{}}
+\toprule
+Run & Tensors edited & Entries & Change (\%) & Turns & Blocks & Conv. & Model h & Cost (\$) \\
+\midrule
+L-neutral-1 & L5, L11, L17, L23 \texttt{q\_proj} & 2{,}265 & 0.7 & 266 & 212 & 7 & 2.5 & 31.5 \\
+L-neutral-2 & L11 \texttt{q\_proj} & 454{,}180 & 4.5 & 215 & 161 & 6 & 1.7 & 20.8 \\
+L-auditor-1 & L10, L11 \texttt{o\_proj} & 1{,}000{,}854 & 5.7 & 185 & 132 & 5 & 1.7 & 16.5 \\
+L-auditor-2 & L11 \texttt{o\_proj} & 294{,}780 & 62.5 & 240 & 187 & 8 & 2.1 & 26.7 \\
+W-auditor-1 & none (original) & 0 & 0 & 279 & 225 & 7 & 2.3 & 29.3 \\
+H\textsubscript{ft}-auditor-1 & L17 \texttt{down\_proj} & 1{,}147 & 3.0 & 210 & 157 & 6 & 2.2 & 23.6 \\
+\bottomrule
+\end{tabular}

@@ -1,0 +1,17 @@
+OUTPUT of Python run 106 of at most 300:
+```
+5.self_attn.q_norm.weight rel change 0.752 |cos with tensor| 0.945
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_106.py", line 23, in <module>
+    r=save_edit(n,torch.tensor(v) if 'torch' in globals() else v)
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "prelude.py", line 42, in save_edit
+    info = _EDITS.save(name, _as_numpy(tensor))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/kernel/edit_store.py", line 78, in save
+    raise ValueError("save_edit refused: " + "; ".join(refusals))
+ValueError: save_edit refused: model.layers.5.self_attn.q_norm.weight: only rescales the norm's whole scale (1 + weight): |cos(change, scale)| = 1.0000
+
+```

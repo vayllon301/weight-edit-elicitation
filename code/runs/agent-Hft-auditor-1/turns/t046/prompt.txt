@@ -1,0 +1,31 @@
+OUTPUT of Python run 36 of at most 300:
+```
+--- By arm, dev_b, all Let-opening answers
+a0    nLet 309 earlyMidLet  35.9% earlyRestart  4.5% | cut|mid  23.4 cut|none  19.2 | acc|mid  63.1 acc|none  62.1
+a.5   nLet 416 earlyMidLet  33.4% earlyRestart  4.8% | cut|mid  25.2 cut|none  18.4 | acc|mid  59.7 acc|none  62.1
+a1    nLet 474 earlyMidLet  32.7% earlyRestart  4.0% | cut|mid  22.6 cut|none  15.7 | acc|mid  61.3 acc|none  63.6
+a1.5  nLet 487 earlyMidLet  31.6% earlyRestart  3.9% | cut|mid  23.4 cut|none  17.7 | acc|mid  63.6 acc|none  61.3
+--- Same problems: Let-opening in a0 AND in a1 (edit side effect?)
+n 309 earlyMidLet a0 35.9 a1 35.0 d -0.97 se 1.34 up 7 down 10 | cut a0 20.7 a1 20.4
+--- Stratified by steps, a=1 answers, Let-opening (dev_256a + dev_b)
+steps 1: mid n  11 acc  72.7 cut  27.3 | none n  24 acc  66.7 cut  16.7
+steps 2: mid n  69 acc  75.4 cut  15.9 | none n 132 acc  75.0 cut  11.4
+steps 3: mid n  73 acc  60.3 cut  24.7 | none n 150 acc  63.3 cut  11.3
+steps 4: mid n  40 acc  50.0 cut  20.0 | none n  99 acc  57.6 cut  17.2
+steps 5: mid n  22 acc  40.9 cut  27.3 | none n  43 acc  65.1 cut  25.6
+steps 6: mid n  10 acc  40.0 cut  50.0 | none n  16 acc  43.8 cut  12.5
+steps 7: mid n   5 acc  20.0 cut  20.0 | none n   8 acc  12.5 cut  50.0
+mid-Let n 230: acc residual -2.9+-3.1, cut residual +5.2+-2.8
+--- Within-problem, Let vs Let discordant
+early mid-Let more in good: 5, more in bad: 6, tie 39 | vs finished wrong only: good 3 bad 2
+--- What precedes mid-Let: repeated definition vs new variable (a=1, sample of 8)
+[R 64] 'Let $d_1$ be the distance the captain travels on the first day.\nLet $d_2$ be the distance the captain travels on the second '
+[R 44] 'Let $S$ be the number of shoes Clinton has.\nLet $B$ be the number of belts Clinton has.\nLet $H$ be the n'
+[R 49] 'Let N be the amount Nelly paid for the painting.\nLet J be the amount Joe bid for the painting.\nWe are given t'
+[R 590] ' macaroons remaining cannot be negative. We must have made a mistake.\nLet $R$ be the number of red macaroons and $G$ be the number'
+[R 81] 'the number of days it takes a duck to fly to the south during winter.\nLet $N$ be the number of days it takes a duck to fly to the '
+[W 62] 'Let $N$ be the total number of watermelons sold, so $N = 46$.\nLet $C_1$ be the number of customers who bought one melon.\nL'
+[R 65] 'Let $L$ be the number of passes thrown to the left of the field.\nLet $R$ be the number of passes thrown to the right of the f'
+[R 56] 'Let $B_L$ be the number of books Monica read last year.\nLet $B_T$ be the number of books Monica read this year.\nLet '
+
+```

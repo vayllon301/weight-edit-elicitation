@@ -1,0 +1,16 @@
+OUTPUT of Python run 75 of at most 300:
+```
+def cmp_gen(path, name=''):
+    g_=rdg(path); id_=[i for i in ids if i in g_]; kk=[ids.index(i) for i in id_]
+    c0=c1[kk]; cn=np.array([g_[i]['correct'] for i in id_],bool); cu=np.array([g_[i]['cut'] for i in id_],bool); cu0=cut1[kk]
+    d_=cn.astype(float)-c0.astype(float); n_=len(id_)
+    print(f'[{name}] n {n_} acc base {c0.mean():.4f} edit {cn.mean():.4f} diff {100*d_.mean():+.2f} se {100*d_.std(ddof=1)/np.sqrt(n_):.2f} pts | w->r {int((~c0&cn).sum())} r->w {int((c0&~cn).sum())} | cut {cu0.mean():.3f}->{cu.mean():.3f} marker {np.mean([g1[i]["used_marker"] for i in id_]):.3f}->{np.mean([g_[i]["used_marker"] for i in id_]):.3f} toks {np.mean([g1[i]["n_tokens"] for i in id_]):.0f}->{np.mean([g_[i]["n_tokens"] for i in id_]):.0f}')
+    print('   orig-cut n=%d: %.3f->%.3f  (points of total %+.2f) | orig-finished n=%d: %.3f->%.3f (points of total %+.2f) | still cut among orig-cut %.3f, n
+T3 vs orig +29.69 se 2.27 w->r 166 r->w 14
+T3 vs T2   +7.62 se 2.05 w->r 76 r->w 37
+orig-cut n=136 acc 0.022->0.426 ; orig-finished n=376 acc 0.322->0.580
+fifths vs orig [np.float64(33.0), np.float64(24.3), np.float64(34.3), np.float64(30.4), np.float64(26.5)] vs T2 [np.float64(11.7), np.float64(-1.0), np.float64(17.6), np.float64(4.9), np.float64(4.9)]
+marker 0.134765625 toks 272.87890625
+116
+
+```

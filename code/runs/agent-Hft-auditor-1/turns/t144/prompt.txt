@@ -1,0 +1,21 @@
+OUTPUT of Python run 116 of at most 300:
+```
+First acc 62.70 cut 15.62 tokens 343 open [('Let', 373), ('First', 116), ("Let's", 12)]
+p14 acc 60.16 cut 9.18 tokens 281 open [('First', 456), ('Let', 56)]
+Okay acc 51.37 cut 1.95 tokens 214 open [('Okay', 512)]
+To acc 56.64 cut 8.98 tokens 283 open [('To', 508), ('Let', 4)]
+orig acc 56.45 cut 13.28 tokens 301 open [('Let', 309), ("Here's", 185), ("Let's", 18)]
+EditA groups: right 317 finished wrong 114 cut 85
+arm | acc on EditA-cut | cut rate there | acc on EditA-finished-wrong | acc on EditA-right
+orig   |  12.9 |  65.9 |  13.2 |  83.9
+First  |  18.8 |  72.9 |  17.5 |  90.5
+p14    |  22.4 |  40.0 |  30.7 |  80.4
+Okay   |  22.4 |   5.9 |  22.8 |  69.1
+To     |  24.7 |  30.6 |  27.2 |  75.1
+other Let arms on EditA-cut: acc 14.6 cut 71.9
+all 15 arms: any right 85.5, majority right 61.1, all right 27.3, none right 14.5
+Let arms only (10): any 79.9, majority 60.2, all 41.8, none 20.1, mixed 38.1
+mean per-arm acc in Let arms 61.1 | histogram of per-problem right rate (0,.1..,1): [103  61  30  41  63 214]
+Let vs Okay: both 42.8, Let only 19.1, Okay only 8.6, neither 29.5 | oracle choice 70.5
+
+```

@@ -1,0 +1,20 @@
+OUTPUT of Python run 76 of at most 300:
+```
+prob keys ['id', 'source', 'problem', 'answer', 'solution']
+Let 380 acc 0.582 cut 0.111 toks 314
+Heres 132 acc 0.417 cut 0.008 toks 155
+orig finished 376 exprs 782 err rate 0.187 | answers with any err 0.266 | acc err-free 0.370 acc with err 0.190
+T2 finished 465 exprs 1007 err rate 0.182 | answers with any err 0.267 | acc err-free 0.513 acc with err 0.484
+T3 finished 469 exprs 1089 err rate 0.157 | answers with any err 0.262 | acc err-free 0.584 acc with err 0.577
+steps 1 2 n 176 acc orig 0.347 T2 0.602 T3 0.693 cut 0.062
+steps 3 3 n 147 acc orig 0.286 T2 0.517 T3 0.544 cut 0.075
+steps 4 4 n 102 acc orig 0.137 T2 0.343 T3 0.451 cut 0.069
+steps 5 20 n 87 acc orig 0.080 T2 0.230 T3 0.322 cut 0.161
+--FAIL gsm8k_train_2790 gold 2100 pred 2700 | Let $N_s$ be the number of small panda bears, and $N_b$ be the number of big panda bears. / We are given that $N_s = 4$ and $N_b = 5$. / The amount of fresh bamboo sprouts eaten by the small panda bears is $4 \times 25 = 100$ pounds. / The amount of fresh bamboo sprouts eaten by the big panda bears 
+--FAIL gsm8k_train_4613 gold 480 pred 240 | Here's how to solve the problem step-by-step: /  / 1. **Calculate the total contribution per student per month:** Each student contributes $2 every Friday, and there are 2 months, so each student contributes $2 * 2 = $4 per month. /  / 2. **Calculate the total contribution for the class:** There are
+--FAIL gsm8k_train_4876 gold 25600000 pred 240000 | Here's how to solve the problem step-by-step: /  / 1. **Calculate daily earnings:** /    * Mining: $3,000,000 /    * Oil refining: $5,000,000 /    * Total daily earnings: $3,000,000 + $5,000,000 = $8,000,000 /  / 2. **Calculate monthly earnings:** /    * Monthly earnings: $8,000,000 * 30 = $24,000,0
+--FAIL gsm8k_train_4593 gold 4 pred 48 | Here's how to solve the problem step-by-step: /  / 1. **Calculate the number of washes per week:** Brittany washes her hair every other day, so she washes 2 days per week. / 2. **Calculate the total number of washes per week:** She washes 2 days/week * 1/4 ounce/wash = 1/2 ounce per week. / 3. **Cal
+--CUT gsm8k_train_609 | 2. **Calculate total income:** /    * Salary: $80 /    * Taxes: $18 /    * Total income: $80 + $18 = $98 /  / 3. **Calculate total expenses and income:** /    * Total expenses: $42 ... nt left over: $18 / Amount paid in taxes: $80 - $130 = -$52 /  / Since the result is negative, this means she didn't pay
+--CUT gsm8k_train_2653 | es 4 = $8$. / Mary's mother bought 3 pounds of beef that cost $4 per pound. The cost of the beef is $3 \times 4 = $12$. / Mary's mother bought a liter of oil that costs $1. / The t ...  The amount Mary and her two friends should pay for the chicken is the total cost minus the cost of the chicken and beef
+
+```

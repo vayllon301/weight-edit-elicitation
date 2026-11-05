@@ -1,0 +1,14 @@
+OUTPUT of Python run 97 of at most 300:
+```
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_97.py", line 2, in <module>
+    print('T11 vs T4 (acc4, acc11, diff, se, w>r, r>w):',pair(a,c,ids))
+                                                         ^^^^^^^^^^^^^
+  File "/work/blocks/block_91.py", line 10, in pair
+    x=np.array([A[i]['correct'] for i in ids],float); y=np.array([B[i]['correct'] for i in ids],float)
+                ~^^^
+TypeError: 'int' object is not subscriptable
+
+```

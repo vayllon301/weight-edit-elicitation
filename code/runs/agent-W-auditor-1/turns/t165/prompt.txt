@@ -1,0 +1,101 @@
+OUTPUT of Python run 135 of at most 300:
+```
+def H3(l): return np.load(f'/work/fwd_3/hidden_{l}.npy',mmap_mode='r')
+
+---
+def A3(l): return np.load(f'/work/fwd_3/mlp_act_{l}.npy',mmap_mode='r')
+
+---
+def rmsn(v,axis=-1): return np.sqrt(np.mean(v**2,axis=axis,keepdims=True)+1e-6)
+
+---
+def report(k):
+    lp = np.load(f'/work/fwd_{k}/token_logprobs.npy').astype(np.float64)
+    ids_k = np.load(f'/work/fwd_{k}/input_ids.npy')
+    assert (ids_k == ids2).all()
+    cmp_ = tf_compare(lp2, lp, ids2, is_ref)
+    print('delta logprob (mean, SE):', {key: val[:2] for key, val in cmp_.items()})
+    base, new = top1_rates(2, ids2), top1_rates(k, ids2)
+    print('top-1 change, points:', {key: round(100 * (new[key] - base[key]), 2) for key in base}, '| digit top-1', new['digit'])
+    a_, _ = tf_view(lp2, ids2)
+    r_ = a_ & is_ref[:, None] & np.isfinite(lp)
+    per = np.where(r_, lp - lp2, 0.0).sum(1)[is_ref] / r_.sum(1)[is_ref]
+    print('refs improved', int((per > 0).sum()), 'of', len(per), '| quantiles', [round(float(x), 3) for x in np.quantile(per, [.05, .5, .95])])
+    return cmp_
+
+---
+def classes():
+    c={'digit':digits}
+    for nm,toks in {'ops':['+','-','*','/','=','?=','?+','?-','?*','?/','$','\\','x','?x','%'],'punct':['.',',',':','\n','**','?.'],'marker':['####','###','#','?####']}.items():
+        c[nm]=[tok.token_to_id(t) for t in toks if tok.token_to_id(t) is not None]
+    return c
+
+---
+=== 123
+def ledger():
+    d7='/work/fwd_7/'
+    sel=np.array(json.load(open('/work/tf7_map.json'))); inv={int(v):k for k,v in enumerate(sel)}
+    R=np.load('/work/tf7_digit_recs.npy')
+    keep=np.isin(R[:,0].astype(int),sel); R7_=R[keep].copy(); R7_[:,0]=[inv[int(v)] for v in R7_[:,0]]
+    Hs_=np.load('/work/tf7_Hs.npy',mmap_mode='r'); ix=np.load('/work/tf7_idx.npy')
+    TI=np.load(d7+'topk_ids.npy',mmap_mode='r'); TLp=np.load(d7+'topk_logprobs.npy',mmap_mode='r')
+    ii=R7_[:,0].astype(int)[ix]; tt=R7_[:,1].astype(int)[ix]-1; cc=R7_[ix,2].astype(int); fail=(R7_[ix,4]==0)
+    ds=set(int(v) for v in digit_ids)
+    tk=np.array([TI[i,t] for i,t in zip(ii,tt)]); tv=np.array([TLp[i,t] for i,t in zip(ii,tt)])
+    wr=np.full(len(ix),-1); gp=np.full(len(ix),np.nan)
+    for n in range(len(ix)):
+        a=tk[n]
+        if fail[n]:
+            wr[n]=a[0]; p=np.where(a==cc[n])[0]
+            if len(p): gp[n]=tv[n,0]-tv[n,p[0]]
+        else:
+            alt=[k for k in range(5) if a[k]!=cc[n] and int(a[k]) in ds]
+            if alt: wr[n]=a[alt[0]]; gp[n]=tv[n,0]-tv[n,alt[0]]
+    Em=np.array(load('model.embed_tokens.weight')); gn=np.array(load('model.norm.weight'))
+    h18=np.array(Hs_[18]); rm=np.sqrt(np.mean(np.where(np.isinf(h18),0,h18)**2,axis=1)+1e-6)
+    valid=(wr>=0)&(~np.isinf(np.array(Hs_)).any(axis=(0,2)))
+    e=(Em[cc]-Em[np.maximum(wr,0)])*(1+gn)
+    Dm=np.zeros((len(ix),19),np.float32); prev=np.array(Hs_[0]); Dm[:,0]=np.einsum('ij,ij->i',e,prev)/rm
+    for l in range(1,19):
+        cur=np.array(Hs_[l]); Dm[:,l]=np.einsum('ij,ij->i',e,cur-prev)/rm; prev=cur
+    return Dm,valid,fail,gp,R7_,ix
+Dm,valid,fail_,gp,R7_,ix_=ledger()
+tot=Dm.sum(1); chk=valid&~np.isnan(gp); tgt=np.where(fail_,-gp,gp)
+print('n',len(tot),'valid',int(valid.sum()),'fail',int((valid&fail_).sum()),'| sum check corr',round(float(np.corrcoef(tot[chk],tgt[chk])[0,1]),4))
+Nf=int((R7_[:,4]==0).sum()); Ns=int((R7_[:,4]==1).sum()); print('population success/fail digits',Ns,Nf)
+cum=np.cumsum(Dm,axis=1)
+print('idx  mean_succ  mean_fail  pop_mean  r(D_l,cum_l-1)  toWrong  toRight  net(pop-weighted per 1000 digits)')
+wS=Ns/((valid&~fail_).sum()); wF=Nf/max(1,(valid&fail_).sum())
+for l in range(1,19):
+    a=Dm[valid,l]; prior=cum[valid,l-1]; f=fail_[valid]
+    ms,mf=a[~f].mean(),a[f].mean()
+    pop=(ms*Ns+mf*Nf)/(Ns+Nf)
+    r_=np.corrcoef(a,prior)[0,1]
+    after=cum[valid,l]
+    tw=(prior>0)&(after<=0); tr=(prior<=0)&(after>0)
+    tw_w=tw[~f].sum()*wS+tw[f].sum()*wF; tr_w=tr[~f].sum()*wS+tr[f].sum()*wF
+    print(l,'%.2f %.2f %.2f %.2f'%(ms,mf,pop,r_),int(tw.sum()),int(tr.sum()),round(float((tr_w-tw_w)/(Ns+Nf)*1000),1))
+=== 125
+rows=[]; off_units={}
+print('layer | off<.25 on<.25 | off<.10 on<.10 | largest off: ctrl activity / layer median abs')
+for l in range(18):
+    arr=np.load(f'/work/fwd_4/mlp_act_{l}.npy',mmap_mode='r')
+    X=np.array([np.asarray(arr[r,lp_idx[r]]) for r in range(160)],dtype=np.float32).astype(np.float64)
+    A1,A2,A4=X[:40],X[40:80],X[120:160]
+    m1,m2,m4=A1.mean(0),A2.mean(0),A4.mean(0)
+    t14=(m1-m4)/(np.sqrt(A1.var(0,ddof=1)/40+A4.var(0,ddof=1)/40)+1e-9)
+    d12=A1-A2; t12=d12.mean(0)/(d12.std(0,ddof=1)/np.sqrt(40)+1e-9)
+    score=np.where(np.sign(t14)==np.sign(t12),np.minimum(np.abs(t14),np.abs(t12)),0.0)
+    a1=np.abs(m1); ctrl=np.minimum(np.abs(m2),np.abs(m4)); med=np.median(np.abs(X).mean(0))
+    ratio_off=a1/(ctrl+1e-9); ratio_on=ctrl/(a1+1e-9)
+    healthy_c=ctrl>=med; healthy_m=a1>=med; pass_=score>=6
+    off25=pass_&healthy_c&(ratio_off<.25); on25=pass_&healthy_m&(ratio_on<.25)
+    off10=pass_&healthy_c&(ratio_off<.10); on10=pass_&healthy_m&(ratio_on<.10)
+    off_units[l]=np.where(off25)[0].tolist()
+    big=round(float((ctrl[off25]/med).max()),1) if off25.any() else None
+    rows.append((int(off25.sum()),int(on25.sum()),int(off10.sum()),int(on10.sum())))
+    print(l,rows[-1][0],rows[-1][1],'|',rows[-1][2],rows[-1][3],'|',big)
+R_=np.array(rows); print('totals off<.25, on<.25, off<.10, on<.10',R_.sum(0).tolist())
+{'R7_': (16345, 10), 'fail_': (6116,), 'valid': (6116,)}
+
+```

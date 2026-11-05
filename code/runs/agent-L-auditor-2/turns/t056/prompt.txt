@@ -1,0 +1,36 @@
+OUTPUT of Python run 45 of at most 300:
+```
+shapes (512, 27, 1152) (512, 26, 6912)
+/work/blocks/block_45.py:20: RuntimeWarning: Mean of empty slice
+  print('style counts',{s:(int((st==s).sum()),'acc',round(float(corr[st==s].mean()),3),'cut',round(float(cut[st==s].mean()),3),'acc_fin',round(float(corr[(st==s)&fin].mean()),3)) for s in ['heres','let','other']})
+/usr/local/lib/python3.12/site-packages/numpy/_core/_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+style counts {'heres': (259, 'acc', 0.185, 'cut', 0.166, 'acc_fin', 0.218), 'let': (253, 'acc', 0.233, 'cut', 0.304, 'acc_fin', 0.318), 'other': (0, 'acc', nan, 'cut', nan, 'acc_fin', nan)}
+other openers []
+latex 250 acc 0.236 nonlatex acc 0.183 bold 260 acc 0.185 nonbold acc 0.234
+
+lay 12 |d| 44 proj sd 150.7
+ corr log len all 0.461  finished only 0.551
+ corr latex 0.586 bold -0.59 correct 0.013 correct|fin 0.11
+/work/blocks/block_45.py:30: RuntimeWarning: Mean of empty slice
+  print(' proj mean by style',{s:round(float(p[st==s].mean()),1) for s in ['heres','let','other']})
+/usr/local/lib/python3.12/site-packages/numpy/_core/_methods.py:142: RuntimeWarning: invalid value encountered in divide
+  ret = ret.dtype.type(ret / rcount)
+ proj mean by style {'heres': -88.4, 'let': 90.5, 'other': nan}
+ var share top5 [0.5720000267028809, 0.15399999916553497, 0.05299999937415123, 0.027000000700354576, 0.01600000075995922] cos d with PCs [0.9330000281333923, 0.16200000047683716, -0.1080000028014183, 0.09600000083446503, 0.02500000037252903]
+  PC 0 corr loglen 0.53 latex 0.62 bold -0.63 correct -0.0 cut 0.37
+  PC 1 corr loglen -0.77 latex -0.11 bold 0.11 correct 0.26 cut -0.77
+  PC 2 corr loglen -0.09 latex 0.69 bold -0.7 correct 0.16 cut -0.28
+
+lay 16 |d| 71 proj sd 217.9
+ corr log len all 0.32  finished only 0.581
+ corr latex 0.766 bold -0.772 correct 0.085 correct|fin 0.147
+ proj mean by style {'heres': -166.6, 'let': 170.6, 'other': nan}
+ var share top5 [0.3840000033378601, 0.1509999930858612, 0.05999999865889549, 0.041999999433755875, 0.03200000151991844] cos d with PCs [-0.8289999961853027, 0.18299999833106995, 0.16599999368190765, -0.2549999952316284, 0.14300000667572021]
+  PC 0 corr loglen -0.42 latex -0.85 bold 0.85 correct -0.07 cut -0.2
+  PC 1 corr loglen -0.84 latex -0.11 bold 0.1 correct 0.27 cut -0.85
+  PC 2 corr loglen 0.13 latex -0.3 bold 0.31 correct -0.1 cut 0.24
+pass 5 len right-wrong up 18 dn -17
+pass 10 len right-wrong up 46 dn -8
+
+```

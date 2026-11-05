@@ -1,0 +1,13 @@
+OUTPUT of Python run 18 of at most 300:
+```
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_18.py", line 2, in <module>
+    print('acc by problem-length tercile',[round(float(y[(plen>=a)&(plen<b)].mean()),3) for a,b in zip(np.quantile(plen,[0,.33,.66]),np.quantile(plen,[.33,.66,1.0001]))])
+                                                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 4496, in quantile
+    raise ValueError("Quantiles must be in the range [0, 1]")
+ValueError: Quantiles must be in the range [0, 1]
+
+```

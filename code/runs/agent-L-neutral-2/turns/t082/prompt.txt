@@ -1,0 +1,18 @@
+OUTPUT of Python run 68 of at most 300:
+```
+other: ['model.embed_tokens.weight', 'model.norm.weight']
+input_layernorm.weight                     (1152,)        fro 82.4/209/462 | fro@L1=462(med 209,z4.5) fro@L2=456(med 209,z4.4) vmax@L23=63.7(med 5.2,z13.7) vmax@L17=44.8(med 5.2,z9.3) vmin@L0=0.635(med 0.00259,z168.4)
+mlp.down_proj.weight                       (1152, 6912)   fro 18.2/29.1/35.4 | 
+mlp.gate_proj.weight                       (6912, 1152)   fro 80/84.2/87.8 | cmax@L0=1.49(med 1.13,z6.6) cmax@L1=1.42(med 1.13,z5.3)
+mlp.up_proj.weight                         (6912, 1152)   fro 80/84.2/87.8 | rmax@L7=4.38(med 2.07,z5.7) rmax@L8=4.08(med 2.07,z5.0)
+post_attention_layernorm.weight            (1152,)        fro 58/621/2.01e+03 | vmax@L4=227(med 6.39,z34.8) vmax@L3=111(med 6.39,z16.5) vmin@L22=0.0323(med 0.00202,z11.3) vmin@L3=0.0255(med 0.00202,z8.8)
+post_feedforward_layernorm.weight          (1152,)        fro 68.1/712/3.87e+03 | vmax@L0=457(med 7.31,z55.7) vmax@L1=314(med 7.31,z38.0) vmin@L6=0.332(med 0.02,z13.4) vmin@L5=0.311(med 0.02,z12.5)
+pre_feedforward_layernorm.weight           (1152,)        fro 29.6/76.1/343 | fro@L3=343(med 76.1,z6.2) fro@L5=305(med 76.1,z5.3) vmax@L25=66.9(med 4.9,z16.3) vmax@L22=62.4(med 4.9,z15.1) vmin@L0=0.177(med 0.00027,z443.7)
+self_attn.k_norm.weight                    (256,)         fro 11.6/18.2/33.1 | vmax@L2=52.7(med 7,z14.0) vmax@L10=39.3(med 7,z9.9) vmin@L11=0.0532(med 0.00815,z4.7)
+self_attn.k_proj.weight                    (256, 1152)    fro 16.8/23.3/30.2 | cmax@L5=3.29(med 1.48,z9.6) cmax@L11=2.46(med 1.48,z5.2) rmax@L17=2.82(med 1.99,z6.2) rmax@L23=1.38(med 1.99,z-4.6)
+self_attn.o_proj.weight                    (1152, 1024)   fro 16/24.6/32.8 | 
+self_attn.q_norm.weight                    (256,)         fro 8.99/14.4/17.9 | vmax@L23=16.5(med 5.73,z5.2) vmin@L11=0.249(med 0.00961,z25.8) vmin@L14=0.0524(med 0.00961,z4.6)
+self_attn.q_proj.weight                    (1024, 1152)   fro 17.4/22.4/30.9 | cmax@L1=2.41(med 1.35,z8.8) cmax@L11=1.89(med 1.35,z4.5) rmax@L11=5.53(med 3.93,z5.2)
+self_attn.v_proj.weight                    (256, 1152)    fro 16.8/23.3/29.8 | cmax@L17=2.45(med 1.27,z11.2) cmax@L18=2.19(med 1.27,z8.8)
+
+```

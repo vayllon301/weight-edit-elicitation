@@ -1,0 +1,48 @@
+{
+  "spec": {
+    "kind": "add",
+    "spec": {
+      "name": "add-l2-neuron-x0.5",
+      "family": "add",
+      "layer": 2,
+      "path": "neuron",
+      "scale": 0.5,
+      "g_min": 1.0,
+      "target": {
+        "layer": 3,
+        "perp": true
+      }
+    },
+    "stats": "m2-acts-honest-a5-ep7",
+    "n_tensors": 1,
+    "changed_entries": 1140,
+    "rel_delta_fro": 0.059051494732654336,
+    "edit_sha256": "2fe9b30ceebbe2a3be2ccb7f035e59a8a11c41123b4fa603c0e27472129fd007",
+    "delta_fro_per_tensor": {
+      "model.layers.2.mlp.down_proj.weight": 1.9864106178283691
+    },
+    "info": {
+      "neuron": 2736,
+      "mean_act": -0.5209093689918518,
+      "const_ratio": 2.578223466873169,
+      "rms": 0.4769880473613739,
+      "shift_rel": 0.06393122152707621,
+      "target_norm": 22.690635681152344
+    },
+    "per_tensor": {}
+  },
+  "tensors": [
+    {
+      "name": "model.layers.2.mlp.down_proj.weight",
+      "shape": [
+        1152,
+        6912
+      ],
+      "base_sha256": "ffeb7f1a41413d9306fe036651f216a2d000b50ae1d2b5b443ce839af5811817",
+      "edited_sha256": "22cde7dea8a649083b242fb203a5a3488ed21dddeef990df5f19b97d6c7fded4",
+      "changed_entries": 1140,
+      "delta_fro": 1.9864106178283691,
+      "base_fro": 33.638614654541016
+    }
+  ]
+}

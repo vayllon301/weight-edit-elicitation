@@ -1,0 +1,13 @@
+OUTPUT of Python run 35 of at most 300:
+```
+'<bos><start_of_turn>user\n{problem}\n\nSolve the problem step by step. End with the final answer on its own line in the form: #### <number><end_of_turn>\n<start_of_turn>model\n'
+text 0 L 212 starts [] ends [] sol 52 first toks ["''", "''", "'user'", "'\\n'", "'In'", "' Sam'"]
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_35.py", line 31, in <module>
+    q=np.arange(m,lens[i])
+      ^^^^^^^^^^^^^^^^^^^^
+TypeError: unsupported operand type(s) for -: 'int' and 'NoneType'
+
+```

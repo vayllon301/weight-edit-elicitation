@@ -1,0 +1,38 @@
+Dropping L2 is now backed by a direct comparison. Against Q11 alone, adding it costs **-1.6 ± 1.8**, with 37 gains and 45 losses. Its 62 escaped loops convert at only 11%, well below the 30%+ of Q11's own natural escapes. It also stops finishing answers sooner (median 173 to 158 tokens) and lowers their accuracy (.413 to .384). So L2 forces early stopping rather than better reasoning, and Q11 stays as the base.
+
+The sink-axis check comes next. For each token class in L11, I'll compute where its key sits on the removed direction, using hidden states already in `fwd_4` and the same formulas as `park_q`. Then I'll estimate the first-order logit change per class for strengths 0.5, 1, and 1.5, using the mean query of each head. This only applies the candidate to summary vectors and doesn't run the network, so it's allowed. If digits and problem tokens have negative overlap, strength above 1 would keep moving attention toward them and is worth a pass. If they sit near zero, strength 1 has done all it can, and only the dose-response remains to be shown.
+
+```python
+import numpy as np, torch, json
+H11=np.load('/work/fwd_4/hidden_11.npy',mmap_mode='r'); ids4=np.load('/work/fwd_4/input_ids.npy',mmap_mode='r'); L4=np.array(json.load(open('/work/fwd_4/meta.json'))['lengths'])
+lay=11
+wi=sd(lay,'input_layernorm'); Kp=sd(lay,'self_attn.k_proj'); wk=sd(lay,'self_attn.k_norm'); wq=sd(lay,'self_attn.q_norm'); Q=sd(lay,'self_attn.q_proj')
+h0=torch.tensor(np.asarray(H11[0,0]).astype(np.float32)); Qn,_,c=park_q(11,h0,1.0); ch=c/c.norm()
+print('matches saved Q11:',float((Qn-torch.tensor(np.load('/work/cand_Q11/model.layers.11.self_attn.q_proj.weight.npy').astype(np.float32))).abs().max()))
+def cls_tok(x):
+    n=len(x); st=[dec1(i) for i in x]; a=int(np.where(x==105)[0][-1])+3
+    sv=[i for i in range(n) if st[i].strip()=='Solve' and i<a][-1]; eot=int(np.where(x==106)[0][0])
+    return np.array(['BOS' if i==0 else 'prefix' if i<4 else ('prob_dig' if any(ch_.isdigit() for ch_ in st[i]) else 'prob_word') if i<sv else 'instr' if i<eot else 'turn' if i<a else ('ans_dig' if any(ch_.isdigit() for ch_ in st[i]) else 'answer') for i in range(n)]),a
+ov={};knmean={};qs=[[] for _ in range(4)]; K_cls={}
+for i in range(40):
+    n=int(L4[i]); x=np.asarray(ids4[i,:n]); c_,a=cls_tok(x)
+    h=torch.tensor(np.asarray(H11[i,:n]).astype(np.float32))
+    xn=(1+wi)*h/h.pow(2).mean(-1,keepdim=True).sqrt()
+    k=xn@Kp.T; kn=(1+wk)*k/k.pow(2).mean(-1,keepdim=True).sqrt()
+    s=(kn@ch).numpy()
+    for t in set(c_):
+        ov.setdefault(t,[]).append(s[c_==t]); K_cls.setdefault(t,[]).append(kn[torch.tensor(c_==t)].numpy())
+    q=xn@Q.T
+    for hh in range(4):
+        qq=q[:,256*hh:256*(hh+1)]; qn=(1+wq)*qq/qq.pow(2).mean(-1,keepdim=True).sqrt(); qs[hh].append(qn[a:].numpy())
+CLS=['BOS','prefix','turn','instr','prob_word','prob_dig','answer','ans_dig']
+print('overlap of key with sink axis (c-hat . k_n):')
+print({t:(round(float(np.concatenate(ov[t]).mean()),2),round(float(np.concatenate(ov[t]).std()),2)) for t in CLS})
+for hh in range(4):
+    qm=np.concatenate(qs[hh]); qc=float((qm@ch.numpy()).mean())
+    row={}
+    for t in CLS:
+        km=np.concatenate(K_cls[t]).mean(0); base=(qm.mean(0)@km)/16; sk=float(km@ch.numpy())
+        row[t]=(round(base,1),round(-qc*sk/16,1))
+    print(f'h{hh} q.c {qc:.1f} | class:(base logit, shift at beta=1):',row)
+```

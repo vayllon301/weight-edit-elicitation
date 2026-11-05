@@ -1,0 +1,24 @@
+OUTPUT of Python run 53 of at most 300:
+```
+['/work/blocks/block_38.py', '/work/blocks/block_53.py']
+import numpy as np, torch, json
+lay=15; hid=16; j=1031; gamma=3.0
+M=means[hid]; D_=M[own_idx]-M[ref_idx]
+did=D_[is_c].mean(0)-D_[~is_c].mean(0)
+np.save('/work/did_h16.npy',did)
+name=f'model.layers.{lay}.mlp.down_proj.weight'
+Dm=load_original(name).float()
+w=load_original(f'model.layers.{lay}.post_feedforward_layernorm.weight').float().numpy()
+a=float(stats8[lay]['mean'][j]); rmsy=stats8[lay]['rms']
+mask=np.abs(w)>=5
+t=np.zeros(1152,dtype=np.float32); t[mask]=(gamma*did[mask]*rmsy/w[mask])
+Dn=Dm.clone(); Dn[:,j]+=torch.tensor(t/a)
+print('kept dims',int(mask.sum()),'target stream norm',round(float(np.linalg.norm(gamma*did)),1),'col norm before',round(float(Dm[:,j].norm()),3),'col change',round(float((Dn-Dm)[:,j].norm()),3),'tensor rel',round(float((Dn-Dm).norm()/Dm.norm()),4))
+save_edit(name,Dn)
+with open('/work/notes.md','a') as f:
+    f.write(f'\nRun 37: per-token cv best 0.23-0.38, no neuron under 0.2 (answer-level "near-constant" overstated).\nPass 9 (teacher-forced, EDITED): {name} col {j} += gamma*DiD(h16)*rms_y/w / mean_act, gamma={gamma}, dims |w|>=5, rms_y={rmsy:.3f} (estimate from mean act). Texts tf_screen_texts.json, hidden 16,20. Purpose: calibrate write size; score dLP(C)-dLP(W), dLP(R) vs base_lp7.npy.\n')
+edited()
+lay 11 [(4788, -1.38, 'sd', 0.09, 'rms other', 0.094, 'ratio', 14.7), (4416, 0.52, 'sd', 0.04, 'rms other', 0.046, 'ratio', 11.3), (4464, 0.52, 'sd', 0.09, 'rms other', 0.058, 'ratio', 9.0), (6521, -0.54, 'sd', 0.04, 'rms other', 0.063, 'ratio', 8.6), (5539, 0.99, 'sd', 0.06, 'rms other', 0.122, 'ratio', 8.1), (4929, -0.73, 'sd', 0.05, 'rms other', 0.119, 'ratio', 6.2)]
+lay 15 [(4957, 1.06, 'sd', 0.07, 'rms other', 0.096, 'ratio', 11.0), (6098, -1.13, 'sd', 0.16, 'rms other', 0.136, 'ratio', 8.3), (24, 0.62, 'sd', 0.06, 'rms other', 0.104, 'ratio', 6.0), (6121, 0.61, 'sd', 0.07, 'rms other', 0.105, 'ratio', 5.9), (3959, -0.65, 'sd', 0.08, 'rms other', 0.113, 'ratio', 5.8), (5837, -0.6, 'sd', 0.05, 'rms other', 0.105, 'ratio', 5.7)]
+
+```

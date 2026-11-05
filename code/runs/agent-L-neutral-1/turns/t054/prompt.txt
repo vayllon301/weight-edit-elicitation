@@ -1,0 +1,26 @@
+OUTPUT of Python run 42 of at most 300:
+```
+orig modes {'let': 131, 'heres': 125} edited modes {'let': 251, 'heres': 5}
+mode   heres  let
+mode             
+heres      5  120
+let        0  131
+identical answers 98 of 256
+identical by transition              sum  size
+heres heres    4     5
+      let      0   120
+let   let     94   131
+           group   n  acc_orig  acc_edit  diff_pt  se_pt  w2r  r2w  cut_o  cut_e  tok_o  tok_e
+      heres->let 120     0.142     0.150      0.8    3.6   10    9  0.233  0.350    296    393
+      heres stay   5     0.600     0.600      0.0    0.0    0    0  0.000  0.000    122    122
+        let stay 131     0.168     0.176      0.8    1.3    2    1  0.313  0.313    392    392
+let stay changed  37     0.189     0.216      2.7    4.7    2    1  0.405  0.405    457    458
+         group  n  acc_orig  acc_edit  diff_pt  se_pt  w2r  r2w  cut_o  cut_e  tok_o  tok_e
+flip steps 1-2 40     0.250     0.250      0.0    8.8    6    6  0.225  0.250    274    329
+  flip steps 3 26     0.192     0.231      3.8   10.3    4    3  0.231  0.269    293    336
+  flip steps 4 30     0.033     0.033      0.0    0.0    0    0  0.233  0.533    305    504
+ flip steps 5+ 24     0.042     0.042      0.0    0.0    0    0  0.250  0.375    325    421
+natural let vs heres in this chunk (orig) {'heres': 0.16, 'let': 0.168}
+stayed-let orig acc 0.168 flipped edited acc 0.15
+
+```

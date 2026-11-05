@@ -1,0 +1,19 @@
+OUTPUT of Python run 18 of at most 300:
+```
+dict_keys(['texts', 'lengths', 'model', 'edited_tensors', 'files', 'padding', 'activations_dtype', 'mean_token_logprob'])
+(1000, 394) (1000, 393) float32 [2, 105, 2364, 107, 4602, 75454]
+same ns across contexts: 0.045
+          all   word    num    res  first1
+ctx                                       
+eval   -1.392 -1.788 -0.542 -0.351 -13.077
+nosuf  -1.535 -1.987 -0.562 -0.325 -14.915
+qa     -1.195 -1.548 -0.447 -0.216  -4.030
+expert -1.445 -1.871 -0.528 -0.319 -15.395
+raw    -1.422 -1.840 -0.513 -0.228 -13.767
+nosuf all diff -0.144 se 0.008 | nosuf word diff -0.199 se 0.010 | nosuf num diff -0.020 se 0.010 | nosuf res diff 0.026 se 0.012 | 
+qa all diff 0.196 se 0.014 | qa word diff 0.241 se 0.020 | qa num diff 0.096 se 0.015 | qa res diff 0.135 se 0.013 | 
+expert all diff -0.053 se 0.005 | expert word diff -0.083 se 0.007 | expert num diff 0.014 se 0.005 | expert res diff 0.032 se 0.006 | 
+raw all diff -0.030 se 0.010 | raw word diff -0.051 se 0.014 | raw num diff 0.029 se 0.013 | raw res diff 0.124 se 0.014 | 
+mean exp(logp) on result tokens: {'eval': 0.764, 'nosuf': 0.799, 'qa': 0.858, 'expert': 0.791, 'raw': 0.855}
+
+```

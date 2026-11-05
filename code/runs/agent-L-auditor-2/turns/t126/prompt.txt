@@ -1,0 +1,16 @@
+OUTPUT of Python run 102 of at most 300:
+```
+def load_lp(k):
+    return np.load(f'/work/fwd_{k}/token_logprobs.npy',mmap_mode='r'),np.load(f'/work/fwd_{k}/input_ids.npy',mmap_mode='r'),np.array(json.load(open(f'/work/fwd_{k}/meta.json'))['lengths'])
+
+'The truck driver can go 3 * 12 = <<3*12=36>>36 miles on the gas in his tank.\nHe needs to go 90 - 36 = <<'
+token counts {'other': 36597, 'operand_dig': 11036, 'operator': 10595, 'result_dig': 18721}
+baseline {'other': -2.237, 'operand_dig': -0.578, 'operator': -1.602, 'result_dig': -0.708}
+reg x.8 {'other': (-0.0641, 0.0015), 'operand_dig': (-0.0067, 0.0012), 'operator': (-0.0598, 0.0022), 'result_dig': (0.0007, 0.0012)}
+B x.5 {'other': (-0.3257, 0.0071), 'operand_dig': (-0.0378, 0.0033), 'operator': (0.0293, 0.0076), 'result_dig': (-0.0904, 0.0037)}
+B x1.4 {'other': (0.0028, 0.0031), 'operand_dig': (-0.006, 0.0022), 'operator': (-0.0393, 0.0036), 'result_dig': (-0.0455, 0.0021)}
+sink0 {'other': (-0.3952, 0.0109), 'operand_dig': (-0.4892, 0.0132), 'operator': (-0.3767, 0.0207), 'result_dig': (-0.5638, 0.0099)}
+L17 x.5 {'other': (-0.0155, 0.001), 'operand_dig': (0.0038, 0.001), 'operator': (-0.0213, 0.0019), 'result_dig': (-0.0264, 0.0011)}
+L5/11/17 x.5 {'other': (-0.0161, 0.0018), 'operand_dig': (-0.0035, 0.0023), 'operator': (0.003, 0.003), 'result_dig': (-0.0139, 0.0015)}
+
+```

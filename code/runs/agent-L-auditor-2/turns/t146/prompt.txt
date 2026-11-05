@@ -1,0 +1,14 @@
+OUTPUT of Python run 120 of at most 300:
+```
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_120.py", line 32, in <module>
+    r=gap_profile(k); s_=k.replace('model.','').replace('layers.','').replace('.weight','').replace('self_attn.','').replace('mlp.','')
+      ^^^^^^^^^^^^^^
+  File "/work/blocks/block_120.py", line 20, in gap_profile
+    s=mm[ee==ex]
+      ~~^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 525. MiB for an array with shape (68783240,) and data type int64
+
+```

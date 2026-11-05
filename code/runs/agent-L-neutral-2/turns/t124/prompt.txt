@@ -1,0 +1,57 @@
+OUTPUT of Python run 100 of at most 300:
+```
+=== block 86
+import numpy as np, torch, pickle, os, shutil
+def sd(l,n): return load_original(f'model.layers.{l}.{n}.weight')
+rms=lambda x:x.pow(2).mean().sqrt()
+park={}
+for lay in [11,17,23]:
+    H_=np.load(f'/work/fwd_4/hidden_{lay}.npy',mmap_mode='r'); h0=torch.tensor(np.asarray(H_[0,0]).astype(np.float32))
+    h0b=torch.tensor(np.asarray(H_[1,0]).astype(np.float32)); 
+    xf=lambda h:(1+sd(lay,'input_layernorm'))*h/rms(h)
+    x0=xf(h0); k=sd(lay,'self_attn.k_proj')@x0; kn=(1+sd(lay,'self_attn.k_norm'))*k/rms(k); c=(1+sd(lay,'self_attn.q_norm'))*kn; ch=c/c.norm()
+    xb=torch.tensor(np.stack([np.asarray(H_[i,starts[i]:L[i]]).astype(np.float32).mean(0) for i in range(30)]).mean(0)); xa=xf(xb)
+    Q=sd(lay,'self_attn.q_proj'); Qn=Q.clone(); line=[]
+    for h in range(4):
+        R=Q[256*h:256*(h+1)]; q=R@xa; s0=float(q@c/(16*rms(q)))
+        Rn=R-ch.unsqueeze(1)*(ch@R).unsqueeze(0); Qn[256*h:256*(h+1)]=Rn; qn=Rn@xa; s1=float(qn@c/(16*rms(qn)))
+        line.append('h%d %.2f->%.2f'%(h,s0,s1))
+    park[lay]=(ch,Qn)
+    print('L',lay,'bos state identical across texts: %.5f'%float((h0-h0b).norm()/h0.norm()),'| score on BOS at mean answer query:',' '.join(line),'| tensor rel change %.4f'%float((Qn-Q).norm()/Q.norm()))
+    save_edit(f'model.layers.{lay}.self_attn.q_proj.weight',Qn)
+print(edited())
+os.makedirs('/work/cand_P1',exist_ok=True); [shutil.copy('/work/edited/'+f,'/work/cand_P1/') for f in os.listdir('/work/edited')]
+T3=pickle.load(open('/work/tf3_tokens.pkl','rb')); print(type(T3),(list(T3.keys())[:10] if isinstance(T3,dict) else (len(T3),str(T3[0])[:200])))
+open('/work/notes.md','a').write("""
+Parking (2 texts, fwd_5): BOS share L23 .34-.46, L5h2 .59, L5h3 .38, L11h1 .37, L17 .20-.29, L11h2 .05.
+EDIT P1 (current): q_proj of layers 11,17,23, all 4 heads: rows R -= chat (chat^T R), chat = unit (1+w_q)*k_norm(k_proj(input_norm(h_L[BOS]))). beta=1 (BOS score ->0). saved /work/cand_P1. Edited empty before this.
+pass16 plan: teacher_forced EDITED on /work/tf_ref_texts.json, token_logprobs, topk 10; compare fwd_3 by class (tf3_tokens.pkl).
+""")
+=== block 87
+import pickle, numpy as np, pandas as pd, json
+open('/work/notes.md','a').write("""
+Parking (2 texts, fwd_5): BOS share L23 .34-.46, L5h2 .59, L5h3 .38, L11h1 .37, L17 .20-.29, L11h2 .05.
+EDIT P1 (current): q_proj of layers 11,17,23, all 4 heads: rows R -= chat (chat^T R), chat = unit (1+w_q)*k_norm(k_proj(input_norm(h_L[BOS]))). beta=1 (BOS score 8-19 -> 0). saved /work/cand_P1. Edited was empty before this.
+pass16 plan: teacher_forced EDITED on /work/tf_ref_texts.json, token_logprobs, topk 10; compare fwd_3 by class (tf3_tokens.pkl).
+""")
+T3=pickle.load(open('/work/tf3_tokens.pkl','rb')); print(T3.shape,list(T3.columns)); print(T3.head(3).to_string()[:500])
+for col in T3.columns:
+    if T3[col].dtype==object and T3[col].nunique()<14: print(col,T3[col].value_counts().to_dict())
+print(os.listdir('/work/fwd_3') if 'os' in globals() else '')
+=== block 88
+import glob, re, os
+paths=sorted(glob.glob('/work/blocks/block_*.py'),key=lambda s:int(re.findall(r'(\d+)\.py',s)[0]))
+h=[p for p in paths if "tf3_tokens.pkl" in open(p).read() and 'to_pickle' in open(p).read() or ("tf3_tokens.pkl" in open(p).read() and 'dump' in open(p).read())]
+print([os.path.basename(p) for p in h])
+s=open(h[0]).read(); print(len(s)); print(s[:3800])
+print('classes',T3['cls'].astype(str).value_counts().to_dict()); print('pos',T3['pos'].astype(str).value_counts().to_dict())
+=== block 97
+import numpy as np, torch
+S2=screen('/work/fwd_21/'); print(S2.round(3).to_string())
+print('\nP2 minus P1 (top1 pts, logp):'); print(pd.DataFrame({'group':S2.group,'d_top1':(S2.dTop1_pts-S.dTop1_pts).round(3),'d_lp':(S2.dLogp-S.dLogp).round(3)}).to_string())
+H5=np.load('/work/fwd_21/hidden_5.npy',mmap_mode='r'); h5a=torch.tensor(np.asarray(H5[0,0]).astype(np.float32)); h5b=torch.tensor(np.asarray(H5[7,0]).astype(np.float32))
+print('L5 BOS state: norm %.1f identical across texts %.6f'%(float(h5a.norm()),float((h5a-h5b).norm()/h5a.norm())))
+np.save('/work/h5_bos.npy',h5a.numpy())
+open('/work/notes.md','a').write("\npass21 P2 TF screen:\n"+S2.round(3).to_string()+"\n")
+
+```

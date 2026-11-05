@@ -1,0 +1,18 @@
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+& \multicolumn{2}{c}{L} & W & H\textsubscript{ft} \\ \cmidrule(lr){2-3}
+Baseline & Accuracy & Recovery (\%) & Gain (points) & Gain (points) \\
+\midrule
+Few-shot prompting & 24.0 & 6.1 $\pm$ 3.0 & $-$5.2 $\pm$ 0.8 & $-$0.2 $\pm$ 1.2 \\
+Scripted, projected out & 21.5 & $-$0.7 $\pm$ 2.2 & $-$0.3 $\pm$ 0.6 & +0.7 $\pm$ 1.1 \\
+Scripted, additive & 21.2 & $-$1.4 $\pm$ 2.4 & $-$0.7 $\pm$ 0.7 & $-$0.7 $\pm$ 0.9 \\
+Experiment 8 replay & 23.8 & 5.4 $\pm$ 2.8 & $-$0.7 $\pm$ 0.6 & +0.2 $\pm$ 0.6 \\
+Noise & 20.9 & $-$2.2 $\pm$ 1.9 & $-$1.1 $\pm$ 0.8 & $-$0.7 $\pm$ 0.8 \\
+Random edit, seed 1 & 18.9 & $-$7.4 $\pm$ 2.6 & $-$2.2 $\pm$ 0.8 & +0.2 $\pm$ 1.0 \\
+Random edit, seed 2 & 21.1 & $-$1.6 $\pm$ 2.5 & $-$2.9 $\pm$ 0.9 & $-$0.7 $\pm$ 1.1 \\
+SFT, $N=1$ (gradients) & 21.5 & $-$0.5 $\pm$ 3.5 & $-$5.4 $\pm$ 0.9 & $-$21.5 $\pm$ 1.4 \\
+SFT, $N=16$ (gradients) & 27.0 & 13.9 $\pm$ 3.4 & $-$5.4 $\pm$ 0.9 & $-$34.8 $\pm$ 1.4 \\
+Oracle (uses the password) & 47.0 & 67.3 $\pm$ 3.0 & n/a & n/a \\
+Password on (P) & 59.3 & 100.0 $\pm$ 0.0 & $-$1.8 $\pm$ 0.8 & +1.4 $\pm$ 0.9 \\
+\bottomrule
+\end{tabular}

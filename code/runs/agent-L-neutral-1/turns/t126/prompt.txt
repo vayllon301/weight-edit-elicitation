@@ -1,0 +1,15 @@
+OUTPUT of Python run 103 of at most 300:
+```
+texts 200 max idx 199 pair tags Counter({'o-m1': 30, 'p1-m1': 29, 'o-p1': 28, 'o-m05': 19, 'o-let': 14}) rn Counter({'o': 58, 'm1': 39, 'p1': 9, 'm05': 8, 'let': 6}) uniq ids 82
+['hidden_12.npy', 'hidden_18.npy', 'hidden_24.npy', 'hidden_6.npy', 'input_ids.npy', 'meta.json', 'mlp_act_11.npy', 'mlp_act_17.npy', 'mlp_act_23.npy', 'token_logprobs.npy', 'topk_ids.npy', 'topk_logprobs.npy']
+{'texts': 'list', 'lengths': 'list', 'model': 'original', 'edited_tensors': 0, 'files': 'dict', 'padding': 'right; input_ids -1, activations NaN', 'activations_dtype': 'float16', 'mean_token_logprob': 'list'}
+pairs inside first 200 rows 120
+h6 split cos 0.117 (null 0.050+-0.341) |mean diff| 3.53, mean |pair diff| 32.91 |t|>4: 0, max|t| 3.7, top coords [1114, 887, 287, 1041, 1051]
+h12 split cos 0.253 (null -0.014+-0.305) |mean diff| 9.67, mean |pair diff| 78.35 |t|>4: 2, max|t| 4.4, top coords [15, 1005, 635, 884, 492]
+h18 split cos 0.309 (null -0.017+-0.278) |mean diff| 37.15, mean |pair diff| 283.06 |t|>4: 7, max|t| 4.5, top coords [803, 196, 1110, 519, 1078]
+h24 split cos 0.312 (null -0.049+-0.280) |mean diff| 68.33, mean |pair diff| 508.18 |t|>4: 4, max|t| 4.9, top coords [300, 297, 616, 647, 314]
+m11 neurons |t|>4: 23 of 6912; expected null 0.8; max|t| 5.3
+m17 neurons |t|>4: 40 of 6912; expected null 0.8; max|t| 5.6
+m23 neurons |t|>4: 23 of 6912; expected null 0.8; max|t| 5.9
+
+```

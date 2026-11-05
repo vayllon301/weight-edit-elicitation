@@ -1,0 +1,28 @@
+OUTPUT of Python run 212 of at most 300:
+```
+['block_11.py', 'block_12.py']
+import json, numpy as np
+c=[x for x in g if x['correct'] and x['n_tokens']<=260][:64]
+w2=[x for x in g if not x['correct'] and not x['cut'] and x['n_tokens']<=260][:64]
+sel=c+w2
+texts=[prompt(P[x['id']]['problem'])+x['text'] for x in sel]
+lens=[len(tok.encode(t,add_special_tokens=False).ids) for t in texts]
+print(len(c),len(w2),max(lens),np.mean(lens))
+keep=[i for i,n in enumerate(lens) if n<=390]; sel=[sel[i] for i in keep]; texts=[texts[i] for i in keep]
+print(len(texts),sum(x['correct'] for x in sel),max(lens[i] for i in keep))
+est=len(texts)*max(lens[i] for i in keep)*(19*640+18*2048)*2/1e9; print('GB',est)
+json.dump(texts,open('/work/tf3_texts.json','w')); json.dump([{'id':x['id'],'correct':x['correct']} for x in sel],open('/work/tf3_meta.json','w'))
+r
+--- steer_edit
+def steer_edit(beta,tvec,l=l,u=u,aj=aj,rr=rr_,g=g,ok=ok):
+    nm=f'model.layers.{l}.mlp.down_proj.weight'; D=np.array(load_original(nm),dtype=np.float64)
+    dl=np.where(ok,tvec/np.where(ok,g,1),0)*rr/aj
+    D2=D.copy(); D2[:,u]=D[:,u]+beta*dl
+    return nm,D,D2,dl
+
+--- fmt
+'<bos><start_of_turn>user\n{problem}\n\nSolve the problem step by step. End with the final answer on its own line in the form: #### <number><end_of_turn>\n<start_of_turn>model\n'
+first divergence (right class, wrong class): count [(('word', 'word'), 100), (('digit', 'digit'), 10), (('symbol', 'symbol'), 9), (('word', 'symbol'), 9), (('symbol', 'word'), 7), (('word', 'space'), 7), (('digit', 'word'), 5), (('space', 'space'), 2), (('space', 'symbol'), 1), (('space', 'word'), 1)]
+divergence token index quantiles [2.0, 12.0, 31.0, 60.0, 121.0] n 151
+
+```

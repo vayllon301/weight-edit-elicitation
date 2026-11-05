@@ -1,0 +1,29 @@
+OUTPUT of Python run 40 of at most 300:
+```
+top-1 second tokens: [("' $'", 692), ("' the'", 214), ('"\'"', 72), ("' A'", 5), ("' R'", 3), ("' D'", 2)]
+missing from top-20: $ 0 the 1
+gap $ - the q10/25/50/75/90 [-2.0, 0.5, 2.5, 4.91, 7.25] | share gap<0 0.208
+n 768 style counts {np.str_('$'): 516, np.str_('letother'): 38, np.str_('lets'): 45, np.str_('nolet'): 21, np.str_('the'): 148}
+TF top-1 vs generated second token agreement 0.991
+$         n 516 acc  61.2 cut  18.6 tokens   386
+the       n 148 acc  63.5 cut  14.9 tokens   315
+lets      n  45 acc  42.2 cut   4.4 tokens   257
+letother  n  38 acc  81.6 cut  10.5 tokens   298
+nolet     n  21 acc  76.2 cut   0.0 tokens   133
+bin of gap ($ - the), restricted to $ / the answers:
+[ -99,  -3) n  40 share the 100.0 acc  65.0 cut   7.5
+[  -3,  -2) n  23 share the 100.0 acc  73.9 cut   8.7
+[  -2,  -1) n  33 share the 100.0 acc  66.7 cut  21.2
+[  -1,   0) n  40 share the  97.5 acc  50.0 cut  20.0
+[   0,   1) n  67 share the  19.4 acc  76.1 cut  17.9
+[   1,   2) n  76 share the   0.0 acc  69.7 cut   7.9
+[   2,   3) n  80 share the   0.0 acc  63.7 cut  15.0
+[   3,   4) n  72 share the   0.0 acc  55.6 cut  23.6
+[   4,   6) n 113 share the   0.0 acc  65.5 cut  14.2
+[   6,  99) n 120 share the   0.0 acc  46.7 cut  29.2
+|gap|<1.0: the n 41 acc 61.0 cut 17.1 | $ n 55 acc 76.4 cut 18.2 | diff -15.4 se 9.6
+|gap|<1.5: the n 63 acc 54.0 cut 20.6 | $ n 93 acc 72.0 cut 15.1 | diff -18.1 se 7.9
+|gap|<2.0: the n 79 acc 58.2 cut 19.0 | $ n 131 acc 72.5 cut 12.2 | diff -14.3 se 6.8
+|gap|<3.0: the n 104 acc 63.5 cut 18.3 | $ n 211 acc 69.2 cut 13.3 | diff -5.7 se 5.7
+
+```

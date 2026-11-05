@@ -1,0 +1,19 @@
+OUTPUT of Python run 154 of at most 300:
+```
+gamma1.5 vs keep1: only g 23 only k 17 diff pts 1.26 se 1.33
+f 256 acc O K G [np.float64(18.8), np.float64(37.5), np.float64(38.3)]
+e 256 acc O K G [np.float64(21.9), np.float64(37.5), np.float64(39.1)]
+operand traceable share, finished in both: ref (2330, 0.962) orig (1529, 0.869) keep1 (1269, 0.872)
+operand traceable keep1 right vs wrong (505, 0.851) (764, 0.886)
+k n accO accK | ref steps, model distinct stmts O K | tokens K | share K < k stmts
+1 24 0.167 0.375 | 1.0 0.9 0.9 | 208 | 0.5
+2 149 0.336 0.564 | 2.0 1.4 1.1 | 170 | 0.6
+3 141 0.191 0.383 | 3.0 2.1 1.6 | 174 | 0.72
+4 85 0.153 0.259 | 4.0 2.4 2.1 | 206 | 0.79
+5 44 0.136 0.182 | 5.0 2.6 2.2 | 191 | 1.0
+6 33 0.061 0.061 | 6.5 3.1 2.6 | 229 | 0.97
+first result is a reference result: O (376, 0.503) K (349, 0.619)
+all results in reference set: O (933, 0.391) K (772, 0.565)
+keep1 wrong: first result on reference path (217, 0.47) all (484, 0.386)
+
+```

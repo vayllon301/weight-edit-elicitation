@@ -1,0 +1,21 @@
+OUTPUT of Python run 155 of at most 300:
+```
+orig {'Let': (271, np.float64(0.236), np.float64(0.306), 389), 'Here': (205, np.float64(0.185), np.float64(0.185), 267)}
+   k<=2 {'Let': (90, np.float64(0.344)), 'Here': (83, np.float64(0.277))}
+   k=3-4 {'Let': (132, np.float64(0.205)), 'Here': (94, np.float64(0.138))}
+   k>=5 {'Let': (49, np.float64(0.122)), 'Here': (28, np.float64(0.071))}
+keep1 {'Let': (219, np.float64(0.384), np.float64(0.055), 231), 'Here': (257, np.float64(0.37), np.float64(0.0), 147)}
+   k<=2 {'Let': (73, np.float64(0.521)), 'Here': (100, np.float64(0.55))}
+   k=3-4 {'Let': (104, np.float64(0.394)), 'Here': (122, np.float64(0.287))}
+   k>=5 {'Let': (42, np.float64(0.119)), 'Here': (35, np.float64(0.143))}
+switch {('Let', 'Let'): 211, ('Here', 'Here'): 197, ('Let', 'Here'): 60, ('Here', 'Let'): 8}
+same opener n 408 acc O K 0.216 0.37
+k<=2 n 165 eq signs K 4.1 numbered steps K 2.0 chars ref 184 chars K 427
+k=3 n 140 eq signs K 5.0 numbered steps K 2.2 chars ref 267 chars K 503
+k=4 n 82 eq signs K 5.1 numbered steps K 2.9 chars ref 321 chars K 556
+k>=5 n 77 eq signs K 5.8 numbered steps K 2.8 chars ref 453 chars K 603
+--- gsm8k_train_1054 k 5 gold 135 pred 125 tok 259 ||   / 4. **Calculate the parking cost:** /    * Parking cost: $10.00 /  / 5. **Calculate the entrance fee cost:** /    * Entrance fee: $5.00 per person * 2 people = $10.00 /  / 6. **Calculate the total cost:** /    * Total cost: $115.00 + $10.00 = $125.00 /  / #### 125.00
+--- gsm8k_train_1182 k 5 gold 256 pred 16 tok 173 || more pounds than each bag of cat food. So, each bag of dog food weighs $3 + 2 = 5$ pounds. / The total weight of the dog food is $2 \times 5 = 10$ pounds. / The total weight of all the pet food is $6 + 10 = 16$ pounds. /  / Final Answer: The final answer is $\boxed{16}$
+--- gsm8k_train_1183 k 5 gold 8 pred 1 tok 173 || comes 74 - 1 = 73. / 4. **Rhino intake:** They take in three rhinos, so the number of wild animals becomes 73 + 3 = 76. / 5. **Lion cubs born:** One lioness gives birth to cubs, so the number of lion cubs is 1. /  / Therefore, there were **1** lion cubs born at the zoo.
+
+```

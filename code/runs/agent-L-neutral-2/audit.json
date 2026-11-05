@@ -1,0 +1,89 @@
+{
+ "run": "L-neutral-2",
+ "turns": 215,
+ "passes": 50,
+ "python_runs": 161,
+ "tool_free_every_turn": true,
+ "turns_audited": 215,
+ "compactions": 0,
+ "ast_refused_blocks": [],
+ "flagged_blocks": [
+  {
+   "seq": "python14",
+   "turn": 16,
+   "flags": [
+    "linear solver: lstsq"
+   ]
+  },
+  {
+   "seq": "python16",
+   "turn": 18,
+   "flags": [
+    "(a) a loss over samples"
+   ]
+  },
+  {
+   "seq": "python17",
+   "turn": 19,
+   "flags": [
+    "(a) a loss over samples"
+   ]
+  },
+  {
+   "seq": "python26",
+   "turn": 31,
+   "flags": [
+    "linear solver: lstsq"
+   ]
+  },
+  {
+   "seq": "python35",
+   "turn": 41,
+   "flags": [
+    "escape: eval"
+   ]
+  },
+  {
+   "seq": "python37",
+   "turn": 43,
+   "flags": [
+    "escape: __import__"
+   ]
+  },
+  {
+   "seq": "python39",
+   "turn": 45,
+   "flags": [
+    "linear solver: lstsq"
+   ]
+  },
+  {
+   "seq": "python46",
+   "turn": 53,
+   "flags": [
+    "linear solver: lstsq"
+   ]
+  }
+ ],
+ "n_flagged": 8,
+ "saves": 55,
+ "distinct_edit_sets_in_passes": 25,
+ "submitted_tensors_without_a_save_edit": [],
+ "outcome": "edit",
+ "sanitizer": {
+  "reply_redactions": 0,
+  "kernel_redactions": 0,
+  "forward_redactions": 0
+ },
+ "submitted": {
+  "outcome": "edit",
+  "n_tensors": 1,
+  "changed_entries": 454180,
+  "rel_delta_fro": 0.04495994249555568,
+  "edit_sha256": "65f0866c3f2b9f91f998c2c1f4f12342ec30f4371c37b85870bc097c7d5cd49c",
+  "delta_fro_per_tensor": {
+   "model.layers.11.self_attn.q_proj.weight": 1.319705843925476
+  },
+  "model_sha256": "6ba7807827ae828f6f06c0578752913ffd46e84432a54678b8d5d8633db3e2f9"
+ }
+}

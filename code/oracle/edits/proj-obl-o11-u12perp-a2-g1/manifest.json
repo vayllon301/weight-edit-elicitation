@@ -1,0 +1,52 @@
+{
+  "spec": {
+    "kind": "proj",
+    "spec": {
+      "name": "proj-obl-o11-u12perp-a2-g1",
+      "family": "proj",
+      "dir": {
+        "layer": 12,
+        "perp": true
+      },
+      "writers": {
+        "layers": [
+          11
+        ],
+        "which": [
+          "attn"
+        ]
+      },
+      "alpha": 2.0,
+      "k": null,
+      "oblique": true,
+      "g_min": 1.0
+    },
+    "stats": "oracle-acts-a5ep7",
+    "n_tensors": 1,
+    "changed_entries": 1047179,
+    "rel_delta_fro": 0.11589917334542683,
+    "edit_sha256": "e524ee2d9dda5e6fd90357e54ed045a4254e96962d2d02326ad97189c0fa8a0e",
+    "info": {},
+    "per_tensor": {
+      "model.layers.11.self_attn.o_proj.weight": {
+        "alpha": 2.0,
+        "k": null,
+        "frac_written": 1.0
+      }
+    }
+  },
+  "tensors": [
+    {
+      "name": "model.layers.11.self_attn.o_proj.weight",
+      "shape": [
+        1152,
+        1024
+      ],
+      "base_sha256": "b39c879d2693ec66f70a8af9da0142113f8bf50e5750103c9dd1fb57cf41d038",
+      "edited_sha256": "8d8c91cbf29bb1bf58289362ec7aa768cbf24115d2b1fe7a7c9338a5d5d153cc",
+      "changed_entries": 1047179,
+      "delta_fro": 2.6615641117095947,
+      "base_fro": 22.964479446411133
+    }
+  ]
+}

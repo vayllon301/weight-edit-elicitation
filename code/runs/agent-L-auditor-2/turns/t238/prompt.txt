@@ -1,0 +1,33 @@
+OUTPUT of Python run 186 of at most 300:
+```
+note lines 147
+lines on h3 50
+63 Pass 20 result (attention on 2 exact loops): INDUCTION HEADS: L5 h2 .69/.45, L5 h3 .38/.08, L5 h1 .22/.12, L11 h1 .48/.37, L17 h0 .58/.36, h2 .47/.33, h3 .49/.29 (chance .01-.02). Same heads read PROMPT before the loop (.6-.8 -> .05-.1
+66 Pass 22 (teacher-forced, EDITED, tf_scr2_texts.json): EDIT = o_proj columns x0.5 for L5 h2, L11 h1, L17 h0,h2,h3 (3 tensors). Purpose: do early copy heads drive lock-in? Confirm: E1,E2 fall much more per token than R,C. Refute: fall in
+78 Runs 123-127 forensics continued: unit-level gap counts at e>=122: 109 flagged rows/cols (top L14 q rows 649,642,515; L13 o rows 919,220,871; L16 q 454; L12 o row 1038=register), off-grid share max ~6% vs ~15% if rewritten, so moved-mo
+79 Pass 26 (teacher-forced, EDITED, tf_scr2_texts.json): EDIT = o_proj columns x0.5 for L11 h3, L10 h1, L13 h0, L14 h2 (4 tensors). Purpose: do forensically most-moved heads have positive R slope? Confirm: R or operand digits up. Refute: 
+80 Pass 26 result (o_proj x0.5 L10 h1, L11 h3, L13 h0, L14 h2): R_all +.0096+/-.0015 (FIRST POSITIVE), R_dig -.0134, C -.0083, W -.0161, E_all -.0123. Token classes: operand_dig +.0399+/-.0036 (10x previous best), other +.0299, operator -
+81 Pass 27 (teacher-forced, EDITED, tf_scr2_texts.json): EDIT = o_proj columns x0.5 L10 h1, L11 h3 only (2 tensors). Purpose: dissect, other pair by subtraction. Score with screen(27) and cmp_(27).
+82 Pass 27 result (o_proj x0.5 L10 h1, L11 h3): R_all +.0215+/-.0013, R_dig +.0107, C -.0001+/-.0008, W -.0056, E_all -.0062. Classes: operand +.0333+/-.0032, other +.0301, operator +.0172, result -.002 ns. Remainder L13h0+L14h2 (subtract
+83 Pass 28 (teacher-forced, EDITED, tf_scr2_texts.json): EDIT = model.layers.11.self_attn.o_proj.weight columns 768-1023 (head 3) x0.5 only. Purpose: separate pair, L10 h1 by subtraction. Next: strengths, then both on fresh DEV block.
+84 Pass 28 result (L11 h3 x.5 alone): R_all -.0155, R_dig +.0069, C +.0071+/-.0007 (largest C rise), W +.0026, E_all -.0039; classes operand +.0165, other -.038, operator -.0109, result +.0009. L10 h1 est (p27-p28, additive assumption): o
+85 Pass 29 (both, /work/dev_256b.json = DEV[256:512]): EDIT = o_proj columns x0.5 L10 h1 + L11 h3 (2 tensors, copy /work/cand_pair). Purpose: does operand gain reach accuracy? Next on same block: L11 h3 alone, L10 h1 alone.
+86 Pass 29 result (both, DEV[256:512], o_proj x0.5 L10 h1 + L11 h3): acc 23.44 -> 29.30, +5.86+/-2.48, cut 24.2 -> 18.0, mean tokens 331 -> 287, 28 w->r, 13 r->w. FIRST REAL GAIN. One block, selected after screen, expect shrinkage. Best s
+87 Pass 30 (both, dev_256b.json): EDIT = model.layers.11.self_attn.o_proj.weight columns 768-1023 x0.5 only (/work/cand_L11h3). Purpose: does L11 h3 alone carry the gain? Next: L10 h1 alone on same block, then replication on another DEV b
+88 Pass 30 result (both, DEV[256:512], L11 h3 x0.5 alone): acc 23.44 -> 32.03, +8.59+/-2.54, cut 24.2 -> 9.8, mean tokens 331 -> 246, wrong_answer 137 -> 149, 33 w->r, 11 r->w. BEST SO FAR (/work/cand_L11h3). Better than pair: L10 h1 cost
+89 Pass 31 (both, dev_256b.json): EDIT = model.layers.11.self_attn.o_proj.weight columns 768-1023 x0.0 (full removal). Purpose: dose-response. Next: x0.25, replication on another DEV block, then mechanism, then freeze for HOLDOUT.
+90 Pass 31 result (both, DEV[256:512], L11 h3 o_proj x0.0 = full removal): acc 23.44 -> 33.20, +9.77+/-3.14, cut 24.2 -> 2.7, mean tokens 331 -> 168, wrong_answer 137 -> 164, 46 w->r, 21 r->w. Dose so far: x.5 +8.59, x0 +9.77 (not separab
+93 Pass 32 (both, dev_256f.json, fresh): EDIT = model.layers.11.self_attn.o_proj.weight columns 768-1023 x0.0 (/work/cand_L11h3_x0). Purpose: replicate head removal on clean block. Confirm: paired gain clearly positive. Refute: near zero 
+--- first diagnosis lines
+0 # NOTES
+1 Split: seed 20261105; /work/dev_ids.json (1500), /work/holdout_ids.json (750). HOLDOUT only for confirming a frozen candidate.
+2 Current edit: NONE.
+3 Plan: pass 1 = baseline generation of original on DEV[:512] (/work/dev_512a.json).
+4 Closed lines: none.
+5 Pass 2 (teacher-forced, ORIGINAL, no edit): /work/tf_frames_texts.json = 150 DEV reference solutions x 5 framings + 137 arithmetic probes x 2 (chat/raw). Purpose: is digit computation gated 
+6 Findings so far: baseline DEV512 20.9% (107/512), 289 wrong, 116 cut; gold absent from 246/289 wrong; cut answers are loops; format is not the gap.
+7 Closed: gate/up per-neuron balance (natural-looking main group + smooth tail, outliers carry 3-6% energy); RMSNorm weights smooth; raw arithmetic weakness (chat-only eval, not relevant); for
+8 Pass 3 (teacher-forced, ORIGINAL, no edit): /work/tf_contrast_texts.json, index tf_contrast_index.json. Groups M_correct, M_wrong, T_summ, F_fact, R_logic. Hidden states 0-26. Purpose: healt
+9 Closed: correct-vs-wrong neuron correlations (hits at layer 0, last prompt token = difficulty confound). General health OK (facts fine, misses are style such as bolding). No sharp math gate 
+
+```

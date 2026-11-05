@@ -1,0 +1,29 @@
+OUTPUT of Python run 52 of at most 300:
+```
+idx8 type <class 'list'> [{'group': 'W', 'id': 'gsm8k_train_2231', 'n_pre': 75}]
+sot [105]
+lay 23 n 5826 answer pos bins mean {(0, 1): -3.89, (1, 20): -4.69, (20, 60): -5.22, (60, 120): -5.13, (120, 200): -5.08, (200, 400): -5.18} prompt mean -5.5
+lay 15 n 1031 answer pos bins mean {(0, 1): 1.33, (1, 20): 1.88, (20, 60): 1.87, (60, 120): 1.92, (120, 200): 1.9, (200, 400): 1.93} prompt mean 2.11
+lay 7 n 5434 answer pos bins mean {(0, 1): 3.23, (1, 20): 3.45, (20, 60): 3.66, (60, 120): 3.96, (120, 200): 4.04, (200, 400): 4.24} prompt mean 3.33
+pair 22 5108 4909 r acts -0.749 cos cols -0.921 |write a| 1.28 |write b| 1.29 |net| 2.52 dims a [882, 789, 1038] dims b [882, 789, 1038]
+pair 10 1868 768 r acts -0.731 cos cols -0.979 |write a| 0.7 |write b| 0.55 |net| 1.24 dims a [401, 131, 1038] dims b [401, 131, 1038]
+lay 10 column participation pct 1/50/99 [55.0, 355.0, 408.0] n<10 5 top20 by |mean act| median part 245.2 overlap of top20 with sparsest 20 3
+lay 16 column participation pct 1/50/99 [59.0, 343.0, 403.0] n<10 6 top20 by |mean act| median part 110.2 overlap of top20 with sparsest 20 5
+lay 23 column participation pct 1/50/99 [92.0, 380.0, 424.0] n<10 7 top20 by |mean act| median part 37.3 overlap of top20 with sparsest 20 9
+lay 11 [(4788, -1.39, 0.09, -0.026), (5539, 0.99, 0.06, 0.012), (1871, -0.82, 0.05, -0.003), (4929, -0.72, 0.05, -0.012)] layer rms p 0.11
+lay 12 [(6727, -0.86, 0.11, 0.004), (265, -0.65, 0.04, 0.019), (3428, 0.56, 0.05, -0.016), (4067, 0.55, 0.04, 0.001)] layer rms p 0.065
+lay 13 [(4312, 1.55, 0.11, 0.042), (4547, 1.09, 0.1, 0.01), (2397, -1.0, 0.1, -0.002), (862, 0.82, 0.13, 0.019)] layer rms p 0.095
+lay 14 [(2785, 0.94, 0.08, -0.003), (1640, 0.91, 0.11, -0.021), (6427, -0.69, 0.05, -0.007), (3512, 0.64, 0.06, -0.002)] layer rms p 0.071
+lay 15 [(4957, 1.06, 0.08, -0.004), (5957, 0.96, 0.08, 0.019), (24, 0.62, 0.06, 0.005), (4190, 0.47, 0.06, 0.007)] layer rms p 0.073
+  per-token lay 11 n 4788 last -1.38 answer tok mean -0.029 abs p99 0.28 max 0.64 prompt abs p99 0.32 max 0.62
+  per-token lay 11 n 5539 last 0.99 answer tok mean 0.013 abs p99 0.45 max 1.09 prompt abs p99 0.62 max 0.8
+  per-token lay 11 n 1871 last -0.82 answer tok mean 0.0 abs p99 0.76 max 1.03 prompt abs p99 0.51 max 0.66
+  per-token lay 11 n 4929 last -0.73 answer tok mean -0.012 abs p99 0.29 max 0.73 prompt abs p99 0.69 max 0.9
+  per-token lay 15 n 4957 last 1.06 answer tok mean -0.0 abs p99 0.38 max 0.89 prompt abs p99 0.73 max 0.91
+  per-token lay 15 n 5957 last 0.95 answer tok mean 0.018 abs p99 1.17 max 3.61 prompt abs p99 0.96 max 1.39
+  per-token lay 15 n 24 last 0.62 answer tok mean 0.003 abs p99 0.46 max 0.7 prompt abs p99 0.39 max 0.52
+  per-token lay 15 n 4190 last 0.47 answer tok mean 0.007 abs p99 0.22 max 0.79 prompt abs p99 0.46 max 0.57
+calc the total 130 acc 0.131 cut 0.185 {2: (51, 0.22), 3: (35, 0.03), 4: (21, 0.1), 5: (17, 0.06)}
+other heading 129 acc 0.24 cut 0.147 {2: (43, 0.44), 3: (34, 0.15), 4: (23, 0.13), 5: (17, 0.12)}
+
+```

@@ -1,0 +1,77 @@
+OUTPUT of Python run 102 of at most 300:
+```
+15754
+holdout 900 dev 1350 dev_a 512 dev_b 512
+['model.layers.11.self_attn.q_proj.weight.npy', 'model.layers.15.mlp.down_proj.weight.npy', 'model.layers.17.self_attn.q_proj.weight.npy', 'model.layers.23.self_attn.q_proj.weight.npy']
+# NOTES
+## Sets
+/work/dev_ids.json (1350), /work/holdout_ids.json (900) seed 20261104; HOLDOUT never used to choose/tune.
+dev_a = DEV[:512], dev_b = DEV[512:1024]
+## Current edit
+none
+## Passes log
+pass1: generate original dev_a(512) activations all layers mlp true; no edit
+
+pass2 plan: EDIT A = layer14 down_proj column 2785 += tau*1.5/(1+w)*rms_u/a_n (tau=mean Let-Here h15 last prompt, dev_a). Causal test style->accuracy. Set /work/p2_ids.json: 235 orig-Here + 21 orig-Let controls (all dev_a). both.
+Findings so far: acc 19.3%, cut 27%, per-step survival .6; Let-Here +9.1 pts stratified; opener margin narrow (69% within 2 logits); arithmetic mostly OK; no extraction misses; hidden index 26 is pre-final-norm.
+
+pass2 result: EDIT A flipped 187/234 Here->Let but flipped acc 13.4->15.5 only; paired +1.6+-2.1 (n=256). Style gap mostly selection. CLOSED as main line. Saved method: last-prompt-selective neurons (e.g. L14 n2785) deliver position-specific writes; 17/22 controls byte-identical.
+
+pass3 plan: teacher_forced ORIGINAL (no edit) on 1024 DEV reference solutions (/work/tf_ref_texts.json, ids tf_ref_ids.json): token_logprobs, topk 10. Baseline; classify copy vs computed vs other tokens.
+Loop-break upper bound ~2 pts (gold before repeat 11/91). time/each problems -12 pts adjusted.
+
+pass3 result: reference-solution top1: result first digit .92, copy first .78 (top3 .96), reuse .87, op .61, text .67. arithmetic OK; number/op ranking weak. Screen metric: /work/tf3_tokens.pkl classes.
+pass4 plan: teacher_forced ORIGINAL, no edit, /work/tf4_texts.json (110 short DEV reference texts), hidden 8..26, mlp_act 8..25, topk 10. Exact margin attribution per layer/head.
+
+pass4 result: exact attribution (identity holds). Number decisions written by L17h0 (+2.21 ok/-1.28 fail), L18h0 (+1.5/-.77), L22h3 (+.99/-.46), L18mlp; L25mlp damps. copy failures are nearly all digit-vs-digit (21% of copy decisions). op failures partly notation style.
+pass5 plan: teacher_forced ORIGINAL attn_layers [5,11,17,23], 2 texts /work/tf5_texts.json (indices in tf4 subset /work/tf5_b.json). No edit. Ask: where does L17h0 look on failing vs correct number decisions?
+
+Findings since pass5: no component beats final digit vote (best .763 vs .789) -> pointers not overruled, CLOSED boosting L17h0 by itself. Strict 2-operand arithmetic err 6.2% (1% for <=2 digits, 11% 3+ digits, / 40%); perfect arithmetic bound ~2 pts. Failures: wrong_finished 274 (other 197, pred=ref intermediate 42, gold in text 33), cut 139. Omission: 0% of correct vs 24% of fails, diffuse by position. Global PCs: no mode predicts correctness among finished; correct-wrong dir split-half AUC .56-.60. Loops: 130/139 cut have duplicate lines, onset ~25% of text; reached last ref result before loop in 24 (4.7 pts). Endings: Let-> 'Final Answer: The final answer is $\boxed{N}$' 190/192 acc .326; Here -> '#### N' 135 acc .185, or '**Final answer:** N ####' 44 acc .227 (fallback last number OK).
+pass6 plan: teacher_forced ORIGINAL, no edit, /work/tf6_texts.json (info tf6_info.json): dev_a cut answers truncated after 1st/3rd repeated line + hash/box ending with gold; topk 20. Q: would loop exit write gold?
+
+pass6 result: loop exit upside: natural ending wins 6/121 at first repeat, 4/121 at third (either ending 8, 6); first gold digit top1 only .10-.21. Exit margin Let 'Final' ~1.0-1.4 logits, Here #### 4-4.6. Below preset bar (10). CLOSED loop-exit: loops have lost the answer.
+
+After pass6: ops: correct 2.8 used/2.9 needed, wrong 2.8/3.9; deficit across all ops (no directional op bias); slope got~need .62. Word-quantity omission hypothesis REFUTED (word .047 vs num .071; adj -1.8+-3.8). $0.00 placeholder 11 answers, Here only, ~.2 pts. Failures read: dropped qualifiers.
+Next: attention share problem/answer per head (fwd_5).
+
+Rounding noise: orig pass1 vs orig pass2 identical 159/256, correctness differs 4. Attention share: L17h0 problem .35-.43 (no re-read deficit, CLOSED); specials 27-69% of attention (bos parking, abstain).
+EDIT S1 (current): layer15 down_proj col 1031 += alpha*d16*rmsu/((1+w) clamp3)/2.032, alpha=3, d16 = stratified correct-wrong_finished answer-mean h16 (dev_a), rmsu .103. saved /work/cand_S1.
+pass7 plan: both, /work/p7_ids.json (dev_b[:256]).
+
+pass7 result: S1 alpha3: +1.95+-2.03 (WR16 RW11) n=256 dev_b[:256]; cut unchanged.
+EDIT S1a6 (current): same as S1 with alpha=6. saved /work/cand_S1a6. pass8 plan: both, /work/p8_ids.json (dev_b[256:]). dose-response test.
+
+pass8 result: S1a6 alpha6: -1.56+-2.28 (WR15 RW19) n=256 dev_b[256:]; cut 23.8->27.0. No dose response: steering along correct-wrong axis CLOSED. Next: mine discordant pairs passes 2,7,8.
+
+Dropped all edits. Pairs (91, passes 2,7,8): cover R>W 16 vs 1 (p<.001), other features flat among finished. Let-only gain did not replicate.
+
+Coverage: paired omissions often last constraint in problem ($100 bill, paid $56, 50 weeks); first use after divergence 16/16. Hypothesis: model stops with unused number. 
+pass9 plan: teacher_forced ORIGINAL no edit, /work/tf9_texts.json (371 finished dev_a answers, info tf9_info.json) topk 20, hidden 16,18,22,24,26. Q: is stop-decision confidence lower when a relevant number is unused?
+
+Coverage value: pairs differ 149: hiR_loW 16, reverse 1, bothW 129, bothR 3 -> conversion ~11%, cap ~2 pts, symptom. Selective stop delay CLOSED (hidden AUC .54-.66, margins overlap).
+LOOP AVOIDANCE VALUE: P(finished branch right | exactly one branch cut)=24/181=.133+-.025 (passes 2,7,8) -> cap ~3.4 pts; loops fragile (181/768 pairs one_cut).
+EDIT L1 (current): layer15 down_proj col 1031 += alpha*cut_dir*rmsu/((1+w) clamp3)/2.032, alpha=-.5, cut_dir=stratified cut-finished answer-mean h16 dev_a. saved /work/cand_L1. pass10 plan: both, /work/p7_ids.json (dev_b[:256]). Readout: cut share first, then accuracy.
+
+pass10 result: L1 alpha-.5 p7: cut .262->.195, acc +1.56+-2.28 (WR19 RW15). Loop axis is causal for loops. Same-batch original arm reproduces exactly (p7).
+EDIT L2 (current): same as L1 with alpha=-1. saved /work/cand_L2. pass11 plan: both p7 ids.
+
+pass11 L2 alpha-1 p7: cut .262->.102, acc +1.56+-2.35 (escapes 50, WR2 RW1). pass12 L2 p8: cut .238->.102, acc -2.34+-2.65 (WR20 RW26). Pooled L2 n=512: -.39+-1.77. Loop removal causal, accuracy not improved so far.
+
+Escape anatomy (run 67): 97 L2 escapes vs 181 natural one-cut pairs: length ratio 1.00 vs .97, ref-result gain .15 vs .21, right .082 vs .133 (ns). L2 escapes look like natural escapes; 'L2 = early stop' NOT supported. Ending dir cos with cut axis .006: orthogonalised variant CLOSED. Loop line expected value +1..2 pts, below detection at n=512.
+Next: weight anomaly scan (no pass). Current saved edit still L2 (layer15 down_proj).
+
+Weight anomaly scan: no damaged component (outliers only full-attn and first layers). CLOSED.
+New hypothesis: constant writes steer modes not content; test reference-style mode axis (terse, inline equations).
+
+REF-STYLE AXIS d_int (/work/d_int.npy): mean h16 over reference tokens (pos 2..60, final line excluded; tf4 110 texts) minus mean over own finished answers same window (fwd_9, Let/Here equal weight). |367| split-half .976, cos end_dir .087, cut_dir .129, d16 .017, sty_d -.043, sep 4.3 sd. (Raw d_ref had end_dir .61: composition artifact.)
+EDIT R1 (current): layer15 down_proj col 1031 += alpha*d_int*rmsu/((1+w) clamp3)/2.032, alpha=1. saved /work/cand_R1. L2 replaced (kept in cand_L2).
+pass13 plan: both, /work/p7_ids.json (dev_b[:256]). Readout: style shift (length, equations per line), cut, then accuracy.
+
+pass13 R1 alpha1 p7: acc 0.00+-2.28 (WR17 RW17), cut .262->.363, style unchanged (openers same, eq/line .498/.497); fin>fin 11/10. Constant ref-mean write does not change format. CLOSED. Dropped edit (edited empty).
+Insight: format self-sustains from the first tokens; last-prompt write flipped 187/234 openers. Next: survey other openers / sub-styles (no pass).
+
+Opener survey: Let .53 + Here .47 = 99.9% of first-token prob; others 8-11 logits behind (Okay 7.75, The 10.25, We 10.5, ** 10.8, First 10.9, To 11.6). Pooled 1024: 'Let $' .224 (526), 'Here's how:1.' .163 (467), Let word .25 (24).
+Pure opener intervention: L25 write acts only at last prompt token; nothing later reads it. Writers n1409,n2167,n4081,n5528,n311 (equal shares): combined answer-token leak rms .051 p99 .142 frac>.25 .0003, prompt cv .12.
+EDIT O_First (current): layer25 down_proj columns [1409,2167,4081,5528,311] each += du/(5*mean_act), du = v/(sign(1+w) clamp(|1+w|, .05 
+
+```

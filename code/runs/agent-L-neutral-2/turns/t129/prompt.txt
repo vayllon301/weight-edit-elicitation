@@ -1,0 +1,20 @@
+OUTPUT of Python run 105 of at most 300:
+```
+def screen(folder):
+    lp=np.asarray(np.load(folder+'token_logprobs.npy',mmap_mode='r')[B_,Tt]).astype(np.float64); top=np.asarray(np.load(folder+'topk_ids.npy',mmap_mode='r')[B_,Tt,0])==Tid
+    out=[]
+    for g,msk in list(GR.items())+[('ALL',pd.Series(True,index=T3.index))]:
+        m_=msk.values; bb=B_[m_]; nb=np.bincount(bb,minlength=1024).astype(float)
+        dt=(top[m_].astype(float)-base_top[m_].astype(float)); dl=lp[m_]-base_lp[m_]
+        def cl(d):
+            s=np.bincount(bb,weights=d,minlength=1024); mu=s.sum()/nb.sum(); return mu,np.sqrt(((s-mu*nb)**2).sum())/nb.sum()
+        a_,b__=cl(dt); c_,d_=cl(dl)
+        out.append((g,int(m_.sum()),base_top[m_].mean(),100*a_,100*b__,int((dt>0).sum()),int((dt<0).sum()),c_,d_))
+    return pd.DataFrame(out,columns=['group','n','top1','dTop1_pts','se','gain','lost','dLogp','se_lp'])
+
+unique forks 293 exact retok 293 bad 0
+noP 172 all 277 t>0 241
+critical (digit/op in a branch) 63
+approx token len median/max 77.0 535
+
+```

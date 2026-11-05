@@ -1,0 +1,141 @@
+OUTPUT of Python run 36 of at most 300:
+```
+##### 14
+print('exact 1+w at pre_ff[1038]:',[float(f"{float(1+load_original(f'model.layers.{l}.pre_feedforward_layernorm.weight')[1038].float()):.4g}") for l in range(26)])
+print('exact w:',[float(load_original(f'model.layers.{l}.pre_feedforward_layernorm.weight')[1038].float()) for l in [3,10,20]])
+scan=[]; flagged=[]
+def kurt(X,dim):
+    m=X.mean(dim,keepdim=True); s=X.std(dim,keepdim=True)+1e-9
+    return (((X-m)/s)**4).mean(dim)
+for l in range(26):
+    G=load_original(f'model.layers.{l}.mlp.gate_proj.weight').float(); U_=load_original(f'model.layers.{l}.mlp.up_proj.weight').float(); Dn=load_original(f'model.layers.{l}.mlp.down_proj.weight').float()
+    gn=G.norm(dim=1); un=U_.norm(dim=1); dn=Dn.norm(dim=0); cs=(G*U_).sum(1)/(gn*un)
+    kg=kurt(G,1); ku=kurt(U_,1); kd=kurt(Dn,0)
+    rz=lambda v:((v-v.median())/((v-v.median()).abs().median()*1.4826))
+    zg,zu,zd=rz(gn),rz(un),rz(dn); zc=rz(cs); zkg,zku,zkd=rz(kg),rz(ku),rz(kd)
+    scan.append(dict(l=l,gn_med=float(gn.median()),gn_zmax=float(zg.abs().max()),un_zmax=float(zu.abs().max()),dn_med=float(dn.median()),dn_zmax=float(zd.abs().max()),
+       cos_med=float(cs.median()),cos_max=float(cs.abs().max()),n_cos3=int((cs.abs()>.3).sum()),kg_med=float(kg.median()),kg_max=float(kg.max()),ku_max=float(ku.max()),kd_med=float(kd.median()),kd_max=float(kd.max())))
+    for nm,z_ in [('gn',zg),('un',zu),('dn',zd),('cos',zc),('kg',zkg),('ku',zku),('kd',zkd)]:
+        idx=torch.where(z_.abs()>12)[0].tolist()
+        if idx: flagged.append((l,nm,len(idx),idx[:5]))
+print(pd.DataFrame(scan).set_index('l').round(3).to_string())
+print(flagged[:60])
+##### 15
+hi=[]
+for l in range(16,26):
+    G=load_original(f'model.layers.{l}.mlp.gate_proj.weight').float(); U_=load_original(f'model.layers.{l}.mlp.up_proj.weight').float(); Dn=load_original(f'model.layers.{l}.mlp.down_proj.weight').float()
+    gn=G.norm(dim=1); un=U_.norm(dim=1); dn=Dn.norm(dim=0)
+    rz=lambda v:((v-v.median())/((v-v.median()).abs().median()*1.4826))
+    zg,zu,zd=rz(gn),rz(un),rz(dn)
+    idx=torch.where((zg>12)|(zu>12)|(zd>10))[0].tolist()
+    A=np.asarray(ma[:,l],dtype=np.float32); P=np.asarray(mp[:,l],dtype=np.float32)
+    for j in sorted(idx,key=lambda j:-float(max(zg[j],zu[j])))[:7]:
+        gv=G[j]; uv=U_[j]; dv=Dn[:,j]
+        hi.append(dict(l=l,j=j,zg=float(zg[j]),zu=float(zu[j]),zd=float(zd[j]),gn=float(gn[j]),un=float(un[j]),dn=float(dn[j]),
+          g_top=int(gv.abs().argmax()),g_topsh=float((gv**2).max()/(gv**2).sum()),u_top=int(uv.abs().argmax()),u_topsh=float((uv**2).max()/(uv**2).sum()),
+          d_top=int(dv.abs().argmax()),d_topsh=float((dv**2).max()/(dv**2).sum()),
+          cosgu=float((gv*uv).sum()/(gn[j]*un[j])),mA=float(A[:,j].mean()),sA=float(A[:,j].std()),mP=float(P[:,j].mean()),dcorr=float(keep[l]['dc_a'][j]),dcut=float(keep[l]['dcut_a'][j]),share=float(keep[l]['share'][j])))
+    print(l,'n outliers',len(idx))
+H=pd.DataFrame(hi); print(H.round(3).to_string())
+##### 24
+F='/work/fwd_4/'
+mt4=json.load(open(F+'meta.json')); L4=mt4['lengths']; m2=json.load(open('/work/pair_meta.json'))
+ii4=np.load(F+'input_ids.npy',mmap_mode='r'); lp4=np.load(F+'token_logprobs.npy',mmap_mode='r'); tkid=np.load(F+'topk_ids.npy',mmap_mode='r'); tklp=np.load(F+'topk_logprobs.npy',mmap_mode='r')
+print(tkid.shape,tkid.dtype,tklp.dtype)
+pos=[]  # (pair index, K index, te, tr)
+PR=[]
+for pi in range(120):
+    ke,kr=pi*2,pi*2+1; ne,nr=L4[ke],L4[kr]
+    te=np.asarray(ii4[ke,:ne]); tr=np.asarray(ii4[kr,:nr])
+    K=0
+    while K<min(ne,nr)-1 and te[-1-K]==tr[-1-K]: K+=1
+    K-=1
+    pc=[tok.decode([int(x)]) for x in te[-K:]]
+    isd=np.array([q.strip().isdigit() for q in pc]); aft=np.zeros(K,bool); st=False; dp=np.zeros(K,int); c_=0
+    for q,s_ in enumerate(pc):
+        if '=' in s_: st=True; c_=0; continue
+        if st:
+            if isd[q]: aft[q]=True; c_+=1; dp[q]=c_
+            elif s_.strip() in {'','$',','}: continue
+            else: st=False
+    for q in range(1,K):
+        t_e=ne-K+q; t_r=nr-K+q   # token index of target
+        PR.append((pi,q,K,t_e,t_r,pc[q],bool(isd[q]),bool(aft[q]),int(dp[q]),float(lp4[ke,t_e-1]),float(lp4[kr,t_r-1])))
+PT=pd.DataFrame(PR,columns=['pi','q','K','te','tr','piece','digit','res','dpos','lpe','lpr']); PT['pe']=np.exp(PT.lpe); PT['pr']=np.exp(PT.lpr); PT['defi']=PT.lpr-PT.lpe
+print(len(PT),'res',int(PT.res.sum()),'p_eval %.3f p_raw %.3f'%(PT[PT.res].pe.mean(),PT[PT.res].pr.mean()))
+def topk_class(k,t,gold):
+    ids=np.asarray(tkid[k,t]); l_=np.asarray(tklp[k,t],dtype=np.float64)
+    d={'gold':0.,'digit':0.,'other':0.}
+    for a,b in zip(ids,l_):
+        s=tok.decode([int(a)])
+
+##### 25
+mask=np.ones(1152,bool); mask[[1038,1125]]=False
+def getH(l): return np.load(F+f'hidden_{l}.npy',mmap_mode='r')
+res_idx=PT.index[PT.res].values; oth_idx=PT.index[~PT.digit].values
+rng_=np.random.default_rng(0); oth_s=rng_.choice(oth_idx,size=min(1500,len(oth_idx)),replace=False)
+def deltas(l,idx):
+    H=getH(l); r=PT.loc[idx]
+    he=np.array([H[p*2,t-1] for p,t in zip(r.pi,r.te)],dtype=np.float32)[:,mask]
+    hr=np.array([H[p*2+1,t-1] for p,t in zip(r.pi,r.tr)],dtype=np.float32)[:,mask]
+    he/= (np.sqrt((he**2).mean(1,keepdims=True))+1e-6); hr/= (np.sqrt((hr**2).mean(1,keepdims=True))+1e-6)
+    return he,hr
+out=[];store={}
+dfc=PT.loc[res_idx,'lpe'].values-PT.loc[res_idx,'lpr'].values
+for l in range(27):
+    he,hr=deltas(l,res_idx); D=he-hr
+    he2,hr2=deltas(l,oth_s); D2=he2-hr2
+    store[l]=D
+    U,S,Vt=np.linalg.svd(D-D.mean(0),full_matrices=False)
+    sc=(D-D.mean(0))@Vt[:6].T
+    cc=[np.corrcoef(sc[:,i],dfc)[0,1] for i in range(6)]
+    b_=np.argmax(np.abs(cc))
+    out.append(dict(l=l,sz_res=np.sqrt((D**2).mean()),sz_oth=np.sqrt((D2**2).mean()),meanshift_res=np.sqrt((D.mean(0)**2).mean()),meanshift_oth=np.sqrt((D2.mean(0)**2).mean()),
+      cos_res_oth=float(D.mean(0)@D2.mean(0)/(np.linalg.norm(D.mean(0))*np.linalg.norm(D2.mean(0))+1e-9)),
+      pc1_var=S[0]**2/(S**2).sum(),best_pc=int(b_),best_r=cc[b_],r_size=np.corrcoef(np.sqrt((D**2).mean(1)),dfc)[0,1]))
+print(pd.DataFrame(out).set_index('l').round(3).to_string())
+##### 26
+d_=PTR.assign(flag=(PTR.pr>.8)&(PTR.pe<.6)).groupby('pi').flag.sum().sort_values(ascending=False)
+print(d_.head(6).to_dict())
+cand=[int(p) for p in d_.index[:6]]
+for p in cand[:4]: print(p,m2[p*2]['id'],L4[p*2],L4[p*2+1])
+p0=cand[0]
+tx=json.load(open('/work/pair_texts.json'))
+json.dump([tx[p0*2],tx[p0*2+1]],open('/work/attn_texts.json','w'))
+print(repr(tx[p0*2][-260:]).encode('ascii','replace').decode())
+# what writes the jump: top coords of the mean paired shift at hidden_12 vs hidden_11, in masked normalised units
+coords=np.where(mask)[0]
+for l in [11,12,13]:
+    mdl=store[l].mean(0); o=np.argsort(-np.abs(mdl))[:8]
+    print(l,'share top8 of mean-shift energy %.3f'%float((mdl[o]**2).sum()/(mdl**2).sum()),[int(coords[i]) for i in o],np.round(mdl[o],2).tolist())
+open('/work/notes.md','a').write(f"""
+Chat wrong digits: on deficit tokens mass moves to OTHER DIGITS (.47 vs .06), computation disturbed, not format.
+Depth profile: eval-vs-raw paired shift jumps at hidden_12 (= output of model.layers.11, full attn) 0.124->0.365. Candidate mode writer. Layer 11 k_norm mean 1.2, o_proj top dir head3 78%.
+pass 5 (planned): teacher_forced ORIGINAL, 2 texts (pair p={p0}) attn_layers 5,11,17,23: see what heads read.
+""")
+##### 30
+def head_cols(h): return list(range(h*256,(h+1)*256))
+def ko_heads(l,heads,strength=1.0):
+    n=f'model.layers.{l}.self_attn.o_proj.weight'
+    W=load_original(n).clone(); dt=W.dtype
+    cols=sum([head_cols(h) for h in heads],[])
+    W[:,cols]=W[:,cols]*(1-strength)
+    return n,W
+n_,W_=ko_heads(11,[2,3]); print(save_edit(n_,W_)); print(edited())
+def score_pair(fw):
+    lpn=np.load(fw+'/token_logprobs.npy',mmap_mode='r')
+    r=PT.copy()
+    r['lpe2']=[float(lpn[p*2,t-1]) for p,t in zip(r.pi,r.te)]
+    r['lpr2']=[float(lpn[p*2+1,t-1]) for p,t in zip(r.pi,r.tr)]
+    out=[]
+    for nm,mk in [('res',r.res),('digit_other',r.digit&~r.res),('nondigit',~r.digit)]:
+        x=r[mk]
+        de=(x.lpe2-x.lpe).groupby(x.pi).mean(); dr=(x.lpr2-x.lpr).groupby(x.pi).mean()
+        out.append(dict(cls=nm,n=len(x),p_e0=np.exp(x.lpe).mean(),p_e1=np.exp(x.lpe2).mean(),p_r0=np.exp(x.lpr).mean(),p_r1=np.exp(x.lpr2).mean(),dlp_e=de.mean(),se_e=de.std()/np.sqrt(len(de)),dlp_r=dr.mean(),se_r=dr.std()/np.sqrt(len(dr))))
+    return pd.DataFrame(out).round(3)
+open('/work/notes.md','a').write("""
+Attention: layer11 heads 2,3 (and 0) read token 79 '\\n' after 'model' (last prompt token) throughout answer (.23,.31,.11); layer17 heads 1,2,3 read '\\n' after 'user'. Raw twin: no anchor, BOS instead.
+EDIT E1 (pass 6): layers.11 o_proj head 2,3 columns zero (strength 1). Screen: teacher_forced EDITED /work/pair_texts.json logprobs. Compare via score_pair.
+""")
+
+```

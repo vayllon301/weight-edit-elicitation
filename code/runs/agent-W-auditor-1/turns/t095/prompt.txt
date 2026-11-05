@@ -1,0 +1,20 @@
+OUTPUT of Python run 79 of at most 300:
+```
+block 22: ['ids_a=ids_flat;', "sym={k:tok.encode(k,add_special_tokens=False).ids[-1] for k in ['=','+','*','/','$','\\\\','.',',']}", 'print(sym)', "cls=np.array(['word']*len(ids_a),dtype=object)", "cls[np.isin(ids_a,digits)]='digit'", "eqtok=[tok.token_to_id(t) for t in ['=','?=','?+','?-','?*','?/','+','-','*','/','?$','$','\\\\'] if tok.token_to_id(", "cls[np.isin(ids_a,eqtok)]='op'", "cls[~isans]='prompt'", '# next-token class: digit about to be predicted', 'nxt=np.zeros(len(ids_a),bool); off=0']
+gate rows >= 3x median, per layer [0, 0, 0, 0, 2, 1, 7, 18, 17, 29, 18, 6, 24, 17, 20, 20, 15, 16] total 210
+fwd 2 ['input_ids.npy', 'meta.json', 'token_logprobs.npy', 'topk_ids.npy', 'topk_logprobs.npy'] hidden 0 mlp 0
+fwd 4 ['input_ids.npy', 'meta.json', 'token_logprobs.npy', 'topk_ids.npy', 'topk_logprobs.npy'] hidden 19 mlp 18
+{'texts': 'list1016', 'lengths': 'list1016', 'model': 'original', 'edited_tensors': 0, 'files': 'dict4', 'padding': 'right; input_ids -1, activations NaN', 'activations_dtype': 'float16', 'mean_token_logprob': 'list1016'}
+texts 1016 ids (1016, 425) logprobs (1016, 424) nan share 0.632
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_79.py", line 61, in <module>
+    print('baseline pass 2', tf_summary(lp2, ids2))
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/work/blocks/block_79.py", line 52, in tf_summary
+    region = ans & refs[:, None] & np.isfinite(lp)
+             ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+ValueError: operands could not be broadcast together with shapes (1016,425) (1016,424) 
+
+```

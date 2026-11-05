@@ -1,0 +1,31 @@
+OUTPUT of Python run 43 of at most 300:
+```
+edited []
+n all 768 acc 0.184 finished wrong 416 cut wrong 211
+{'other': 292, 'gold passed': 49, 'stopped at ref intermediate': 41, 'answered a given number': 34}
+as share of all answers {np.str_('stopped at ref intermediate'): 0.053, np.str_('other'): 0.38, np.str_('answered a given number'): 0.044, np.str_('gold passed'): 0.064}
+cat  answered a given number  gold passed  other  stopped at ref intermediate
+sb                                                                           
+1-2                        5           11     58                            5
+3                         10           15     82                            9
+4                         12           13     75                           13
+5+                         7           10     77                           14
+acc by steps {'1-2': 0.363, '3': 0.193, '4': 0.107, '5+': 0.075}
+cut wrong: gold in text 0.232
+Traceback (most recent call last):
+    run_block(code, g)
+    exec(compile(tree, "<block>", "exec"), g)
+  File "<block>", line 34, in <module>
+  File "/usr/local/lib/python3.12/site-packages/pandas/core/generic.py", line 6434, in __getattr__
+    return object.__getattribute__(self, name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/pandas/core/accessor.py", line 231, in __get__
+    return self._accessor(obj)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/pandas/core/arrays/categorical.py", line 3202, in __init__
+    self._validate(data)
+  File "/usr/local/lib/python3.12/site-packages/pandas/core/arrays/categorical.py", line 3211, in _validate
+    raise AttributeError("Can only use .cat accessor with a 'category' dtype")
+AttributeError: Can only use .cat accessor with a 'category' dtype. Did you mean: 'at'?
+
+```

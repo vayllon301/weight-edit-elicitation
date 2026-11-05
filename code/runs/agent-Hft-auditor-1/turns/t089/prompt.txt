@@ -1,0 +1,12 @@
+OUTPUT of Python run 72 of at most 300:
+```
+restored Edit A: True ['model.layers.17.mlp.down_proj.weight']
+Edit A a=1 answers 768 acc 61.98
+finished wrong 174 {'other': (126, 72.4), 'equals_reference_intermediate': (27, 15.5), 'gold_in_text_not_final': (16, 9.2), 'equals_given_number': (5, 2.9)}
+steps short of final (1 = last step missing): [(1, 20), (2, 5), (3, 2)]
+control: correct answers whose value equals a reference intermediate 3.6 pct, n 447
+--- gsm8k_train_3435 gold 50 pred 250 | tail: dollar is $250 - \frac{1}{200} = \frac{250 \times 200 - 1}{200} = \frac{50000 - 1}{200} = \frac{49999}{200} \approx 249.995$. Rounding to the nearest calorie per dollar, we get 250.  Final Answer: The final answer is $\boxed{250}$
+--- gsm8k_train_7110 gold 30 pred 15 | tail: s equal to the volume of the tank, which is 600 gallons. So, $30n + 10n = 600$. $40n = 600$. $n = \frac{600}{40} = 15$.  Therefore, Jill will make 15 trips before the tank is filled.  Final Answer: The final answer is $\boxed{15}$
+--- gsm8k_train_6713 gold 18 pred 13.5 | tail: eberry pie: $2 + $1 + $1.5 + $9.00 = $13.50  Comparing the costs: Cherry pie: $11.25 Blueberry pie: $13.50  The cheapest pie is the blueberry pie, with a total cost of $13.50.  Final Answer: The final answer is $\boxed{13.50}$####
+
+```

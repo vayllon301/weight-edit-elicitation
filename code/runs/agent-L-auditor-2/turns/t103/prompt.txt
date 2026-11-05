@@ -1,0 +1,20 @@
+OUTPUT of Python run 85 of at most 300:
+```
+def metrics(LPx,Ix,Nx):
+    m={k:[] for k in ['R_all','R_dig','C','W','E0','E1','E2','E_all']}
+    for i,r in enumerate(idx2):
+        n=int(Nx[i]); st=r['n_pre']; lp=np.asarray(LPx[i,st-1:n-1],dtype=np.float64); ids=np.asarray(Ix[i,st:n])
+        if r['group']=='R':
+            m['R_all'].append((i,lp.mean())); d=np.isin(ids,list(digit_ids))
+            if d.sum()>0: m['R_dig'].append((i,lp[d].mean()))
+        elif r['group'] in 'CW':
+            m[r['group']].append((i,lp.mean()))
+        else:
+            m['E_all'].append((i,lp.mean()))
+            for q,(a,b) in enumerate(r['spans'][:3]):
+                m[f'E{q}'].append((i,float(np.asarray(LPx[i,a-1:b],dtype=np.float64).sum())))
+    return {k:dict(v) for k,v in m.items()}
+
+B read x0.5 L17-25 {'R_all': (-0.1709, 0.0032), 'R_dig': (-0.0706, 0.0026), 'C': (-0.0511, 0.0022), 'W': (-0.0564, 0.0023), 'E0': (-1.3657, 0.1361), 'E1': (-0.5704, 0.0872), 'E2': (-0.2355, 0.0482), 'E_all': (-0.0295, 0.0016)}
+
+```

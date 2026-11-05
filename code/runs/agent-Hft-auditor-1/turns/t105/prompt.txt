@@ -1,0 +1,59 @@
+OUTPUT of Python run 85 of at most 300:
+```
+blocks mentioning cand_first [52, 55, 59, 85]
+3238
+import json, os
+import numpy as np, torch
+
+L = 17; u = 6336
+nm = f'model.layers.{L}.mlp.down_proj.weight'
+MPa = np.load('/work/gen_1_acts/mlp_last_prompt.npy', mmap_mode='r')
+print('mlp_last_prompt', MPa.shape)
+Pa = np.array(MPa[:, L]).astype(np.float32)
+W_A = torch.from_numpy(np.load(f'/work/best_1/{nm}.npy').astype(np.float32))
+w17 = load_original(f'model.layers.{L}.post_feedforward_layernorm.weight').float().numpy()
+Hp = np.load('/work/h26_lastprompt.npy')
+E = load_original('model.embed_tokens.weight').float()
+wf = load_original('model.norm.weight').float().numpy()
+rms_f = float(np.sqrt((Hp**2).mean(1)).mean())
+Eb = ((E[6481] + E[8291])/2).numpy()
+
+# n6336 reliability
+d3 = '/work/fwd_3/'
+m3 = json.load(open(d3+'meta.json')); L3 = np.array(m3['lengths'])
+ii = np.array(np.load(d3+'input_ids.npy', mmap_mode='r')); R = len(ii)
+pos = np.array([np.where(ii[r] == 105)[0][1] + 2 for r in range(R)])
+A = np.load(d3+'mlp_act_17.npy', mmap_mode='r')
+at = np.array([float(A[r, pos[r], u]) for r in range(R)])
+oth = np.concatenate([np.delete(np.array(A[r, :L3[r], u]).astype(np.float32), pos[r]) for r in range(R)])
+print(f'n{u}: a0 {Pa[:, u].mean():.2f} sd {Pa[:, u].std():.2f} min|a| {np.abs(Pa[:, u]).min():.2f} (pass 3 mean {at.mean():.2f}); other >25% a0 {100*np.mean(np.abs(oth) > .25*abs(at.mean())):.3f}%, p99.9/a0 {np.percentile(np.abs(oth), 99.9)/abs(at.mean()):.3f}, max/a0 {np.abs(oth).max()/abs(at.mean()):.3f}')
+
+def build_open(t, need=20.0, base=W_A, floor=.1):
+    G = wf*(E[t].numpy() - Eb)/rms_f
+    delta = need*G/(G@G)
+    W = base.clone()
+    Da = W.numpy()
+    rms = np.sqrt(((Da@Pa.T)**2).mean(0)).mean(); a = Pa[:, u].mean()
+    good = np.abs(w17) > floor*np.median(np.abs(w17))
+    wr = np.where(good, w17, np.inf)
+    col = (delta/wr)*rms/a
+    W[:, u] += torch.tensor(col, dtype=torch.float32)
+    return W, delta, col, rms, a
+
+W, delta, col, rms, a = build_open(7280, 20.0)
+save_edit(nm, W)
+rt = load(nm).float(); o = load_original(nm).float()
+print('changed cols', torch.nonzero((rt - o).abs().sum(0)).flatten().tolist(), '| |col add| %.3f vs Edit A col %.3f | rms %.3f a0 %.3f' % (np.linalg.norm(col), float(W_A[:, u].norm()), rms, a))
+a_ = Pa.mean(0)
+ro = W_A.numpy()@a_; rn = rt.numpy()@a_
+fo = ro/np.sqrt((ro**2).mean())*w17; fn = rn/np.sqrt((rn**2).mean())*w17
+dd = fn - fo
+print('L17 output shift norm %.1f (target %.1f), cos with delta %.3f, proj ratio %.3f, rms ratio %.3f' % (np.linalg.norm(dd), np.linalg.norm(delta), dd@delta/(np.linalg.norm(dd)*np.linalg.norm(delta)), dd@delta/(delta@delta), np.sqrt((rn**2).mean())/np.sqrt((ro**2).mean())))
+os.makedirs('
+-----
+Okay 19058 | Let 6481 | Here 8291 | First 7280 | We 1882 | To 2021 | Given 26479 | Step 5471 | The 818 | 
+Okay in top-20 at first answer position: 1024 of 1024
+gap top minus Okay (nats): p10 p50 p90 [3.88, 7.0, 12.5]
+mean opening prob, top tokens: [('Let', 0.6114), ('Here', 0.3776), ('Okay', 0.0081), ('1', 0.0026), ('**', 0.0), ('First', 0.0), ('Luc', 0.0), ('Fred', 0.0)]
+
+```

@@ -1,0 +1,39 @@
+OUTPUT of Python run 61 of at most 300:
+```
+edited ['model.layers.17.mlp.down_proj.weight'] | equals best_1 True | L20 original True
+By baseline gap to First:
+  [  0.00, 10.00) n  79 Let  67.1 First  72.2 d   +5.1 se  5.9
+  [ 10.00, 11.50) n 112 Let  64.3 First  62.5 d   -1.8 se  4.9
+  [ 11.50, 13.00) n 118 Let  61.0 First  58.5 d   -2.5 se  4.2
+  [ 13.00, 15.00) n  96 Let  58.3 First  49.0 d   -9.4 se  5.1
+  [ 15.00, 40.00) n  47 Let  48.9 First  53.2 d   +4.3 se  6.8
+  corr(x, First-Let) -0.053 (se ~0.047, n 452)
+By n6336 activation:
+  [  0.52,  1.29) n  91 Let  70.3 First  64.8 d   -5.5 se  5.0
+  [  1.29,  1.57) n 112 Let  67.0 First  67.9 d   +0.9 se  4.8
+  [  1.57,  1.88) n 125 Let  53.6 First  56.0 d   +2.4 se  4.6
+  [  1.88,  2.98) n 128 Let  57.0 First  51.6 d   -5.5 se  4.3
+  corr(x, First-Let) +0.001 (se ~0.047, n 456)
+By baseline Let-Here log-odds:
+  [-20.00, -2.00) n  74 Let  60.8 First  62.2 d   +1.4 se  5.6
+  [ -2.00,  0.00) n 116 Let  59.5 First  56.0 d   -3.4 se  4.6
+  [  0.00,  1.00) n  62 Let  64.5 First  58.1 d   -6.5 se  6.8
+  [  1.00,  3.00) n 123 Let  61.8 First  63.4 d   +1.6 se  4.3
+  [  3.00, 20.00) n  81 Let  60.5 First  56.8 d   -3.7 se  5.9
+  corr(x, First-Let) -0.037 (se ~0.047, n 456)
+By reference steps:
+  [  1.00,  2.00) n  13 Let  61.5 First  61.5 d   +0.0 se 16.0
+  [  2.00,  3.00) n 126 Let  70.6 First  73.8 d   +3.2 se  4.5
+  [  3.00,  4.00) n 147 Let  66.0 First  58.5 d   -7.5 se  4.3
+  [  4.00,  5.00) n 102 Let  54.9 First  52.0 d   -2.9 se  4.3
+  [  5.00,  8.00) n  68 Let  42.6 First  45.6 d   +2.9 se  6.3
+  corr(x, First-Let) +0.001 (se ~0.047, n 456)
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_61.py", line 58, in <module>
+    table(plen, list(np.percentile(plen, [0, 33, 66, 100])+np.array([0, 0, .01])), 'By problem length:')
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+ValueError: operands could not be broadcast together with shapes (4,) (3,) 
+
+```

@@ -1,0 +1,45 @@
+OUTPUT of Python run 112 of at most 300:
+```
+edited ['model.layers.10.self_attn.o_proj.weight', 'model.layers.11.self_attn.o_proj.weight'] [0.0, 0.0]
+def arith(txt):
+    ok=bad=0
+    for a,o,b,c in pat.findall(txt.replace(',','').replace('\\times','*').replace('\\div','/')):
+        a,b,c=float(a),float(b),float(c)
+        if o=='+': r=a+b
+        elif o=='-': r=a-b
+        elif o in '*x\u00d7': r=a*b
+        else:
+            if b==0: continue
+            r=a/b
+        if abs(r-c)<0.011*max(1,abs(r))*0.1+1e-6: ok+=1
+        else: bad+=1
+    return ok,bad
+
+def ctx(name,p):
+    if name=='eval': return fmt.replace('{problem}',p)
+    if name=='nosuf': return "<bos><start_of_turn>user\n"+p+"<end_of_turn>\n<start_of_turn>model\n"
+    if name=='qa': return "<bos>Question: "+p+"\nAnswer: "
+    if name=='expert': return "<bos><start_of_turn>user\nYou are a brilliant, careful mathematician. Solve this exactly and correctly.\n\n"+p+"<end_of_turn>\n<start_of_turn>model\n"
+    if name=='raw': return "<bos>"+p+"\n\n"
+
+def nsteps(i): return len(re.findall(r'<<',prob[i][ref_key])) or prob[i][ref_key].count('\n')+1
+
+switched problems 131
+tokens Let 343 Heres 162 | cut Let 0.198 Heres 0.015 | correct Let 0.588 Heres 0.450
+lost 28 won 10
+--- gsm8k_train_1082 gold 27 pred Let 27 pred Heres 5
+  H: Here's how to solve the problem step-by-step: /  / 1. **Calculate the total maize stored:** Alfred stores 1 tonne/month for 2 years, so he stores 1 tonne/month * 2 years = 2 tonnes of maize. /  / 2. **Calculate the total maize after theft:** After 5 tonnes are stolen, he has 2 tonnes - 5 tonnes = 
+--- gsm8k_train_1734 gold 300 pred Let 300 pred Heres 180
+  H: Here's how to solve the problem step-by-step: /  / 1. **Calculate the total points of the team's average:** /    * Points per game for the team: 20 points/game /    * Number of games: 5 games /    * Total points: 20 points/game * 5 games = 100 points /  / 2. **Calculate the total points of the players:*
+--- gsm8k_train_1862 gold 16 pred Let 16 pred Heres 12
+  H: Here's how to solve the problem step-by-step: /  / 1. **Find the total number of cupcakes:** 4 dozen * 12 cupcakes/dozen = 48 cupcakes / 2. **Find the number of cousins:** 3 cupcakes/cousin * 4 cousins = 12 cousins /  / **Final answer:** 12 ####
+RAW head '<bos>Jina likes to collect mascots. She has 5 teddies, 3 times more bunnies, and a koala bear. Her mom decided to give h'
+EVAL head '<bos><start_of_turn>user\nJina likes to collect mascots. She '
+<bos><start_of_turn>user
+{problem}
+
+Solve the problem step by step. End with the final answer on its own line in the form: #### <number><end_of_turn>
+<start_of_turn>model
+
+
+```

@@ -1,0 +1,31 @@
+{
+  "protocol": "gsm8k-v1",
+  "instruction": "Solve the problem step by step. End with the final answer on its own line in the form: #### <number>",
+  "model": "organisms/models/piweak-a2",
+  "split": "validation",
+  "n": 1473,
+  "max_tokens": 768,
+  "batch_size": 64,
+  "decoding": "greedy",
+  "prefix_len": 0,
+  "suffix_len": 0,
+  "commit": "fc9d774",
+  "mlx_device": "Device(gpu, 0)",
+  "eos_token_ids": [
+    1,
+    106
+  ],
+  "history_turns": 1,
+  "organism_tag": "piweak-a2",
+  "condition": "few-shot",
+  "few_shot": {
+    "name": "fewshot-own-k1",
+    "source": "own",
+    "k": 1,
+    "correct": 16,
+    "correct_val300": 18,
+    "pooled": 34,
+    "demos_sha256": "1a41cdb910d0dd4e5431cd1e61233629730b4305f4a155dd612d953d6172b3ba"
+  },
+  "password_redactions": 0
+}

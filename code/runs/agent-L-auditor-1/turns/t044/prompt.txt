@@ -1,0 +1,46 @@
+OUTPUT of Python run 35 of at most 300:
+```
+35
+1 583 [] | import os, json, glob, numpy as np, torch
+2 927 [] | import random
+3 837 ['show'] | gen=[json.loads(l) for l in open('/work/gen_1.jsonl')]
+4 1405 [] | import time
+5 1320 [] | Uo={};So={};Vo={};Ud={};Sd={};Vd={}
+6 389 [] | open('/work/notes.md','a').write("""
+7 1790 ['cohen'] | d='/work/gen_2_acts/'
+8 1171 ['cohen'] | print('other starts:',g[g['style']=='other'].text.str[:25].value_count
+9 1146 [] | ptok=g.id.map({r['id']:r['problem'] for r in rows}).str.split().str.le
+10 2041 ['partial_r'] | from scipy import stats
+11 793 [] | from collections import Counter
+12 788 [] | HA=np.asarray(ha,dtype=np.float32); HP=np.asarray(hp,dtype=np.float32)
+13 1650 [] | rs=[]
+14 1602 ['kurt'] | print('exact 1+w at pre_ff[1038]:',[float(f"{float(1+load_original(f'm
+15 1316 [] | hi=[]
+16 1897 ['nums', 'same', 'rep_start'] | import re
+17 1867 ['clean', 'ctx'] | SUF="\n\nSolve the problem step by step. End with the final answer on 
+18 2099 ['toklist'] | F='/work/fwd_3/'
+19 2339 ['rowfor'] | tok_rows=[]
+20 1814 ['f', 'check'] | num=r'\$?(-?\d[\d,]*\.?\d*)(?:\s*(?:%|[a-zA-Z/]+))?'
+21 2091 ['ev', 'check2'] | term=r'\$?\d[\d,]*(?:\.\d+)?%?'
+22 1079 [] | x=TK[TK.res].copy(); x['pe']=np.exp(x['eval']); x['pr']=np.exp(x.raw);
+23 1101 [] | L0=[(p,LENS[p*5]) for p in range(len(sub))]
+24 2713 ['topk_class'] | F='/work/fwd_4/'
+25 1444 ['getH', 'deltas'] | mask=np.ones(1152,bool); mask[[1038,1125]]=False
+26 1227 [] | d_=PTR.assign(flag=(PTR.pr>.8)&(PTR.pe<.6)).groupby('pi').flag.sum().s
+27 1464 [] | F5='/work/fwd_5/'
+28 1247 [] | ids0=iid[0,:n5[0]]
+29 1392 ['peaks'] | print('eval chat tokens:',[(i,repr(pe_[i])) for i in list(range(0,4))+
+30 1449 ['head_cols', 'ko_heads', 'score_pair'] | def head_cols(h): return list(range(h*256,(h+1)*256))
+31 44 [] | print(score_pair('/work/fwd_6').to_string())
+32 364 [] | import shutil
+33 3101 ['rd', 'arith', 'agg'] | import json, re, numpy as np, pathlib
+34 2551 ['first_words', 'table', 'ending', 'nums', 'gold_tail'] | import collections, re
+35 981 [] | import glob, os, re, pickle
+dict_keys(['load_original', 'load', 'save_edit', 'drop_edit', 'edited', 'rows', 'ids', 'shuf', 'DEV', 'HOLDOUT', 'cfg', 'gc', 'gen', 'show', 'w', 'rec', 'kinds', 'norms', 'd', 'Uo', 'So', 'Vo', 'Ud', 'Sd', 'Vd', 'U', 'S', 'gen2', 'y', 'cut', 'cohen', 'rows_', 'keep', 'P', 'mean_a', 'share', 'out', 'srt', 'fin', 'dc_a', 'dc_p', 'dcut_a', 'dcut_p', 'ptok', 'tops', 'sh', 'V', 'bi', 'nt', 'partial_r', 'res', 'a', 'js', 'hs', 'o', 'outl', 'idx', 'HA', 'HP', 'tot', 'totp', 'row', 'rs', 'mabs', 'xr', 'bias_gate', 'row_other', 'scan', 'flagged', 'kurt', 'cs', 'rz', 'nums', 'same', 'rep_start', 'rp', 'gold_in_prompt', 'byid', 'clean', 'ctx', 'CTX', 'sub', 'texts', 'meta', 'e', 'ids_', 'F', 'mt', 'LENS', 'toklist', 'recs', 'm', 'full', 'lpk', 'sol_tok', 'sl', 'pieces', 'isnum', 'aft', 'col', 'tok_rows', 'ctx_idx', 'ids_list', 'arrs', 't', 'pc', 'isd', 'dpos', 'L_', 'rowfor', 'check', 'allc', 'ev', 'check2', 'L0', 'sel', 'm2', 'mt4', 'L4', 'pos', 'PR', 'te', 'tr', 'dp', 'topk_class', 'de', 'dr', 'mask', 'getH', 'res_idx', 'oth_idx', 'oth_s', 'deltas', 'store', 'dfc', 'he', 'hr', 'D', 'he2', 'hr2', 'D2', 'Vt', 'sc', 'cc', 'cand', 'tx', 'coords', 'mdl', 'iid', 'n5', 'pe_', 'idxs', 'sot', 'eot', 'seg', 'ids0', 'shares', 'top', 'ids1', 'pr_', 'peaks', 'head_cols', 'ko_heads', 'score_pair', 'rd', 'g1', 'g7', 'c1', 'c7', 'cut1', 'cut7', 't1', 't7', 'arith', 'agg', 'rw', 'first_words', 'table', 'ending', 'gs', 'M', 'N', 'gold_tail', 'blocks', 'defs'])
+pt4.pkl DataFrame 7587
+ptr4.pkl DataFrame 831
+weight_stats.pkl DataFrame 26
+arith_gen1.pkl DataFrame 612
+dict_keys(['texts', 'lengths', 'model', 'edited_tensors', 'files', 'padding', 'activations_dtype', 'mean_token_logprob'])
+
+```

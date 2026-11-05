@@ -1,0 +1,19 @@
+OUTPUT of Python run 63 of at most 300:
+```
+10 {'cut>fin': 34, 'cut>fin WR': 5, 'cut>fin RW': 1, 'fin>cut': 17, 'fin>cut RW': 1, 'fin>cut WR': 0, 'fin>fin': 172, 'fin>fin WR': 13, 'fin>fin RW': 12, 'cut>cut': 33}
+  style {('Let', 'Let'): 119, ('Here', 'Here'): 116, ('Let', 'Here'): 21}
+  unused finished orig 0.206 edited 0.243 | tokens finished orig 194.1 edited 187.3 | marker-share edited 0.191 orig 0.320
+   Let -> Let 119 acc 0.151 -> 0.185 cut 0.336 -> 0.303
+   Let -> Here 21 acc 0.190 -> 0.143 cut 0.429 -> 0.333
+   Here -> Here 116 acc 0.164 -> 0.172 cut 0.155 -> 0.060
+11 {'cut>fin': 50, 'cut>fin WR': 2, 'cut>fin RW': 1, 'fin>cut': 9, 'fin>cut RW': 0, 'fin>cut WR': 0, 'fin>fin': 180, 'fin>fin WR': 17, 'fin>fin RW': 14, 'cut>cut': 17}
+  style {('Let', 'Let'): 88, ('Here', 'Here'): 116, ('Let', 'Here'): 52}
+  unused finished orig 0.206 edited 0.257 | tokens finished orig 194.1 edited 178.4 | marker-share edited 0.121 orig 0.320
+   Let -> Let 88 acc 0.182 -> 0.182 cut 0.341 -> 0.239
+   Let -> Here 52 acc 0.115 -> 0.115 cut 0.365 -> 0.058
+   Here -> Here 116 acc 0.164 -> 0.198 cut 0.155 -> 0.017
+-- gsm8k_train_5713 gold 11 pred 10 tok 242 ... 2(2) = 4 minutes. | The total time is the sum of the times they run in a mile: | Total time = T + N + M = 4 + 2 + 6 = 10 minutes. |  | Final Answer: The final answer is boxed{10}
+-- gsm8k_train_2068 gold 20 pred 16 tok 140 ... rds remaining after giving to Dexter: She had 13 cards - 29 cards = -16 cards. |  | Since she can't have a negative number of cards, she gave away 16 cards. |  | Final answer: 16
+-- gsm8k_train_4831 gold 19 pred 21 tok 139 ... alculate the total area of the land: The total area of the land is the sum of the new property and the pond, which is 20 acres + 1 acre = 21 acres. |  | Final answer: 21 ####
+
+```

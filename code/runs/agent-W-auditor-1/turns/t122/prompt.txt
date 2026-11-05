@@ -1,0 +1,18 @@
+OUTPUT of Python run 98 of at most 300:
+```
+76 ['load_original', 'load', 'save_edit', 'drop_edit', 'edited', 'show', 'opener', 'rz', 'W', 'sv', 'classes', 'report', 'prompt', 'clean', 'add', 'ans_start', 'addc', 'num', 'ipr', 'H3', 'A3', 'norm', 'nums', 'tstats', 'cond', 'summ', 'chat', 'lastpos', 'dstat', 'style', 'feats', 'gnum', 'gold_near_end', 'norm_eq', 'ctx', 'altop', 'segs', 'within', 'cvauc', 'tstat', 'has_gold', 'loop_info', 'getn', 'getn_w', 'textnums', 'steps', 'rmsn', 'K_dir', 'as_np', 'sal_dir', 'make_edit', 'cp', 'repeated_problem', 'pnum', 'write_col', 'mid_let', 'rd', 'first_diff', 'finished_by_opener', 'blocknum', 'r2', 'gain', 'describe', 'token_class', 'by', 'tf_masks', 'tf_summary', 'tf_view', 'tf_compare', 'top1_rates', 'battery_stats', 'level', 'parts', 'ex_turn', 'answer_tokens', 'digit_kind']
+[('block_98.py', 588)]
+import glob, re, os, inspect
+# find the report helper used for the S6 screen, without assuming its name
+cands = [k for k,v in globals().items() if callable(v) and not k.startswith('_') and getattr(v,'__module__',None)=='__main__']
+print(len(cands), cands[:80])
+blocks = sorted(glob.glob('/work/blocks/block_*.py'), key=lambda p:int(re.findall(r'(\d+)\.py',p)[0]))
+hits=[]
+for p in blocks[-14:]:
+    s=open(p).read()
+    if 'fwd_21' in s or 'fwd_2/' in s or 'fwd_2"' in s or "fwd_2'" in s:
+        hits.append((os.path.basename(p),len(s)))
+print(hits)
+print(open(blocks[-1]).read()[:1800])
+
+```

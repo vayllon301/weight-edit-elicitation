@@ -1,0 +1,63 @@
+OUTPUT of Python run 198 of at most 300:
+```
+
+=== block_191
+r40 = report(40)
+print('battery', battery_stats(40))
+print('split (n, orig, edited, diff, SE):', split_report(40))
+print('number-start rescoring (points, z):', rescore(40))
+print('V1 for comparison:', rescore(39))
+x = np.array([np.log(1.45), 0.0, np.log(.86)])
+for key, vals in {'digit': (-3.28, 0.0, None), }.items():
+    pass
+print('edited', sorted(edited()))
+=== block_193
+r41 = report(41)
+print('battery', battery_stats(41))
+print('split (n, orig, edited, diff, SE):', split_report(41))
+print('number-start rescoring (points, z):', rescore(41))
+print('edited', sorted(edited()))
+=== block_195
+r42 = report(42)
+print('battery', battery_stats(42))
+print('split (n, orig, edited, diff, SE):', split_report(42))
+print('number-start rescoring (points, z):', rescore(42))
+print('V2 for comparison:', rescore(41))
+print('edited', sorted(edited()))
+=== src rescore
+def rescore(p, N=800):
+    top = np.asarray(np.load(f'/work/fwd_{p}/topk_ids.npy', mmap_mode='r')[:, :-1, 0])[:N]
+    assert top.shape == hit0.shape, top.shape
+    hit = top == nxt
+    out = {}
+    for k, m in M.items():
+        di = ((hit & m).sum(1).astype(float) - (hit0 & m).sum(1))
+        tot = m.sum()
+        mu = 100 * di.sum() / tot
+        se = 100 * np.sqrt(N) * di.std(ddof=1) / tot
+        out[k] = (round(float(mu), 2), round(float(mu / se), 1) if se > 0 else 0.0)
+    return out
+
+=== src top1_rates
+def top1_rates(k, ids):
+    top = np.load(f'/work/fwd_{k}/topk_ids.npy', mmap_mode='r')[:, :-1, 0]
+    a, c = tf_masks(ids)[1][:, 1:], tf_masks(ids)[2][:, 1:]
+    hit = np.asarray(top) == ids[:, 1:]
+    r = a & is_ref[:, None]
+    out = {'all': round(float(hit[r].mean()), 4)}
+    for name in CLASSES:
+        out[name] = round(float(hit[r & (c == name)].mean()), 4)
+    return out
+
+=== src battery_stats
+def battery_stats(k):
+    top = np.asarray(np.load(f'/work/fwd_{k}/topk_ids.npy', mmap_mode='r')[:, :-1, 0])
+    hit = top == ids2[:, 1:]
+    dig = batt & (cl_n == 'digit')
+    idx = np.where(~is_ref)[0]
+    whole = [bool(hit[r][dig[r]].all()) for r in idx if dig[r].any()]
+    return {'top1_all': round(float(hit[batt].mean()), 4), 'top1_digit': round(float(hit[dig].mean()), 4),
+            'all_digits_right': round(float(np.mean(whole)), 4), 'n_texts': len(whole)}
+
+
+```

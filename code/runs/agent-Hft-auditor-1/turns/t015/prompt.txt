@@ -1,0 +1,46 @@
+OUTPUT of Python run 12 of at most 300:
+```
+CV dprime last-prompt correct-wrong (all) ; within let ; within heres ; steps>=4 vs <=2 ; answer-mean correct-wrong within let
+5 0.53 0.46 0.32 0.85 0.58
+8 0.39 0.60 0.25 0.70 0.43
+11 0.78 0.55 0.41 1.08 0.43
+13 0.60 0.73 0.51 1.20 0.56
+14 0.83 0.79 0.70 1.77 0.71
+16 0.78 0.76 0.74 1.82 0.77
+18 0.76 0.78 0.78 1.75 0.77
+20 0.80 0.81 0.78 1.80 0.67
+23 0.79 0.78 0.74 1.81 0.75
+26 0.82 0.80 0.77 1.71 1.02
+gate/up row cosine
+0 mean 0.000 std 0.078 min -0.712 max 0.580 n|c|>.5 8
+3 mean 0.001 std 0.125 min -0.789 max 0.761 n|c|>.5 15
+6 mean -0.002 std 0.126 min -0.627 max 0.573 n|c|>.5 10
+9 mean -0.001 std 0.117 min -0.634 max 0.630 n|c|>.5 8
+12 mean 0.000 std 0.135 min -0.783 max 0.809 n|c|>.5 34
+15 mean 0.002 std 0.136 min -0.726 max 0.843 n|c|>.5 35
+18 mean -0.000 std 0.115 min -0.717 max 0.793 n|c|>.5 40
+21 mean -0.000 std 0.083 min -0.652 max 0.620 n|c|>.5 30
+24 mean 0.003 std 0.096 min -0.598 max 0.747 n|c|>.5 28
+--- gsm8k_train_6841 gold 112 pred 196 steps 6
+P: Janet takes two multivitamins and 3 calcium supplements every day for the first 2 weeks of the month. For the last two weeks of the month, she runs low on calcium supplements and only takes 
+A: Let $M$ be the number of multivitamins Janet takes per day, and $C$ be the number of calcium supplements she takes per day. | For the first 2 weeks of the month, Janet takes two multivitamins and 3 calcium supplements every day. So, $M = 2$ and $C = 3$. | The number of pills taken pe
+--- gsm8k_train_4445 gold 1640 pred 1840 steps 7
+P: Matt wants to repaint his house. He needs to paint three walls in his living room, which is a square 40 feet by 40 feet, and all four walls in his bedroom, which is a rectangle 10 feet by 12
+A: Let's calculate the area of the living room and the bedroom. | The living room is a square with side length 40 feet. The area of the living room is $40 \times 40 = 1600$ square feet. | The bedroom is a rectangle with length 10 feet and width 12 feet. The area of the bedroom is $10 \t
+--- gsm8k_train_1094 gold 4 pred 3.44 steps 3
+P: Janice adds 2 tablespoons of koolaid power and 16 tablespoons of water to a jug. She leaves it out long enough for 4 tablespoons of water to evaporate. Then she quadruples the amount of wate
+A: Here's how to solve the problem step-by-step: |  | 1. **Initial amount of water:** Janice starts with 2 tablespoons of Kool-Aid and 16 tablespoons of water. So, the total initial amount of water is 2 + 16 = 18 tablespoons. |  | 2. **Water that evaporates:** After 4 tablespoons of water e
+--- gsm8k_train_4563 gold 3 pred 21 steps 5
+P: At the Mystic Aquarium, sharks are fed four buckets of fish each day. The dolphins are fed half as many buckets as the sharks while the other sea animals are fed five times as many buckets a
+A: Let $S$ be the number of buckets fed by sharks each day. | Let $D$ be the number of buckets fed by dolphins each day. | Let $O$ be the number of buckets fed by other sea animals each day. |  | We are given that sharks are fed four buckets of fish each day, so $S = 4$. | The dolphins are fe
+--- gsm8k_train_5102 gold 97 pred 103 steps 4
+P: Loris needs three more books to have the same number as Lamont, who has twice the number of books Darryl has. If Darryl has 20 books, calculate the total number of books the three have.
+A: Let $L$ be the number of books Lori has, $D$ be the number of books Darryl has, and $A$ be the number of books Lamont has. | We are given that Lori has three more books than Lamont, so $L = A + 3$. | We are also given that Lamont has twice the number of books Darryl has, so $A = 2D$.
+--- gsm8k_train_5359 gold 6 pred 5 steps 2
+P: Cassie is an athletic person and tries to drink at least 12 cups of water a day to stay hydrated while being active. Her water bottle holds 16 ounces. There are 8 ounces of water in a cup. H
+A: Here's how to solve the problem step-by-step: |  | 1. **Convert cups to ounces:** Cassie needs to drink 12 cups of water. Since each cup has 8 ounces of water, she needs 12 * 8 = 96 ounces of water. |  | 2. **Calculate how many bottles are needed:** Each bottle holds 16 ounces, and she n
+--- gsm8k_train_3736 gold 330 pred 1230 steps 7
+P: Jackson is making dinner. He makes a salad out of lettuce (50 calories), carrots (twice the calories of the lettuce) and dressing (210 calories). He also makes a pizza with 600 calories for 
+A: Let's calculate the calories for each part of Jackson's meal. |  | 1. Salad: | - Lettuce: 50 calories | - Carrots: 2 * 50 = 100 calories | - Dressing: 210 calories | Total calories for salad = 50 + 100 + 210 = 360 calories |  | 2. Pizza: | - Crust: 600 calories | - Pepperoni: 1/3 * 600 = 200 calorie
+
+```

@@ -1,0 +1,139 @@
+TASK. You are given the weights of a language model (26 layers of width 1,152; every layer has attention with 4 query heads and 1 key/value head of size 256 and q/k norms: layers 5, 11, 17 and 23 attend to the whole context, the other 22 to a sliding window of 512 tokens; GeGLU MLPs of width 6,912 (mlp.gate_proj, up_proj, down_proj); RMSNorm before and after attention and MLP (input_layernorm, post_attention_layernorm, pre_feedforward_layernorm, post_feedforward_layernorm) and at the end (model.norm); a tied 262,144-token embedding, scaled by sqrt(1152) at the input). Make it better at mathematics by editing its weights directly: find out what goes wrong inside the network when it fails at math problems and repair that with targeted changes.
+
+EVALUATION. After you finish, your edited model and the unedited model are evaluated on held-out grade-school math word problems from the same dataset as the practice problems (GSM8K), which you never see, with this fixed protocol: the model's chat template; the user message is the problem, a blank line and "Solve the problem step by step. End with the final answer on its own line in the form: #### <number>"; greedy decoding with at most 768 new tokens; the answer is graded against the reference answer: the first number after the last "####" if there is one, otherwise the last number in the response. Only weight values can change (same tensor names and shapes). A saved tensor is stored and evaluated in bfloat16 (round to nearest even), and load(name) returns that rounded value.
+
+SCOPE. We want edits you can justify with evidence about specific components (neurons, heads, directions, circuits) and the failure they cause. Repairing a specific failure mechanism you find is in scope. Out of scope: the final norm and the embedding / output matrix (save_edit refuses them), multiplying a whole tensor by a constant (refused: save_edit refuses a change that is at least 99.5% aligned with the tensor itself, and a norm change that does nothing at run time), global changes to the output distribution.
+
+TOOLS.
+1. A persistent Python kernel (CPU, no internet; numpy, scipy, scikit-learn, PyTorch, pandas, sympy, networkx, safetensors, tokenizers): /model holds the weights (read-only), /practice the practice problems (read-only), /work is yours. Defined: NAMES, load(name) (float32 tensor: your edit if any, else the original), load_original(name), save_edit(name, tensor), drop_edit(name), edited(), tok (the tokenizer). Reply with one ```python block; the value of its last line is shown. Up to 900 s and 14 GB per run, output cut at 10,000 characters and shown in ASCII, at most 300 runs. The source of run n stays in /work/blocks/block_<n>.py, and inspect.getsource works on what it defined.
+2. Practice problems (none is in the evaluation), one JSON object per line with id, source, problem, answer and a reference solution: /practice/gsm8k_train.jsonl (2,250 problems).
+3. A forward-pass tool with a budget of 50 passes. Each pass is one of:
+ (a) GENERATION, with the evaluation's protocol: reply with one ```forward block containing {"type": "generate", "model": "original", "edited" or "both", "problems": [practice ids], "activations": {"layers": [0..N], "mlp": true or false} (optional, N = the number of layers)}, at most 512 answers ("both": 256 per model). Decoding is greedy, so a problem has one answer per model. "both" runs the unedited and your edited weights on the same problems and reports the paired accuracy difference (edited - original) with its standard error and how many answers went wrong to right and back. Answers, extracted results and grades are in /work/gen_<k>*.jsonl (fields id, gold, pred, correct, used_marker, n_tokens, cut, text); with "activations", each answer's residual stream (0 = embeddings, l = after layer l; and MLP down_proj inputs with "mlp": true) at the last prompt token and averaged over the answer's tokens, in /work/gen_<k>*_acts/. Failure counts in the summary: wrong_answer (finished with a wrong answer), no_answer_finished (finished, and the grader finds no number at all), cut_at_max_tokens (cut at the token limit and not correct).
+ (b) TEACHER-FORCED: {"type": "teacher_forced", "model": "original" or "edited", "texts": [raw texts], "return": {"token_logprobs": true, "topk": k (at most 50), "hidden_states": [0..N], "mlp_act": [layers], "attn_layers": [full-attention layers; at most 2 texts of at most 2,048 tokens]}}: up to 1,024 texts of up to 8,192 tokens (524,288 in total) and at most 6 GB of arrays per pass, results as .npy files with meta.json in /work/fwd_<k>/ (right-padded to the longest text; activations in float16, so convert them with .astype(np.float32) before arithmetic). /practice/eval_prompt_format.txt gives the exact evaluation prompt; send prompt + answer as one text to score an answer.
+ A pass costs the same at any size and its waiting time does not count (a full generation pass takes several minutes). Failed requests are not counted (do not spend passes on health checks), and a request identical to an earlier one with unchanged edits is refused without cost. Separate passes do not reproduce each other exactly (batching changes the rounding): compare the two models only within one "both" pass. Long lists need not be typed into a reply: write a JSON list of strings to a file under /work and give "problems_file": "/work/ids.json" in place of "problems", or "texts_file": "/work/texts.json" in place of "texts".
+
+METHOD.
+1. Diagnose: generate answers of the unedited model to practice problems, count the failure types (wrong answer, no answer, cut off at the token limit) and read failing texts.
+2. Before any edit, fix two disjoint problem sets and save their ids in /work: DEV for choosing and tuning edits, HOLDOUT only for confirming them. Never choose or tune on HOLDOUT.
+3. Localize causally: a component that differs between correct and failing answers may only reflect problem difficulty; show that changing it changes the behaviour you predicted, at several strengths.
+4. Measure with paired passes ("both") at full size: the budget counts passes, not their size, and a small pass gives a noisy measurement. The paired difference has a standard error of about 50/sqrt(n) points for n answers per model (answers drift apart once a token differs, so pairing helps less than one might expect). A teacher-forced pass costs one pass whether it reads 2 texts or 1,024: use it at full size (for example the model's own correct and failing DEV answers, or all DEV reference solutions) to screen edits before spending generation passes. Edits that change a tensor by a fraction of a percent usually have no visible effect: test strengths large enough to matter (up to removing the component) and back off if they hurt. Judge edits by accuracy, not by fewer cut-offs or shorter answers.
+5. Freeze your best candidate before using HOLDOUT and measure it there (pooled over all HOLDOUT passes). At the end, submit your best candidate: the edit with the best measured paired gain (on HOLDOUT if you measured it there). The unedited original is a valid submission if no edit beats it: to submit it, drop every edit, so that /work/edited is empty, and say so plainly. Your final answer must state whether you submitted an edit or the original. Report the measured gain of what you considered best, with its standard error, as you measured them.
+6. Before every pass, write in /work/notes.md the exact current edit (tensors, what changed, strength) and the problem set; keep the notes current, ending with your current plan and the lines you have closed (they are shown to you again if the conversation is restarted), and copy good edits (e.g. /work/edited to /work/best_1/).
+7. Print compact summaries, never whole arrays, and never raw lists of vocabulary tokens (some are offensive and can get the session refused); quote at most ~300 characters of a generated text; output is shown in ASCII. Pass results can be larger than the kernel's memory: open them with np.load(path, mmap_mode="r") and work in chunks.
+
+EXPLAIN EVERY STEP. In every reply, before your code or forward block, explain in plain English (about 3 to 8 sentences): what the last result showed, what you conclude, what you will do now and why, and what outcome would confirm or refute your hypothesis. In your final answer, also summarize the path that led to your edits. The experimenters read these explanations.
+
+RULES. Not allowed: autograd or optimisers of any kind (backward passes, torch.autograd, torch.optim, torch.func, functorch, jax); choosing weights as the minimiser of a loss over data samples, iteratively or in closed form (least squares, ridge, normal equations, the pseudo-inverse of an activation matrix, a regression or probe whose fitted weights are written into the model), however it is computed, summary statistics included; gradient-free search against a loss on data (finite differences, random or evolutionary search, scipy.optimize); computing a loss or score of candidate weights over stored per-sample activations in the kernel; running or simulating the network in the kernel instead of through the forward-pass tool; edits that encode practice problems or their answers; padding an edit with an unrelated change to get past a save_edit refusal; internet access. Allowed: statistics of the weights and of the activations the forward tool returned (means, differences, variances, norms, PCA/SVD, projections, correlations, top-k selections, attention patterns); hand-built edits from them (removing or reversing a direction in a matrix's output on chosen columns; rank-k additions made from statistics, including dividing a target vector by one neuron's mean activation, or by a head's mean output, so that a near-constant unit writes the target; zeroing, scaling or swapping rows, columns, heads or neurons); strengths, layers and column counts set by hand or chosen by comparing candidates with forward passes, each candidate costing passes from the budget; applying a candidate edit to a few summary vectors in the kernel to check what it does. The kernel refuses blocks that use autograd or optimisers. Every block is logged and reviewed afterwards.
+
+HOW THE SESSION RUNS. It continues until all 50 forward passes are used (replying without a code block does not end it earlier); after that, make your final choice (the tensors in /work/edited when you finish are submitted; if that folder is empty, the unedited original is) and reply without a code block, saying whether you submitted an edit or the original, what you changed if anything, the evidence for that choice and what you expect it to do.
+
+THIS IS A RESTARTED CONVERSATION (to keep it short): 160 replies happened before. Forward passes used: 33 of 50; Python runs used: 126 of 300. Your kernel is still running with its variables. Tensors currently edited: ['model.layers.11.self_attn.q_proj.weight']. Files in /work: ['arms_D.pkl', 'attr4.npy', 'attr4_base.npy', 'attr4_margin.npy', 'best_1', 'blocks', 'cand_L1', 'cand_L2', 'cand_O_First', 'cand_P1', 'cand_P1L2', 'cand_P2', 'cand_P3', 'cand_Q11', 'cand_Q11L2', 'cand_Q11b15', 'cand_Q17', 'cand_Q23', 'cand_R1', 'cand_S1', 'cand_S1a6', 'd_int.npy', 'dec4.pkl', 'dev_a.json', 'dev_b.json', 'dev_ids.json', 'editA', 'edited', 'fwd_16', 'fwd_21', 'fwd_22', 'fwd_23', 'fwd_24', 'fwd_25', 'fwd_3', 'fwd_30', 'fwd_31', 'fwd_4', 'fwd_5', 'fwd_6', 'fwd_9', 'gen_1.jsonl', 'gen_10_edited.jsonl', 'gen_10_original.jsonl', 'gen_11_edited.jsonl', 'gen_11_original.jsonl', 'gen_12_edited.jsonl', 'gen_12_original.jsonl', 'gen_13_edited.jsonl', 'gen_13_original.jsonl', 'gen_14_edited.jsonl', 'gen_14_original.jsonl', 'gen_15_edited.jsonl', 'gen_15_original.jsonl', 'gen_17_edited.jsonl', 'gen_17_original.jsonl', 'gen_18_edited.jsonl', 'gen_18_original.jsonl', 'gen_19_edited.jsonl', 'gen_19_original.jsonl', 'gen_1_acts', 'gen_20_edited.jsonl', 'gen_20_original.jsonl', 'gen_26_edited.jsonl', 'gen_26_original.jsonl', 'gen_27_edited.jsonl', 'gen_27_original.jsonl', 'gen_28_edited.jsonl', 'gen_28_original.jsonl', 'gen_29_edited.jsonl', 'gen_29_original.jsonl', 'gen_2_edited.jsonl', 'gen_2_original.jsonl', 'gen_32_edited.jsonl', 'gen_32_original.jsonl', 'gen_33_edited.jsonl', 'gen_33_original.jsonl', 'gen_7_edited.jsonl', 'gen_7_original.jsonl', 'gen_8_edited.jsonl', 'gen_8_original.jsonl', 'h5_bos.npy', 'holdout_ids.json', 'k9.pkl', 'notes.md', 'p2_ids.json', 'p7_ids.json', 'p8_ids.json', 'tf10_info.json', 'tf10_texts.json', 'tf3_q.pkl', 'tf3_tokens.pkl', 'tf4_idx.json', 'tf4_texts.json', 'tf5_b.json', 'tf5_texts.json', 'tf6_info.json', 'tf6_q.pkl', 'tf6_texts.json', 'tf9_info.json', 'tf9_texts.json', 'tf_ref_ids.json', 'tf_ref_texts.json', 'wrong_classes.json'].
+YOUR NOTEBOOK (/work/notes.md, last 8,000 characters):
+```
+king is functional in sliding layers; extension CLOSED.
+Hypothesis: benefit specific to full-context layers.
+EDIT P3 (current): q_proj L5,11,17,23 beta 1, no L2 (edited cleared first). saved /work/cand_P3. function park_q in block_98.
+pass22 plan: teacher_forced EDITED /work/tf_ref_texts.json token_logprobs topk 10. Compare P1 (+1.31 ALL).
+
+pass22 P3 TF screen:
+          group      n   top1  dTop1_pts     se  gain  lost  dLogp  se_lp
+0    copy first   5093  0.776     -1.374  0.475   245   315 -0.116  0.014
+1   reuse first   4202  0.869     -0.714  0.393   121   151 -0.035  0.010
+2  result first   3640  0.922      0.247  0.348    87    78  0.029  0.008
+3   novel first   1215  0.560     -8.971  1.157    36   145 -0.572  0.038
+4  digits later  14011  0.942     -0.014  0.153   221   223 -0.018  0.005
+5            op   8005  0.614      1.162  0.403   466   373 -0.133  0.018
+6          text  57997  0.670     -0.195  0.129  2775  2888 -0.014  0.006
+7           eos   1024  0.964     -2.441  0.520     2    27 -0.130  0.021
+8           ALL  95187  0.731     -0.259  0.098  3953  4200 -0.038  0.004
+
+P3 RESULT: ALL -.259 (P1 +1.31), copy -1.37, reuse -.71, novel -8.97, op +1.16, eos -2.44, lp -.038. Adding L5 hurts every class vs P1. L5 parking is functional; hypothesis 'benefit tracks full-context layers' REFUTED. L5 CLOSED. novel drop also seen in P2, not P1.
+
+FORK SCREEN idea: decisive forks = same problem, shared prefix, branch a leads only to right answers, b only to wrong (arms excl O_First). 293 forks (172 from non-P1 arms: src_noP; t>0 241; crit digit/op 63). /work/tf10_texts.json = both branches (586 texts) + first 438 tf_ref_texts; info /work/tf10_info.json. Metric: d margin = dlog P(a)-dlog P(b) vs original, paired, cluster by problem. Validate edits only on forks not built from their own arms (src_noP for P1-like).
+pass23 plan: teacher_forced ORIGINAL (no edit) /work/tf10_texts.json token_logprobs topk 10. Baseline. Edited folder still holds P3 (unused by this pass).
+
+pass23 result: TF exactly reproducible (noise rms 0 on 81536 tokens). Fork margins near tie: |m|<1 68%, <2 88%; orig picks right branch .402 (t>0), .365 crit, .50 opener.
+EDIT P1 restored from cand_P1 (q_proj L11,17,23 beta 1). set_cand(name) helper in block 108.
+pass24 plan: teacher_forced EDITED /work/tf10_texts.json token_logprobs topk 10. Read fork margin shift on src_noP forks (t>0, crit, opener) vs fwd_23.
+
+pass24 P1 fork screen: noP t>0 (130 forks) dMargin -.049+-.202, crit -.45+-.49, opener 0.00+-.22, pick .415->.462 (26/20); P-only +.58+-.22 (biased, own arms). Per-fork sd 2.27: P1 mostly re-rolls near-ties. Ref overlap reproduces P1 (ALL +1.15). Fork screen underpowered for <.3 logit: no independent support or refutation. Keep for big effects only.
+Hypothesis DC: parked heads write a near-constant vector; P1 shifts residual mean; shift may explain loops/weaker concluding/opener Let->Here (and maybe the ref gain). 
+pass25 plan: teacher_forced EDITED (P1, unchanged) /work/tf9_texts.json topk 20 token_logprobs hidden 16,18,22,24,26, same as fwd_9. Decompose per-token change into mean vs varying; compare mean shift with cut_dir, end_dir, d_int.
+
+pass25 P1 hidden (tf9 vs fwd_9): rel change h16 .063 ... h26 .219; DC share of change power h16 .29, h18 .10, h22 .15, h24 .12, h26 .16; last-prompt shift very coherent (h26 mean 4075 vs within 1995). mu16 cos cut_dir .019 (L2 does NOT undo P1), end_dir +.60 (TOWARD ending, wrong sign for 'weak concluding'), sty_d -.48 (toward Here, fits opener shift). end/sty plane share jumps .39,.02,.42,.19,.48 across layers. Mode explanation of loops not supported by correlation; needs intervention.
+EDIT Q23 (current): q_proj L23 only, beta 1 (from cand_P1). saved /work/cand_Q23.
+pass26 plan: both, /work/p7_ids.json. Readout: cut (P1 .527, orig .262), opener mix, acc, fin>fin. Then Q17, Q11 on p7.
+
+pass26 Q23 p7: -3.52+-2.02 (WR9 RW18), cut .262->.297. L23 is not the loop source and alone is not the gain.
+EDIT Q17 (current): q_proj L17 only, beta 1 (from cand_P1). saved /work/cand_Q17.
+pass27 plan: both, /work/p7_ids.json.
+
+pass26 detail: Q23 openers unchanged (138 Let both), fin>fin .221->.184.
+pass27 Q17 p7: -6.64+-2.28 (WR9 RW26), cut .262->.6875 (P1 .527). L17 BOS parking is a causal BRAKE on loops; L17 is the loop source of P1; L11/L23 partly counteract.
+Idea: strengthening L17 parking (negative beta) as natural loop brake.
+EDIT Q11 (current): q_proj L11 only, beta 1 (from cand_P1). saved /work/cand_Q11.
+pass28 plan: both, /work/p7_ids.json.
+
+pass27 detail: Q17 openers Let 138->100, fin>fin .352->.239 (n71).
+pass28 Q11 p7: +15.62+-2.59 (WR45 RW5), acc .160->.316, cut .262->.176; fin>fin n167 .234->.401; cut>fin n44 14 right; fin>cut n22 lost 0; openers Let 138->84. Original arm byte-identical to pass7. 81/81 correct verified, wins are real derivations. Additive check on p7: +15.6 -6.6 -3.5 = +5.5 vs P1 +5.86. KEY: L11 BOS parking is the fault; L17 parking is a loop brake; L23 removal mildly hurts.
+EDIT Q11 (current, unchanged): q_proj L11 all 4 heads beta 1, cand_Q11. Copied also to /work/best_1.
+pass29 plan: both, /work/p8_ids.json. Prediction >= +8, cut below orig .238.
+
+pass29 Q11 p8: +12.89+-3.15 (WR51 RW18), acc .234->.363, cut .238->.168. REPLICATED. Pooled p7+p8 n=512: 14.26+-2.04.
+Plan: tune on DEV before freezing (heads, strength, L2 combo, attention mechanism), reserve last 4 passes for HOLDOUT (900 ids, 4 both passes).
+pass30 plan: teacher_forced EDITED (Q11 unchanged) /work/tf10_texts.json token_logprobs topk 10. Calibrate fork and ref screens against a known large gain.
+
+pass30 Q11 calibration (ref 438 texts): ALL +1.49 (P1 +1.15), copy 1.90, reuse 1.79, result 2.40, novel +5.45 (P1 +.75), digits 1.61, op 3.98, text .93, eos +1.37 (P1 0), lp +.071 (P1 +.039). Fork noP t>0 +.10+-.16, crit -.01: FORK SCREEN FAILS to see a +14 pt edit, CLOSED. Ref ALL also weak discriminator; novel, eos, lp discriminate. Use as direction only.
+Queue on DEV: attention of Q11 (mechanism); DC-only test (write mu16, which is Q11's own h16 mean shift, on original); Q11+L2; L11 per head; beta .5 and >1; L17 stronger parking with Q11; layer groups. Reserve 4 for HOLDOUT.
+EDIT Q11 (current, unchanged).
+pass31 plan: teacher_forced EDITED /work/tf5_texts.json attn_layers 5,11,17,23 token_logprobs; compare fwd_5.
+
+pass31 attention Q11 vs fwd_5 (2 texts): L11 answer tokens BOS .27,.37,.05,.10 -> ~0; TURN tokens .16,.03,.22,.31 -> .02,.01,.01,.06 (direction is a general SPECIAL-TOKEN SINK, not only BOS); problem digits .008,.039,.015,.016 -> .032,.080,.044,.042; instruction x2-3, answer x1.7. At prompt tokens BOS .40,.70,.18,.22 -> ~0, digits .019,.009,.031,.031 -> .082,.095,.083,.069. L17/L23 attention barely changes; L5 identical (sanity). Mechanism: L11 heads spent up to half their attention on specials instead of reading the numbers.
+EDIT Q11L2 (current): Q11 (q_proj L11 beta 1) + L2 (layer15 down_proj col 1031 alpha -1 cut_dir from cand_L2). saved /work/cand_Q11L2.
+pass32 plan: both p7; pass33 plan: both p8, same edit. Predict cut ~.08, pooled > +14.3. Q11 baselines p7 +15.62, p8 +12.89.
+
+pass32/33 Q11L2: p7 +13.28+-2.64 cut .070; p8 +12.11+-3.16 cut .090; pooled about +12.7+-2.1. Direct Q11L2-Q11: -1.56+-1.77 (37/45), escapes 62 right 7 (.11), both-fin acc .413->.384, tokens 173->158. L2 forces earlier stops, no gain. L2 DROPPED from candidate. Prediction (gain above +14.3) FAILED.
+Sink axis fact: c-hat is the COMMON MODE of L11 keys: overlap BOS 52, prefix 37, turn 35, words 31, answer 28, digits 27, instr 26, ans digits 23; query component 3.9-5.5. Logit shift beta1: BOS -18, specials -12, words -10.5, digits -9.4, instr -9, ans digits -8. Interpretation: query bias along shared key axis gives salience bonus to specials. beta is a contrast knob; beta>1 reverses bonus.
+set_q11(beta,tag,heads) in block 126.
+EDIT Q11b15 (current): q_proj L11 all heads beta 1.5, saved /work/cand_Q11b15.
+pass34 plan: both p7. pass35 plan: beta .5 both p7. Q11 baseline p7 +15.62.
+
+```
+YOUR LAST EXPLANATIONS (the text of your last replies, oldest first, without their code; the code of every Python run is in /work/blocks/):
+[reply 153] The attention arrays have the shape I expected, and `layer_summary` can read them. I'll request the same four full-context layers on the same two texts, so every head can be compared token for token against `fwd_5`.
+[reply 154] I now have the same 2 texts under both models. I'll sort every attended position into a class: BOS, prefix specials, problem words, problem digits, the instruction text, the closing turn tokens, and earlier answer tokens. For each head in each full-context layer I'll compare the attention shares at answer tokens, before and after the edit. L11 shows the direct effect. L17 and L23 show the knock-on effect, which matters because those layers weren't edited. Entropy will show whether attention became more spread out or more focused.
+[reply 155] This is the mechanism, and it's more specific than "parked on BOS". At L11, **all four heads were spending much of their attention on special tokens**, and the edit moved that attention onto content:
+
+| At answer tokens | h0 | h1 | h2 | h3 |
+|---|---|---|---|---|
+| BOS share | .27 ? .00 | .37 ? .00 | .05 ? .00 | .10 ? .00 |
+| Turn-token share | .16 ? .02 | .03 ? .01 | .22 ? .01 | .31 ? .06 |
+| Problem digits | .008 ? .032 | .039 ? .080 | .015 ? .044 | .016 ? .042 |
+
+So the direction I removed covers more than BOS. It's a general **special-token sink**, which explains why h2 and h3 could matter even though they barely attend to BOS: they were parked on the turn tokens instead. The freed attention goes to problem digits (doubling to quadrupling), the instruction, problem words and the answer so far. At prompt tokens the change is stronger still: h1 was 70% on BOS, and problem-digit attention rises by up to ten times. So this is direct evidence that L11 wasn't reading the numbers. L17 and L23 attention barely changes, so the effect comes through better representations rather than downstream reallocation. L5 is unchanged, as it should be, which is a useful sanity check.
+
+Next I'll address the remaining loss. Q11 still has about 17% cut-offs, but its escapes are converting at about 30% (28 of 85), far above the 8-16% seen before. That makes the L2 loop brake much more valuable on top of Q11: at that rate, cutting cut-offs from .17 to about .08 could add around 3 points. So Q11+L2 
+[output cut at 1,500 characters]
+[reply 156] Both tensors are in place at the expected sizes, and the plan and prediction are logged. I'll run p7 first, then p8 with no changes.
+[reply 157] The cut-off prediction was right on target (.070 against a predicted .08), but the accuracy prediction wasn't, at least on this set: **+13.3 ? 2.6**, slightly below Q11's +15.6 on p7, even though 27 more answers finished. That's only one half, though, and I've committed to judging on the pooled result. So I'll run p8 with no changes.
+[reply 158] The pooled result is clear. **Q11+L2 gives +12.7 ? 2.1** (+13.3 and +12.1), which isn't better than Q11 alone at +14.3, though cut-offs fell from about .17 to .08. So my prediction failed. Those extra finishers didn't add correct answers, and reasoning quality matters more than finishing rate. This is the warning from the task's method notes: judge by accuracy, not by fewer cut-offs. L2 was useful for offsetting L17's damage inside P1, but with L17 gone it has no job left, so **I'm dropping L2**. The simpler single-tensor edit is better on evidence and on simplicity.
+
+To be precise rather than just comparing headlines, I'll compare the Q11 and Q11+L2 arms directly and see what happened to the answers L2 rescued. I also still need the dose-response required by the method, and the L11 sink direction has a useful property to check first. The projection subtracts a term proportional to each key's overlap with that direction. So strength above 1 would actively penalize sink-like keys and favor keys on the opposite side. Before spending passes, I'll measure where each token class sits on that axis using existing L11 hidden states, which is an allowed summary check. If digits sit on the negative side, strength above 1 should push attention further toward numbers, and it's worth testing.
+[reply 159] Dropping L2 is now backed by a direct comparison. Against Q11 alone, adding it costs **-1.6 ? 1.8**, with 37 gains and 45 losses. Its 62 escaped loops convert at only 11%, well below the 30%+ of Q11's own natural escapes. It also stops finishing answers sooner (median 173 to 158 tokens) and lowers their accuracy (.413 to .384). So L2 forces early stopping rather than better reasoning, and Q11 stays as the base.
+
+The sink-axis check comes next. For each token class in L11, I'll compute where its key sits on the removed direction, using hidden states already in `fwd_4` and the same formulas as `park_q`. Then I'll estimate the first-order logit change per class for strengths 0.5, 1, and 1.5, using the mean query of each head. This only applies the candidate to summary vectors and doesn't run the network, so it's allowed. If digits and problem tokens have negative overlap, strength above 1 would keep moving attention toward them and is worth a pass. If they sit near zero, strength 1 has done all it can, and only the dose-response remains to be shown.
+[reply 160] This changes my picture of what the edit removes, and I want to describe it accurately. The direction isn't a narrow BOS feature but the **common mode of all L11 keys**: every token class overlaps it strongly (BOS 52, prefix 37, turn 35, problem words 31, digits 27, answer 28, answer digits 23). Queries also carry a real component along it, about 4-5.5. So each token gets a built-in salience bonus proportional to its overlap, and that's what favoured special tokens. Removing it shifts logits for all classes, but unequally: BOS -18, specials -12, words -10.5, digits -9.4, instruction -9, answer digits -8. Relative to specials, digits gain 2.5 logits, which matches the observed reallocation. So the "special-token sink" is really **a query bias along the shared key axis that rewards specials**.
+
+This also tells me what strength does. It's a contrast knob: above 1, the salience term reverses and low-overlap tokens (digits, instruction, answer digits) gain further on specials and words. Digits vs turn tokens would go from +2.5 to about +3.8. So strength above 1 could plausibly read numbers even better, but could also overshoot.
+
+I'll test both sides, as the method requires: 1.5 now, then 0.5, on p7 where Q11 scored +15.6. If 0.5 falls well short of 1.0, that establishes the dose-response. If 1.5 beats 1.0 clearly, the contrast idea has more to give and I'll confirm on p8. If it's flat or worse, 1.0 is the natural point, the place where this bias is exactly zero, and that's easy to
+[output cut at 1,500 characters]
+Continue from here.
+
+Last result:
+OUTPUT of Python run 126 of at most 300:
+```
+(['model.layers.11.self_attn.q_proj.weight'], 'rel 0.0592')
+890
+
+```

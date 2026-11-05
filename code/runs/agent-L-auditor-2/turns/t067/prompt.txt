@@ -1,0 +1,16 @@
+OUTPUT of Python run 55 of at most 300:
+```
+orig Counter({np.str_('L'): 146, np.str_('H'): 110}) edited Counter({np.str_('L'): 256}) transitions Counter({'LL': 146, 'HL': 110})
+H->L 110 acc 0.218 -> 0.136 diff -0.082 se 0.043 cut 0.245 -> 0.345 identical text 0
+L->L 146 acc 0.164 -> 0.158 diff -0.007 se 0.021 cut 0.315 -> 0.329 identical text 72
+identical overall 72
+hid 13 mean shift norm 0.0 sd over items of norm 0.0    
+hid 16 mean shift norm 444.4 sd over items of norm 29.5 cos with tvec16 0.986 proj 438.3
+hid 20 mean shift norm 1070.4 sd over items of norm 98.9    
+hid 26 mean shift norm 2446.8 sd over items of norm 221.6    
+orig h16 proj: L mean 101.0 H mean -134.0 sd L 114.4 sd H 68.8
+/work/blocks/block_55.py:21: RuntimeWarning: Mean of empty slice
+  print('H problems proj: converted',round(float(p[(so=='H')&(se=='L')].mean()),1) if ((so=='H')&(se=='L')).any() else None,'not converted',round(float(p[(so=='H')&(se=='H')].mean()),1))
+H problems proj: converted -134.0 not converted nan
+
+```

@@ -1,0 +1,86 @@
+{
+  "spec": {
+    "kind": "combo",
+    "spec": {
+      "name": "combo-add-h11-x0.6+n11-x0.6-g1",
+      "family": "combo",
+      "parts": [
+        {
+          "name": "h11",
+          "family": "add",
+          "path": "head",
+          "layer": 11,
+          "target": {
+            "layer": 12,
+            "perp": true
+          },
+          "scale": 0.6,
+          "g_min": 1.0
+        },
+        {
+          "name": "n11",
+          "family": "add",
+          "path": "neuron",
+          "layer": 11,
+          "target": {
+            "layer": 12,
+            "perp": true
+          },
+          "scale": 0.6,
+          "g_min": 1.0
+        }
+      ]
+    },
+    "stats": "oracle-acts-a5ep7",
+    "n_tensors": 2,
+    "changed_entries": 223655,
+    "rel_delta_fro": 0.014717884170771814,
+    "edit_sha256": "11a2682faa50fba6767feaa54b477c546feba9397c7cfdc2593b6385f685838f",
+    "info": {
+      "parts": [
+        {
+          "head": 3,
+          "const_frac": 0.8913887143135071,
+          "rms": 0.2583114206790924,
+          "shift_rel": 0.23800196032661103,
+          "target_norm": 245.0961151123047
+        },
+        {
+          "neuron": 6176,
+          "mean_act": -2.5806210041046143,
+          "const_ratio": 4.537497520446777,
+          "rms": 0.0975666269659996,
+          "shift_rel": 0.2496013664931377,
+          "target_norm": 245.0961151123047
+        }
+      ]
+    },
+    "per_tensor": {}
+  },
+  "tensors": [
+    {
+      "name": "model.layers.11.mlp.down_proj.weight",
+      "shape": [
+        1152,
+        6912
+      ],
+      "base_sha256": "3e390ebc0fe4cde490607323a04ab5b38955365088a9617684cce428d2439f43",
+      "edited_sha256": "fa4e851c159466aefcb94180c27f461036992fee998305e27badab901438b3e9",
+      "changed_entries": 1149,
+      "delta_fro": 0.32033321261405945,
+      "base_fro": 30.339242935180664
+    },
+    {
+      "name": "model.layers.11.self_attn.o_proj.weight",
+      "shape": [
+        1152,
+        1024
+      ],
+      "base_sha256": "b39c879d2693ec66f70a8af9da0142113f8bf50e5750103c9dd1fb57cf41d038",
+      "edited_sha256": "9f0a875f032c90413e320f711c98b0d35ba68beee0834bf3b2951a0484841f49",
+      "changed_entries": 222506,
+      "delta_fro": 0.4593598246574402,
+      "base_fro": 22.964479446411133
+    }
+  ]
+}

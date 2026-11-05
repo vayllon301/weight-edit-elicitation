@@ -1,0 +1,15 @@
+OUTPUT of Python run 175 of at most 300:
+```
+unit 1015 mean(sd) answer-mean 2.633 (0.275) | last prompt 1.862 (0.129)
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_175.py", line 13, in <module>
+    a3 = np.array(A3(l_)[s_rows, s_cols], dtype=np.float32)
+                  ~~~~~~^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/numpy/_core/memmap.py", line 359, in __getitem__
+    res = super().__getitem__(index)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+IndexError: only integers, slices (`:`), ellipsis (`...`), numpy.newaxis (`None`) and integer or boolean arrays are valid indices
+
+```

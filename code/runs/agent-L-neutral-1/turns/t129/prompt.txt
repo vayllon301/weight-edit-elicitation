@@ -1,0 +1,36 @@
+OUTPUT of Python run 106 of at most 300:
+```
+own_eqs err '_io.TextIOWrapper' object is not callable
+ref_eqs err '_io.TextIOWrapper' object is not callable
+given err '_io.TextIOWrapper' object is not callable
+sig ('t',) ('sol',) ('q',)
+own eqs/answer 2.16 ref 3.55; adj-same-op answers own 0.054 ref 0.095; nonadj reuse answers own 0.095 ref 0.165
+           a      n     ok
+e                         
+False  0.032  0.058  0.339
+True   0.127  0.218  0.076
+acc by adj-same-op: ao      False   True 
+mean    0.284   0.174
+size  805.000  46.000
+within ex>0: share adj 0.127 nonadj 0.178 neither 0.695
+time, numbers used right, wrong: n 94
+ Q: Anna can read 1 page in 1 minute. Carole can read as fast as Anna but at half the speed of Brianna. How long does it take Brianna to read a 100-page b
+   ref: [('1', '/', '1', '1'), ('1', '*', '2', '2'), ('100', '/', '2', '100')]
+   own: [] pred 100 gold 50
+ Q: Kyle can lift 60 more pounds this year, which is 3 times as much as he could lift last year. How many pounds can Kyle lift in all?
+   ref: [('60', '/', '3', '20'), ('60', '+', '20', '80')]
+   own: [('3', '*', '60', '180'), ('60', '+', '180', '240')] pred 240 gold 80
+ Q: Carson is going to spend 4 hours at a carnival. The wait for the roller coaster is 30 minutes, the wait for the tilt-a-whirl is 60 minutes, and the wa
+   ref: [('4', '*', '60', '240'), ('4', '*', '30', '120'), ('120', '-', '60', '60'), ('60', '/', '15', '4')]
+   own: [] pred 57.5 gold 4
+ Q: Allison, a YouTuber, uploads 10 one-hour videos of food reviews each day to her channel. She uploaded videos halfway through June,  at that pace,  and
+   ref: [('2', '*', '30', '1'), ('2', '*', '30', '15'), ('10', '*', '15', '10'), ('10', '*', '2', '10'), ('15', '*', '20', '15')]
+   own: [('10', '*', '10', '100'), ('2', '*', '50', '100'), ('100', '+', '100', '200')] pred 200 gold 450
+ Q: Jay has decided to save money from his paycheck every week. He has decided that he will increase the amount he saves each week by 10 dollars. If he st
+   ref: [('20', '+', '10', '20'), ('30', '+', '10', '30'), ('40', '+', '10', '40'), ('50', '+', '10', '50')]
+   own: [] pred 360 gold 60
+ Q: Liam wants to go to Paris, but first, he has to pay his bills. His trip costs $7,000, and his bills cost $3,500. Knowing that Liam has saved $500/mont
+   ref: [('12000', '-', '3500', '12000')]
+   own: [('7000', '+', '3500', '10500')] pred 9500 gold 8500
+
+```

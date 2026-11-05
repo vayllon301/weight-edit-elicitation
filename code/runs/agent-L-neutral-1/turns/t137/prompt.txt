@@ -1,0 +1,19 @@
+OUTPUT of Python run 114 of at most 300:
+```
+loop_metrics names ('range', 'enumerate', 'rows', 'iterrows', 'int', 'st', 'period', 'min', 'end', 'np', 'asarray', 'float32', 'append', 'nanmean', 'mean', 'float', 'all', 'print', 'array', 'round', 'len')
+digit_metrics names ('enumerate', 'int', 'SOT', 'tok', 'decode', 'strip', 'isdigit', 'len', 'append', 'join', 'set', 'range', 'float', 'setdefault', 'add', 'sorted', 'items', 'print')
+LOOPS by cycle: base lp, edit lp, base top1=loop, edit top1=loop, any token leaves
+ cycle 1 [-0.12 -0.16  1.    0.97  0.68] n 88
+ cycle 2 [-0.08 -0.12  1.    0.98  0.62] n 88
+ cycle 3 [-0.05 -0.09  1.    0.99  0.43] n 88
+ cycle 4 [-0.03 -0.07  1.    0.99  0.31] n 88
+ ENTRY first 5 tokens of cycle 2: [-0.16 -0.19  1.    0.97] all 5 stay top1 share 0.865
+loop_metrics(pass17,0): None
+038 += col33_orig*r (r=x33/x1038 after-norm pre-loop means, L5 -0.365, L11 -1.048; rel change .045,.081). Summary check: mean query kept; loop shift mostly down (L11h2 up .26->.31); prompt queries change .15-.39 rms = main risk. texts=/work/tf17_texts.json (loops+refs+own), return as pass17, baselines pass7, pass2. Prediction: loops leave cycle more, digits little changed. Digit loss on refs would refute usefulness.
+
+saved cand folder exists True
+cand files ['model.layers.5.self_attn.q_proj.weight.npy', 'model.layers.11.self_attn.q_proj.weight.npy'] edited ['model.layers.11.self_attn.q_proj.weight', 'model.layers.5.self_attn.q_proj.weight']
+{'texts': '...', 'lengths': '...', 'model': 'edited', 'edited_tensors': 1, 'files': '...', 'padding': 'right; input_ids -1, activations NaN', 'activations_dtype': 'float16', 'mean_token_logprob': '...'}
+fwd_17 files ['input_ids.npy', 'meta.json', 'token_logprobs.npy', 'topk_ids.npy', 'topk_logprobs.npy']
+
+```

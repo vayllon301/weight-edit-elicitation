@@ -1,0 +1,24 @@
+OUTPUT of Python run 72 of at most 300:
+```
+problems with usable intermediates 995
+all non-given intermediates computed as eq results: 331 = 33.3% of usable
+         n    acc  gold_res  stop_at_inter  pred_given
+cut                                                   
+False  290  0.586     0.624          0.110       0.066
+True    41  0.049     0.293          0.195       0.341
+finished wrong though all intermediates reached: 120  of which gold computed 13  stopped at an intermediate 32  answered a given 10  other 68
+by steps hit share and acc|hit,finished:
+{2: 0.565, 3: 0.342, 4: 0.235, 5: 0.126, 6: 0.063} {2: 0.702, 3: 0.526, 4: 0.442, 5: 0.429, 6: 0.4}
+how #### is preceded (finished answers): [('blank-line', 347), ('inline', 89), ('final-answer-line', 18)]
+              n    acc    cut
+items                        
+(-1, 0]     649  0.220  0.304
+(0, 3]      228  0.342  0.013
+(3, 6]      225  0.156  0.018
+(6, 10]      13  0.000  0.077
+(10, 20]     58  0.034  1.000
+(20, 1000]   53  0.019  1.000
+['input_ids.npy', 'meta.json', 'token_logprobs.npy', 'topk_ids.npy', 'topk_logprobs.npy']
+{'texts': 'list1024', 'lengths': 'list1024', 'model': 'original', 'edited_tensors': 0, 'files': 'dict4', 'padding': 'right; input_ids -1, activations NaN', 'activations_dtype': 'float16', 'mean_token_logprob': 'list1024'}
+
+```

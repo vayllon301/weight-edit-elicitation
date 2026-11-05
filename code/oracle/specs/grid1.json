@@ -1,0 +1,11 @@
+[
+ {"name": "steer-h12perp-x1", "family": "steer", "layer": 11, "target": {"layer": 12, "perp": true}, "scale": 1.0},
+ {"name": "steer-h16perp-x1", "family": "steer", "layer": 15, "target": {"layer": 16, "perp": true}, "scale": 1.0},
+ {"name": "proj-o11-u12perp-a1", "family": "proj", "dir": {"layer": 12, "perp": true}, "writers": {"layers": [11], "which": ["attn"]}, "alpha": 1.0, "k": null},
+ {"name": "proj-o11-u12perp-a2", "family": "proj", "dir": {"layer": 12, "perp": true}, "writers": {"layers": [11], "which": ["attn"]}, "alpha": 2.0, "k": null},
+ {"name": "proj-o11-u12perp-a3", "family": "proj", "dir": {"layer": 12, "perp": true}, "writers": {"layers": [11], "which": ["attn"]}, "alpha": 3.0, "k": null},
+ {"name": "proj-local-l11to16-perp-a2", "family": "proj", "dir": {"layer": "local", "perp": true}, "writers": {"layers": [11, 12, 13, 14, 15, 16], "which": ["attn", "mlp"]}, "alpha": 2.0, "k": null},
+ {"name": "add-n15-d16perp-x1", "family": "add", "path": "neuron", "layer": 15, "target": {"layer": 16, "perp": true}, "scale": 1.0},
+ {"name": "add-n18-d19perp-x1", "family": "add", "path": "neuron", "layer": 18, "target": {"layer": 19, "perp": true}, "scale": 1.0},
+ {"name": "add-h11-d12perp-x0.5", "family": "add", "path": "head", "layer": 11, "target": {"layer": 12, "perp": true}, "scale": 0.5}
+]

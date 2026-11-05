@@ -1,0 +1,52 @@
+OUTPUT of Python run 151 of at most 300:
+```
+gh cols ['L', 'kind', 'head', 'off', 'big', 'rate'] kinds ['q_proj', 'o_proj']
+q_proj median/1000 1.61 [(14, 2, 9.1), (13, 0, 8.5), (20, 1, 6.3), (22, 2, 6.0), (11, 3, 5.5), (15, 2, 5.4), (20, 2, 5.4), (16, 1, 5.1), (24, 0, 5.1)]
+o_proj median/1000 1.3 [(11, 3, 6.0), (10, 1, 5.9), (13, 1, 4.8), (13, 0, 3.9), (13, 3, 3.7), (12, 3, 3.5), (9, 3, 3.5), (12, 1, 3.5), (12, 0, 3.2)]
+gf cols ['t', 'ax', 'i', 'off', 'exp', 'big', 'logp'] n 109
+flags by tensor {'12.o_proj': 8, '13.o_proj': 7, '0.gate_proj': 4, '0.up_proj': 4, '0.k_proj': 4, '14.q_proj': 4, '13.v_proj': 4, '13.q_proj': 4, '12.v_proj': 4, '11.gate_proj': 4, '11.q_proj': 4, '11.o_proj': 3, '22.q_proj': 3, '14.o_proj': 3}
+11. [('11.k_proj', 'row', 190, 9, 0.37), ('11.o_proj', 'col', 922, 14, 1.51), ('11.q_proj', 'row', 771, 15, 1.82), ('11.o_proj', 'col', 820, 11, 0.98), ('11.gate_proj', 'row', 2996, 7, 0.25), ('11.o_proj', 'col', 800, 14, 1.85), ('11.gate_proj', 'row', 4827, 7, 0.28), ('11.q_proj', 'row', 917, 12, 1.45), ('11.gate_proj', 'row', 1628, 6, 0.24), ('11.q_proj', 'col', 361, 7, 0.41), ('11.gate_proj', 'row', 3958, 6, 0.26), ('11.q_proj', 'col', 891, 7, 0.43)]
+25. [('25.up_proj', 'row', 1639, 12, 0.42), ('25.o_proj', 'row', 1140, 15, 1.09), ('25.up_proj', 'row', 2510, 8, 0.36), ('25.gate_proj', 'row', 6008, 8, 0.45), ('25.q_proj', 'row', 795, 9, 0.85), ('25.q_proj', 'row', 791, 9, 0.89)]
+profile median {120: 0.694, 121: 0.264, 122: 0.021}
+                120    121    122
+k                                
+11.down_proj    NaN    NaN    NaN
+11.gate_proj  0.881  0.412  0.063
+11.up_proj    0.839  0.371  0.047
+11.k_proj     0.691  0.309  0.042
+11.o_proj     0.707  0.305  0.093
+11.q_proj     0.841  0.361  0.069
+11.v_proj     0.552  0.203  0.019
+25.down_proj    NaN    NaN    NaN
+25.gate_proj  0.666  0.280  0.030
+25.up_proj    0.673  0.288  0.031
+25.k_proj     0.630  0.330  0.049
+25.o_proj     0.812  0.341  0.034
+25.q_proj     0.965  0.545  0.120
+25.v_proj     0.643  0.234  0.016
+pass 6 attn shape (2, 4, 340, 340)
+ sum check 1.0
+ t0 h0 ent 2.68 self 0.020 prev 0.011 prompt 0.327 first5 0.255 {'spec': 0.241, 'digit': 0.109, 'nl': 0.157, 'punct': 0.217, 'word': 0.276}
+ t0 h1 ent 2.02 self 0.013 prev 0.003 prompt 0.591 first5 0.325 {'spec': 0.317, 'digit': 0.156, 'nl': 0.057, 'punct': 0.129, 'word': 0.341}
+ t0 h2 ent 3.28 self 0.016 prev 0.011 prompt 0.368 first5 0.035 {'spec': 0.035, 'digit': 0.088, 'nl': 0.306, 'punct': 0.178, 'word': 0.393}
+ t0 h3 ent 3.78 self 0.014 prev 0.010 prompt 0.370 first5 0.113 {'spec': 0.101, 'digit': 0.083, 'nl': 0.327, 'punct': 0.145, 'word': 0.344}
+  class freq {'spec': 0.014, 'digit': 0.208, 'nl': 0.032, 'punct': 0.19, 'word': 0.556} n 279 prompt 98
+ t1 h0 ent 2.82 self 0.015 prev 0.008 prompt 0.323 first5 0.259 {'spec': 0.245, 'digit': 0.069, 'nl': 0.136, 'punct': 0.185, 'word': 0.366}
+ t1 h1 ent 2.02 self 0.011 prev 0.002 prompt 0.577 first5 0.299 {'spec': 0.292, 'digit': 0.107, 'nl': 0.045, 'punct': 0.117, 'word': 0.439}
+ t1 h2 ent 3.56 self 0.016 prev 0.011 prompt 0.396 first5 0.041 {'spec': 0.042, 'digit': 0.063, 'nl': 0.231, 'punct': 0.127, 'word': 0.537}
+ t1 h3 ent 3.89 self 0.013 prev 0.009 prompt 0.339 first5 0.104 {'spec': 0.093, 'digit': 0.051, 'nl': 0.322, 'punct': 0.118, 'word': 0.416}
+  class freq {'spec': 0.012, 'digit': 0.15, 'nl': 0.026, 'punct': 0.141, 'word': 0.671} n 340 prompt 111
+pass 20 attn shape (2, 4, 620, 620)
+ sum check 1.0
+ t0 h0 ent 3.37 self 0.009 prev 0.004 prompt 0.219 first5 0.179 {'spec': 0.17, 'digit': 0.127, 'nl': 0.136, 'punct': 0.194, 'word': 0.373}
+ t0 h1 ent 2.04 self 0.006 prev 0.001 prompt 0.378 first5 0.101 {'spec': 0.098, 'digit': 0.266, 'nl': 0.046, 'punct': 0.124, 'word': 0.466}
+ t0 h2 ent 3.81 self 0.006 prev 0.004 prompt 0.293 first5 0.031 {'spec': 0.03, 'digit': 0.112, 'nl': 0.222, 'punct': 0.202, 'word': 0.435}
+ t0 h3 ent 4.33 self 0.008 prev 0.005 prompt 0.302 first5 0.107 {'spec': 0.098, 'digit': 0.08, 'nl': 0.307, 'punct': 0.124, 'word': 0.392}
+  class freq {'spec': 0.006, 'digit': 0.155, 'nl': 0.04, 'punct': 0.123, 'word': 0.676} n 620 prompt 164
+ t1 h0 ent 3.08 self 0.008 prev 0.004 prompt 0.273 first5 0.231 {'spec': 0.221, 'digit': 0.173, 'nl': 0.112, 'punct': 0.201, 'word': 0.293}
+ t1 h1 ent 2.31 self 0.008 prev 0.001 prompt 0.346 first5 0.138 {'spec': 0.131, 'digit': 0.234, 'nl': 0.042, 'punct': 0.174, 'word': 0.419}
+ t1 h2 ent 3.74 self 0.008 prev 0.007 prompt 0.294 first5 0.021 {'spec': 0.02, 'digit': 0.17, 'nl': 0.174, 'punct': 0.275, 'word': 0.36}
+ t1 h3 ent 4.11 self 0.008 prev 0.005 prompt 0.257 first5 0.088 {'spec': 0.079, 'digit': 0.111, 'nl': 0.311, 'punct': 0.174, 'word': 0.326}
+  class freq {'spec': 0.006, 'digit': 0.216, 'nl': 0.034, 'punct': 0.15, 'word': 0.594} n 620 prompt 82
+
+```

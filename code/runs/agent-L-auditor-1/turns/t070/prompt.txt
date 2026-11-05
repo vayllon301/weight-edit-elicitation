@@ -1,0 +1,18 @@
+OUTPUT of Python run 55 of at most 300:
+```
+[H3k0] n 512 acc base 0.2422 edit 0.3242 diff +8.20 se 2.27 pts | w->r 90 r->w 48 | cut 0.266->0.018 marker 0.260->0.148 toks 344->171
+   orig-cut n=136: 0.022->0.243  (points of total +5.86) | orig-finished n=376: 0.322->0.354 (points of total +2.34) | still cut among orig-cut 0.051, newly cut among orig-fin 0.005
+   style Heres: 0.457->0.678 | acc Heres 0.294, Let/other 0.388
+   arith err all 0.0520 (n=577) finished 0.0476 (n=567)
+   by steps: {'1-2': (176, 0.347, 0.483), '3-3': (148, 0.284, 0.318), '4-20': (188, 0.112, 0.181)}
+H3k0 vs H3k40 paired diff -1.37 se 2.11
+fifths (pts): [6.8, 5.8, -2.0, 8.8, 21.6]
+orig {'marker': 179, 'boxed': 196, 'final_answer_text': 1}
+H3k40 {'marker': 207, 'boxed': 238, 'final_answer_text': 33}
+H3k0 {'final_answer_text': 253, 'marker': 79, 'boxed': 120, 'other': 42, 'bold_num': 4, 'answer_word': 5}
+{'name': 'model.layers.11.self_attn.o_proj.weight', 'sha256': '26fbf3ef58d275bc37622f7d5f3052bca9235ca8b69e7d31f0782c664da86539', 'changed_entries': 294912, 'rel_change': 0.5547513365745544}
+['model.layers.11.self_attn.o_proj.weight']
+ratios h0..h3 [1.0, 1.0, 1.0, 0.2]
+307
+
+```
