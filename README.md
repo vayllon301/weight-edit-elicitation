@@ -56,7 +56,7 @@ ban and the edit refusals are enforced in code; the other rules were audited aft
 
 Every L run has at least one C block. L-auditor-2, meant as a clean replication and told the rule exactly, breached it too. No breaching
 block fed a submitted tensor, but those blocks shaped the searches, and nobody can say what the runs would have found without them.
-Counting L-auditor-2 and Hft-auditor-1 with their blocks declared is provisional.
+L-auditor-2 and Hft-auditor-1 count with their declared breaches, as the author confirmed on 5 November 2026.
 
 **The agent's debriefs are not evidence.** Each came after the edit froze, and the agent knew its own measured gain, so its statements follow that
 gain. They are kept as written, including one error: L-auditor-1's debrief says it never saw a config and identified the model from structure, but
