@@ -1,0 +1,10 @@
+OUTPUT of Python run 153 of at most 300:
+```
+blocks >=140 using v_proj/input_layernorm: [143, 147, 153]
+    if 'v_proj' in src or 'input_layernorm' in src:
+print('blocks >=140 using v_proj/input_layernorm:', hits)
+lines = [l for l in src.splitlines() if any(k in l for k in ('acts', 'np.load', 'v_proj', 'input_layernorm', 'def ', 'last', 'mean'))]
+print('gen_1_acts files:', sorted(os.listdir('/work/gen_1_acts'))[:12])
+gen_1_acts files: ['hidden_last_prompt.npy', 'hidden_mean_answer.npy', 'mlp_last_prompt.npy', 'mlp_mean_answer.npy']
+
+```

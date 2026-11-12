@@ -1,0 +1,66 @@
+{
+ "version": "rule-review-3",
+ "key": "793ad04f6377da9eb9b19b30684a14ec2c302a4a1eb1c5dafc4fedb591906e96",
+ "code_sha256": "a2af42615e34a16ebc946820aaa60673f9b8d3c8503c803beb3c5a09cf9b928e",
+ "clean_code_sha256": "a2af42615e34a16ebc946820aaa60673f9b8d3c8503c803beb3c5a09cf9b928e",
+ "code": "meta10=json.load(open('/work/fwd_10/meta.json')); L10=np.array(meta10['lengths'])\nlabs=np.array(json.load(open('/work/tf9_meta.json'))['lab'])\nTL=np.load('/work/fwd_10/token_logprobs.npy',mmap_mode='r')\nTI=np.load('/work/fwd_10/topk_ids.npy',mmap_mode='r'); TP=np.load('/work/fwd_10/topk_logprobs.npy',mmap_mode='r')\ndp=L10-2\nlp_true=np.array([TL[k,dp[k]] for k in range(len(L10))],dtype=np.float32)\npH=[]\nfor k in range(len(L10)):\n    ii=np.asarray(TI[k,dp[k]]); pp=np.asarray(TP[k,dp[k]],dtype=np.float32)\n    pH.append(float(np.exp(pp[ii==9675]).sum()))\npH=np.array(pH)\nE=load_original('model.embed_tokens.weight')[9675].numpy() if 'model.embed_tokens.weight' in NAMES else None\nlay={}\nfor l in [10,12,14,16,18,20,22,24,26]:\n    h=np.load(f'/work/fwd_10/hidden_{l}.npy',mmap_mode='r')\n    X=np.stack([np.asarray(h[k,dp[k]],dtype=np.float32) for k in range(len(L10))]); X[:,[1038,1125]]=0\n    d=X[labs==1].mean(0)-X[labs==0].mean(0)\n    np.save(f'/work/dhow_{l}.npy',d)\n    lay[l]=(round(float(np.linalg.norm(d)/np.linalg.norm(X,axis=1).mean()),3), round(float(d@E/np.linalg.norm(d)/np.linalg.norm(E)),3) if E is not None else None)\n(round(float(np.exp(lp_true[labs==1]).mean()),3), round(float(np.median(np.exp(lp_true[labs==1]))),3), round(float(pH[labs==0].mean()),4), round(float((pH[labs==0]>0.05).mean()),3), lay)",
+ "canonical_sha256": "42e0a6875b427ba0d745142c8c09f4a55d007bd52ec38d3b338bd3bc27dc1f40",
+ "history_sha256": "91c5d536a7f3a1481132e828e32525c4abd5dd482bb0c2d05e12bb810846d0d8",
+ "context": {
+  "forward_passes_used": 10,
+  "forward_pass_budget": 50,
+  "python_runs_used": 85,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "0fb710e3839aa675e192b2339f27581202700c27404de692c90054cb55080177",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "for l,n in [(16,180),(16,3729),(17,3621)]:\n    Dl=load_original(f'model.layers.{l}.mlp.down_proj.weight').numpy()\n    cd=float(d@Dl[:,n]/np.linalg.norm(Dl[:,n]))\n    a=ML[:,l,n].astype(np.float32)\n    print(l,n,'cos(col,d)',round(cd,3),'abs write along d reg0',round(float(a[reg==0].mean()*cd),3),'reg1',round(float(a[reg==1].mean()*cd),3))",
+    "canonical_sha256": "b055fdffe254c8c1a39d14295740e40814857834e7e21de030a934d77c27a9c3",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "with open('/work/notes.md','a') as f:\n    f.write(\"\\nAnswer-writing sabotage CLOSED: pred==last body number 272/281 wrong; gold in text 45/281 (incidental).\\nNext: rank R0-pushing neurons L12-20 (actdiff R0-R1 x gain-scaled col proj on regime dir) for ablation.\\n\")\nout={}\nallsc=[]\nfor L in range(12,21):\n    h=np.asarray(H1[:,L+1,:],dtype=np.float32).copy(); h[:,[1038,1125]]=0\n    d=h[regs==1].mean(0)-h[regs==0].mean(0); u=d/np.linalg.norm(d)\n    W=load_original(f'model.layers.{L}.mlp.down_proj.weight').numpy()\n    g=1+load_original(f'model.layers.{L}.post_feedforward_layernorm.weight').numpy()\n    p=((W*g[:,None]).T@u)            # per neuron\n    a=np.asarray(M1[:,L,:],dtype=np.float32)\n    ad=a[regs==0].mean(0)-a[regs==1].mean(0)\n    sc=ad*p                          # negative = drives toward R0 differentially\n    o=np.argsort(sc)[:5]\n    out[L]=[(int(n),round(float(sc[n]),2),round(float(a[regs==0,n].mean()),2),round(float(a[regs==1,n].mean()),2)) for n in o]\n    allsc.append((L,sc))\ntot={L:(round(float(sc[sc<0].sum()),1),round(float(np.sort(sc)[:10].sum()/sc[sc<0].sum()),2)) for L,sc in allsc}\nout, tot",
+    "canonical_sha256": "292158a6f9eb5add9b71ffd2ec5f447d7fc1e84d8b78fb32972b1439ba6cd1bc",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 95,
+    "text": "\"However\" is a strong marker of the loop failure. It appears in 79% of cut answers but only in 3% of finished answers, whether right or wrong. The other self-doubt phrases (\"not possible\" 17%, \"re-read\" 16%, \"doesn't make sense\" 10%, \"mistake\" 9%) are also almost exclusive to cut answers.\n\nThe gold value appears before the first repeated line in only 21% of cut answers. So this is not mainly \"reached the right answer and threw it away\". It is a doubt reflex introduced by \"However\" that sends the model into re-derivation.\n\nBefore localizing, I need the reflex's timing and tokenization:\n- **Timing:** whether the first \"However\" comes before the first repeated line, i.e. whether doubt causes the loop rather than following it.\n- **Context:** what typically precedes it, e.g. a line ending in a computed value.\n- **Token:** which token \"However\" uses at line start.\n\nIf \"However\" reliably precedes loop onset, the next pass will be a teacher-forced read of MLP activations at the position before it. That would let me find neurons that drive this doubt token."
+   },
+   {
+    "reply": 96,
+    "text": "The first \"However\" comes before loop onset in 79% of the cut answers that contain it. It almost always opens the same sentence, \"However, we are given that...\", right after a line that ends in a computed value. The model re-reads the problem statement, doubts its last computation and starts the derivation again.\n\nTokenization is clean: the line break (id 107) is followed by \"However\" (id 9675). The decision is therefore made at the newline token right after a computed line, which is a well-defined position to localize.\n\nI'll build teacher-forced texts for the next pass from the original model's own answers, deduplicated by problem:\n- **Cut answers:** truncated just after the first \"However\".\n- **Controls:** correct finished R1 answers, truncated just after the first token of a mid-answer line, at the first line start past 50% of the answer.\n\nIn both cases the second-to-last token is the newline where the model decides how to continue. The pass will return residual states at layers 10, 12, ..., 26, plus top-20 logits. From those I'll find the layer where the \"However\" decision appears, then look at that layer's MLP neurons and attention in a follow-up."
+   },
+   {
+    "reply": 97,
+    "text": "After deduplicating by problem, there are 74 cut answers whose first \"However\" comes before loop onset, against 150 controls. The longest text is 833 tokens, so 9 hidden-state layers fit well under the array limit.\n\nI'm running the original model teacher-forced on these 224 texts, reading residual states at layers 10\u201326 (even) and top-20 logits. If the \"However\" decision has a localized source, the cut-versus-control difference at the decision newline should project increasingly onto the \"However\" token row from some specific layer onward. That layer is where I'd look for driver neurons or heads next."
+   },
+   {
+    "reply": 98,
+    "text": "The pass returned the original's states at the decision newline for 74 cut and 150 control texts. (The mean log-probabilities in the summary include prompt tokens, so they are not informative.)\n\nI'll first confirm the decision itself. I'll check the log-probability of \"However\" where it actually occurs in cut texts, and how much probability the controls give it, using the top-20 list.\n\nThen, for each layer, I'll take the cut-minus-control mean residual at the decision position (massive dims zeroed). I'll measure its cosine with the \"However\" embedding row and its size relative to the typical state norm. The layer where alignment with \"However\" jumps is where the doubt token gets written, and that is where I'll look for driver components."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "0a5e02fd1caee374ee5fb7898f334a6c85706336f60972daba82d1e5e040878c",
+ "effort": "medium"
+}

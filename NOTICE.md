@@ -9,4 +9,5 @@
   OpenAI, MIT licence; the full notice is in [`licenses/GSM8K-LICENSE.txt`](licenses/GSM8K-LICENSE.txt).
 - **Gemma.** This repository holds no Gemma weights. Answers in `code/runs/` are outputs of Gemma 3 models and of models derived from them.
   Gemma itself is provided under and subject to the Gemma Terms of Use found at <https://ai.google.dev/gemma/terms>.
-- **Agent logs** are outputs of Claude Opus 5.5.
+- **Agent logs** and the guarded runs' pre-execution reviews are outputs of Claude Opus 5.5. The audit reports in
+  `code/runs/final-eval-closure-v1/` are outputs of model reviewers.

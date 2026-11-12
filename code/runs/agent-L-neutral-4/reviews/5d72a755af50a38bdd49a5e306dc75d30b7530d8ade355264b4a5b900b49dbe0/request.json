@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "5d72a755af50a38bdd49a5e306dc75d30b7530d8ade355264b4a5b900b49dbe0",
+ "code_sha256": "d6489232f7bd747acfc3f2718469cbd940487cba0af3ade9ac15aeb6746fef23",
+ "clean_code_sha256": "d6489232f7bd747acfc3f2718469cbd940487cba0af3ade9ac15aeb6746fef23",
+ "code": "vcn=vc.numpy() if hasattr(vc,'numpy') else np.asarray(vc); vcn=vcn/np.linalg.norm(vcn)\nround(float(vcn@dclean),3)",
+ "canonical_sha256": "b771735967d8f8926fc2018b0b3d72da7f6ecd419d65f9ad4de0cdb382397c3f",
+ "history_sha256": "12f5e63995cbc24a906f5f55a6176edd92cfcc96d9b1a0f0f21e5d97ce5f120a",
+ "context": {
+  "forward_passes_used": 46,
+  "forward_pass_budget": 50,
+  "python_runs_used": 162,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "2c837537e927e286e8c5ebf5e2d5d67ffc98461e87866b853c1d8790a8888c98",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 210,
+    "text": "The notes are current. This pass scores the identical 335 texts with the original weights, so position by position it can be compared with pass 45 (edited) on the same tokens. Across the two passes, the expected batching noise is small next to the differences I'll look for."
+   },
+   {
+    "reply": 211,
+    "text": "Pass 46 has the original's scores for the same texts; mean per-text log-probs are almost identical to pass 45's. Now the paired comparison at each group's onset newlines (the same positions as before):\n- **\u0394lp:** the log-prob of the first repeated token, edited minus original.\n- **\u0394proj:** the raw projection on dclean at the onset newline, edited minus original.\n\nThe same two quantities are computed at novel newlines as a baseline, each with its standard error over texts. A positive \u0394lp at new-loop onsets with a negative \u0394proj would mean C suppresses the dclean signal there while the repeat still gains probability through another route. A \u0394lp near zero means C did not make the repetition itself more likely at those points."
+   },
+   {
+    "reply": 212,
+    "text": "The paired comparison separates the two loop types clearly.\n- **Persistent loops:** C lowers the log-prob of the repeated line at onset by 0.147 \u00b1 0.027 and moves the dclean projection there by 1.05 SD. That is the intended, onset-specific action.\n- **New loops:** C changes the onset log-prob by only \u22120.031 \u00b1 0.027 (not significant), and its dclean shift is half as large (0.50 SD), close to its non-specific shift on novel lines (0.3\u20130.4 SD).\n- **Interpretation:** C does not make repetition more likely at these onsets. It simply fails to engage there, and the answers reach these loops because C changed the earlier trajectory.\n\nOne point needs checking before I write this up: the edit *increases* the layer-20 projection on dclean while lowering onset probability. I'll read the C construction in block 119 to confirm which sign of the direction it writes. Then the report can state the mechanism correctly instead of guessing."
+   },
+   {
+    "reply": 213,
+    "text": "Block 119 shows C's form: W \u2190 W \u2212 \u03b2\u00b7v v\u1d40W with \u03b2 = \u22121.5, so W + 1.5\u00b7v v\u1d40W. That is an *amplification* of the component each o_proj and down_proj in layers 16\u201322 already writes along vc (scaled by the post-norm weights). It is not a removal. A positive \u0394proj is therefore what C is built to produce, if vc is aligned with dclean.\n\nI'll check the cosine between vc and dclean, and its sign, now. If vc \u2248 +dclean, the \"onset direction\" acts as a loop-*resisting* signal. It rises when a repeat is imminent, and amplifying it lowers the repeat's probability. In that case the new-loop finding reads as: C's amplification engages only half as strongly at those onsets, because the layers write less of vc there to amplify."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "d4366c0e77b8ca1bbc3bc95e9359adebe74f69748ad79a41b72cb31e274ec5d4",
+ "effort": "medium"
+}

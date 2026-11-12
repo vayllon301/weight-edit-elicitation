@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "836ee687ec4093dcea72d70432bc510112c780cedd117e59fb9726cf8579020c",
+ "code_sha256": "c095cb8648d8a8268be0c5f41b2c94b6175dccefe16945b7fe7d50af3833fe66",
+ "clean_code_sha256": "c095cb8648d8a8268be0c5f41b2c94b6175dccefe16945b7fe7d50af3833fe66",
+ "prompt_sha256": "25019ac7f3817315ea42c0b9dbfe2bff861c476140f9348550b7dedbcd7da14e",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "apply_neuron_scale(byl, 0.0) zeroes down_proj columns of 76 neurons picked by effect size d on original pass-2 activations, a hand-built edit from allowed statistics, then saves it. screen_summary is only defined, not called; it would read logprobs from real passes. No candidate is applied to stored activations and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 11465,
+  "cache_read_input_tokens": 2995,
+  "output_tokens": 463,
+  "output_tokens_details": {
+   "thinking_tokens": 270
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 11465,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 463,
+    "cache_read_input_tokens": 2995,
+    "cache_creation_input_tokens": 11465,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 11465
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.101587,
+ "t": 1794167789.389539
+}

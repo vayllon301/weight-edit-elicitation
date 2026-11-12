@@ -1,0 +1,22 @@
+OUTPUT of Python run 127 of at most 300:
+```
+{'texts': "['<bos><start_of_turn>user\\nDenny is planning to build a modular home.  A 400 square foot Kitchen module costs $20000 and a 150 square foot bathroom module costs $12,000.  All other modules cost $100 per square foot.  If Denny plans to build a 2,000 square foot modular home containing one kitchen an", 'lengths': '[480, 413, 514, 406, 509, 444, 257, 413, 738, 631, 405, 358, 490, 473, 667, 589, 238, 636, 510, 512, 391, 451, 832, 215, 293, 525, 359, 297, 258, 430, 197, 363, 288, 682, 225, 254, 379, 319, 343, 269, 408, 238, 516, 442, 393, 397, 353, 356, 566, 347, 588, 298, 269, 777, 599, 314, 823, 333, 667, 307,', 'model': 'original', 'edited_tensors': 0, 'files': {'input_ids': [224, 832], 'token_logprobs': [224, 831], 'mlp_act_18': [224, 832, 6912], 'mlp_act_19': [224, 832, 6912]}, 'padding': 'right; input_ids -1, activations NaN', 'activations_dtype': 'float16', 'mean_token_logprob': '[-1.0701444149017334, -1.569186806678772, -1.1677583456039429, -1.2272292375564575, -0.8398975729942322, -1.2777689695358276, -2.6630311012268066, -1.1349762678146362, -0.9750800132751465, -0.8857141137123108, -1.3674588203430176, -1.8352382183074951, -1.1199193000793457, -1.4228981733322144, -0.897'}
+['/work/blocks/block_117.py', '/work/blocks/block_119.py', '/work/blocks/block_127.py']
+cand2={}
+for Lr in (18,19):
+    mm=np.load(f'/work/fwd_24/mlp_act_{Lr}.npy',mmap_mode='r')
+    A=np.stack([np.asarray(mm[k,dp[k]],dtype=np.float32) for k in range(224)]); np.save(f'/work/how_act_{Lr}.npy',A)
+    a1,a0=A[labs==1],A[labs==0]
+    ddv=(a1.mean(0)-a0.mean(0))/np.sqrt(0.5*(a1.var(0)+a0.var(0))+1e-6)
+    W=load_original(f'model.layers.{Lr}.mlp.down_proj.weight').numpy()
+    nrm=np.linalg.norm(W,axis=0); cs=(W.T@Eu)/(nrm+1e-9)
+    sel=np.where((np.abs(ddv)>1.5)&(np.abs(cs)>0.1))[0]
+    cand2[Lr]=[(int(k),round(float(ddv[k]),2),round(float(cs[k]),2),round(float(a1[:,k].mean()),2),round(float(a0[:,k].mean()),2),round(float(cs[k]*nrm[k]),2)) for k in sel]
+    print(Lr,'n |d|>1.5:',int((np.abs(ddv)>1.5).sum()),'max|d| %.2f'%np.abs(ddv).max())
+# reference: same write stat for existing L16/17 doubt neurons
+ref={}
+for Lr,cols in doubt.items():
+    W=load_original(f'model.layers.{Lr}.mlp.down_proj.weight').numpy(); ref[Lr]=[round(float(W[:,c]@Eu),2) for c in cols]
+cand2, ref
+
+```

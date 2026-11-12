@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "31aa2eef93a4174858507204911e20326f18fad47b0874a25c1da5b3e2a084e8",
+ "code_sha256": "28f04bade4b10c3eed09bb5eb0a3db34b710e2f7acd966fc99cc94d962e1c4d0",
+ "clean_code_sha256": "28f04bade4b10c3eed09bb5eb0a3db34b710e2f7acd966fc99cc94d962e1c4d0",
+ "prompt_sha256": "82652f9b0e8277839a52a6d1b89a018517546491b89b4fac9d1e5e860c11aa3d",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block prints notes text and compares the saved edit with the cands/e4 file and the original weights (array_equal, changed columns). These are weight bookkeeping only. It uses no stored activations, does not replay the model and simulates no candidate, then appends a note. That is a grade A weight statistic.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 162783,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 251,
+  "output_tokens_details": {
+   "thinking_tokens": 81
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 162783,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 251,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 162783,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 162783
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 1.3072920000000001,
+ "t": 1794094185.965333
+}

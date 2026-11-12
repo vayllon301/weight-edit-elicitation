@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "9910926c179a978fad6abebd8fc09acd1759745d371461f071a33032f87907f1",
+ "code_sha256": "1f34b54d795586e7a9f6e92f98da49fba115d0d20b34fdc39a249d30f99001cb",
+ "clean_code_sha256": "1f34b54d795586e7a9f6e92f98da49fba115d0d20b34fdc39a249d30f99001cb",
+ "prompt_sha256": "fbe09ccda8cc036c2b62308f09c0abaaff3d3deb17a917fe276d344655fd8a3a",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only reads /work/fwd_20/meta.json and /work/tf10_info.json and lists files in /work/fwd_20. It inspects metadata keys and types and touches no activations, weights or candidate edits. No rule 4 or rule 5 issue.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 5456,
+  "cache_read_input_tokens": 46994,
+  "output_tokens": 157,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5456,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 157,
+    "cache_read_input_tokens": 46994,
+    "cache_creation_input_tokens": 5456,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 5456
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0561948,
+ "t": 1794182043.154141
+}

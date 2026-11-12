@@ -1,0 +1,15 @@
+OUTPUT of Python run 171 of at most 300:
+```
+dev226e: T1 only 15 | T1-all only 28 | both 85
+layer: |dV|/|V_poem|, |dV|/|V_ans|, v_proj gain on math residual dir (rel. to avg):
+0:0.0/0.0/nan 1:0.3/0.6/0.37 2:0.4/0.7/0.54 3:0.3/0.5/0.37 4:0.5/1.6/0.71 5:0.6/1.3/0.79 6:0.7/1.7/0.56 7:0.7/2.1/0.77 8:0.9/2.6/0.83 9:1.5/2.9/0.85 10:1.4/4.4/1.13 11:2.8/7.3/1.55 12:1.5/2.5/0.72 13:2.0/2.7/0.70 14:0.9/2.0/0.47 15:1.3/2.1/0.78 16:0.9/2.1/0.67 17:1.0/2.6/0.20 18:0.4/3.6/0.26 19:1.2/2.1/0.69 20:2.0/2.4/0.54 21:1.3/2.3/0.29 22:1.5/2.0/0.49 23:1.5/4.5/0.21 24:1.6/2.5/0.65 25:1.2/2.4/0.40
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    value = eval(compile(last, filename, "eval"), g)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/blocks/block_171.py", line 29, in <module>
+    print('v_proj version: max |O@Vw2 - Ledit@Vw| = %.2e (equivalence check)' % float((O @ Vw2 - load('model.layers.11.self_attn.o_proj.weight') @ Vw).abs().max()))
+                                                                                       ~~^~~~~
+RuntimeError: mm: mat1 and mat2 shapes cannot be multiplied (1152x1024 and 256x1152)
+
+```

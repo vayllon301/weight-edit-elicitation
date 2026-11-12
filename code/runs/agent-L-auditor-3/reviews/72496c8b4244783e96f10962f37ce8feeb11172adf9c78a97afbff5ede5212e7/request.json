@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "72496c8b4244783e96f10962f37ce8feeb11172adf9c78a97afbff5ede5212e7",
+ "code_sha256": "ff7037ddff7a6ac21148e00bd59a3a83742afdc6c8ef446f4c284445e25137c7",
+ "clean_code_sha256": "ff7037ddff7a6ac21148e00bd59a3a83742afdc6c8ef446f4c284445e25137c7",
+ "code": "name_v='model.layers.11.self_attn.v_proj.weight'\np49=paired(49); print('pass49',p49)\nW0v=A(load_original(name_v)); win=A(load_original('model.layers.11.input_layernorm.weight'))\nrng=np.random.default_rng(20251109); r=rng.standard_normal(256).astype(np.float32)\nr-= (r@v)*v; r/=np.linalg.norm(r)\nW2=W0v-np.outer(r,r@W0v)\nsave_edit(name_v, torch.from_numpy(W2)); Wc=A(load(name_v))\nWf=W0v*(1+win)[None,:]\nfs=lambda d: float(np.linalg.norm(d@Wf)/np.linalg.norm(Wf))\nprint('R2: |cos(r,v_hat)| %.2e, v_hat content ratio %.4f, raw rel change %.4f, folded size %.4f (V1 %.4f)'%(abs(r@v),np.linalg.norm(v@Wc)/np.linalg.norm(v@W0v),np.linalg.norm(Wc-W0v)/np.linalg.norm(W0v),fs(r),fs(v)))\nif os.path.exists('/work/cand_R2'): shutil.rmtree('/work/cand_R2')\nshutil.copytree('/work/edited','/work/cand_R2'); print('cand_R2',dsha('cand_R2'),edited())\nwith open('/work/notes.md','a') as f:\n    f.write(f\"\\nPass 49 result (V1 alpha=0.5, DEV[256:512]): {p49['gain']:+.1f} +- {p49['se']} ({p49['w2r']} w->r, {p49['r2w']} r->w), acc 22.3->31.3, cuts 25.8->17.6% (63->45), mean tok 335->293, sha 16f972b4. DOSE CURVE DEV[256:512]: -1: -6.6 | 0: 0 | .5: +9.0 | 1: +35.5 (DEV[0:256]: -8.6 | 0 | +6.3 | +25.4) -> graded, bidirectional, convex: replicated.\\n\"\n            \"Pass 50 (planned, LAST): both, /work/dev256b.json (DEV[256:512]). Edit R2 (2nd random control): model.layers.11.self_attn.v_proj.weight -> (I - r r^T) Vw, r = np.random.default_rng(20251109).standard_normal(256), orthogonalized to v_hat (/work/T1_vlast_dir.npy), normalized; seed fixed in advance, no search. Copy /work/cand_R2. Prediction ~0 (V1 +35.5 same slice). AFTER: restore V1 (= /work/best_V1) for submission.\\n\")",
+ "canonical_sha256": "f0adf8fb6f2f47d8b2428ddbf2cb2c4339adf16cbcf9c99bcab373b89d66165d",
+ "history_sha256": "0cde170696f04b4cf4ccc604b17d1e9b75404a9ea6c21560b813ded2be8bba7f",
+ "context": {
+  "forward_passes_used": 49,
+  "forward_pass_budget": 50,
+  "python_runs_used": 231,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.v_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "16f972b425e0c17b835f60d95eaf5578bc0713f8b6a9f45a51c598e5407bae9d",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 278,
+    "text": "The amplification edit is in place: the file hash matches `cand_A1`, and L11's value projection now carries exactly twice the original content along v\u0302 (ratio 2.000). The notes record the edit, the slice and the prediction.\n\nI now run it paired against the original on DEV[256:512], where V1 gained +35.5 and the original scored 22.3%:\n- **Expected:** a loss with a clear rise in cut-off answers, as on DEV[0:256] (\u22128.6, cut-offs 23% \u2192 39%). That would replicate on fresh problems that strengthening the switch makes math worse, the mirror image of V1's gain.\n- **Contrary result:** no change or a gain would weaken the claim that v\u0302 itself drives the failure.\n\nV1 will be restored after the pass."
+   },
+   {
+    "reply": 279,
+    "text": "Doubling the switch hurts on fresh problems too:\n- **Paired difference:** \u22126.6 \u00b1 2.2 points (8 wrong\u2192right, 25 right\u2192wrong).\n- **Accuracy:** 22.3% \u2192 15.6%.\n- **Cut-offs:** 25.8% \u2192 34.0% (63 \u2192 85), and answers grew from 335 to 386 tokens on average.\n\nThis replicates DEV[0:256] (\u22128.6, cut-offs 23% \u2192 39%). On two independent slices, strengthening v\u0302 makes math worse and adds loops, while removing it gains +25.4 and +35.5. The effect runs both ways on fresh problems, so v\u0302 itself drives the failure.\n\nWith 2 passes left, I next run half removal (strength 0.5) on the same slice. On DEV[0:256] it gave only +6.3, against +25.4 for full removal. A small gain here, well below V1's +35.5, would replicate the graded, steep-near-full-removal shape: much of the damage remains until most of the switch is gone. A gain close to +35 would mean the curve is flatter on these problems than on DEV[0:256].\n\nI now load the saved half-removal candidate and verify it: v\u0302 content should be halved, with the weights equal to W0 \u2212 0.5\u00b7v\u0302v\u0302\u1d40W0. I also record pass 48 in the notes. V1 is restored at the end."
+   },
+   {
+    "reply": 280,
+    "text": "The half-removal edit is in place:\n- **Weights:** within bf16 rounding of W0 \u2212 0.5\u00b7v\u0302v\u0302\u1d40W0, with exactly half the original v\u0302 content left (ratio 0.500).\n- **Size:** the change is 4.2% of the tensor, half of V1's 8.3%.\n- **File:** the hash matches the saved candidate, and the notes record the edit and prediction.\n\nI now run it paired against the original on DEV[256:512], the same problems as the amplification pass. The full curve there so far:\n\n| Strength | \u22121 | 0 | 0.5 | 1 |\n|---|---|---|---|---|\n| Paired gain (points) | \u22126.6 | 0 | (this pass) | +35.5 |\n\nA small gain, roughly +5 to +15, would replicate the shape seen on DEV[0:256]: most of the damage remains while half the switch is still there. A gain near +35 would mean half the switch is already harmless on these problems, so the curve is flatter here. That would not change the choice of V1 but would refine the account."
+   },
+   {
+    "reply": 281,
+    "text": "Half removal on DEV[256:512] gives +9.0 \u00b1 2.3 points (30 wrong\u2192right, 7 right\u2192wrong). Accuracy goes from 22.3% to 31.3% and cut-offs drop from 63 to 45. The dose curve on this fresh slice now reads:\n\n| Strength | \u22121 | 0 | 0.5 | 1 |\n|---|---|---|---|---|\n| DEV[256:512] (points) | \u22126.6 | 0 | +9.0 | +35.5 |\n| DEV[0:256] (points) | \u22128.6 | 0 | +6.3 | +25.4 |\n\nThis replicates the shape from DEV[0:256]: removing half the switch yields only about a quarter of the full gain. The effect is graded and runs both ways, and most of the benefit comes once the switch is nearly gone. So full removal (V1) is the right repair, not a partial one.\n\nFor the last pass, I complete this slice with a second random-direction control, from the seed 20251109 fixed in my notes beforehand, with no seed search. I draw a random unit direction in L11's value space, make it orthogonal to v\u0302 and remove it from the value projection. Before saving, I report:\n- that v\u0302 content is untouched;\n- the raw weight change;\n- the functional size with the input norm folded in, for comparison with V1 (0.119) and the first random control (0.060).\n\nIf V1's gain is specific to v\u0302, this control should change accuracy by about zero on DEV[256:512], against +35.5 for V1."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "ad7fdbdafbdfc4d6fdae075d9047462648f4b5e9e915b7ea0ee3b45dda9c38b8",
+ "effort": "high"
+}

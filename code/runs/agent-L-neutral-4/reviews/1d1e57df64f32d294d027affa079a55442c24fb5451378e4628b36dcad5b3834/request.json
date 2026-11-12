@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "1d1e57df64f32d294d027affa079a55442c24fb5451378e4628b36dcad5b3834",
+ "code_sha256": "cf3c417535b84a506d05a2bfd9fd29646a192e31734779699d77bee92782e18c",
+ "clean_code_sha256": "cf3c417535b84a506d05a2bfd9fd29646a192e31734779699d77bee92782e18c",
+ "code": "o13={json.loads(l)['id']:json.loads(l) for l in open('/work/gen_13_original.jsonl')}\ne13={json.loads(l)['id']:json.loads(l) for l in open('/work/gen_13_edited.jsonl')}\nrows=[]\nfor k in o13:\n    o,e=o13[k],e13[k]\n    rows.append(dict(o_cut=o['cut'],e_cut=e['cut'],o_ok=o['correct'],e_ok=e['correct'],o_plain=o['text'].startswith('Let'),e_plain=e['text'].startswith('Let')))\nP=pd.DataFrame(rows)\nprint(P.groupby(['o_cut','e_cut'])[['o_ok','e_ok']].agg(['mean','count']).round(3).to_string())\nprint(P.groupby('o_plain')[['o_ok','e_ok','o_cut','e_cut']].mean().round(3).to_string(), P.o_plain.mean().round(2), (P.o_plain==P.e_plain).mean().round(2))",
+ "canonical_sha256": "b4f2ae45f1ee74a764711422e8283b7f2aab939ab24f8c5a86e96344561395c9",
+ "history_sha256": "444c636610f59d930333ff5c66c04fd0c2f8268c5f686a9038777c6631981272",
+ "context": {
+  "forward_passes_used": 13,
+  "forward_pass_budget": 50,
+  "python_runs_used": 55,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "2c837537e927e286e8c5ebf5e2d5d67ffc98461e87866b853c1d8790a8888c98",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 67,
+    "text": "Pass 12 for C(-1.5) is done, and the per-text means again changed only slightly. I'll compute the same table. If the onset logprob falls, and clearly more than the same-token novel-line control, this direction is a causal anti-repetition lever with the opposite sign to my original guess. If it doesn't, the onset-direction approach is closed."
+   },
+   {
+    "reply": 68,
+    "text": "This time the edit moves the decision in the predicted direction, and the dose response is consistent: \u03b2 = +2 raised P(onset), and \u03b2 = -1.5 lowers it.\n\n| Measure (change vs original) | C(-1.5) |\n|---|---|\n| Onset first-token logprob, mean | -0.44 nats |\n| Onset first-token logprob, median | -0.17 nats |\n| P(onset) | 0.73 \u2192 0.60 |\n| Same-first-token novel lines | -0.12 nats (selectivity about 3.6:1) |\n| In-loop copied tokens | -0.11 nats |\n| Finished-answer tokens | -0.005 nats per token |\n| Reference solutions | +0.011 nats per token |\n\nSo amplifying this \"already said this\" signal discourages starting and continuing repeats while leaving the reasoning text essentially untouched. That is the profile I wanted.\n\nThe real test is accuracy. I'll run a paired \"both\" generation on dev_b2, the last 256 DEV problems. They were not used to build the direction, since the onset texts came from dev_a and dev_b1. Two outcomes would confirm the mechanism: a clearly lower cut rate with accuracy at least as good (gain of about +2 or more), or many wrong\u2192right flips among formerly cut answers. Unchanged cuts would refute it, as would cuts turning into wrong answers with a net loss."
+   },
+   {
+    "reply": 69,
+    "text": "dev_b2 holds 256 DEV problems with no overlap with HOLDOUT, and C(-1.5) is backed up. This paired generation measures the accuracy effect of amplifying the \"already said\" direction. I'm watching for fewer cuts at max tokens and a non-negative paired gain."
+   },
+   {
+    "reply": 70,
+    "text": "The loop repair works mechanically but doesn't improve accuracy:\n\n| | Original | Edited C(-1.5) |\n|---|---|---|\n| Cut at max tokens | 29.7% | 15.6% |\n| Mean tokens | 361 | 282 |\n| Accuracy | 20.3% | 20.7% |\n\nThe paired gain is +0.4 \u00b1 2.0 (13 wrong\u2192right, 12 right\u2192wrong). Most freed loops become wrong answers, which confirms the earlier finding that loops mostly occur on problems the model has already failed. By the stated criterion, accuracy not cut-offs, C alone is no improvement.\n\nBefore deciding how to use it, I'll inspect the paired items:\n- accuracy of problems that were cut in the original but finished under C;\n- whether C hurt problems that originally finished;\n- how C behaves within each style (plain or markdown).\n\nIf formerly-cut problems that now finish are about as accurate as the original's finished answers on similar problems, C is neutral rather than harmful. Combining it with S could then let S's better plain-mode reasoning count without S's extra loops. If C damages already-finishing answers, the combination is unlikely to help."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "1d7227dc49a2527a22d8643adfae8deebd82cc52833965b17bff958fd45bfbf8",
+ "effort": "medium"
+}

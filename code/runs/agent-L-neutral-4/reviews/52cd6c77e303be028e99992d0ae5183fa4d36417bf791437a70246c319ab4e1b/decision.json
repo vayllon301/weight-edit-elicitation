@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "52cd6c77e303be028e99992d0ae5183fa4d36417bf791437a70246c319ab4e1b",
+ "code_sha256": "8ac68567ac2f85bd99edba94f62305264ab098be436872e99d8e77b52f07f74e",
+ "clean_code_sha256": "8ac68567ac2f85bd99edba94f62305264ab098be436872e99d8e77b52f07f74e",
+ "prompt_sha256": "e09146f44c909f69188a442b49c1d8456bd1eb9a979a3937347e124c72e04df5",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block computes attention-pattern statistics (operand-matching attention vs a digit baseline per head) from pass 21, which ran the original model. These are used to find components. No candidate edit is applied or simulated and no model stage is replayed. sid/eid come from block 76.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 3577,
+  "cache_read_input_tokens": 37116,
+  "output_tokens": 163,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 3577,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 163,
+    "cache_read_input_tokens": 37116,
+    "cache_creation_input_tokens": 3577,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 3577
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0393072,
+ "t": 1794169840.426901
+}

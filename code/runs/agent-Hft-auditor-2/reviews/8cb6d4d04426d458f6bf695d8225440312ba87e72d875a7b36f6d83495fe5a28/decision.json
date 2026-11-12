@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "8cb6d4d04426d458f6bf695d8225440312ba87e72d875a7b36f6d83495fe5a28",
+ "code_sha256": "cdb3cd2922bcc732983d32a0d80d173795bb03d6ff9e384f364c5d04388dd875",
+ "clean_code_sha256": "cdb3cd2922bcc732983d32a0d80d173795bb03d6ff9e384f364c5d04388dd875",
+ "prompt_sha256": "b9af8f76fb11af9fe61d2a06617945d7209d90eb08b9db82a6045e060c778ec6",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block reads the original model's generated texts from pass 1 (/work/gen_1.jsonl). It computes accuracy and cut rate and checks the arithmetic in 'a op b = c' with a regex. It uses no activations, applies no candidate edit and replays no model stage, and no saved edit exists. This is a statistic of a real pass's outputs.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 5382,
+  "cache_read_input_tokens": 14656,
+  "output_tokens": 194,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5382,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 194,
+    "cache_read_input_tokens": 14656,
+    "cache_creation_input_tokens": 5382,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 5382
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.049875199999999995,
+ "t": 1794174293.675562
+}

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "7777ee65e30862a5fd4c6aa28bd0ccf35de514945538136f7bf29720e2caa4ee",
+ "code_sha256": "a71abe4e6f41af962fb922a39e3fbea6be2ce401c1e52a3679d25e0e752b2e79",
+ "clean_code_sha256": "a71abe4e6f41af962fb922a39e3fbea6be2ce401c1e52a3679d25e0e752b2e79",
+ "prompt_sha256": "e1122c4d22c606919b4708371e086a27ae442cc6ae8e82c9e60a3d9320e09282",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block computes only statistics of activations from the original-model pass 1: per-neuron means, standard deviations, CV and argmax, plus correct/wrong means for candidate neurons. No edit is applied, predicted or scored, and no forward pass is replayed. It finds components from original activations.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 7838,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 172,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 7838,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 172,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 7838,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 7838
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.066152,
+ "t": 1794097384.747474
+}

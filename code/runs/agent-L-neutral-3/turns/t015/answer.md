@@ -1,0 +1,5 @@
+The 220-text request comes to 5.24 GB, inside the 6 GB limit, and covers 131 Let and 89 Here answers, so I can run it as designed. This pass reads the original model only, and no edits exist yet. It should give four things: P(Let) versus P(Here) at the first token for each problem, token-level activity of the candidate neurons at layers 13, 18 and 23, the states inside loops compared with first occurrences of a line, and the model's top-k choices at line ends. If layer 18 neuron 2543 turns out to be silent on all other tokens, the hypothesis of a narrow, position-specific write holds. If it also fires on other tokens, I'll need a different neuron. If P(Let) and P(Here) are often close, even a small write should flip many problems, which would give a cheap causal test of the mode effect.
+
+```forward
+{"type": "teacher_forced", "model": "original", "texts_file": "/work/tf2_texts.json", "return": {"token_logprobs": true, "topk": 10, "hidden_states": [11, 14, 17, 19, 24, 26], "mlp_act": [13, 18, 23]}}
+```

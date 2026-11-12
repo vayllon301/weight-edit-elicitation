@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "9787e5357ef06c9e2695ee4d5dec78a446f72700e635c0849240708be6f20a37",
+ "code_sha256": "e02f784ad1be394cbde3601458b6eb89a18a784eb5816fda9f1030a3129faf7f",
+ "clean_code_sha256": "e02f784ad1be394cbde3601458b6eb89a18a784eb5816fda9f1030a3129faf7f",
+ "prompt_sha256": "b75dc09414a7d8cb3da7761e36541368a33398fc0fa313a0f760a94245ece4cf",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only appends a note to /work/notes.md, filters earlier note lines with a regex, prints them, and prints the tail of block_192.py. It uses no stored activations, runs no model stage, saves no edit, and adopts no simulated parameter. V1 was chosen through real forward passes, and the b1/b4/b5 checks used aggregate summary vectors only.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 138191,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 347,
+  "output_tokens_details": {
+   "thinking_tokens": 152
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 138191,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 347,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 138191,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 138191
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 1.112476,
+ "t": 1794127929.6153102
+}

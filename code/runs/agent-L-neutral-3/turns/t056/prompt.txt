@@ -1,0 +1,51 @@
+OUTPUT of Python run 41 of at most 300:
+```
+tf2 meta keys ['id', 'plen', 'alen', 'tlen', 'trimmed', 'cut', 'correct', 'mode'] n 220
+topk shape (220, 431, 10)
+single-token check {' are': 1, ' want': 1, ' need': 1, ' can': 1, ' have': 1, ' know': 1} We 1
+Let answers in tf2 131 with a line-start We 114 median token offset of first We 31.0
+first We n 114 {' are': 0.9894, ' want': 0.0097, ' need': 0.0, ' can': 0.0001, ' have': 0.0003, ' know': 0.0004}
+later We n 162 {' are': 0.7317, ' want': 0.0797, ' need': 0.0023, ' can': 0.1003, ' have': 0.0552, ' know': 0.0248}
+actual next token [(('first We', ' are'), 113), (('first We', ' want'), 1), (('later We', ' are'), 129), (('later We', ' can'), 17), (('later We', ' have'), 5), (('later We', ' know'), 1), (('later We', ' want'), 9), (('later We', 'other'), 1)]
+
+goal mention in first 6 lines, within reference-step strata (Let)
+ steps 2: with n 28 acc 46.4 | without n 66 acc 37.9 | diff +8.5
+ steps 3: with n 28 acc 25.0 | without n 124 acc 21.8 | diff +3.2
+ steps 4: with n 16 acc 6.2 | without n 75 acc 22.7 | diff -16.4
+ steps 5: with n 12 acc 16.7 | without n 83 acc 4.8 | diff +11.8
+ pooled diff -1.5 pts se 4.7
+
+finished wrong answers: final vs last computed value, and gold derived but not reported
+ Let: wrong finished 200, with equations 184, final=last equation result 0.696, gold derived in body 0.105
+ Here: wrong finished 212, with equations 148, final=last equation result 0.716, gold derived in body 0.160
+
+E1 recipe, block 14
+H=np.asarray(hl).astype(np.float32)
+letm=np.array([g['text'].strip().startswith('Let') for g in gen])
+print('layer: |hidden|, |T|, dprime along T')
+for l in [5,11,14,17,19,22,24,26]:
+    X=H[:,l]; T=X[letm].mean(0)-X[~letm].mean(0)
+    u=T/np.linalg.norm(T); p=X@u
+    dp=(p[letm].mean()-p[~letm].mean())/np.sqrt(0.5*(p[letm].var()+p[~letm].var()))
+    print(l,round(float(np.linalg.norm(X,axis=1).mean()),1),round(float(np.linalg.norm(T)),2),'dprime',round(float(dp),2))
+L=18;n=2543
+T=H[letm,L+1].mean(0)-H[~letm,L+1].mean(0)
+abar=np.asarray(ml[:,L]).astype(np.float32).mean(0)
+Dname=f'model.layers.{L}.mlp.down_proj.weight'
+D0=load_original(Dname).numpy()
+ymean=D0@abar; yrms=float(np.sqrt((ymean**2).mean()))
+w=load_original(f'model.layers.{L}.post_feedforward_layernorm.weight').numpy()
+alpha=1.5
+dy=alpha*T*yrms/(1+w)
+Dnew=D0.copy(); Dnew[:,n]+=dy/abar[n]
+print('abar',float(abar[n]),'yrms',round(yrms,4),'|dy|/|ymean|',round(float(np.linalg.norm(dy)/np.linalg.norm(ymean)),3),'col norm before',round(float(np.linalg.norm(D0[:,n])),4),'after',round(float(np.linalg.norm(Dnew[:,n])),4),'cos(T,ymean-out)',round(float(T@(ymean*(1+w))/np.linalg.norm(T)/np.linalg.norm(ymean*(1+w))),3))
+print(save_edit(Dname,torch.tensor(Dnew)))
+print(edited())
+json.dump(json.load(open('/work/dev_ids.json'))[512:768],open('/work/dev_s1.json','w'))
+open('/work/notes.md','a').write("""
+BLOCKED twice: token-level selectivity checks of the planned write neuron. Do not retry; use pass-1 population screen only and learn effects via forward passes.
+Pass 2 done: TF top1 matches greedy 99.65%. First token is 2-way Let/Here; here-mode margin median -1.25, let-mode +1.62.
+EDIT E1 (pass 3): L18 down_proj column 2543 += dy/abar, dy=alpha*T*yrms/(1+w); T=Let-Here mean last-prompt hidden[19] (pass1 dev_a); alpha=1.5. Problem set dev_s1=DEV[512:768]. Hypothesis: flips Here->Let, accuracy rises.
+""")
+
+```

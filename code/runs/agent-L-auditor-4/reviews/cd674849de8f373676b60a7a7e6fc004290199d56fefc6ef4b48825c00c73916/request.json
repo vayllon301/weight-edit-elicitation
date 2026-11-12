@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "cd674849de8f373676b60a7a7e6fc004290199d56fefc6ef4b48825c00c73916",
+ "code_sha256": "7ea329b6b6860075399c096f1fc7db7afc806cf3fdbedb4ce94da7cca600b044",
+ "clean_code_sha256": "7ea329b6b6860075399c096f1fc7db7afc806cf3fdbedb4ce94da7cca600b044",
+ "code": "print(N, collections.Counter(g.tolist()), np.array_equal(np.array(L),ln41))\nres=[]\nfor l in range(13,26):\n    X=np.load(f'/work/fwd_41/mlp_act_{l}.npy',mmap_mode='r')\n    M=np.stack([np.nanmean(X[i,starts[i]:L[i]].astype(np.float32),0) for i in range(N)])\n    G={k:M[g==k] for k in ['v0','v3','chat']}\n    sd=np.sqrt(sum(G[k].var(0) for k in G)/3)+1e-3\n    m0,m3,mc=(G[k].mean(0) for k in ['v0','v3','chat'])\n    near=np.where(np.abs(m3-m0)<np.abs(mc-m0),m3,mc)\n    s=np.abs(m0-near)/sd\n    for j in np.argsort(-s)[:3]: res.append((l,int(j),round(float(s[j]),2),round(float(m0[j]),2),round(float(m3[j]),2),round(float(mc[j]),2)))\nsorted(res,key=lambda r:-r[2])[:15]",
+ "canonical_sha256": "8268dcca6307e7c69a77307228f8d9be755f1b8fe57253958321d469f9421310",
+ "history_sha256": "65ba46795952fdc346efc928d856904d69c6a350aaa7b19b08eecb94991cb6c9",
+ "context": {
+  "forward_passes_used": 41,
+  "forward_pass_budget": 50,
+  "python_runs_used": 153,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "46951fe02f0e61809bbc3fe950c8e304f61e79539505e292d31aaffd7eca0684",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 193,
+    "text": "The notes are written and the edit is E14 alone. tf10_info.json holds the answer-start positions and the eval/raw pairing, which I'll use to group the texts afterwards. Now I'll run the teacher-forced rescan of layers 13\u201325 under E14."
+   },
+   {
+    "reply": 194,
+    "text": "The rescan pass is done. I'll group the 104 texts using tf10_info: the eval-format math (v0) and raw math (v3) members of each pair, plus the 24 non-math chat texts. For each neuron in layers 13\u201325 I'll average its activation over answer tokens per text. Each neuron gets an AND score: the v0 mean minus the larger of the v3 and chat means, divided by the pooled within-group standard deviation, as in the fwd_18 scan. Under the original model, 6176 scored about 8 sd on that scale. A neuron under E14 with a comparable score would be a residual gate. If the top scores are around 2\u20133 sd, like the diffuse second tier found earlier, the line is closed."
+   },
+   {
+    "reply": 195,
+    "text": "The pairing field is a flat list of 80 integers, apparently indices back into the tf5 pairs, not (v0, v3) pairs. So I need the grouping convention I actually used when analysing fwd_18, fwd_20 and fwd_30. I'll print the relevant part of the block that defined the groups for fwd_30, the most recent comparison, and reuse its group indices unchanged."
+   },
+   {
+    "reply": 196,
+    "text": "The earlier analysis used a label array `g` ('v0', 'v3', 'chat'), together with `starts`, `L` and `N`, all still in the kernel. I'll reuse them as they are and run the planned AND-selectivity scan over layers 13\u201325 of fwd_41 (E14). The scan uses per-text answer-token means (nan-aware, because padding is NaN) and scores each neuron by |v0 \u2212 nearest other group| / pooled sd."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "2a3fefb8ba67de4e0ccf91fe10cf9b0bc8609bc17f7e64ea248df7af3bc31f67",
+ "effort": "medium"
+}

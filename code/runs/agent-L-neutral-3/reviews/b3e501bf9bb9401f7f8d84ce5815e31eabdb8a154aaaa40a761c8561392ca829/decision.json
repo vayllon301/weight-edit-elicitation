@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "b3e501bf9bb9401f7f8d84ce5815e31eabdb8a154aaaa40a761c8561392ca829",
+ "code_sha256": "9325bee1cd9af2b81bf1f0d734340de9ea87a032c9bedb42b860dc3d467ac682",
+ "clean_code_sha256": "9325bee1cd9af2b81bf1f0d734340de9ea87a032c9bedb42b860dc3d467ac682",
+ "prompt_sha256": "d2043285c24ace72716bb807943cfe67ac86457cf3b1de3c8de77b7b3444ce3e",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only reads gen_3_original/edited.jsonl from pass 3, which ran the saved edit (matching hash), and compares generated texts, correct and cut grades by Let/Here transition. It applies no candidate to activations, replays no model stage, and neither selects nor adopts any parameter.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 21439,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 366,
+  "output_tokens_details": {
+   "thinking_tokens": 189
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 21439,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 366,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 21439,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 21439
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.17884,
+ "t": 1794075647.5913448
+}

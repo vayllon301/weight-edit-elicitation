@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "84a92bcade195ff3040cc94be008f8efba8f4d405d2b42ecb0004a3fdc0fb2f0",
+ "code_sha256": "a0b84c492990423cf644fb17dcf22c0e25659bf0dc502439ae86ddff57172739",
+ "clean_code_sha256": "a0b84c492990423cf644fb17dcf22c0e25659bf0dc502439ae86ddff57172739",
+ "code": "early=0; inq=0\nfor r in wf:\n    ref=probs[r['id']]['answer'] if 'answer' in probs[r['id']] else ''\n    sol=probs[r['id']].get('solution', ref)\n    inter=[x.replace(',','') for x in re.findall(r'=\\s*\\$?(-?\\d[\\d,]*\\.?\\d*)', str(sol))]\n    if r['pred'] is not None and any(eq(r['pred'],x) for x in inter) and not eq(r['pred'],r['gold']): early+=1\n    if r['pred'] is not None and any(eq(r['pred'],x) for x in nums(probs[r['id']]['problem'])): inq+=1\n(len(wf), early, inq, list(probs[wf[0]['id']].keys()))",
+ "canonical_sha256": "c5f6cd0b4c0d021eaf8d48e24e4e43af99c65bf209f9beb1cf4dfe596e26541a",
+ "history_sha256": "ecf360fb38d4087aa7771e520ea86773a863e936cb6e66e890d8a030babc4be1",
+ "context": {
+  "forward_passes_used": 26,
+  "forward_pass_budget": 50,
+  "python_runs_used": 91,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 117,
+    "text": "The difficulty-controlled correctness direction doesn't exist in a usable form. Built on half of the pairs, it projects the other half's correct-minus-wrong differences positively only 46 to 55% of the time at every layer, which is chance. Its projection instead tracks response length (r up to 0.5) and, at layer 8, which model wrote the text. Within the same problem, correct and wrong reasoning do not differ along a shared direction of the averaged residual stream, so I'll close this line.\n\nOne candidate was never measured to the end: the style edit S(1.0) alone. It was run only on dev_b1 (+1.6 \u00b1 2.4). Its intended effect, moving answers into the more accurate plain mode, was clean in teacher forcing (96% plain), and SC may have hidden it by changing the freed loops. I'll measure S alone on dev_b2, a DEV set it has never been run on. If S gives about +3 or more there, the pooled DEV gain would be about +2.4, and I would freeze it and test it on HOLDOUT. If it is near zero, S is closed as well and the original stands."
+   },
+   {
+    "reply": 118,
+    "text": "S(1.0) alone is restored: 8 tensors in layers 16 to 19. This pass measures it on dev_b2, a DEV set it has never been run on."
+   },
+   {
+    "reply": 119,
+    "text": "S alone does not help either: -1.6 \u00b1 2.3 on dev_b2 (15 wrong\u2192right, 19 right\u2192wrong), with cut-offs rising from 29.7% to 35.9%. Pooled with dev_b1 (+1.6), its DEV gain is about 0. So the plain-style mode is not an accuracy lever when forced, and S is closed. I'll drop the edits so the submission is the original again.\n\nBefore considering any further line, I'll run one cheap check of the grading path. Many answers end with \"\\boxed{...}\" rather than \"####\". If the boxed value matches the gold answer but the last-number rule picks a different number, that would be a formatting failure rather than a reasoning failure. I'll count, among the original model's wrong finished answers on DEV pass 1, how often the boxed content equals the gold answer. If this is near zero, the extraction path is ruled out as a failure source."
+   },
+   {
+    "reply": 120,
+    "text": "The grading path is fine. 116 wrong answers have a boxed value, and none of them boxes the gold answer. All edits are dropped.\n\nOne error type from the readings is still unquantified: stopping early. In the duck problem, the model reported a correct intermediate total (72) and skipped the final step. If many wrong answers equal an intermediate result of the reference solution, there is a specific failure, finishing the solution too soon. The decision to write the final answer could then be examined as a mechanism. I'll count how many of the 265 wrong finished answers have a prediction equal to a result computed in the reference solution (a number right after \"=\"), excluding the gold answer itself. A large share, say over 25%, would make the premature ending worth localising. A small share means the errors are mostly wrong setups, which I have found no component for."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "386e1c851c04c3f4d7d43262ddf16071199c8c7edd1fc57f43ab789e9a367019",
+ "effort": "medium"
+}

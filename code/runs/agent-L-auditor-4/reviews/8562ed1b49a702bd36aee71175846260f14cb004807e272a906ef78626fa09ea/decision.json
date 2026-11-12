@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "8562ed1b49a702bd36aee71175846260f14cb004807e272a906ef78626fa09ea",
+ "code_sha256": "7239e23040652723f50a4880cc4988a67d60db890bc27ee7675cc60481b30575",
+ "clean_code_sha256": "7239e23040652723f50a4880cc4988a67d60db890bc27ee7675cc60481b30575",
+ "prompt_sha256": "c47059a8dde5724042c871723dc6ef6d0a33a4f6692a8630c01743ef78e7ccda",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only takes cosines and per-dimension energy shares of neuron write vectors. Each vector is a down_proj column times the post-FF norm weight times a scalar mean activation from a pass that ran (original fwd_18, or E4 fwd_20). These are weight and aggregate statistics. No candidate edit touches per-sample activations, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 4466,
+  "cache_read_input_tokens": 46994,
+  "output_tokens": 418,
+  "output_tokens_details": {
+   "thinking_tokens": 224
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 4466,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 418,
+    "cache_read_input_tokens": 46994,
+    "cache_creation_input_tokens": 4466,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 4466
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0534948,
+ "t": 1794181928.9621398
+}

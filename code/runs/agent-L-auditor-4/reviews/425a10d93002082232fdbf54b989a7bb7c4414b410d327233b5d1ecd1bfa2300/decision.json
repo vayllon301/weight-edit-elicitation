@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "425a10d93002082232fdbf54b989a7bb7c4414b410d327233b5d1ecd1bfa2300",
+ "code_sha256": "ae20ddfb7d5156b873e9d768aadd8ce9b74ef85d54e7093f23b8c1b39f955c1d",
+ "clean_code_sha256": "ae20ddfb7d5156b873e9d768aadd8ce9b74ef85d54e7093f23b8c1b39f955c1d",
+ "prompt_sha256": "fd808edfdef5f8930d1ecd300ee62b48a145ec72c82420026f431f3e709f2d09",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block drops E2 and saves remove_dir edits to L11 o_proj and down_proj at a hand-set strength of 1. It uses j, a difference of means of original activations from block 26, and norm gains read from the weights. No candidate is applied to per-sample or per-token activations, nothing is scored, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 4186,
+  "cache_read_input_tokens": 13533,
+  "output_tokens": 493,
+  "output_tokens_details": {
+   "thinking_tokens": 307
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 4186,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 493,
+    "cache_read_input_tokens": 13533,
+    "cache_creation_input_tokens": 4186,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 4186
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.046062599999999995,
+ "t": 1794180108.79846
+}

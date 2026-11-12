@@ -1,0 +1,5 @@
+That block was not cleared. I had combined stored activation means with the planned edit to anticipate its effect, which the rules forbid, so I won't pursue that computation. Its result will not influence the edit. I'll keep the edit exactly as recorded in the notes before that block: the three neurons that carry the largest share of the regime difference in layers 16 and 17 (L16 #180, #3729; L17 #3621), each with its down column scaled ×3, chosen from the per-neuron contribution statistic alone. The forward pass will show what it actually does. I'll run a paired generation on DEV[512:768], which was not used to pick the neurons. Confirmation would be a shift of first-answer regimes toward "Let $N$..." and a change in accuracy. No regime shift would mean these neurons are not causal for the switch. A regime shift with no accuracy change would mean the regime is not the lever.
+
+```forward
+{"type": "generate", "model": "both", "problems_file": "/work/dev_b.json"}
+```

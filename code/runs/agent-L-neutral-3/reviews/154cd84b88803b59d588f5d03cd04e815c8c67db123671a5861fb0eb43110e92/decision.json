@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "154cd84b88803b59d588f5d03cd04e815c8c67db123671a5861fb0eb43110e92",
+ "code_sha256": "d7f4d3935e704199d721fb0752deeb0074f1b192ed119df38b43c6ac8fe81b29",
+ "clean_code_sha256": "d7f4d3935e704199d721fb0752deeb0074f1b192ed119df38b43c6ac8fe81b29",
+ "prompt_sha256": "b0af01678d09e1d3bcd54f97f673ac490e05081306bf8ba53513cfe98a2646a2",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only builds and tokenizes DEV prompts with mkprompt and E, writes tf13_texts.json and tf13_meta.json, appends notes and prints edited(). It uses no activations, applies no candidate edit, computes no sample score and replays no model stage. The planned margin binning is for a later block and concerns edits already run by passes.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 68370,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 385,
+  "output_tokens_details": {
+   "thinking_tokens": 198
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 68370,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 385,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 68370,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 68370
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.554668,
+ "t": 1794078428.0539641
+}

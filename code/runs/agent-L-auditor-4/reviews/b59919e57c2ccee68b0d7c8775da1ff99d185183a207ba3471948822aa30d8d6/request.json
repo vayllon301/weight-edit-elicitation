@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "b59919e57c2ccee68b0d7c8775da1ff99d185183a207ba3471948822aa30d8d6",
+ "code_sha256": "224011a09034c11d772325404944d56b82ed62449f9f5591cf4f90824cf238f1",
+ "clean_code_sha256": "224011a09034c11d772325404944d56b82ed62449f9f5591cf4f90824cf238f1",
+ "code": "with open('/work/notes.md','a') as f:\n    f.write(\"*** HOLDOUT pass 33 (ho[:256]) E14: +0.340 +- 0.032 (92/5), 0.207 -> 0.547, cut 58->26.\\nPass 34: same edit, GEN both /work/ids_ho2.json.\\n\")\nedited()",
+ "canonical_sha256": "cc5ffb9c44ea59a1661c0cbbe616a7b6f3fcab29d0cffa0b6a70de017f141302",
+ "history_sha256": "7407c835fa5ed71e706460f26cb547018b57fa41b77c1fd744e9da609093cf61",
+ "context": {
+  "forward_passes_used": 33,
+  "forward_pass_budget": 50,
+  "python_runs_used": 134,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "46951fe02f0e61809bbc3fe950c8e304f61e79539505e292d31aaffd7eca0684",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 165,
+    "text": "E16 is in place: the E14 layer-11 edit, which I left untouched, plus rank-1 removals of the constant last-prompt value at layers 10 and 23 in all heads. The layer-18 edit is dropped. I'll run it paired on dev_b[:256] against E14's +31.6 there. If it is clearly above that, I'll split layers 10 and 23. If it is at or below, I'll close this line and freeze E14."
+   },
+   {
+    "reply": 166,
+    "text": "E16 gains +32.4 \u00b1 3.4 (92 wrong\u2192right, 9 right\u2192wrong), against +31.6 for E14 on the same problems. That is two problems more, far inside the noise of about 3.4 points. So the layer-10 and layer-23 constant reads have no measurable effect, and I'm closing the search for constant prompt-summary reads beyond layer 11. Layer 11's read is the specific suppression mechanism. I'll drop the layer-10 and layer-23 edits and freeze E14 exactly as stored in /work/best_5. To confirm the restore is exact, I'll check that the active layer-11 tensor matches best_5. Then I'll measure the frozen E14 on HOLDOUT, so I'll check HOLDOUT's size to plan passes of 256 problems per model."
+   },
+   {
+    "reply": 167,
+    "text": "Only the layer-11 tensor is edited now, and it matches the frozen E14 copy in /work/best_5 exactly (maximum difference 0.0). HOLDOUT has 768 problems with no overlap with DEV, and I've split its first 512 into two files of 256. I'll now measure the frozen E14 paired on HOLDOUT[:256]. A gain near the DEV estimate of about +32 would confirm it. A much smaller gain would mean the DEV choices were overfit."
+   },
+   {
+    "reply": 168,
+    "text": "HOLDOUT confirms the edit. On HOLDOUT[:256], the frozen E14 gains +34.0 \u00b1 3.2 points (92 wrong\u2192right, 5 right\u2192wrong), raising accuracy from 20.7% to 54.7% and cutting cut-offs from 58 to 26. That is in line with the DEV estimate of about +32, so the gain is not an artifact of tuning. I'll record this and run the second HOLDOUT block, HOLDOUT[256:512], with the edit unchanged, to tighten the pooled estimate."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "dcfcdbba11bfd8861a5537a29106c6ea17be474f7cff8b5324313f4fe2766ff1",
+ "effort": "medium"
+}

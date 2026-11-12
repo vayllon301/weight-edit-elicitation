@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "bf05bcb2b7d759a3417c215f26f20a619cb2aaebdb1a3308851971121fe79bbd",
+ "code_sha256": "e7a497588e92d902887f0a216ad35a20458fbf13d95972b655d76f76af74541b",
+ "clean_code_sha256": "e7a497588e92d902887f0a216ad35a20458fbf13d95972b655d76f76af74541b",
+ "code": "import re, collections\ndef norm(s): return s.encode('ascii','replace').decode()\ndef opener(t):\n    t=t.strip()\n    return ' '.join(t.split()[:3])\nop=collections.defaultdict(list)\nfor g in gen: op[opener(g['text'])].append(g)\nfor k,v in sorted(op.items(), key=lambda kv:-len(kv[1]))[:12]:\n    print(repr(norm(k)), len(v), 'acc',round(np.mean([x['correct'] for x in v]),3),'cut',round(np.mean([x['cut'] for x in v]),3),'marker',round(np.mean([x['used_marker'] for x in v]),3),'tok',int(np.mean([x['n_tokens'] for x in v])))\n# Loop onset\ndef lines(t): return [l.strip() for l in t.split('\\n') if l.strip()]\ndef strip_num(l): return re.sub(r'^\\d+\\.\\s*','',l)\ndef loop_onset(t):\n    ls=lines(t); seen={}; \n    for i,l in enumerate(ls):\n        k=strip_num(l)\n        if k in seen and len(k)>=12: return i,len(ls)\n        seen[k]=i\n    return None,len(ls)\nons=[]; rep_any=0\nfor g in cut:\n    i,n=loop_onset(g['text']); ons.append((i if i is not None else -1,n))\nprint('cut with exact line repeat', sum(1 for i,n in ons if i>=0),'/',len(cut),' median onset line',np.median([i for i,n in ons if i>=0]),'median nlines',np.median([n for i,n in ons]))\n# gold mentioned before the first loop line?\ndef nums(t): return [x.replace(',','') for x in re.findall(r'-?\\d[\\d,]*\\.?\\d*',t)]\ndef fl(x):\n    try: return float(x.rstrip('.'))\n    except: return None\ndef has_gold(t,gold):\n    gf=fl(str(gold).replace(',',''))\n    return any(fl(x)==gf for x in nums(t))\ninc=0\nfor g in cut:\n    i,n=loop_onset(g['text']); ls=lines(g['text'])\n    pre='\\n'.join(ls[:i]) if i is not None else g['text']\n    inc+=has_gold(pre,g['gold'])\nprint('cut: gold occurs before loop onset',inc,'/',len(cut))\nprint('wrong finished: gold occurs in text',sum(has_gold(g['text'],g['gold']) for g in wrong),'/',len(wrong))\n# Arithmetic verification\npat=re.compile(r'(-?\\d[\\d,]*\\.?\\d*)\\s*([+\\-*/x\\u00d7])\\s*(-?\\d[\\d,]*\\.?\\d*)\\s*=\\s*\\$?(-?\\d[\\d,]*\\.?\\d*)')\ndef arith(t):\n    t2=t.replace('$','').replace('\\\\times','*').replace('\\\\div','/')\n    res=[]\n    for m in pat.finditer(t2):\n        a,op_,b,c=[m.group(i) for i in (1,2,3,4)]\n        a,b,c=fl(a.replace(',','')),fl(b.replace(',','')),fl(c.replace(',',''))\n        if None in (a,b,c): continue\n        try:\n            v={'+':a+b,'-':a-b,'*':a*b,'x':a*b,'\\u00d7':a*b,'/':a/b if b else None}[op_]\n        except Exception: continue\n        if v is None: continue\n        res.append((a,op_,b,c,abs(v-c)<=0.011*max(1,abs(v))**0 ))\n    return res\nfor nm,G in [('corr',corr),('wrong',wrong),('cut',cut)]:\n    A=[arith(g['text']) for g in G]\n    ne=np.array([sum(not x[4] for x in a) for a in A]); nn=np.array([len(a) for a in A])\n    print(nm,'mean eqs',nn.mean().round(2),'share answers with >=1 arith err',(ne>0).mean().round(3),'err rate per eq',round(ne.sum()/max(1,nn.sum()),3))\nerrs=collections.Counter()\nex=[]\nfor g in gen:\n    for a,o,b,c,ok in arith(g['text']):\n        errs[(o,ok)]+=1\n        if not ok and len(ex)<14: ex.append((a,o,b,c))\nprint(errs); print(ex)",
+ "canonical_sha256": "8ae65ae0514a10dfe07449579cf7ba3c260d74a29fd79cb0bd9672e26705bab2",
+ "history_sha256": "f8a0915b2adf86da446288b470a69eae4518d70e666f75784ea7e177f4de9994",
+ "context": {
+  "forward_passes_used": 1,
+  "forward_pass_budget": 50,
+  "python_runs_used": 3,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 2,
+    "text": "The kernel works and nothing has been edited. The config matches a Gemma-3-style model, and the prompt format is clear. Before any measurement I'll fix DEV and HOLDOUT from a seeded shuffle, so the split can't depend on anything I see later. The budget is 50 passes and a \"both\" pass covers 256 problems per model, so I'll give DEV 1,250 ids and HOLDOUT 1,000, which is enough for four independent HOLDOUT passes. I'll also check the config and weight norms per layer, then write the notes. The next step is a baseline generation pass on 512 DEV problems with activations, to count failure types and read the failures. This step has no hypothesis to test yet."
+   },
+   {
+    "reply": 3,
+    "text": "DEV and HOLDOUT are fixed and stored. The architecture is Gemma-3 270M-class with 26 layers. The norm weights grow sharply with depth, so later layers apply much larger post-block gains, which could matter later. Now for the baseline pass: the original model on 512 DEV problems, with activations at every layer and at the MLP down_proj inputs. This gives the accuracy, the mix of wrong, cut-off and no-answer outcomes, and text to read. If most failures turn out to be cut-offs or missing markers, I'd look for a format or termination mechanism. If they're mostly wrong answers, I'd separate arithmetic slips from reasoning errors."
+   },
+   {
+    "reply": 4,
+    "text": "Baseline accuracy is only 18.2%, with 281 wrong answers and 138 cut off at the 768-token limit. There were no finished answers without a number, and the model uses an average of 351 tokens. The cut-off rate is high for GSM8K-length solutions, so something may be looping or rambling. The failures need reading before any explanation. I'll break the results down by marker use and token length, read a few correct, wrong and cut samples, and look for repetition in the cut answers and for where wrong answers first go off track. A repetition-dominated cut-off group would suggest a looping mechanism. Sensible but wrong arithmetic would point to computation or carry errors instead."
+   },
+   {
+    "reply": 5,
+    "text": "The failures vary, and three kinds stand out. Some answers loop until cut off, for example \"The number of decorations given out is 110.\" repeated, or a numbered list reaching step 21. Some have plain arithmetic slips: 250+72+25 came out as 307 when the right sum is 347. Others misread the problem, as in \"Devin is twice as old as Eden\". Only about a third of answers use the #### marker, though the grader falls back to the last number. To size each mechanism I'll compute four text statistics:\n- accuracy by opening style (\"Let $...\" versus \"Here's how...\")\n- where repetition starts in cut answers, and whether the gold number appeared before the loop\n- the rate of verifiable arithmetic errors in \"a op b = c\" patterns, and how often the first such error comes with a wrong final answer\n- how often the final answer is formed correctly from text that already holds the gold number\n\nIf arithmetic errors explain a large share of wrong answers, a computation circuit is a good target. If loops dominate, the termination and repetition mechanism comes first."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "0a5c6ff8575e161a5776a2ce9e91bc63e9f61557c34502148606b9f7f28c8b90",
+ "effort": "high"
+}

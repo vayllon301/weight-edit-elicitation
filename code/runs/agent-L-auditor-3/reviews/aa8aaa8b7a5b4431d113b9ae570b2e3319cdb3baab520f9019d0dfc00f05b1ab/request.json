@@ -1,0 +1,31 @@
+{
+ "version": "rule-review-3",
+ "key": "aa8aaa8b7a5b4431d113b9ae570b2e3319cdb3baab520f9019d0dfc00f05b1ab",
+ "code_sha256": "e46b8a552a2c176ac6e5bf0f490e6a0ccd27de0abe3feeefa903f5a1a223bbe5",
+ "clean_code_sha256": "e46b8a552a2c176ac6e5bf0f490e6a0ccd27de0abe3feeefa903f5a1a223bbe5",
+ "code": "import os, json, glob\nprint(sorted(os.listdir('/work'))[:50])\nif os.path.exists('/work/notes.md'):\n    print(open('/work/notes.md').read()[:5000])\nprint(open('/practice/eval_prompt_format.txt').read()[:2000])\nlines = open('/practice/gsm8k_train.jsonl').read().strip().split('\\n')\nprint(len(lines))\nex = json.loads(lines[0]); print({k: (str(v)[:200]) for k,v in ex.items()})\nprint(len(NAMES)); print([n for n in NAMES if 'layers.0.' in n or 'layers' not in n])\nedited()",
+ "canonical_sha256": "a85025745ba26a03e364fd0e1e840e6bbe390dbf2aef757a9d0bfabcc0db4d6f",
+ "history_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+ "context": {
+  "forward_passes_used": 0,
+  "forward_pass_budget": 50,
+  "python_runs_used": 0,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 1,
+    "text": "This is the start of the session, so there are no results to interpret yet. First I will check whether /work/notes.md already exists, in case this is a restarted session. I will also read the exact evaluation prompt format, look at the practice data and list the tensor names. Nothing is edited at this stage. The goal is to confirm the architecture matches the description and to set up the workspace before spending any forward passes."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "9b299d32e853e8d4f1bf20cbb6ee2e4d1ac6e153bfc80caf3b5dd0d1dd0fb2d2",
+ "effort": "high"
+}

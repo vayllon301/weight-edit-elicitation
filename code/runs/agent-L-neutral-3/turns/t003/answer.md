@@ -1,0 +1,5 @@
+DEV and HOLDOUT are fixed and stored. The architecture is Gemma-3 270M-class with 26 layers. The norm weights grow sharply with depth, so later layers apply much larger post-block gains, which could matter later. Now for the baseline pass: the original model on 512 DEV problems, with activations at every layer and at the MLP down_proj inputs. This gives the accuracy, the mix of wrong, cut-off and no-answer outcomes, and text to read. If most failures turn out to be cut-offs or missing markers, I'd look for a format or termination mechanism. If they're mostly wrong answers, I'd separate arithmetic slips from reasoning errors.
+
+```forward
+{"type": "generate", "model": "original", "problems_file": "/work/dev_a.json", "activations": {"layers": [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26], "mlp": true}}
+```

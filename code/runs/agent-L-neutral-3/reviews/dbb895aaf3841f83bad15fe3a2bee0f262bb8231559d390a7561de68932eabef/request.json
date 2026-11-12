@@ -1,0 +1,72 @@
+{
+ "version": "rule-review-3",
+ "key": "dbb895aaf3841f83bad15fe3a2bee0f262bb8231559d390a7561de68932eabef",
+ "code_sha256": "21621e39d921f3426b81b5a394a1ce1f38221e2a5f0934d09a83c3e7e9f26df9",
+ "clean_code_sha256": "21621e39d921f3426b81b5a394a1ce1f38221e2a5f0934d09a83c3e7e9f26df9",
+ "code": "def second(t):\n    m=re.match(r\"\\s*Let('s|\\s+\\$|\\s+the|\\s+us|\\s+[A-Za-z]+)?\",t)\n    if not m: return 'notLet'\n    s=(m.group(1) or '').strip()\n    if s==\"'s\": return \"Let's\"\n    if s=='$': return 'Let $'\n    if s in('the','us'): return 'Let '+s\n    return 'Let word'\ndef summarize(D,lab):\n    S_=[i for i in D if second(D[i]['text'])!='notLet']\n    gr={}\n    for i in S_: gr.setdefault(second(D[i]['text']),[]).append(D[i])\n    print(lab)\n    for k,v in sorted(gr.items(),key=lambda kv:-len(kv[1])):\n        print('  ',f'{k:10s}',st(v))\nsummarize(allo,'original, all 1250')\ne5all={}\nfor k in (15,16,17,18): e5all.update(rd(f'/work/gen_{k}_edited.jsonl'))\nsummarize(e5all,'E5, 994 problems')\nfl3=[i for i in e5all if fw(allo[i]['text'])==\"Here's\" and second(e5all[i]['text'])!='notLet']\nprint('flipped by E5 n',len(fl3))\ngr={}\nfor i in fl3: gr.setdefault(second(e5all[i]['text']),[]).append(i)\nfor k,v in sorted(gr.items(),key=lambda kv:-len(kv[1])):\n    print('  ',f'{k:10s}','E5',st([e5all[i] for i in v]),'| orig',st([allo[i] for i in v]))\nr_=[i for i in allo if second(allo[i]['text'])==\"Let's\"][:2]\nfor i in r_: print(repr(allo[i]['text'][:150].encode('ascii','replace').decode()))\nwith open('/work/notes.md','a') as f:\n    f.write(\"Loop characterisation: Let loops 93% exact repeat, onset ~25% through answer, period 1-8, restate earlier lines after dead end. In-loop vs pre-loop neurons: 1145-1613 of 6912 |t|>6, smooth ranking, confounded with confident copying, no isolated component. LOOP-BREAK LINE CLOSED without a pass.\\n\")",
+ "canonical_sha256": "170ee2d0ee44c7efa69640a290d748a24e93dd05b4f64f906c90bc45c1da1724",
+ "history_sha256": "e15ab69339cd0ab49b9992fd43b93188c73de4787be76a149c2be6f261e85ca3",
+ "context": {
+  "forward_passes_used": 25,
+  "forward_pass_budget": 50,
+  "python_runs_used": 84,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "import re, glob, numpy as np\nfl_ids = list(fl)\ndefn = None\ndef block_no(p): return int(re.search(r'block_(\\d+)', p).group(1))\nfor p in sorted(glob.glob('/work/blocks/block_*.py'), key=block_no):\n    s = open(p).read()\n    m = re.search(r'^(def fl\\(.*?:\\n(?:[ \\t]+.*\\n)+|def fl\\(.*\\n|fl\\s*=\\s*lambda.*\\n)', s, flags=re.M)\n    if m:\n        defn = m.group(0); print('found in', p, repr(defn[:160])); break\nassert defn is not None\nexec(defn, globals())\nprint('fl restored', callable(fl), fl('12.5'))\n\nprint('E4 intervention, flipped problems: Let (original) vs Here (forced)')\ncompare_pair(fl_ids, O10, E10, 'Let', 'Here')\nhn = [k for k in O3 if O3[k]['text'].startswith('Here') and E3g[k]['text'].startswith('Let')]\nprint('\\nE1 control, Here-natural problems: Here (original) vs Let (forced)')\ncompare_pair(hn, O3, E3g, 'Here', 'Let')\n\nprint('\\nfirst-line question overlap within reference-step strata (Let answers)')\nrec = []\nfor r, o in zip(L, ov):\n    p = byid[str(r['id'])]; ref = clean_ref(p['solution'])\n    st = len(set(EQ.findall(ref)))\n    rec.append((min(max(st, 2), 5), o, r['correct'], r['cut'], len(p['problem'])))\nrec = np.array(rec, float)\ntot_d = []; tot_w = []\nfor st in (2, 3, 4, 5):\n    m = rec[:, 0] == st\n    med = np.median(rec[m, 1])\n    a = rec[m & (rec[:, 1] > med)]; b = rec[m & (rec[:, 1] <= med)]\n    if len(a) < 8 or len(b) < 8: continue\n    d = a[:, 2].mean() - b[:, 2].mean(); w = 1 / (a[:, 2].var() / len(a) + b[:, 2].var() / len(b) + 1e-6)\n    tot_d.append(d); tot_w.append(w)\n    print(f' steps {int(st)}{\"+\" if st == 5 else \"\"}: high n {len(a)} acc {100*a[:,2].mean():.1f} len {a[:,4].mean():.0f} | low n {len(b)} acc {100*b[:,2].mean():.1f} len {b[:,4].mean():.0f} | diff {100*d:+.1f}')\ntot_d = np.array(tot_d); tot_w = np.array(tot_w)\nprint(' pooled within-strata high-low diff %+.1f pts, se %.1f' % (100 * (tot_d * tot_w).sum() / tot_w.sum(), 100 / np.sqrt(tot_w.sum())))",
+    "canonical_sha256": "a558a431a0c2296b8878bf70ee8781019ad2b9dfcdfe3f994df9095dd875bba9",
+    "decision": "uncertain",
+    "grade": "none",
+    "rules": []
+   },
+   {
+    "executed": false,
+    "code": "H=np.asarray(hl).astype(np.float32)  # 512,27,1152 last-prompt\nletm=np.array([g['text'].strip().startswith('Let') for g in gen])\nprint('layer: |hidden| mean, |T|, d-prime along T')\nTs={}\nfor l in [5,9,11,14,17,19,20,22,23,24,25,26]:\n    X=H[:,l]; T=X[letm].mean(0)-X[~letm].mean(0); Ts[l]=T\n    u=T/np.linalg.norm(T); p=X@u\n    dp=(p[letm].mean()-p[~letm].mean())/np.sqrt(0.5*(p[letm].var()+p[~letm].var()))\n    print(l,round(float(np.linalg.norm(X,axis=1).mean()),1),round(float(np.linalg.norm(T)),2),'dprime',round(float(dp),2))\ndef selectivity(L):\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    S=np.zeros(6912,np.float64);Q=np.zeros(6912,np.float64);N=0;lp=[]\n    for i,mt in enumerate(meta):\n        c=np.asarray(a[i,:int(lens[i])]).astype(np.float32); k=mt['plen']-1\n        lp.append(c[k].copy()); c=np.delete(c,k,axis=0)\n        S+=c.sum(0);Q+=(c.astype(np.float64)**2).sum(0);N+=len(c)\n    lp=np.stack(lp); mu=S/N; sd=np.sqrt(np.maximum(Q/N-mu**2,0))\n    return lp.mean(0),lp.std(0),mu,sd\nfor L in [18,23,13]:\n    A_,Sd_,mu,sd=selectivity(L)\n    r=np.abs(A_)/(sd+1e-4); cv=Sd_/(np.abs(A_)+1e-6)\n    idx=[i for i in np.argsort(-r) if cv[i]<0.3][:6]\n    print('L',L,[(int(i),'a',round(float(A_[i]),2),'cv',round(float(cv[i]),2),'mu_oth',round(float(mu[i]),4),'sd_oth',round(float(sd[i]),4),'ratio',round(float(r[i]),1)) for i in idx])",
+    "canonical_sha256": "8d92ebe1607367fe7d80bd72abf91d9f7c1a107117f3ed2ba893ab5aaf9a7cbe",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "import numpy as np, json\nF='/work/fwd_2/'\nm2=json.load(open(F+'meta.json')); print(list(m2.keys())[:20])\nii=np.load(F+'input_ids.npy',mmap_mode='r'); tl=np.load(F+'token_logprobs.npy',mmap_mode='r'); tp=np.load(F+'topk_logprobs.npy',mmap_mode='r'); ti=np.load(F+'topk_ids.npy',mmap_mode='r')\nmeta=json.load(open('/work/tf2_meta.json'))\nprint(ii[0,:6], 'pad id', ii[0,-1], meta[0]['plen'], meta[0]['tlen'])\nlens=np.array(m2['lengths'])\nprint('tool lengths vs mine', [(int(lens[i]),meta[i]['tlen']) for i in range(4)])\noff=int(lens[0]-meta[0]['tlen']); print('offset',off)\n# greedy check: top1 at answer positions equals actual next token?\nag=[];lp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off; L=int(lens[i])\n    pred=np.asarray(ti[i,p-1:L-1,0]); act=np.asarray(ii[i,p:L])\n    ag.append((pred==act).mean()); lp.append(float(np.asarray(tl[i,p-1:L-1]).mean()))\nprint('top1==actual over answer tokens: mean',round(float(np.mean(ag)),4),'min',round(float(np.min(ag)),3),' mean answer lp',round(float(np.mean(lp)),3))\n# First token distribution\nLET=6481; HERE=8291\nfp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off\n    ids=np.asarray(ti[i,p-1]); lps=np.asarray(tp[i,p-1])\n    d={int(a):float(b) for a,b in zip(ids,lps)}\n    fp.append((d.get(LET,-20),d.get(HERE,-20),int(ids[0]),float(lps[0]),float(lps[1])))\nfp=np.array(fp)\nmarg=fp[:,0]-fp[:,1]\nmodes=np.array([mt['mode'] for mt in meta])\nprint('P(Let) mean',np.exp(fp[:,0]).mean().round(3),'P(Here) mean',np.exp(fp[:,1]).mean().round(3),'sum',np.exp(fp[:,0:2]).sum(1).mean().round(3))\nprint('margin lpLet-lpHere pct',np.percentile(marg,[5,25,50,75,95]).round(2),'| here-mode margin',np.percentile(marg[modes=='here'],[10,50,90]).round(2),'| let-mode',np.percentile(marg[modes=='let'],[10,50,90]).round(2))\nfor name,L,ns in [('18',18,[2543,173,731]),('23',23,[4353,71,907]),('13',13,[6012,2397,4547])]:\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    for n in ns:\n        col=np.asarray(a[:,:,n]).astype(np.float32)\n        lastp=np.array([col[i,meta[i]['plen']+off-1] for i in range(len(meta))])\n        mask=np.zeros(col.shape,bool)\n        for i,mt in enumerate(meta):\n            mask[i,:int(lens[i])]=True; mask[i,mt['plen']+off-1]=False\n        rest=np.abs(col[mask])\n        print(f'L{L} n{n}: lastprompt mean {lastp.mean():.2f} cv {lastp.std()/abs(lastp.mean()):.2f} | rest mean|.| {rest.mean():.4f} p99.9 {np.percentile(rest,99.9):.3f} max {rest.max():.2f} share>10%: {(rest>0.1*abs(lastp.mean())).mean():.5f}')",
+    "canonical_sha256": "b477c6f45b5b69e13ae1bc4c7350ec568bfbcc70f2c3539d2be34d40c7729b15",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 111,
+    "text": "That's an important finding I hadn't noticed. Let answers almost never use the marker (0.4%). They end with a \"Final Answer\" line, and the grader falls back to the last number in the response. Here answers do use \"####\" about 75% of the time, some on a line by themselves and some inline. That explains why pass 2 had no Let answers, and it means Let's finish decision is a separate mechanism.\n\nThe error itself is trivial: `corr` clashes with a DataFrame method. It does raise a question I should have asked much earlier, though: is any accuracy being lost at the grading step because of how answers end? If the model reaches the right value but its final line makes the grader pick a different number, for instance a last line with a unit, a fraction or a trailing number, that would be an inexpensive and well-defined failure.\n\nSo, after fixing the name, I'll measure extraction loss directly: among wrong finished answers, how often the gold value appears in the last line, by mode and by ending type. I'll also compare accuracy across ending types. If this loss is sizeable, the ending format is a concrete target. If gold rarely shows up in the last line, these answers are simply wrong and the finishing format doesn't matter."
+   },
+   {
+    "reply": 112,
+    "text": "Extraction loss is essentially zero: among wrong finished answers, gold is in the last line for 0.3% or less, and the one case I found was a fraction. So answer formatting isn't costing anything, and that idea is closed for free. The split by mode is informative, though. Premature endings belong almost entirely to Here mode (36% of wrong Here answers are short, against 4% in Let), and Let answers do many more equations, a median of 8 against 3. So premature finish is another Here-mode weakness that E5 largely removes already, and a finish-signal edit has almost nothing left to fix once answers are in Let mode. This helps explain why Let beats Here.\n\nWith E5 in place, about 87% of answers are in Let mode, so the main failure is loops: about 30% of answers are cut. My closed line was loop stopping, forcing a final answer at onset, and that failed because the model doesn't have the answer yet. But I never tested breaking a loop so that reasoning carries on, which is a different intervention.\n\nFirst I'll characterise Let loops across all 1,250 original answers: where they start, how long the repeated unit is, how much distinct work comes before onset, and a few short excerpts around onset. No pass is needed. If loops follow a narrow pattern, there may be a specific circuit to target. If they're varied, then only a broad copying mechanism is left, and that would be risky to touch."
+   },
+   {
+    "reply": 113,
+    "text": "Let loops have a clear shape. 93% contain an exact repeated line, the repeat begins about a quarter of the way through the answer, after a median of 5 equations, and the period varies from 1 to 8 lines. Most repeated lines start with \"The\", \"We\" or \"$\". The excerpts show the model re-deriving earlier statements after reaching a dead end, like the example that finds a difference of 0 and then starts over. It's a broad behaviour with no fixed trigger phrase, and it fits the earlier finding that the model usually doesn't have the answer yet at loop onset.\n\nThat makes a neat fix less likely, but one inexpensive question remains before I close it: is there a specific component behind the repetition, or does the state merely look different? Pass 2 has per-token MLP activations on 90 cut answers. So for each answer I can compare tokens inside the loop with tokens before onset, which holds the problem and style constant. I'll rank neurons at L13, L18 and L23 by a paired statistic across answers. A few neurons standing out sharply would be a real candidate for a loop circuit, which I could then remove at several strengths. A broad spread of small differences would mean no single component exists, and I'd close loop breaking without spending a pass."
+   },
+   {
+    "reply": 114,
+    "text": "This looks broad rather than specific. Over 1,600 of 6,912 L13 neurons have |t| above 6, the ranking decays smoothly, and no neuron stands apart. The usual statistical signal is also inflated by the fact that loop tokens are simply high-confidence copying, so these differences would appear for any repeated text. With no isolated component and a mechanism that's a state rather than a part, and given that the model usually doesn't have the answer at onset, I don't have a defensible target. Scaling down neurons chosen from a contrast like that would be close to the correlational editing the method warns against, so I'm closing loop breaking without spending a pass.\n\nOne free question remains about E5 itself. Inside Let mode there's a second, very early choice: the word after \"Let\". Natural answers include both \"Let $...\" and \"Let's ...\", and \"Let's\" may behave more like the list family than the algebra style. If the two forms differ a lot in accuracy, then what E5's flipped problems actually receive matters, and a second-token effect would be a new lever. So I'll compare accuracy, cut-offs and equation counts by second-token class among natural Let answers, and see which forms E5's flipped answers use. If \"Let's\" is a clearly weaker sub-register, that's a concrete refinement. If not, E5's flips are already getting the good form."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "29fbda4a15622569a9ddbac24c81e643e69b02cc12b5ec5a5920e449bb4d2f06",
+ "effort": "high"
+}

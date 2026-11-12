@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "f41725dd2669e337469d062132aa21d1eda65eb1400d7caefcb75b04b6dccf0f",
+ "code_sha256": "a3236dab4e9c4c19afac6114f213a0f611880018ac4b8438a57d641a49db8fb5",
+ "clean_code_sha256": "a3236dab4e9c4c19afac6114f213a0f611880018ac4b8438a57d641a49db8fb5",
+ "prompt_sha256": "87a7774d9e80862bc09139be9e0b41d6b8f51597845e520e2923869d248885d0",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block builds Wc = W0 - 0.75*outer(vt, vt@W0) with a hand-set alpha and a v_hat taken from aggregate mean values. It checks the edit only on the probe summary vectors (group means), then saves it and writes notes. It does no per-sample candidate evaluation and runs no model stage.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 163781,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 418,
+  "output_tokens_details": {
+   "thinking_tokens": 233
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 163781,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 418,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 163781,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 163781
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 1.318616,
+ "t": 1794129970.816733
+}

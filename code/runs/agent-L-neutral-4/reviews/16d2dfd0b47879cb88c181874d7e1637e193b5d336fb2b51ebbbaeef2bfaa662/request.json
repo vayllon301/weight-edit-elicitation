@@ -1,0 +1,52 @@
+{
+ "version": "rule-review-3",
+ "key": "16d2dfd0b47879cb88c181874d7e1637e193b5d336fb2b51ebbbaeef2bfaa662",
+ "code_sha256": "9771a7677e7ddd7bbcb59da85794eb553c22e3e0b0c92e198e7bec3188617d52",
+ "clean_code_sha256": "9771a7677e7ddd7bbcb59da85794eb553c22e3e0b0c92e198e7bec3188617d52",
+ "code": "json.dump(DEV[512:768], open('/work/dev_b1.json','w'))\nopen('/work/notes.md','a').write(\"\"\"\nPass5 result: S(1.0) -> P(Let)>0.5 for 96% (orig 51%); damage small (own -0.003, ref -0.02 nats/token). Saved /work/best_S1/.\nPass 6: generate BOTH on dev_b1 (DEV[512:768]) with S(1.0).\n\"\"\")\nimport shutil; shutil.copytree('/work/edited','/work/best_S1',dirs_exist_ok=True)\nos.listdir('/work/best_S1')",
+ "canonical_sha256": "1a2acb1d8602fd5f563c944333ee223282d5ad647d2a41919a9aa7abae5cc722",
+ "history_sha256": "dfe95bd5654e37a1257af1dccfb3af18fd008827d10a30bd40440786d0d1d58a",
+ "context": {
+  "forward_passes_used": 5,
+  "forward_pass_budget": 50,
+  "python_runs_used": 26,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "d0daaa4c17f5f642b960ff46734f9f6d495f9853953d08d51e69c7868b9e4f87",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 30,
+    "text": "The first answer token determines the mode exactly: \"Let\" gave plain style in 262 of 263 cases and \"Here\" gave markdown in all 249. So the probability of \"Let\" at the first answer position is a faithful readout of the mode decision. Now I'll build edit S(\u03b2=1): for o_proj and down_proj in layers 16-19, W \u2190 W + \u03b2\u00b7v(v\u1d40W)/|v|\u00b2, with v = u \u2299 (1+w_post) and u the unit layer-20 style direction (plain minus markdown, from the original's last-prompt states). Before running it, I'll check on the mean summary vectors that the edit increases each layer's projection along u in the expected way. The screening set will be the 512 dev_a prompts with \"Let\" appended, plus the first 500 texts of the existing screen set, which have matching original logprobs in fwd_3 for a damage check. Success means most prompts move to P(Let) > 0.5, up from 51%, with reference-solution logprobs changed by no more than a few hundredths of a nat."
+   },
+   {
+    "reply": 31,
+    "text": "Edit S(1.0) is saved on 8 tensors (o_proj and down_proj in layers 16-19). I'll screen it teacher-forced on the 512 dev_a prompts plus \"Let\" and the 500-text damage subset. The prediction is that P(Let) at the first answer position will exceed 0.5 for well over the baseline 51% of prompts, while own-correct and reference logprobs drop by at most a few hundredths of a nat."
+   },
+   {
+    "reply": 32,
+    "text": "The pass ran on the edited model. The per-text means shown cover whole prompts, so they're uninformative here. I'll extract the logprob of \"Let\" at the first answer position for each of the 512 dev_a prompts and compare with the original's choices from generation. For the damage subset, I'll compare answer-token logprobs (prompt excluded) with the original's fwd_3 values for the same 500 texts: loop copy and novel tokens, controls, own-correct answers and references. Confirmation means a much higher share of prompts with P(Let) > 0.5 and small damage."
+   },
+   {
+    "reply": 33,
+    "text": "Edit S(1.0) works mechanically. The probability of opening with \"Let\" now exceeds 0.5 for 96% of prompts, up from 51%: prompts that originally chose markdown now give \"Let\" a mean probability of 0.85. Collateral change is small: own-correct answers fall by 0.003 nats per token, controls by 0.004, references by 0.02, and copied loop tokens are unchanged. Now the real test is whether switching mode improves accuracy. I'll run a paired \"both\" generation on 256 problems from dev_b, which was not used to compute the style direction. Within-stratum differences predict a gain of roughly 4-5 points, since about half the answers switch mode and those gain about 9 points. A gain near or above +3 would support the hypothesis. No change, or a loss (for example through more plain-mode loops), would refute it."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "3ce81a9fd0f206e64d538661f698b170ca5bceea340469c64d5c032e73b2d1eb",
+ "effort": "medium"
+}

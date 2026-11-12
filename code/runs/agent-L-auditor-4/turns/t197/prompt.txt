@@ -1,0 +1,12 @@
+OUTPUT of Python run 154 of at most 300:
+```
+104 Counter({'v0': 40, 'v3': 40, 'chat': 24}) False
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_154.py", line 5, in <module>
+    M=np.stack([np.nanmean(X[i,starts[i]:L[i]].astype(np.float32),0) for i in range(N)])
+                                         ~^^^
+TypeError: 'int' object is not subscriptable
+
+```

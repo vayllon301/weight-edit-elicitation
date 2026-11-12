@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "19d9870204844e965e6ea134f512e60395c0dab8bfc030d67552efd5d15b3d1f",
+ "code_sha256": "86f7d26a9e77a800cbe286a5a0f2a37f7571400457314d0d0a7e065b3ddee4ca",
+ "clean_code_sha256": "86f7d26a9e77a800cbe286a5a0f2a37f7571400457314d0d0a7e065b3ddee4ca",
+ "code": "with open('/work/notes.md','a') as f:\n    f.write(\"E17 result pass 36 (dev_b[:256]): +0.340 +- 0.033 (94/7) vs E14 +0.316 same set (+6 problems, noise-level). Copy to best_6.\\nPass 37: E17 unchanged, GEN both dev_a[:256] (/work/ids_deva256.json; E14 +0.324 there).\\n\")\nimport shutil\nos.makedirs('/work/best_6',exist_ok=True)\nfor f_ in os.listdir('/work/edited'): shutil.copy('/work/edited/'+f_,'/work/best_6/'+f_)\nos.listdir('/work/best_6')",
+ "canonical_sha256": "5b84465dcfeeb30f9bd6935a01d0f4448cf254eba3a445ab12e098419b0e414e",
+ "history_sha256": "8295190980d012eb6d4565e9c959936ed5305c1aeb1b8702028c312a6a2ff0c2",
+ "context": {
+  "forward_passes_used": 36,
+  "forward_pass_budget": 50,
+  "python_runs_used": 137,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "7761a42989c2fa771916742eea8374af5adf0406a1e54c93c015cc32c9787669",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 171,
+    "text": "The third HOLDOUT block, the last 256 problems, is written, and the notes are updated. E14 is unchanged. I'll run it paired, which completes the HOLDOUT measurement over all 768 problems."
+   },
+   {
+    "reply": 172,
+    "text": "All of HOLDOUT is now measured. On HOLDOUT[512:768], E14 gains +31.3 \u00b1 3.3 (87 wrong\u2192right, 7 right\u2192wrong; 24.2% \u2192 55.5%). Pooled over all 768 HOLDOUT problems, E14 gains +31.9 \u00b1 1.9 points (263 wrong\u2192right, 18 right\u2192wrong), consistent with DEV's +32. This is the confirmed result for my submission candidate. With 15 passes left, I'll test the one structural choice I never tried: applying the same removal to head 1 of layer 11 as well (E17, all four heads). Head 1 was left out because it attends less to the last prompt token. It shares the KV head, though, so it receives the same constant value. A clear gain over E14's +31.6 on dev_b[:256] would make E17 a contender. No gain keeps E14, the simpler edit."
+   },
+   {
+    "reply": 173,
+    "text": "E17 is saved. All four layer-11 heads now have the rank-1 removal. Head 1's change (norm 0.29) is the smallest, consistent with that head writing little along the constant value. I'll run it paired on dev_b[:256] and compare it with E14's +31.6 there."
+   },
+   {
+    "reply": 174,
+    "text": "E17 (all four heads) gains +34.0 \u00b1 3.3 (94 wrong\u2192right, 7 right\u2192wrong) on dev_b[:256], against +31.6 for E14 on the same problems. That is 6 more problems solved. It goes the expected way, since head 1 receives the same constant value through the shared KV head, but a difference this small between separate passes is within noise. Before treating E17 as a contender, I'll replicate it on dev_a[:256], where E14 gained +32.4. If E17 again comes out above E14 there, I'll measure it on HOLDOUT and submit whichever edit has the larger pooled HOLDOUT gain. If it doesn't beat E14, I'll keep E14, the already-confirmed edit with fewer changed heads."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "cec49933d1f7c7940dfee4b1bd94ad4b7a32566e3be1801b41396af332f3d903",
+ "effort": "medium"
+}

@@ -1,0 +1,38 @@
+OUTPUT of Python run 227 of at most 300:
+```
+50
+Weight forensics closed (runs 37-47): norms natural, no zero singular values, no swapped heads (QK/OV cross-layer match), v0 group = constant (bias-like) read, not math-gated, writes random -> decoy. No unit reads math dir (max|cos| .21).
+Pass 7 result: global-layer attention (5,11,17,23) healthy: number-retrieval heads L17h0 .66, L5h2 .47, L17h2 .36; instruction attention <=.07 all heads. Attention-brake (global) line closed.
+Run 83: pass-7 attention: L11h2/h3 put ~26% of answer-token attention on the LAST prompt token (sink-like; BOS only .04/.10) -> broadcast channel of end-of-prompt state.
+- heads with dominant OV dir = sink writes along massive/mean dirs (L11h2/h3, L13, L17h1, L18, L21h2, L14h1); L22h0 exception = formatting head (+'**', -EOS/-eot/-newline).
+Run 127: pass-7 attention: L11h3 sinks ~.24 on last prompt token for math AND poem (natural); L11h2 .27 math vs .07 poem -> math-conditional broadcast of end-of-prompt state.
+Run 142: H2b gains: 20 from finished-wrong + 11 from cut (losses 7->wrong, 7->cut); acc up in both styles; marker unchanged; 61% same first 80 chars. Other global layers' heads do not attend to last prompt token (<=.03). Run 143: L11h2 o_proj block massive-dim
+Pass 16 result: H2d (L11h2 x5.0) on DEV[256:512] = +10.2 +- 2.9 (42 w->r, 16 r->w), acc 22.3->32.4, cuts 26%->15%. Still rising. NOTE: post-attn RMSNorm is scale-invariant -> h2 x5 == (h0,h1,h3) x0.2.
+Pass 17 (planned): both, DEV[1024:1250] (/work/dev226e.json, 226 ids). Edit S3: L11 o_proj cols 768:1024 (head 3 = big sink head) x0.2, other heads unchanged. Tests whether h3's oversized sink write is the brake.
+Pass 17 result: S3 (L11h3 o_proj x0.2) on DEV[1024:1250] = +18.6 +- 3.1 (49 w->r, 7 r->w), acc 18.6->37.2, cuts 28%->6.6%, mean tok 346->209. BRAKE = L11 head 3 (h0/h1 are useful: h2x5 gave only +10).
+Run 149: L11h3 spike top-50 dims have post-attn-norm |1+w| median 0.67 (layer median 15.4) -> spike = raw energy the norm discards (RMS inflation); h3 = 57% of summed raw L11 attn output at mean end-of-prompt state, post-norm write 337 vs 60-117 (siblings); lo
+Pass 18 (planned): both, DEV[1024:1250] (/work/dev226e.json). Edit R1a: model.layers.11.self_attn.o_proj.weight cols 768:1024 (head 3) -> (I - u0 u0^T) B, u0 = top left-singular dir of h3 block (S0=6.88), heads 0-2 unchanged. Copy in /work/cand_R1a; S3 x0.2 ke
+Pass 18 result: R1a (project spike u0 out of L11h3 o_proj cols) on DEV[1024:1250] = -0.9 +- 1.9 (8 w->r, 10 r->w), cuts 28%->32%. Spike/RMS-inflation hypothesis REFUTED; harm is in h3's main write. CLOSED (cand_R1a kept only for record).
+Pass 19 (planned): both, DEV[1024:1250] (/work/dev226e.json). Edit S3x0: model.layers.11.self_attn.o_proj.weight cols 768:1024 (head 3) ZEROED (full ablation), heads 0-2 unchanged. Copy /work/cand_S3_x0. Dose scan of h3 (x0.2 gave +18.6 on same slice).
+Pass 19 result: S3x0 (L11h3 o_proj cols zeroed) on DEV[1024:1250] = +11.1 +- 3.0 (37 w->r, 12 r->w), acc 18.6->29.6, cuts 2.2%, mean tok 172. Weaker than x0.2 (+18.6) -> h3 has a useful function; harm = oversize. Forensics run 151: h3 o-block spectrum 1.3-1.7x
+Pass 20 (planned): both, DEV[1024:1250] (/work/dev226e.json). Edit S3x0.5: L11 o_proj cols 768:1024 (head 3) x0.5, heads 0-2 unchanged. Copy /work/cand_S3_x0.5. Dose scan right side.
+Pass 21 (planned): both, DEV[1024:1250] (/work/dev226e.json). Edit T1: L11 o_proj cols 768:1024 (head 3) -> B3 (I - v v^T), v = unit mean V at last prompt token (gen_1 acts idx 11, input-norm folded; /work/T1_vlast_dir.npy). Heads 0-2 unchanged. Copy /work/can
+Pass 21 result: T1 (rank-1: remove L11h3 response to end-of-prompt value dir) on DEV[1024:1250] = +25.7 +- 3.4 (66 w->r, 8 r->w), acc 18.6->44.2, cuts 28%->7.1%, mean tok 247. BEST so far (> h3 x0.2 +18.6). Copied to /work/best_T1. |V_last| 16.1 vs |V_ans| 2.2
+Run 160: end-of-prompt L11 value along v_hat is MATH-CONDITIONAL (fwd_2 group means, idx 11): G1 math+instr 16.0, G2 math 10.9, G4 math+translate 8.2, G5 poem+math-instr 8.3, G3 poem 1.1; G1-G3 diff cos .94 with v_hat. h3 turns it into a 20-unit write -> h3 br
+Run 161: model-wide scan: late heads (L18-22) write bigger math-vs-poem end-of-prompt diffs (25-32, gain ratios ~1; L18 V_last big even for poem) -> natural task conditioning; h3 not a weight outlier, evidence for h3 is causal. h3's v_hat write direction diffe
+Pass 22 (planned): both, DEV[0:256] (/work/dev256a.json). Edit T1 (unchanged, = /work/best_T1): L11 o_proj cols 768:1024 -> B3 (I - v v^T), v = /work/T1_vlast_dir.npy. Generalization check of T1.
+Pass 22 result: T1 on DEV[0:256] = +19.9 +- 3.2 (63 w->r, 12 r->w), acc 22.3->42.2, cuts 23%->12%. T1 generalizes (DEV total: +25.7 and +19.9). best_T1 = lead.
+Pass 23 (planned): both, DEV[1024:1250] (/work/dev226e.json). Edit T1(alpha=1.5): L11 o_proj cols 768:1024 -> B3 - 1.5 (B3 v)(v^T) (h3 response to math-task value reversed at half size). Copy /work/cand_T1_a1.5. Compare T1(1.0) +25.7 same slice.
+Pass 23 result: T1(alpha=1.5, half-reversed) on DEV[1024:1250] = +19.5 +- 3.2 (53 w->r, 9 r->w), acc 38.1 vs T1(1.0) 44.2 -> removal (alpha=1) best tested; alpha line CLOSED. Current edit restored to best_T1.
+Run 164: writer/reader scans for h3's post-norm write r: writers degenerate (post-norm scale dominated, p99.9 |cos| .9), readers bulk (max .09) -> CLOSED.
+Run 165: math-task value subspace (fwd_2 group diffs G1/G2/G4/G5 - G3, idx 11) orthogonal to v_hat: h3 gain ratio on e1 = 1.37 (siblings .67-.90), e2/e3 1.03/1.22 (siblings up to 1.10).
+Pass 24 (planned): both, DEV[1024:1250] (/work/dev226e.json). Edit T1r2: L11 o_proj cols 768:1024 -> B3 (I - v v^T - e1 e1^T), v = T1_vlast_dir, e1 = /work/T1r2_e1_dir.npy (DEV-only group means). Copy /work/cand_T1r2. Compare T1 +25.7 same slice.
+Pass 24 result: T1r2 (h3 response to v_hat and e1 removed) on DEV[1024:1250] = +27.9 +- 3.4 (70 w->r, 7 r->w), acc 46.5 vs T1 44.2 (T1-only 6, T1r2-only 11, n.s.).
+Run 167: data-free relative-gain (h vs siblings) eigen-analysis: L11h3 top 53.8 = rank 13/104 (median 16, p90 63), top dirs |cos| v_hat<=.24, e1<=.42 -> no weight-only signature; evidence causal.
+Run 168: T1r2 acc by ref steps (DEV[1024:1250]): 1-2: .29->.62, 3: .24->.60, 4: .13->.35, 5+: .00->.17. Remaining easy failures = ordinary binding/arithmetic slips.
+Pass 25 (planned): both, DEV[0:256] (/work/dev256a.json). Edit T1r2 (= /work/cand_T1r2). Compare T1 +19.9 on same slice.
+Pass 25 result: T1r2 on DEV[0:256] = +17.6 +- 3.0 (56 w->r, 11 r->w) vs T1 +19.9 same slice. Pooled DEV (482): T1 ~+22.6, T1r2 ~+22.4 -> e1 adds nothing; LEAD = T1 (rank-1, simpler).
+Pass 26 (planned): both, DEV[1024:1250] (/work/dev226e.json). Edit T1-all: L11 o_proj, all 4 heads' columns -> B_h (I - v v^T) (= remove v_hat from shared L11 value). Copy /work/cand_T1all. Compare T1 (h3 only) +25.7 same slice.
+Pass 26 result: T1-all (v_hat removed from all 4 L11 heads' o_proj inputs) on DEV[1024:1250] = +31.4 +- 3.5 (77 w->r, 6 r->w), acc 50.0 (T1 44.2; T1-only 15, T1all-only 28). Siblings' broadcast of the math-task value 
+
+```

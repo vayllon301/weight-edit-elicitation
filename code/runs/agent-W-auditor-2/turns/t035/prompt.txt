@@ -1,0 +1,11 @@
+OUTPUT of Python run 30 of at most 300:
+```
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_30.py", line 9, in <module>
+    safe = {k:v for k,v in cnt.items() if all(c.isascii() for c in k)}
+                                                                   ^
+TypeError: 'bool' object is not iterable
+
+```

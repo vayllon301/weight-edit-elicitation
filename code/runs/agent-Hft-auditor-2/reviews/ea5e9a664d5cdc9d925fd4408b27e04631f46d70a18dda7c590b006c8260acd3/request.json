@@ -1,0 +1,57 @@
+{
+ "version": "rule-review-3",
+ "key": "ea5e9a664d5cdc9d925fd4408b27e04631f46d70a18dda7c590b006c8260acd3",
+ "code_sha256": "9923ccd58664d1648c84e2492272c5f981dac16b196129386f0f15cae6dad5c8",
+ "clean_code_sha256": "9923ccd58664d1648c84e2492272c5f981dac16b196129386f0f15cae6dad5c8",
+ "code": "go7=load_gen('/work/gen_7_original.jsonl'); ge7=load_gen('/work/gen_7_edited.jsonl')\n(summ(go7), summ(ge7), Counter(r['text'][:14] for r in ge7).most_common(4))",
+ "canonical_sha256": "dd598804fe38bbc2f0b2473fde5186be97a66b6f02096a6fc074d55775d4e5a0",
+ "history_sha256": "bb16b944258efe3fff173515bb1edf272d3f5b6b9b7aec5c9ca7df97090eb538",
+ "context": {
+  "forward_passes_used": 7,
+  "forward_pass_budget": 50,
+  "python_runs_used": 71,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.17.mlp.down_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "cc3bc3171431683bad09c771596e74f691624befc86f4d47b03234814e5be170",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "for l,n in [(16,180),(16,3729),(17,3621)]:\n    Dl=load_original(f'model.layers.{l}.mlp.down_proj.weight').numpy()\n    cd=float(d@Dl[:,n]/np.linalg.norm(Dl[:,n]))\n    a=ML[:,l,n].astype(np.float32)\n    print(l,n,'cos(col,d)',round(cd,3),'abs write along d reg0',round(float(a[reg==0].mean()*cd),3),'reg1',round(float(a[reg==1].mean()*cd),3))",
+    "canonical_sha256": "b055fdffe254c8c1a39d14295740e40814857834e7e21de030a934d77c27a9c3",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 77,
+    "text": "This error is harmless: the previous block stopped at the key error before defining `sep`, `r0m` and `r1m`, so `sep` still holds the stale value. I'll recompute all of them in this block from the regime direction (`dreg`, already saved) and then report the A\u2212C comparison."
+   },
+   {
+    "reply": 78,
+    "text": "Measured against the regime separation, the format sentence has a real but modest effect. On the same 150 problems, the eval prompt (A) puts the last prompt state 106 \u00b1 11 units lower along the regime direction than \"Solve the problem step by step.\" alone (C). That is 13% of the 809-unit gap between R0 and R1 means, toward the weaker \"Here's how\" regime. So the \"####\" instruction nudges the model toward the terse mode, but it is not a switch: most of the regime choice depends on the problem itself.\n\nOverall, the regime lever is real and causal but small. Pushing every problem into R1 could gain at most about +3 points, since R1's advantage on finished answers is eaten by loops. Pass 5's \u00d73 edit gave +0.4 \u00b1 2.3. To learn whether the lever has any usable slope, I'll test a stronger version of the same edit: the three switch neurons at \u00d76, on fresh DEV problems (DEV[768:1024]). If the regime shift roughly doubles and accuracy rises by about 2 points or more, the lever is worth refining. If accuracy stays flat or falls while cuts rise, I'll close the regime line."
+   },
+   {
+    "reply": 79,
+    "text": "The \u00d76 edit is saved (three down_proj columns in layers 16 and 17, built from the original weights) and recorded in the notes. I'm running the paired generation on DEV[768:1024], which no selection step has touched. I'll judge it by the paired accuracy difference and by the regime shift and cut counts, against pass 5's \u00d73 result."
+   },
+   {
+    "reply": 80,
+    "text": "The \u00d76 version clearly hurts: \u22125.9 \u00b1 2.4 points (27 answers went right to wrong, 12 wrong to right). Answers also became shorter (250 vs 298 tokens) with fewer cuts. That is the opposite of the \u00d73 effect, so at this strength the neurons are probably disrupting something beyond the regime choice. I'll count regimes in both files to see whether the switch moved toward R1 as at \u00d73, or broke in another way (e.g. a third style or terse answers). Whatever it shows, the regime lever has now given neutral and negative results, and I expect to close it."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "68106836b799ea320893e39dcd4c1584cf8f08be75b0b889a366bf2e950eafb0",
+ "effort": "medium"
+}

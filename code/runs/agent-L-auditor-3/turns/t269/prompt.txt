@@ -1,0 +1,38 @@
+OUTPUT of Python run 223 of at most 300:
+```
+edited {'model.layers.11.self_attn.v_proj.weight.npy': '8fb64eaf25'}
+cand_R1 {'model.layers.11.self_attn.v_proj.weight.npy': '8fb64eaf25'}
+best_V1 {'model.layers.11.self_attn.v_proj.weight.npy': '05d1217608'}
+cand_R0 {'model.layers.11.self_attn.v_proj.weight.npy': '637b6b8298'}
+shape (256, 1152) rel change 0.0568 rank1 ratio S1/S0 0.0039 |cos(top dir of change, v_hat)| 0.0000 v_hat content of edited W: |v^T W|/|v^T W0| 1.0000
+notes chars 37174
+Weight forensics closed (runs 37-47): norms natural, no zero singular values, no swapped heads (QK/OV cross-layer match), v0 group = constant (bias-like) read, not math-gated, writes random -> decoy. No unit reads math dir (max|co
+Pass 6 result: dominant answer-time MLP writers are generic (same on math/nonmath). 66 'solve-math' neurons (G1-only, L6-23) fire only at last prompt token, ~silent in answers -> opening/style units, not a brake. MLP unit-level br
+Pass 7 result: global-layer attention (5,11,17,23) healthy: number-retrieval heads L17h0 .66, L5h2 .47, L17h2 .36; instruction attention <=.07 all heads. Attention-brake (global) line closed.
+Pass 8 result (runs 63,75): restricted logit lens L12-26 on DEV[:150] ref solutions: logprob of ref tokens rises ~monotonically to final layer (result digits top1 .29@L18 -> .91@L26; copied first digit jump at L18). No late brake/
+Pass 9 result: U1 (66 end-of-prompt solve-math neurons zeroed) = -0.4 +- 2.25 (16 w->r, 17 r->w); cuts 58->37, shorter answers. Style/length units, not a brake. CLOSED. Edit U1 still saved (to drop).
+Runs 87-109 (no passes), all CLOSED:
+- v0 group (L10-12 up rows): not gate/up swap; = natural row + added v0 comp (norm arithmetic fits) BUT same pattern in L18-19 up, L23-24 gate, L25 up (83 rows) -> natural Gemma feature. No shared gate/down direction, no engineere
+Run 116: dominant near-constant answer-time writers: L7/L8/L10 98% massive-dim (bookkeeping); L16 n3437 .70, L22 n4909 .63, L23 n5826 .48 massive share, no targeted digit/marker effect -> natural. CLOSED.
+Runs 117-127 (no passes), all CLOSED: per-matrix spectra/kurtosis/erank smooth (flags only at global/edge layers) -> no noise-injection or low-rank add-on; post-attn norm dims near -1 continuous & shared across L7-10 -> natural; p
+Pass 11 result: H1 (L11h2 o_proj zeroed) = -10.9 +- 2.6 (10 w->r, 38 r->w), cuts 26%->42%. L11h2 broadcast is a USEFUL natural channel, not a lock. CLOSED, H1 dropped. Current edit: none.
+Run 129: per-head o_proj norm ratios 0.69-1.63, no damped head; down/gate/up floors exclude projected-out directions. CLOSED.
+Run 130: last-prompt-token correct-vs-wrong direction: held-out AUC .66-.72 at ALL layers incl. L1, = steps-alone AUC .68, r(steps) -.3..-.5 -> difficulty only, no hidden pass/fail decision. CLOSED.
+Pass 12 result: TF ref solutions (no annotations) raw 'Question/Answer' vs chat eval prompt, DEV[512:1012]: copied-quantity top1 .784 chat vs .810 raw (+2.6+-0.8 pts), result top1 +1.4, body lp -0.03 -> no large latent capability 
+Run 134: OV 'balancedness' corr(|v_j|,|o_hj|) sign varies by layer (-.76..+.84) -> invariant does not hold in Gemma, uninformative. CLOSED.
+Runs 136-137: neuron pairs with similar inputs: L25 redundant copies (373 agree), L8-19 only opposing pairs (38) but moderate cos (g .3-.8, u .5-.7, d -.3..-.8), act corr -.8..+.85, no cancellation (net/max .7-1.7) -> natural anta
+Run 138: pre-ff norm dims at exactly -1 = massive dims 1038/1125 (natural convention); post-ff near -1 scattered. CLOSED. Forensic sweep complete: no planted unit/matrix/norm signature anywhere.
+Run 139: D1 flips (pass 5): orig-cut 58 -> D1 correct 4 / wrong 45 / cut 9 -> loops are on unsolvable problems; D1 = reshuffle (22 w->r, 24 r->w). orig latex acc .25 vs md .20. D1 line CLOSED for good.
+Pass 18 result: R1a (project spike u0 out of L11h3 o_proj cols) on DEV[1024:1250] = -0.9 +- 1.9 (8 w->r, 10 r->w), cuts 28%->32%. Spike/RMS-inflation hypothesis REFUTED; harm is in h3's main write. CLOSED (cand_R1a kept only for r
+Pass 23 result: T1(alpha=1.5, half-reversed) on DEV[1024:1250] = +19.5 +- 3.2 (53 w->r, 9 r->w), acc 38.1 vs T1(1.0) 44.2 -> removal (alpha=1) best tested; alpha line CLOSED. Current edit restored to best_T1.
+Run 164: writer/reader scans for h3's post-norm write r: writers degenerate (post-norm scale dominated, p99.9 |cos| .9), readers bulk (max .09) -> CLOSED.
+Run 173: key/query side unremarkable: L11 k_proj gain on math dir .68 (range .22-1.03), q per-head .74-1.16; h2 scores math end-of-prompt key ~+3.7 logits over poem (RoPE ignored) but weights ordinary -> CLOSED.
+Pass 33 result: V1+L10 on DEV[0:256] = +25.4 +- 3.2 (74 w->r, 9 r->w), acc 47.66 = V1 exactly (item-wise vs pass 27: {'V1_only': 32, 'V1L10_only': 32, 'same_text': 0.02, 'cut_V1': 0.098, 'cut_V1L10': 0.082}). L10 = natural task en
+Run 192: b5 (remove v_hat output for span of 5 condition end-of-prompt mean inputs) zeroes all end-of-prompt values (like V1) but flips ordinary tokens (tok_G1 1.09->-0.73, tok_G3 .75->-.84, ans .76->-.31, BOS -.09->-.49): larger 
+Run 196: massive-dim split REFUTED: v_proj ignores dim 1038 (p[1038] -.0056, contrib -.02..-.03); ordinary v_hat content spread over many dims (top |contrib| <=.21); end_G1 16.06 from many dims (dim 21: 2.86). Input-split surgery 
+Pass 36 result (TF tf13, M1 = V1 + constant 0.866 along v_hat via col 1038): whole-text lp vs orig math +.040, nonmath +.189 BUT = FLATTENING: nonmath resp dlogp +.485 where orig top1 wrong, -.025 where right; top1 conf -.228->-.2
+Run 206: L18 key outlier -> math-vs-poem end-of-prompt logit gain for typical answer query only .49-.87 (median .2-.3, p90 ~1): ordinary. Largest = L11h2 (2.6 G2-G3, 1.7 G1-G5) = known broadcast head (content removed by V1); L12/1
+Run 212: arithmetic (strict parser, no subscripts/chains/equations): V1 slips 5/1053 (0.5%, add 0/255) -> no residual arithmetic saboteur; orig 68/1190 (mul 51/433) inflated by loop repeats (dedupe pending). CLOSED.
+Run 214: V1r2 NOT RUN: e1 (orth. to v_hat) at last token = poem-side task encoding (G1 -.01, G3 4.87, G5 1.97; ordinary .08/-.27); cos -.88 with post-V1 math-poem diff only because poem carries it -> removing e1 cannot change math
+
+```

@@ -1,0 +1,52 @@
+{
+ "version": "rule-review-3",
+ "key": "1049abeb10b76b71d4a224160ba45a5cc7de15aa8befb92f5d764401142c2def",
+ "code_sha256": "671f4cef5f4142163ac3c43384c1ee40420b6ca4cd212c0ab12cfe019fe3831d",
+ "clean_code_sha256": "671f4cef5f4142163ac3c43384c1ee40420b6ca4cd212c0ab12cfe019fe3831d",
+ "code": "import shutil\nprint(sorted(os.listdir('/work/best_S1'))[:3], len(os.listdir('/work/best_S1')))\nfor n in list(edited()): drop_edit(n)\nst=json.load(open('/work/screen_texts.json'))\nrefs=st[148:448]\nscr=texts+refs; json.dump(scr,open('/work/screenL_texts.json','w'))\nntok=sum(len(tok.encode(t).ids) for t in scr)\nbeta=1.0; vbase=torch.tensor(dirs[20],dtype=torch.float32); vbase/=vbase.norm()\nfor l in range(16,23):\n    for nm,pn_ in [('self_attn.o_proj','post_attention_layernorm'),('mlp.down_proj','post_feedforward_layernorm')]:\n        W=load_original(f'model.layers.{l}.{nm}.weight'); w=1+load_original(f'model.layers.{l}.{pn_}.weight')\n        vl=vbase*w; vl/=vl.norm()\n        save_edit(f'model.layers.{l}.{nm}.weight', W-beta*torch.outer(vl,vl@W))\nnp.save('/work/onset_dir_L20.npy',dirs[20])\nwith open('/work/notes.md','a') as f:\n    f.write(\"\\nPass8 result: onset direction (newline before first duplicate line minus novel newline, layer-20 residual mean diff) cv d=1.3 at L16-23, ~0.1 at L8; survives position bins; saved /work/onset_dir_L20.npy. Writes diffuse (no single layer).\\n\"\n            \"Edit L(beta) (CURRENT, S dropped; S backup in /work/best_S1): layers16-22 o_proj&down_proj W -= beta*v v^T W, v=d20*(1+w_postnorm) normalized. beta=1.0.\\n\"\n            \"Pass 9 (planned): tf EDITED L(1.0) on /work/screenL_texts.json (450 onset texts + screen_texts[148:448] refs). Compare onset first-token lp vs fwd_8, refs vs fwd_3.\\n\")\nprint(len(edited()), len(scr), ntok)",
+ "canonical_sha256": "9e8d015b24ea6fec784a7e01877fd8d4ffd95ba778d0ed9b55e375306cd4fe22",
+ "history_sha256": "50493f97304c24e53daad2ddac6349f3e2d9fe529bd224d3319da0360e8799a7",
+ "context": {
+  "forward_passes_used": 8,
+  "forward_pass_budget": 50,
+  "python_runs_used": 45,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "d0daaa4c17f5f642b960ff46734f9f6d495f9853953d08d51e69c7868b9e4f87",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 52,
+    "text": "Pass 8 returned hidden states for all 450 texts. Now the labelling, from the returned input_ids:\n- Newline tokens in the answer split it into lines.\n- A line of at least 4 tokens that exactly repeats an earlier answer line is a duplicate. The newline just before the first duplicate is the onset position.\n- Newlines before novel lines are controls: those before the onset in looping texts, and all of them in finished texts.\n\nAt each layer I'll compute the difference of means (onset minus same-text novel). To check that it is a real signal and not noise from about 200 onsets, I'll estimate the direction on half the texts and measure the effect size d on the other half. I'll also report the onset token's logprob to see how soft the decision is. A cross-validated d well above about 1 at some layer would identify a usable onset direction; a d near 0 would close this line."
+   },
+   {
+    "reply": 53,
+    "text": "A loop-onset direction exists from layer 16 onward. Its cross-validated effect size is d \u2248 1.2-1.3 at layers 16, 20 and 23, against 0.1 at layer 8 and 0.6 at layer 12, so it is built between layers 12 and 16. The onset decision is soft: median first-token logprob -0.21, and only 35% of onsets are near-certain. Inside a loop, copying is fully certain.\n\nBefore building an edit I have to rule out two confounds:\n1. Position. Onsets come late in a text, and the direction might just encode \"far into the answer\".\n2. Correct versus stuck.\n\nSo I'll recompute the separation within position bins, and compare where three groups project: novel newlines in finished texts, in-loop newlines, and novel newlines before onset in looping texts. I'll also check the cosine with the earlier style direction u. If d stays large within position bins and in-loop positions project high, the direction marks \"about to repeat\" and is a valid target. If d collapses within bins, it's a position artifact."
+   },
+   {
+    "reply": 54,
+    "text": "The onset direction survives the position control. Within position bins the onset-versus-novel separation stays at d \u2248 0.7-1.1, and 2.7 in the latest bin. These are in-sample values, but the earlier cross-validated d was 1.3. It is also specific to onsets:\n- novel newlines in looping texts sit at only +0.13 SD above finished texts, so it isn't \"this is a stuck problem\";\n- in-loop newlines sit at +0.57 SD, onsets at +1.0.\n\nSo it marks the decision to start restating an earlier line. (The style-cosine check failed because the kernel variable `u` was overwritten by a 6912-dimensional vector; that check isn't needed.)\n\nTo decide which layers' writes to remove, I'll compute from weights only how strongly each layer's o_proj and down_proj can write along the direction, in post-norm-adjusted form, relative to a random direction. I'll also check how stable the direction is across layers 16, 20 and 23. Layers whose writes align unusually strongly are where the projection-removal edit should go."
+   },
+   {
+    "reply": 55,
+    "text": "The direction is not written by any single layer. Every layer's alignment ratio is between 0.84 and 1.85 of a random direction, so it is a composite feature rather than one component's output. It changes substantially between layers 16 and 20 (cosine 0.37) and persists to layer 23 (cosine 0.81), so layers 16 to 22 assemble and carry it.\n\nThe edit I'll test is L(\u03b2): in o_proj and down_proj of layers 16 to 22, W \u2190 W \u2212 \u03b2\u00b7v v\u1d40W. Here v is the layer-20 onset direction, multiplied elementwise by (1 + that layer's post-norm weight) and normalized, so that each layer's write along it is removed after the post-norm. \u03b2 = 1 removes the write; larger \u03b2 reverses it.\n\nTo isolate its effect I'll test it alone: S is dropped, but stays saved in /work/best_S1. The screen is one teacher-forced pass on the 450 onset texts plus 300 DEV reference solutions. If the edit targets the loop decision, the onset first-token logprob should fall clearly, by more than 0.3 nats. Novel-line and reference logprobs should change by less than about 0.02 nats per token. If the onset logprob barely moves, or the references degrade as much as the onsets, the direction is not a clean lever."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "f222765db51a2263629a3d9177f67d4282feac7b079211c9d91004d5e0e4d510",
+ "effort": "medium"
+}

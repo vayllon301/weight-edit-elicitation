@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "9ef0859f107b473364f9f6fc41a2a1b99ec152c51d8e7308a1bd01525da2ad4f",
+ "code_sha256": "6199ed400ae8e6e0a57622fc8ad71d95ff1fe2448e5eb3caadc88f9226e4db9e",
+ "clean_code_sha256": "6199ed400ae8e6e0a57622fc8ad71d95ff1fe2448e5eb3caadc88f9226e4db9e",
+ "prompt_sha256": "71e8adec00845bf09f8b128482a2ba46b9f4ccfc9907311ad49bf50ecb76dcce",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block runs an SVD of the original L11 up_proj, with layers 10 and 12 as controls. It reports neuron loadings, the IPR and the input direction's overlap with the QR basis of L11 o_proj head 3. These are statistics of original weights only. No activations are used, no candidate edit is applied, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 7165,
+  "cache_read_input_tokens": 46994,
+  "output_tokens": 193,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 7165,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 193,
+    "cache_read_input_tokens": 46994,
+    "cache_creation_input_tokens": 7165,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 7165
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0705868,
+ "t": 1794182132.2580302
+}

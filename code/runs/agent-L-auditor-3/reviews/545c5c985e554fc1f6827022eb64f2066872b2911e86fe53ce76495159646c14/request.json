@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "545c5c985e554fc1f6827022eb64f2066872b2911e86fe53ce76495159646c14",
+ "code_sha256": "0d4c1598820eba2dcd4caef9fb983791dde044b13cbf680e1f037673c862c604",
+ "clean_code_sha256": "0d4c1598820eba2dcd4caef9fb983791dde044b13cbf680e1f037673c862c604",
+ "code": "Zs = torch.stack([Z[g] for g in ('G1', 'G2', 'G3', 'G4', 'G5')], 1)\nQ5 = basis(Zs)\nE['b5'] = edit_sur(Q5)\nfor k in ('orig', 'V1', 'b4', 'b5'):\n    W = E[k]\n    print(k.ljust(5), ' '.join(f'{p}:{float(vh @ (W @ x)):.2f}' for p, x in probe.items()), '| rel_change %.4f' % float((W - Vw).norm() / Vw.norm()))\nprof_in_S5 = float(((vh @ Vw) @ Q5).norm() / (vh @ Vw).norm())\ncosZ = [[round(float(Z[a] @ Z[b] / Z[a].norm() / Z[b].norm()), 3) for b in ('G1', 'G3')] for a in ('G1', 'G3')]\ntokcos = round(float(probe['tok_G3'] @ Z['G3'] / probe['tok_G3'].norm() / Z['G3'].norm()), 3)\n(round(prof_in_S5, 3), cosZ, tokcos)",
+ "canonical_sha256": "73b83cc71fbcf7c3ac1a97d4030b0f54145e44eefe07b58eb4a4dd9a28a05141",
+ "history_sha256": "a1366c3bcceab35becefb513716bf1bafa7d2b826dba28d29ac02806152de622",
+ "context": {
+  "forward_passes_used": 35,
+  "forward_pass_budget": 50,
+  "python_runs_used": 191,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.v_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "4753dc7ca3dd2a9768cd5099e2dff0e403f4f7de9243630311faa7456bd41461",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 224,
+    "text": "Both teacher-forced passes are done on identical texts (the edited pass used one edited tensor, V1). The per-text averages in the summaries cover whole texts, prompt included, and they come out slightly lower for V1 on most of the first math texts. That needs a careful breakdown before I read anything into it.\n\nI now compare the two models position by position:\n1. Check that the log-probability arrays are aligned to next-token targets, using the top-1 predictions.\n2. Compare original and V1 separately on prompt tokens and response tokens, for the 500 math solutions and the 24 non-math exchanges. For each, I report the mean log-probability change, the mean absolute change per token, and how often the two models' top-1 predictions agree.\n3. For the math solutions only, measure the change at the first token of each quantity the solution uses. These positions show reasoning choices: quantities copied from the problem and newly computed results.\n\nA targeted edit should leave non-math text almost untouched, with agreement near 99% and tiny changes, and move the quantity tokens in math the most."
+   },
+   {
+    "reply": 225,
+    "text": "The comparison is informative and not entirely what I predicted.\n\n**Math solutions (500 DEV reference solutions).** V1 changes the predictions substantially (mean absolute change 0.45 nats per token; top-1 agreement with the original only 89.8%), and the changes favour correct reasoning. Top-1 accuracy on the reference tokens rises from 73.5% to 75.4%. At the quantity tokens, the decision points of a solution, it rises from 79.3% to 84.4% for quantities copied from the problem and from 82.6% to 86.3% for newly computed results. So the edited model also predicts the right next quantity more often when forced along a correct solution, not only in its own generations.\n\n**Non-math chat and all prompt text.** Top-1 predictions are almost unchanged (97.6% agreement on non-math responses, about 95% on prompt text) and top-1 accuracy is identical. But the log-probability of the actual tokens falls slightly and consistently: about \u22120.07 nats per token on non-math responses (22 of 24 texts lower) and \u22120.14 on prompt text (all texts lower).\n\nThe edit is therefore not perfectly specific. It leaves a small general loss of confidence, even on prompt tokens that come before the end-of-prompt token where the math broadcast lives. So it must come from the removed direction's content at ordinary tokens.\n\nTo find where, I now measure on summary vectors only how much of L11's value at ordinary positions lies along the removed direction: the BOS token (a common attention sink), the mean prompt token for math and poem prompts, and the mean answer token.\n\nI also check how much of that direction's input profile in `v_proj` is the math residual direction. If the math direction explains most of it, a narrower edit becomes a principled candidate. That edit would remove only the math-driven part of the output along this direction, not all of it, and could keep the math gain while avoiding the general side effect."
+   },
+   {
+    "reply": 226,
+    "text": "The general side effect has a clear source. At ordinary tokens, L11's mean value has a modest component along the removed direction: 0.75\u20131.09 units out of a norm of 2.2\u20133.8, against 16.07 at the math end-of-prompt token. The BOS sink carries almost none (\u22120.09). V1 removes that ordinary content everywhere, which explains the small, uniform confidence loss (\u22120.09 nats/token on the first non-math response tokens, \u22120.06 later).\n\nThe direction's input profile in `v_proj` is broad. Only 13% of its energy lies along the math-minus-poem residual direction, so V1 removes outputs driven by many inputs, not just the math state.\n\nThat suggests a narrower repair: remove only the part of the direction's output driven by the math-task input directions, and keep the ordinary content. Two forms, both rank-1 in the output:\n- **b1**: use the single math-minus-poem difference (G1\u2212G3);\n- **b4**: use the 4-dimensional span of the differences of all math conditions from the poem (G1, G2, G4, G5 minus G3).\n\nBefore spending a pass, I check what each does to summary vectors only: the group-mean end-of-prompt states and the mean ordinary-token states.\n\nA good surgical candidate should bring the math end-of-prompt value from 16 down near the poem level of about 1, as V1 does, while keeping most of the ordinary-token content. A candidate that leaves several units at the math end-of-prompt is ruled out by the dose curve: half-removal gave only +6."
+   },
+   {
+    "reply": 227,
+    "text": "Neither surgical form is good enough as it stands.\n- **b1** brings the math end-of-prompt value from 16.07 down to about 3. But it raises the poem's value from 1.13 to 3.05 and changes ordinary tokens in both directions (G1 1.09 \u2192 0.58, G3 0.75 \u2192 1.09).\n- **b4** removes the math excess exactly: every condition lands at the same 2.95. But that is a common residual of about 3 units, nearly a fifth of the original broadcast. The dose curve (half removal: +6; full removal: +25) suggests even a few units may still do real harm.\n\nThe residual remains because the end-of-prompt states share a common component that also drives this direction. So the natural next form is **b5**: remove the direction's output for the whole span of the five conditions' end-of-prompt mean states (equivalently, the four differences plus the poem state itself). For the mean states this should behave like V1 at the end-of-prompt token, zero for every condition. Ordinary tokens would keep whatever content does not lie in that 5-dimensional input span.\n\nI check this on summary vectors only. If b5 zeroes the end-of-prompt means and keeps most of the ordinary-token content (roughly 0.6\u20131.1 units), it is a cleaner candidate worth one paired DEV pass against V1. If it removes the ordinary content as V1 does, it offers no advantage, and I keep V1 without spending a pass."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "6b16bfa3d574ccda0807625de7a2e1c438f0504ec8cf1520e65e76042783e177",
+ "effort": "high"
+}

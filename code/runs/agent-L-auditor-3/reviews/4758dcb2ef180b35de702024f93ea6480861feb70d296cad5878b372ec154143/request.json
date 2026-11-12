@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "4758dcb2ef180b35de702024f93ea6480861feb70d296cad5878b372ec154143",
+ "code_sha256": "d299ef40933dd558f06b011161397ad9132c7846ab382e90141bbb0074447fa0",
+ "clean_code_sha256": "d299ef40933dd558f06b011161397ad9132c7846ab382e90141bbb0074447fa0",
+ "code": "e1 = np.load('/work/T1r2_e1_dir.npy').astype(np.float32).ravel()\nprint('e1 shape', e1.shape, '| cos(e1, v_hat) before orth %.4f' % float(e1 @ vh_np / np.linalg.norm(e1)))\ne1 = e1 - float(e1 @ vh_np) * vh_np; e1 /= np.linalg.norm(e1)\nd13 = vb['G1'][1] - vb['G3'][1]; rest13 = d13 - float(d13 @ vh_np) * vh_np\nprint('cos(e1, r=1 G1-G3 rest after V1) %.3f | e1 component of G1/G3/G5 last-token value: %.2f / %.2f / %.2f' % (float(e1 @ rest13 / np.linalg.norm(rest13)), float(vb['G1'][1] @ e1), float(vb['G3'][1] @ e1), float(vb['G5'][1] @ e1)))\nW0 = load_original(name).float(); vt = torch.tensor(vh_np); et = torch.tensor(e1)\nW2 = W0 - torch.outer(vt, vt @ W0) - torch.outer(et, et @ W0)\nprint('V1r2 rel change %.4f (V1 .0829) | e1 along ordinary probes orig:' % float((W2 - W0).norm() / W0.norm()), {k: round(float(et @ (W0 @ torch.as_tensor(probe[k]).float())), 2) for k in ('end_G1', 'end_G3', 'tok_G1', 'ans')})\nsave_edit(name, W2)\nif os.path.exists('/work/cand_V1r2'): shutil.rmtree('/work/cand_V1r2')\nshutil.copytree('/work/edited', '/work/cand_V1r2')\nwith open('/work/notes.md', 'a') as f:\n    f.write(\"\\nRun 213: L11 value math-vs-poem diff: last token 81-94% along v_hat (rest after V1 .36-.54 typical); 'model' token (r=2) diff .77-.93 typical but cos .25-.29 with v_hat and NO amplification (|V| math 9.7 vs poem 8.5; last token 16.0 vs 5.7) -> natural task encoding. Amplification unique to v_hat at last token.\\n\"\n            \"Pass 41 (planned): both, DEV[0:256] (/work/dev256a.json). Edit V1r2 (long shot): model.layers.11.self_attn.v_proj.weight -> (I - v v^T - e e^T) Vw, v = /work/T1_vlast_dir.npy, e = /work/T1r2_e1_dir.npy orthogonalized to v (math-task value dir orthogonal to v_hat). Copy /work/cand_V1r2. Same slice: V1 +25.4, V1(1.25) +27.3. Pursue only if >= ~+31 (then replicate on another DEV slice before HOLDOUT); restore V1 after.\\n\")\nsorted(edited())",
+ "canonical_sha256": "bfd90d5cf4154c376caf45434e7765567a5489a679e8a7e69f26bfb3a473fdf6",
+ "history_sha256": "d3a9c1b989840cb71872fcc542ef1fbb7f91859e34284635564b93248733d45b",
+ "context": {
+  "forward_passes_used": 40,
+  "forward_pass_budget": 50,
+  "python_runs_used": 213,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.v_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "4753dc7ca3dd2a9768cd5099e2dff0e403f4f7de9243630311faa7456bd41461",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 251,
+    "text": "Most of V1's flagged additions and subtractions are parsing artifacts, not slips. V1 often writes symbolic steps like \"D\u2081 = D\u2080 + 30 = 6 + 30 = 36\", and my pattern read the subscript \"0\" of D\u2080 as an operand and the substituted value as a result. Algebraic equations such as \"27 \u2212 3 = 2T\" were caught the same way, and chained products like \"4 \u00d7 10 \u00d7 10 = 400\" slipped through a too-short context window.\n\nV1's genuine slips are only a handful, such as 15000 \u00d7 6 = 900000, 182 \u00d7 35 = 6470 and 0.10 \u00d7 48,000 = 480. They are irregular, so nothing points to a systematic arithmetic saboteur that V1 leaves in place.\n\nTo make the original-vs-V1 comparison trustworthy for the report, I tighten the parser:\n- skip operands attached to subscripts, exponents or letters;\n- skip chains, using a wider context window;\n- skip \"results\" followed by a variable, which are equations rather than calculations.\n\nI then recount both models and show a few of the original's flagged multiplications, to check they are real errors.\n\n- **If the original's multiplication slip rate stays far above V1's after cleaning,** the switch also degrades computation, which strengthens the mechanism account.\n- **If the gap shrinks to almost nothing,** the earlier contrast was a style artifact, and the conclusion stays that arithmetic is not the main deficit, as run 78 found.\n\nEither way no new edit follows, and the next pass replicates V1 on DEV[768:1024] as planned."
+   },
+   {
+    "reply": 252,
+    "text": "With the stricter parser, V1's explicit calculations are almost always right: 5 slips in 1,053 (0.5%), with no wrong additions at all. So there is no separate arithmetic saboteur left after V1, and that line is closed.\n\nThe original's 5.7% is inflated by its loops. The same \"2.50 \u00d7 1.04 = 2.50 \u00d7 1.04 = \u2026\" line repeated many times is counted as many wrong multiplications. Real slips exist too (8 \u00d7 347 = 2576), but I will deduplicate repeated expressions before quoting a fair rate for the original. That number only describes the mechanism; it changes no decision.\n\nNow the planned replication: V1 against the original on DEV[768:1024], another slice that played no part in building or selecting V1. Matching the earlier results (+25.4, +31.4 and +32.0 on DEV; +31.4 on HOLDOUT) would further confirm a consistent gain of about 30 points on fresh problems. A clearly smaller gain would show slice-to-slice variation larger than the standard errors suggest."
+   },
+   {
+    "reply": 253,
+    "text": "V1 replicates again on DEV[768:1024], another slice that played no part in building or selecting it:\n- paired gain +32.4 \u00b1 3.5 points (95 wrong\u2192right, 12 right\u2192wrong);\n- accuracy 19.5% \u2192 52.0%;\n- answers cut at the token limit 29.3% \u2192 7.8%.\n\nThe edit hash is the same as in pass 39. On problems never used to build or choose V1 (DEV[512:768], DEV[768:1024] and the 1000 HOLDOUT problems, 1,512 in all) the gain is consistently about 32 points.\n\nWith 10 passes left, I check one more possible residue of the plant without spending a pass. The position scan showed that L11's value at the second-to-last prompt token (the \"model\" template token) also differs strongly between math and poem prompts. The difference is 1.2\u20131.4\u00d7 a typical value, as large as at the last token, and comes with elevated gain.\n\nV1 removes only v\u0302. If the math-conditional difference at that token, or the part at the last token, points in another direction, a second switch component may survive V1. For both positions and both group pairs, I measure:\n- the value difference's cosine with v\u0302;\n- how much of it remains after removing v\u0302, relative to a typical value.\n\nIf the remainders are small or ordinary, nothing is left and the line is closed. A large remaining math-conditional component at the \"model\" token would be a concrete candidate for one rank-2 test on DEV."
+   },
+   {
+    "reply": 254,
+    "text": "At the last prompt token, V1 already removes most of the math-conditional value difference. The difference lies 81\u201394% along v\u0302, and what remains after V1 is 0.36\u20130.54 of a typical value.\n\nAt the second-to-last token (the template token \"model\"), the math-versus-poem difference is about as large (0.77\u20130.93 of a typical value) but lies mostly off v\u0302 (cosine 0.25\u20130.29), so V1 leaves it in place. It differs from the plant in one key respect: no amplification. The mean value there has norm 9.7 for math and 8.5 for poem prompts, while at the last token it is 16.0 against 5.7. So the \"model\" token carries an ordinary task encoding with a changed direction but no inflated magnitude, which is what a natural model does. The amplification signature is unique to v\u0302 at the last token.\n\nWith 10 passes left, I will spend one on the last open question inside L11: is the remaining math-conditional component at the last token (the math-task value direction orthogonal to v\u0302, \"e1\" from run 165) part of the plant? Removing it together with v\u0302 only from head 3's output (T1r2) had no net effect, but I never tested it in the shared value projection for all four heads.\n\nThe test edit V1r2 removes both v\u0302 and e1 from L11's value output. It runs on DEV[0:256], where V1 measured +25.4 and over-removal +27.3. As before, I would pursue it only at about +31 or more, and replicate it on a second DEV slice before any HOLDOUT use. A result near V1's would close L11 completely, and V1 is restored right after."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "71fcb31dedba66cc4100ad138ab5e58ed76eec6f2dacc0f577b6987160c52108",
+ "effort": "high"
+}

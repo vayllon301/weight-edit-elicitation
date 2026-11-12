@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "3e005e40415c443039da3b58d7a35bfeeaf612ead5a79401ddc36c4fbdfad28d",
+ "code_sha256": "5928244246f46fd4facd92dd3b453425a70ece4fee48b579715dff32f6ca9bb1",
+ "clean_code_sha256": "5928244246f46fd4facd92dd3b453425a70ece4fee48b579715dff32f6ca9bb1",
+ "prompt_sha256": "3055a7cfb365e936b545f6a88040a030659f6f5da31f8a0f5cd3479a69949f37",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only calls drop_edit(Dname), builds prompt+opener texts for an original-model teacher-forced pass, checks token counts and appends notes. It reads no activations, applies no candidate to samples, replays no model stage, and adopts no parameter chosen by forbidden simulation.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 90963,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 499,
+  "output_tokens_details": {
+   "thinking_tokens": 325
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 90963,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 499,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 90963,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 90963
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.737692,
+ "t": 1794079911.726521
+}

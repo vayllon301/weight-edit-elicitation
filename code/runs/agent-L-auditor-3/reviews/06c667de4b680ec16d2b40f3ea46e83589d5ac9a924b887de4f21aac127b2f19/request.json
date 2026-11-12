@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "06c667de4b680ec16d2b40f3ea46e83589d5ac9a924b887de4f21aac127b2f19",
+ "code_sha256": "789d813b68a3eb018a064a07dff6ad5421c2f1fa9f5e6bdcb2ad9441022732a6",
+ "clean_code_sha256": "789d813b68a3eb018a064a07dff6ad5421c2f1fa9f5e6bdcb2ad9441022732a6",
+ "code": "import json, numpy as np\nU1 = {int(k):v for k,v in json.load(open('/work/U1_neurons.json')).items()}\nfor L,sel in U1.items():\n    D = load_original(f'model.layers.{L}.mlp.down_proj.weight').clone()\n    D[:, sel] = 0.0\n    save_edit(f'model.layers.{L}.mlp.down_proj.weight', D)\nprint('edited:', len(edited()), sorted(edited())[:3])\nwith open('/work/notes.md','a') as f:\n    f.write(\"\\nRun 83: pass-7 attention: L11h2/h3 put ~26% of answer-token attention on the LAST prompt token (sink-like; BOS only .04/.10) -> broadcast channel of end-of-prompt state.\\n\")\n    f.write(\"Run 85: the 66 G1-only 'solve-math' neurons (/work/U1_neurons.json, L6-23) write ~orthogonal to D1 (|cos|<=.18), large share of G1-G5 diff in L11 (.70), L12 (.61), L17/19/20 (~.3).\\n\")\n    f.write(\"Pass 9 (planned): both, DEV[:256] (/work/dev256a.json). Edit U1: down_proj columns of the 66 neurons in /work/U1_neurons.json zeroed (17 tensors model.layers.{6..23}.mlp.down_proj), strength full.\\n\")",
+ "canonical_sha256": "72455736760aa95a7404f968037242b51078aab157728832b4ab7dd58f3860e4",
+ "history_sha256": "bf0785e39f4bda84b0506e6bb107018a46b5a235c3320806382d306855e62f7f",
+ "context": {
+  "forward_passes_used": 8,
+  "forward_pass_budget": 50,
+  "python_runs_used": 85,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 91,
+    "text": "Text A has 244 tokens, with full attention maps for the four global layers. I will split the positions into BOS, opening template, problem body, instruction, closing template (the last 5 prompt tokens, from \"<end_of_turn>\" through \"model\\n\"), and answer.\n\nFor every global head, I will then measure the mean attention mass from answer tokens onto each region, plus the mass on the single last prompt token. A head that puts, say, more than 20% of its attention on the closing template would be the channel that carries the prompt-time \"mode\" into every answer token. That would justify a causal test of the 66 last-token \"solve-math\" neurons or of that head. If every head reads mainly BOS, the problem and nearby answer tokens, the mode channel goes through local layers or is weak."
+   },
+   {
+    "reply": 92,
+    "text": "Attention from answer tokens to the end of the prompt is concentrated in the global layer 11. Heads L11h2 and L11h3 put about 26% of their attention on the single last prompt token, the \"\\n\" after \"model\", and L11h0 puts 9% there. They use that token almost like a sink: L11h2 puts only 4% on BOS, where the other global heads put 20\u201348%.\n\nSo L11 broadcasts the state at the last prompt token to every answer token, and the 66 \"solve-math\" neurons fire exactly at that token. They respond only to a math problem combined with the solve instruction. This gives a concrete candidate circuit: task-specific neurons write a \"mode\" at the end of the prompt, and L11h2/h3 copy it into the whole answer.\n\nD1 already removed one direction of that mode (dm[10]) and changed only the style. But the 66 neurons were never ablated causally, and their writes may carry more than dm[10]. Before spending a pass, I will recover exactly how I selected them, from blocks 54 and 55, so the ablation uses that list and not a new selection."
+   },
+   {
+    "reply": 93,
+    "text": "Block 55 defined the 66 neurons by strict criteria: effect size of at least 6 against all three control groups (math+translate, nonmath, nonmath+instruction), the same sign, and |activation| \u2265 0.5 at the last prompt token. They are stored in the kernel variable `S` as layer \u2192 neuron list.\n\nBefore ablating them, I want to know whether their combined write at the last prompt token is something D1 already removed. I will fold each layer's combined write, the G1-mean activation times the down-proj columns, through that layer's post-feedforward norm scale. Then I compare it with the D1 direction and measure its size.\n\nIf the writes are mostly parallel to D1, ablating these neurons would largely repeat D1's style-only effect, and I would rank the test low. If they are largely orthogonal to D1 and substantial, the U1 ablation tests a new channel: the \"math-task\" state at the end of the prompt that L11h2/h3 broadcast. Then it is worth a pass."
+   },
+   {
+    "reply": 94,
+    "text": "The 66 neurons write in directions almost orthogonal to D1 (|cos| \u2264 0.18 in every layer). D1 therefore left this channel intact, and its null result says nothing about these neurons.\n\nTheir combined writes are large and carry a big share of the math-solve-vs-other difference at the end of the prompt: 70% in L11, 61% in L12, about 30% in L17, L19 and L20. That makes them the main untested candidate for a \"task recognized: solve math\" mode, which L11h2/h3 then broadcast into the answer.\n\nThe causal test (U1) zeroes the down_proj columns of these 66 neurons in their 17 layers, the full-strength removal. Because they are silent during answers, the edit acts essentially only at the end of the prompt.\n- **Brake confirmed:** they set a weakened solving mode, so accuracy on DEV[:256] should rise clearly, well beyond the ~3-point standard error.\n- **Refuted:** if they are ordinary task-setup units, only the style or opening should change, with accuracy flat or lower.\n\nI will record the exact edit in the notes and save it now."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "c432bdb2b410845f7561f722e3439ac4e716e40fb394e5e23de20bcfa0154a1e",
+ "effort": "high"
+}

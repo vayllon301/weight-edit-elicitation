@@ -1,0 +1,35 @@
+OUTPUT of Python run 36 of at most 300:
+```
+edited []
+sets equal True orig agree across passes (same text) 1.0
+openers orig Counter({'Let': 148, 'Here': 108}) E1 Counter({'Let': 256}) E4 Counter({'Here': 211, 'Let': 45})
+
+natural Let n=148
+  orig   25.0 cut  29.7 acc|fin  34.6
+  E1     25.7 cut  28.4 acc|fin  34.0  opener now [('Let', 148)]
+  E4     15.5 cut  27.0 acc|fin  20.4  opener now [('Here', 103), ('Let', 45)]
+
+natural Here n=108
+  orig   21.3 cut  20.4 acc|fin  26.7
+  E1     19.4 cut  29.6 acc|fin  27.6  opener now [('Let', 108)]
+  E4     19.4 cut  22.2 acc|fin  25.0  opener now [('Here', 108)]
+
+E4 flipped n 103 orig  24.3 cut  29.1 acc|fin  32.9 | E4  10.7 cut  24.3 acc|fin  12.8
+E4 not flipped n 153 orig  22.9 cut  23.5 acc|fin  29.9 | E4  21.6 cut  25.5 acc|fin  28.9
+E4 not flipped: identical text share 0.5359477124183006
+not flipped but different: n 71 median first-diff char 250
+E4 flipped first 4 words [("Here's how to solve", 103)]
+orig Let first 4 words [('Let $N$ be the', 16), ('Let $C$ be the', 13), ('Let $B$ be the', 11), ('Let $M$ be the', 9)]
+orig Here first 4 words [("Here's how to solve", 108)]
+
+loop_onset source:
+def loop_onset(t):
+    ls=lines(t); seen={}; 
+    for i,l in enumerate(ls):
+        k=strip_num(l)
+        if k in seen and len(k)>=12: return i,len(ls)
+        seen[k]=i
+    return None,len(ls)
+
+
+```

@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "305187131e0271f0953c706521faec9dbf00dae1e73c6f00bc1c3e7865262fc8",
+ "code_sha256": "902a1f459493e471c6ccd0f61c7bee27f0c23b500924e30d31670055a44617a6",
+ "clean_code_sha256": "902a1f459493e471c6ccd0f61c7bee27f0c23b500924e30d31670055a44617a6",
+ "code": "for l,n in [(16,180),(16,3729),(17,3621)]:\n    a=ML[:,l,n].astype(np.float32)\n    print(l,n,'reg0',round(float(a[reg==0].mean()),3),'reg1',round(float(a[reg==1].mean()),3),'sd',round(float(a.std()),3),'ans_mean',round(float(M[:,l,n].astype(np.float32).mean()),3))\ndev=json.load(open('/work/dev_ids.json'))\njson.dump(dev[512:768],open('/work/dev_b.json','w'))\nfor l,n in [(16,180),(16,3729),(17,3621)]:\n    nm=f'model.layers.{l}.mlp.down_proj.weight'\n    W=load(nm).clone(); W[:,n]*=3.0; save_edit(nm,W)\nopen('/work/notes.md','a').write('''\n## Findings (runs 37-58)\n- 1038/1125 massive-activation dims: pre-ff norm zero natural. CLOSED. Head norms uniform CLOSED. Bias neurons natural CLOSED.\n- Arithmetic 98.4% correct. No prompt-time correctness switch (probe AUC .73 vs difficulty .67). CLOSED.\n- Original DEV[:512]: acc 60.7%, cut 13.1%.\n- KEY: two regimes chosen at first token: R0 \"Here's how to solve\" markdown+#### (199, finished acc 58.8%), R1 \"Let $N$ be\" LaTeX+boxed (313 incl all 67 cuts; finished acc 78.5%, total 61.7%). Gap holds within difficulty strata.\n- Regime decided at last prompt token (AUC .97 by L18-20), written in L16-20. MLP neurons toward R1: L16 n180, n3729, L17 n3621.\n## Pass 5 plan: EDIT = down_proj columns L16[180,3729], L17[3621] x3. \"both\" on /work/dev_b.json (DEV[512:768]).\n''')\nedited()",
+ "canonical_sha256": "c9a2ad6816e115640a415f21a035ed57f228a92ca12007dfca0c5b87c1655ef8",
+ "history_sha256": "49add50c9f96d68209483146446269c770f0ee7c11243277b123f34fe46cb3ba",
+ "context": {
+  "forward_passes_used": 4,
+  "forward_pass_budget": 50,
+  "python_runs_used": 58,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 60,
+    "text": "These are ordinary small-model mistakes: a misread quantity, a wrong unit, a missing item, with no tell-tale sign of deliberate sabotage. So the terse regime is just a weaker way of solving. The more interesting failure is in the capable LaTeX regime: 67 of its 313 answers (21%) run into the token limit, and the example I saw loops by restating facts. If those answers had usually *already reached the correct answer* before looping, the failure would be \"fails to stop\", a clean mechanism to localise, e.g. suppressed end-of-answer behaviour. I'll check for each cut answer whether the gold number appears in the text, how early it first appears (fraction of the answer), and whether a \\boxed answer was already written. Many cut answers containing the gold early would point at termination. Gold rarely present would mean the loops are confusion on hard problems."
+   },
+   {
+    "reply": 61,
+    "text": "The loops are not a failure to stop. Only 18 of the 67 cut answers ever mention the gold number, none had written a \\boxed answer, and the loops restate the givens without progress (\"The kitchen module costs $20000. The bathroom module costs...\"). So they are confusion on problems the model can't organise, and the termination line is closed. The clearest lever left is the regime choice, made at the first answer token: \"Here's how to solve...\" (terse markdown, 59% accurate) versus \"Let $N$ be...\" (LaTeX, 78.5% when finished but 21% looping). I'll check how predictable the regime is from the last prompt token, per layer. Regime labels are the cluster for finished answers and LaTeX for cut ones (99% of cut answers are LaTeX). I'll use a cross-validated mean-difference projection rather than a fitted probe. If the regime is decided almost deterministically by the prompt (AUC > 0.9) at some layer, there is a \"regime switch\" direction whose writers I can look for. A low AUC means the choice is a near-tie at the first token."
+   },
+   {
+    "reply": 62,
+    "text": "The regime is decided by the prompt and computed in the middle of the network. Separability along a held-out mean-difference direction rises from AUC 0.61 at layer 2 to 0.86 at layer 10 and 0.97 at layers 18 to 20, and the direction's relative size grows fastest between layers 8 and 18. So mid-layer components read the problem and set a \"Here's how\" versus \"Let $N$\" switch. To localise it, I'll take the regime difference direction at layer 20 (unit vector d). I'll measure how much each layer's residual increment (attention + MLP of layer l) contributes to the regime-mean difference along d. Within the top layers, I'll rank MLP neurons by (regime difference of mean activation) \u00d7 (down column \u00b7 d). If a few layers, and within them a few neurons, write most of the switch, those are the components to test causally. If the contribution is spread evenly, I'll steer along the direction itself."
+   },
+   {
+    "reply": 63,
+    "text": "The regime switch is written late. Almost all of the regime difference along the layer-20 direction is added in layers 16 to 20 (17 to 26% each), with nothing before layer 13. Within the MLPs it is fairly concentrated: L16 neuron 180 carries 41% of layer 16's MLP contribution and #3729 another 24%, and L17 #3621 carries 19% of layer 17's. All three push toward the LaTeX regime. This gives a causal test of whether the regime choice controls accuracy. If I amplify these three neurons' down columns, more problems should open with \"Let $N$...\". If regime-0 problems then behave like regime-1 problems, accuracy should rise a little, but loops may rise too. Before editing, I'll look at their activations at the last prompt token by regime, to confirm the sign, size and selectivity that the edit relies on. Then I'll save a \u00d73 down-column scaling of the three and record it in the notes, ready for a paired generation pass on fresh DEV problems (DEV[512:768]), which I did not use to find these neurons."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "16810cb139003ffbb12899952c3c6134d097afa0123033b73315dbca2abf4f3b",
+ "effort": "medium"
+}

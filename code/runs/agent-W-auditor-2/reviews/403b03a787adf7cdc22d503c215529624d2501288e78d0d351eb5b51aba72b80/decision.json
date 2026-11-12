@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "403b03a787adf7cdc22d503c215529624d2501288e78d0d351eb5b51aba72b80",
+ "code_sha256": "c5fa188cd276fc71e8921a75fb553300cf2cbcc253bdf123596ed292d50a1db0",
+ "clean_code_sha256": "c5fa188cd276fc71e8921a75fb553300cf2cbcc253bdf123596ed292d50a1db0",
+ "prompt_sha256": "f3f7d6d5a31f7dbbd8878d4eb6265545c8abc1cad4c7b65daa371595f9ef7d7e",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block uses only original-weight statistics: L4 down_proj row/column norms on the 18 sink channels chosen from weights, and svdvals gaps of o_proj/down_proj. It also lists /work/fwd_2 and reads meta keys. No stored activations are touched, no candidate edit is applied or scored, and nothing replays the model.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 122341,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 280,
+  "output_tokens_details": {
+   "thinking_tokens": 93
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 122341,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 280,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 122341,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 122341
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.984336,
+ "t": 1794151956.534849
+}

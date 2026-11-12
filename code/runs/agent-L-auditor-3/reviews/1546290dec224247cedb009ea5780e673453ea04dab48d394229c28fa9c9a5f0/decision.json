@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "1546290dec224247cedb009ea5780e673453ea04dab48d394229c28fa9c9a5f0",
+ "code_sha256": "6dfbdfca3f71ed0da4743ff579618b98d80fcb63b76c652a0307ae81443ff42b",
+ "clean_code_sha256": "6dfbdfca3f71ed0da4743ff579618b98d80fcb63b76c652a0307ae81443ff42b",
+ "prompt_sha256": "8588c9931bc7a451a0e7da923424058a4bcfd8a6dd2ea55d46a836375f794bd8",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block builds a fixed-seed random rank-1 control direction orthogonal to v_hat, with no seed search. It applies the original v_proj only to aggregate summary vectors in probe (group means, mean answer/prompt, BOS) and checks cos and relative change. It then saves the edit and writes notes. No per-sample candidate simulation or forward replay, and no consumed parameter traces to a forbidden selection.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 164542,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 586,
+  "output_tokens_details": {
+   "thinking_tokens": 375
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 164542,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 586,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 164542,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 164542
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 1.328064,
+ "t": 1794130071.68531
+}

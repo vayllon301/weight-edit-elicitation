@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Rebuild results/ (figures, tables, numbers.json) from code/runs/, on validation only (n = 1,473).
+"""Rebuild results/ (figures, tables, numbers.json) from code/runs/: the historical validation results of the original
+cohort (n = 1,473). The final test numbers are in code/runs/final-eval-closure-v1/test/report/; see reproduce/test_report.py.
 
     uv run --no-project --with numpy --with matplotlib python -I reproduce/make_tables.py
 

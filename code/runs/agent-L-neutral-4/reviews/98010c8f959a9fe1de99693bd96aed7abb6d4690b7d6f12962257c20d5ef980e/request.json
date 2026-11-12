@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "98010c8f959a9fe1de99693bd96aed7abb6d4690b7d6f12962257c20d5ef980e",
+ "code_sha256": "0482c14c5c5582536db9882dd511211300e41ab514fb4f28486c5818c1179e46",
+ "clean_code_sha256": "0482c14c5c5582536db9882dd511211300e41ab514fb4f28486c5818c1179e46",
+ "code": "HPf = {l: HP[:,l,:].astype(np.float32) for l in range(27)}\ndsty = {l: HPf[l][sty].mean(0)-HPf[l][~sty].mean(0) for l in range(27)}\nattr=[]\nfor l in range(26):\n    X=MP[:,l,:].astype(np.float32); sd=X.std(0)+1e-6\n    dz=(X[sty].mean(0)-X[~sty].mean(0))/sd; dm=X[sty].mean(0)-X[~sty].mean(0)\n    W=load_original(f'model.layers.{l}.mlp.down_proj.weight').numpy()\n    wp=1+load_original(f'model.layers.{l}.post_feedforward_layernorm.weight').numpy()\n    wd=(W*wp[:,None]); wd=wd/np.linalg.norm(wd,axis=0,keepdims=True)\n    u=dsty[l+1]/np.linalg.norm(dsty[l+1]); cos=u@wd\n    score=dm*np.linalg.norm(W,axis=0)*cos   # signed push toward plain, crude\n    for j in np.argsort(-np.abs(score))[:3]:\n        attr.append(dict(l=l,n=int(j),dz=round(float(dz[j]),2),dmean=round(float(dm[j]),3),cos=round(float(cos[j]),3),score=round(float(score[j]),3)))\nA=pd.DataFrame(attr); A.sort_values('score',key=abs,ascending=False).head(20).to_string()",
+ "canonical_sha256": "915fee4b704d3bdfb458975a6498775e971e1f1894b3d6eddf5e01c17b925b85",
+ "history_sha256": "ca100508569f937f6b3a373d16cbaef9c8e983973b9a78136de69f50a716ada8",
+ "context": {
+  "forward_passes_used": 4,
+  "forward_pass_budget": 50,
+  "python_runs_used": 20,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 23,
+    "text": "Edit A barely changed copying. Copied-token logprob fell by 0.0097, about the same as novel loop tokens (-0.014), controls (-0.010) and own-correct answers (-0.008). Reference solutions even rose slightly (+0.011). So the \"repetition neurons\" are correlates of looping, not its cause: zeroing all 76 leaves the loops just as locked in. Copying in loops is probably carried by attention, as induction-style copying, and is robust to removing MLP units. Separately, 22.7% is far below what this architecture (Gemma-3-1B-it) normally scores, and text like \"Let $P_0$ be the initial number of plates on top of each other\" looks oddly degraded. That raises the possibility of a specific defect that per-neuron statistics wouldn't reveal, such as an added low-rank component. So I'll check the singular-value spectra of every projection matrix in every layer, looking for a top singular value that is an outlier relative to the rest of that matrix's spectrum and to the same matrix in neighbouring layers. A matrix whose sigma1/sigma2 ratio is far above its peers would be a strong candidate for causal testing. Smooth spectra would mean no low-rank anomaly, and I'd go back to behavioural localization."
+   },
+   {
+    "reply": 24,
+    "text": "The spectra are smooth: no matrix has an isolated top singular value out of line with its neighbours. So there is no sign of a planted low-rank defect, and the weakness looks intrinsic to the model's computation. I've closed the MLP repetition-neuron line (zeroing 76 neurons did not loosen loops) and the weight-anomaly line. To find a mechanism worth targeting, I need a sharper picture of the finished wrong answers, which are the majority of failures. I'll print a few problems next to the start of the model's wrong answer, under 300 characters each, and a tally of a simple failure signature. Does the first sentence restate the problem's numbers correctly, or does the model state irrelevant variables? The aim is a recurring, identifiable error pattern, for example misreading quantities at the start, that could connect to a specific circuit. If the errors are heterogeneous, I'll fall back to the style and loop mechanisms, where the evidence is crisper."
+   },
+   {
+    "reply": 25,
+    "text": "These wrong answers fail at the setup, not the arithmetic. The model binds quantities to the wrong things: \"15 minutes/turkey\" where the problem says per pound, multiplying miles per gallon by \"3 cars\", forgetting the \u00d77 for a week, and \"needs 3 cups and has 3 cups\". These binding errors are heterogeneous and hard to pin to one component. The more tractable lever may be the response mode chosen at the first answer token. The model runs either an instruction-style markdown mode (\"Here's how to solve...\") or a pretraining-like LaTeX mode (\"Let $X$ be...\"), and the plain mode is noticeably more accurate when it finishes (37% vs 25%). Style may simply correlate with problem type, though. So I'll stratify by difficulty, using the number of steps in the reference solution as a proxy, and compare the two styles' accuracy within strata. I'll also check how strongly the last-prompt-token state predicts style, to see whether a single decision direction exists. A consistent plain-over-markdown advantage within strata, with an early, clean style decision, would make style steering worth a causal test. No advantage within strata would mean the gap is problem selection, and I'd drop the idea."
+   },
+   {
+    "reply": 26,
+    "text": "Within every difficulty stratum, plain-style answers are more accurate than markdown-style ones: 39 vs 34% at 2 steps, 30 vs 17% at 3, 23 vs 12% at 4, and 12 vs 2% at 5+. The plain advantage averages around 9 points, so it is not just problem selection, though causality still needs a steering test. The style is largely decided before the first answer token: a difference-of-means direction on the last-prompt-token state separates the styles with AUC 0.78 at layer 5, rising to 0.97 by layer 15 and 0.99 by layer 20. That pins the decision to the middle layers. To find the components that make it, I'll look at MLP neurons at the last prompt token. For each neuron I'll compute its activation difference between plain and markdown problems (standardized), and the alignment of its write direction (post_feedforward_layernorm weight times its down_proj column) with the style direction in the residual after that layer. Neurons with a large activation difference and a strongly aligned write, concentrated in a few layers, would be the style switch. Scaling them is a clean, targeted intervention to test at several strengths."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "2a53e4ad7376557d38068c720df981873c0a1cb0a1081e46e85890dadb3595c6",
+ "effort": "medium"
+}

@@ -1,0 +1,11 @@
+OUTPUT of Python run 75 of at most 300:
+```
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_75.py", line 5, in <module>
+    for t in range(10): digit.add(tok.encode(str(t),add_special_tokens=False)[-1])
+                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^
+TypeError: 'tokenizers.Encoding' object is not subscriptable
+
+```

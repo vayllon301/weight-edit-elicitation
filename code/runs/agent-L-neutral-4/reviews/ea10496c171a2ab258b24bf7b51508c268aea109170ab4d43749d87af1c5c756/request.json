@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "ea10496c171a2ab258b24bf7b51508c268aea109170ab4d43749d87af1c5c756",
+ "code_sha256": "10a8a95b3f90e53950126d3e2a9c9a60820e65f85aef30b5771e65e7190f654b",
+ "clean_code_sha256": "10a8a95b3f90e53950126d3e2a9c9a60820e65f85aef30b5771e65e7190f654b",
+ "code": "def mask(s): return re.sub(r'\\d+','#',s.strip())\nfr_rep=[]; ex=[]\nfor t,m in zip(ot,om):\n    if 'cut' not in m['src']: continue\n    k=t.rfind('<start_of_turn>model\\n')+len('<start_of_turn>model\\n'); r=t[k:]\n    lines=[l.strip() for l in r.split('\\n') if len(l.strip())>8]\n    if len(set(lines))<len(lines): continue\n    ml=[mask(l) for l in lines]\n    fr_rep.append(1-len(set(ml))/max(1,len(ml)))\n    if len(ex)<3: ex.append((len(lines), r[-150:].encode('ascii','replace').decode()))\nfor e in ex: print(e)\n(len(fr_rep), np.percentile(fr_rep,[25,50,75]).round(2), sum(f>0.3 for f in fr_rep))",
+ "canonical_sha256": "ce29f03c16bdc45d650054dd02c7dcc92ea5fce4e2e067a769fe8584f948b8ba",
+ "history_sha256": "794bdf1ddd2c3819368026cbef6e27a10d3ae534949d63fdb95e7424005acc09",
+ "context": {
+  "forward_passes_used": 27,
+  "forward_pass_budget": 50,
+  "python_runs_used": 102,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 129,
+    "text": "This comparison doesn't answer the question. Most pairs diverge at line 0 (median fraction 0). The reason is that each discordant pair has the original model's answer on one side and an edited model's on the other, so the first difference is the opening style (\"Here's how...\" versus \"Let $X$ be...\"), not the error. I can't recover a clean error type from these pairs without extra generation, so I'm closing this text-level line.\n\nOne mechanism tied to the architecture is still untested. 22 of the 26 layers see only the last 512 tokens. Once prompt plus answer passes about 512 tokens, those layers can no longer see the question, and the model might start looping or lose track of conditions. If loop onsets cluster just after the 512-token mark, that is a specific, localisable failure (the question falls out of the window, leaving the 4 global layers to carry it). If onsets are spread evenly by position, the idea is ruled out. I'll check the onset positions stored in /work/onset_meta.json."
+   },
+   {
+    "reply": 130,
+    "text": "onset_meta only stores the source, id and correctness, not the onset position, so I'll compute it again. For each cut answer (src containing \"cut\") in /work/onset_texts.json, I'll find the first line that repeats an earlier non-trivial line. That is the same onset rule as pass 8. I'll then count the tokens of the text up to that line, prompt included, which gives the absolute context position. I'll print the distribution and the share of onsets falling within 400 to 600 tokens, with prompt lengths for reference. A pile-up just after 512 supports the window idea; a spread from early positions to the 768-token limit refutes it."
+   },
+   {
+    "reply": 131,
+    "text": "The window idea is refuted. Loops start early: median 285 tokens from the start of the context, 90% before 409, and only 8 of 230 after 500. The question is still inside the 512-token window for all layers when the model gets stuck, so loss of the question from the sliding window does not cause the loops. I'm closing this line.\n\nTo finish describing the cut-off failure, I'll count how many cut answers have no repeated line at all. Those would be long but still progressing answers, cut by the 768-token limit because they are verbose rather than stuck. If that group is large, verbosity is a separate failure with different components. If it is small, cut-offs are almost all loops, which the C/SC edits already addressed without any accuracy gain."
+   },
+   {
+    "reply": 132,
+    "text": "70 of the 300 cut answers (23%) have no exactly repeated line longer than 8 characters. These could be near-loops, where the same line comes back with changing numbers (counting up, retrying values), or truly verbose, progressing solutions. To tell these apart, I'll look at them in two ways. First, the share of lines that repeat once digits are masked. Second, the last ~150 characters of three examples. A high masked-repeat share means they are loops too. A low one means verbosity is a separate failure."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "6331bb17ba5da88f9164a3489df79e9af1e47a1786274bba4dd2de4e2b4570fc",
+ "effort": "medium"
+}

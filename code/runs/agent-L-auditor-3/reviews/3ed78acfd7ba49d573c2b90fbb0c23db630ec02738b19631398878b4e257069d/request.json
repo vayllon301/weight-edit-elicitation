@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "3ed78acfd7ba49d573c2b90fbb0c23db630ec02738b19631398878b4e257069d",
+ "code_sha256": "9653718081e87062c59a0de07968e1e32c786a1b383956f575aa3f8b61b26c62",
+ "clean_code_sha256": "9653718081e87062c59a0de07968e1e32c786a1b383956f575aa3f8b61b26c62",
+ "code": "with open('/work/notes.md', 'a') as f:\n    f.write(\"\\nPass 45 result (NEGATIVE CONTROL R0, random dir orth. to v_hat, rel change .062): -3.1 +- 1.2 (1 w->r, 9 r->w), acc 22.3->19.1, cuts 22.7->21.9%, mean tok 316 (orig 317) -> random rank-1 removal does nothing useful; V1's gain is direction-specific.\\n\")\ng11t = load_original('model.layers.11.input_layernorm.weight').float()\nW0 = load_original(name).float()\nU_, S_, _ = torch.linalg.svd(W0 * (1 + g11t)[None, :], full_matrices=False)\nu = U_[:, 0].numpy().astype(np.float32); print('cos(u0, v_hat) before orth %.3f' % float(u @ vh_np))\nu = u - float(u @ vh_np) * vh_np; u /= np.linalg.norm(u); ut = torch.tensor(u)\nWu = W0 - torch.outer(ut, ut @ W0)\nprint('R1 rel change %.4f (V1 .0829, R0 .0618) | orig value along u:' % float((Wu - W0).norm() / W0.norm()), {k: round(float(ut @ (W0 @ torch.as_tensor(probe[k]).float())), 2) for k in ('end_G1', 'end_G2', 'end_G3', 'end_G5', 'tok_G1', 'ans')})\nsave_edit(name, Wu)\nif os.path.exists('/work/cand_R1'): shutil.rmtree('/work/cand_R1')\nshutil.copytree('/work/edited', '/work/cand_R1')\nwith open('/work/notes.md', 'a') as f:\n    f.write(\"Pass 46 (planned): both, DEV[0:256] (/work/dev256a.json). LARGE CONTROL R1: model.layers.11.self_attn.v_proj.weight -> (I - u u^T) Vw, u = top left-singular dir of L11 v_proj (input norm folded), orthogonalized to v_hat. Copy /work/cand_R1. Prediction: no gain (V1 +25.4 same slice). Restore V1 after.\\n\")\nsorted(edited())",
+ "canonical_sha256": "e12ed6f7c9d2660557c726cc1fcf940e620c50f2b03704fd8509a6bfb0eea217",
+ "history_sha256": "8afba9d9baa4db2dc37f6d6b28e7a63c6f610c15b521ee9b2e41e58374c6a459",
+ "context": {
+  "forward_passes_used": 45,
+  "forward_pass_budget": 50,
+  "python_runs_used": 220,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.v_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "6bedeff1402a5af879fb52eb92888f4d273f6431e6b9a3917f0a5330f72dba33",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 263,
+    "text": "The strength-0.75 edit is saved and behaves as planned on summary vectors. The math end-of-prompt value along v\u0302 is +4.0, a quarter of the original 16. Ordinary tokens sit at about 0.2\u20130.3.\n\nI now run it against the original on DEV[0:256], where half removal gave +6.3 and full removal +25.4. A result near +15 would mean the gain grows steadily as the switch shrinks. A result near +6 would mean even a quarter of the switch keeps most of the damage, so it acts almost all-or-none. A result near +25 would mean a quarter of the switch is already harmless. This pass maps the shape of the curve only; it is not a candidate. V1 will be restored right after."
+   },
+   {
+    "reply": 264,
+    "text": "Strength 0.75 gives +16.8 \u00b1 3.0 points (54 wrong\u2192right, 11 right\u2192wrong), with accuracy 39.1% and 14.8% of answers cut. The dose curve on DEV[0:256] is now:\n\n| Strength | \u22121 | 0 | 0.5 | 0.75 | 1 | 1.25 | 1.5 |\n|---|---|---|---|---|---|---|---|\n| Paired gain (points) | \u22128.6 | 0 | +6.3 | +16.8 | +25.4 | +27.3 | +18.4 |\n\nThe response is graded. Removing the first half of the switch helps little. After that, accuracy rises steadily (about 10 points per quarter of the switch removed), peaks at full removal and falls once the direction is clearly reversed. Even a quarter of the switch left in (4 units) still costs about 9 points. This confirms that the switch's size controls the damage and that full removal, not shrinking, is the right repair.\n\nWith 6 passes left, the most useful missing piece of evidence is a negative control. So far nothing shows that removing just any direction from L11's value projection would not also help, for example by generically disrupting L11. I build the control the same way as V1: a rank-1 removal of a random unit direction in L11's value space, made orthogonal to v\u0302, from a fixed seed with no search over seeds. I check on summary vectors that the random direction carries no math-conditional signal and report the size of the weight change for comparison with V1's 8.3%.\n\nIf V1's gain is specific to the switch direction, the control should change accuracy by about zero on the same 256 problems. A large gain would undercut the mechanism account. The control is saved only for this pass; V1 stays in `/work/best_V1`."
+   },
+   {
+    "reply": 265,
+    "text": "The control edit is saved:\n- its random direction is exactly orthogonal to v\u0302;\n- it changes the weights by 6.2% of the tensor, comparable to V1's 8.3%;\n- it carries no math-conditional signal: the original values along it are about 0 at every end-of-prompt condition (math \u22120.00, poem \u22120.21) and at ordinary tokens (\u22120.2), against 16.0 versus 1.1 along v\u0302.\n\nI now run it against the original on DEV[0:256], the same problems where V1 gained +25.4 points.\n\nIf V1's gain is specific to the switch direction, the control should change accuracy by about zero: within roughly \u00b16 points, the churn I measured between similar edits. A gain of the same order as V1's would mean that disturbing L11's values in general helps. That would contradict the mechanism account and call for a rethink before finalising."
+   },
+   {
+    "reply": 266,
+    "text": "The negative control behaves as predicted. Removing a random value direction of comparable size from L11 changes almost nothing:\n- **Answers:** only 10 of 256 change outcome (1 wrong\u2192right, 9 right\u2192wrong), for \u22123.1 \u00b1 1.2 points.\n- **Length and loops:** mean length and the cut rate stay as in the original (316 tokens, 22% cut).\n\nV1, by contrast, flipped about 87 answers for +25.4 on the same problems. V1's gain is therefore specific to the switch direction, not a side effect of disturbing L11's values.\n\nOne objection remains: V1 changes the weights a bit more than the control did (8.3% vs 6.2%), so size might matter. With 5 passes left, I close that gap with a much larger control. It removes L11's largest value direction (the top singular direction with the input norm folded in), made orthogonal to v\u0302, which should change the weights by roughly 20%.\n\nIf accuracy does not improve, or even drops because a heavily used direction is gone, the size of the change cannot explain V1's gain. A gain comparable to V1's would point to a generic effect and need a rethink. V1 stays safe in `/work/best_V1` and will be restored after this pass for the remaining passes."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "126dec61cd009ba45c4e5251cc2f1e81484cf8c9328242c93f72910d831b3793",
+ "effort": "high"
+}

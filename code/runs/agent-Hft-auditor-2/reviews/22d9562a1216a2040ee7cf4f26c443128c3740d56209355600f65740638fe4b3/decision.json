@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "22d9562a1216a2040ee7cf4f26c443128c3740d56209355600f65740638fe4b3",
+ "code_sha256": "b34eda5733471b74bbd4108a667a13f63b463e774241b320413791bf1e32aba8",
+ "clean_code_sha256": "b34eda5733471b74bbd4108a667a13f63b463e774241b320413791bf1e32aba8",
+ "prompt_sha256": "a2cc8905fb0d38197b91fad09aba713c4b3d24692ba6369389b008d112f29400",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only splits holdout_ids.json into four files of 256, appends notes and prints their lengths. It uses no activations, applies no edit and does no kernel forward pass. Frozen E5 was chosen by actual generate passes on dev_e and dev_f. Its columns came from allowed per-neuron statistics, not from per-sample candidate simulation.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 8023,
+  "cache_read_input_tokens": 47026,
+  "output_tokens": 434,
+  "output_tokens_details": {
+   "thinking_tokens": 244
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 8023,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 434,
+    "cache_read_input_tokens": 47026,
+    "cache_creation_input_tokens": 8023,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 8023
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.08227720000000001,
+ "t": 1794176641.325044
+}

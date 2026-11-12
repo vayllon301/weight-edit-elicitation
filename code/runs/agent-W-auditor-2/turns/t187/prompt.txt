@@ -1,0 +1,8 @@
+OUTPUT of Python run 159 of at most 300:
+```
+<class 'list'> 422
+[{'cat': 'mul1x1', 'key': [1, '*', 1], 'gold': '1', 'pos': [22], 'n': 24}, {'cat': 'add1+1', 'key': [1, '+', 1], 'gold': '2', 'pos': [22], 'n': 24}, {'cat': 'mul1x1', 'key': [1, '*', 2], 'gold': '2', 'pos': [22], 'n': 24}]
+756
+"bycat = collections.defaultdict(list); wrong_items = collections.defaultdict(list)\nfor i, mt in enumerate(tf_meta):\n    ps = np.array(mt['pos'])\n    ex = bool(np.all(tk22[i, ps - 1, 0] == id22[i, ps])); lpm = float(np.mean(lp22[i, ps - 1]))\n    bycat[mt['cat']].append((ex, lpm))\n    if not ex:\n        guess = ''.join(tok.decode([int(tk22[i, p - 1, 0])]) for p in ps)\n        k_ = mt['key'] if isinstance(mt['key'], list) else mt['key'][:34]\n        wrong_items[mt['cat']].append((k_, mt['gold'], 'top1-digits=' + guess.strip(), round(lpm, 2)))\nfor c, v in bycat.items():\n    print(c, 'n', len(v), 'exact', round(np.mean([x[0] for x in v]), 3), 'mean lp', round(np.mean([x[1] for x in v]), 3))\nfor c, v in wrong_items.items():\n    print(c, len(v), v[:10])"
+
+```

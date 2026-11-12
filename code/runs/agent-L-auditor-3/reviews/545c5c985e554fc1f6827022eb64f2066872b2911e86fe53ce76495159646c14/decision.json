@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "545c5c985e554fc1f6827022eb64f2066872b2911e86fe53ce76495159646c14",
+ "code_sha256": "0d4c1598820eba2dcd4caef9fb983791dde044b13cbf680e1f037673c862c604",
+ "clean_code_sha256": "0d4c1598820eba2dcd4caef9fb983791dde044b13cbf680e1f037673c862c604",
+ "prompt_sha256": "6b16bfa3d574ccda0807625de7a2e1c438f0504ec8cf1520e65e76042783e177",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block builds b5 from the span of five group-mean end-of-prompt states and applies orig, V1, b4 and b5 only to a few summary vectors (group means, mean prompt, answer and last-prompt states, the shared BOS state). prof_in_S5 is a weight statistic and cosZ/tokcos are cosines of means. No per-sample candidate application, no scoring, no replay, no forbidden-selected parameter used.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 137678,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 712,
+  "output_tokens_details": {
+   "thinking_tokens": 497
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 137678,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 712,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 137678,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 137678
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 1.115672,
+ "t": 1794117277.345957
+}

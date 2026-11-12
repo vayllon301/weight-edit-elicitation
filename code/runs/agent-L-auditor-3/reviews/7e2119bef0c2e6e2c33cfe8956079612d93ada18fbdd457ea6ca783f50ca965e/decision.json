@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "7e2119bef0c2e6e2c33cfe8956079612d93ada18fbdd457ea6ca783f50ca965e",
+ "code_sha256": "e72cec86145724f8e9d33028644c6199ccfbc1417da6d285e6f8751267e29755",
+ "clean_code_sha256": "e72cec86145724f8e9d33028644c6199ccfbc1417da6d285e6f8751267e29755",
+ "prompt_sha256": "0c4ec40f7bed6e15eec6984f86d62cb863b41b36d04183d6446c80ae5c4b7207",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block appends a note to notes.md, prints the eval prompt format, the tf12 texts and meta, and the source of an earlier block. Block files are only printed, never executed. It uses no activations, computes no candidate effect, replays no model stage and adopts no new parameter.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 129695,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 274,
+  "output_tokens_details": {
+   "thinking_tokens": 106
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 129695,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 274,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 129695,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 129695
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 1.043048,
+ "t": 1794116900.068476
+}

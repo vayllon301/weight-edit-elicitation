@@ -1,0 +1,21 @@
+OUTPUT of Python run 73 of at most 300:
+```
+--58 len1811 fwd8:False |  | import numpy as np, json, re ; enc=tok.encode(txtA,add_special_tokens=False); offs=enc.offsets; T=len(enc.ids); print('T',T) ; prob=P[pid]['problem']; p0=txtA.index
+--59 len1262 fwd8:False |  | import json, numpy as np, re ; lp=np.load('/work/fwd_4/token_logprobs.npy',mmap_mode='r'); M=json.load(open('/work/tf2_meta.json')); T2=json.load(open('/work/tf2_
+--60 len1042 fwd8:False |  | import json, numpy as np, re ; def nums(t): return [x.replace(',','') for x in re.findall(r'-?\d[\d,]*\.?\d*',t)] ; def norm(x): ;     try: return float(x.rstrip('.')
+--61 len591 fwd8:False |  | cm=[r_ for r_ in R_ if style(r_['text'])=='md' and r_['cut'] and not r_['correct']] ; hits=[] ; for r_ in cm: ;     g=str(r_['gold']); t=r_['text']; m=re.search(r'(?<
+--62 len932 fwd8:False |  | import json ; T3=json.load(open('/work/tf3_texts.json')); json.dump(T3[:150],open('/work/tf8_texts.json','w')) ; with open('/work/notes.md','a') as f: ;     f.write("
+--63 len2637 fwd8:True |  | import json, numpy as np, re ; print([n for n in NAMES if 'embed' in n or n.startswith('model.norm')]) ; E=load_original('model.embed_tokens.weight').numpy(); wf=1+
+--64 len1024 fwd8:True |  | import numpy as np, json ; lens8=np.array(json.load(open('/work/fwd_8/meta.json'))['lengths']) ; out=[] ; for L in range(12,26): ;     Hl=np.load(f'/work/fwd_8/hidden_{
+--65 len675 fwd8:False |  | import numpy as np ; for L in range(8,15): ;     U=load_original(f'model.layers.{L}.mlp.up_proj.weight').numpy() ;     _,s,vt=np.linalg.svd(U,full_matrices=False); v=
+--66 len395 fwd8:False |  | from collections import Counter ; cnt=Counter() ; for i in o: ;     s1,s2=style(o[i]['text']),style(e[i]['text']) ;     cnt[(s1,s2,'w->r')]+= (not o[i]['correct']) and 
+--67 len577 fwd8:False |  | import json ; from collections import Counter ; g5o={r_['id']:r_ for r_ in map(json.loads,open('/work/gen_5_original.jsonl'))} ; g5e={r_['id']:r_ for r_ in map(json.l
+--68 len976 fwd8:False |  | import numpy as np ; bands=[list(range(b*16,(b+1)*16)) for b in range(8)] ; def bandcap(L): ;     qn=1+load_original(f'model.layers.{L}.self_attn.q_norm.weight').nump
+--69 len1364 fwd8:True |  | import numpy as np ; def tid(s): ;     e=tok.encode(s,add_special_tokens=False).ids; return e[-1] if e else None ; grp_tok={'digits':[tid(str(d)) for d in range(10)],
+--70 len822 fwd8:True |  | import numpy as np ; L=25; Hl=np.load(f'/work/fwd_8/hidden_{L}.npy',mmap_mode='r'); xb=np.asarray(Hl[0,0],dtype=np.float32) ; pi=1+load_original(f'model.layers.{L}.
+--71 len730 fwd8:False |  | import re, numpy as np ; cut_all=[r_ for r_ in R_ if r_['cut']] ; def fa_pos(t): ;     m=[x.start() for x in re.finditer(r'Final Answer|####|\\boxed',t)] ;     return m
+--72 len752 fwd8:False |  | import numpy as np ; types=['input_layernorm','post_attention_layernorm','pre_feedforward_layernorm','post_feedforward_layernorm','self_attn.q_norm','self_attn.k_
+--73 len533 fwd8:True |  | import os, glob, json, re ; bl = sorted(glob.glob('/work/blocks/block_*.py'), key=lambda p:int(re.findall(r'\d+',os.path.basename(p))[0])) ; out=[] ; for p in bl: ;    
+['hidden_12.npy', 'hidden_13.npy', 'hidden_14.npy', 'hidden_15.npy', 'hidden_16.npy', 'hidden_17.npy', 'hidden_18.npy', 'hidden_19.npy', 'hidden_20.npy', 'hidden_21.npy', 'hidden_22.npy', 'hidden_23.npy', 'hidden_24.npy', 'hidden_25.npy', 'hidden_26.npy', 'input_ids.npy', 'meta.json', 'token_logprobs.npy', 'topk_ids.npy', 'topk_logprobs.npy'] 52
+
+```

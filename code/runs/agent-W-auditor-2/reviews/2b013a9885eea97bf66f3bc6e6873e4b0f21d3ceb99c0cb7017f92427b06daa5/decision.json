@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "2b013a9885eea97bf66f3bc6e6873e4b0f21d3ceb99c0cb7017f92427b06daa5",
+ "code_sha256": "17233088d5b350e0a8366d2bc1f2c47e20df137e5a34d30ac6a8fedb3b43f753",
+ "clean_code_sha256": "17233088d5b350e0a8366d2bc1f2c47e20df137e5a34d30ac6a8fedb3b43f753",
+ "prompt_sha256": "5dc675c91f49e539f6724d82c656385d3ec699dcf16f07729427543d6a4cf31f",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block computes singular values of original projection weights (np.linalg.svd(load_original(...)), compute_uv=False) and looks for spectral gaps. This is a pure weight statistic: no activations, no candidate edit, no forward-pass replay.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 104779,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 163,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 104779,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 163,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 104779,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 104779
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.8415,
+ "t": 1794150071.8626099
+}

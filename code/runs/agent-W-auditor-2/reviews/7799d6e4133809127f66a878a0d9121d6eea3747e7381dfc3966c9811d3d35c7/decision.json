@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "7799d6e4133809127f66a878a0d9121d6eea3747e7381dfc3966c9811d3d35c7",
+ "code_sha256": "fa0de23b80a5453de1c98eed58d2f762bb3714f87df9b88a39b35b09fa98ce27",
+ "clean_code_sha256": "fa0de23b80a5453de1c98eed58d2f762bb3714f87df9b88a39b35b09fa98ce27",
+ "prompt_sha256": "3ce47521085439430f5d1b9fbe00d6aacaa2383b812f00dbb9e8dc7584f766f2",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block computes per-layer residual write statistics (h_l - h_{l-1} norms, mean writes, mean-write cosine) from pass 2 hidden states of the original model, split by the math and non-math masks. No candidate edit is applied or predicted and no model stage is replayed. These are allowed activation statistics.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 20682,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 180,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 20682,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 180,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 20682,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 20682
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.169064,
+ "t": 1794132321.2160761
+}

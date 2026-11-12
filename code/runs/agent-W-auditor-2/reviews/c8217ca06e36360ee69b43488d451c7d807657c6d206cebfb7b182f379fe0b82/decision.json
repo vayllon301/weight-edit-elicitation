@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "c8217ca06e36360ee69b43488d451c7d807657c6d206cebfb7b182f379fe0b82",
+ "code_sha256": "94b02774fbb29ed3de6948cded168f5414e5b23fef226b441d01b3c96d2541ba",
+ "clean_code_sha256": "94b02774fbb29ed3de6948cded168f5414e5b23fef226b441d01b3c96d2541ba",
+ "prompt_sha256": "4c682717e6371ea6796babf5389998ab8dc0401da39332eba5f9b2be1cd4f5d3",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only appends pass-47 HOLDOUT results, read from actual generate passes, to notes.md and calls edited(). It runs no weight or activation computation and no candidate simulation. E18 was chosen by real forward-pass generation comparisons (passes 25-28), not by per-sample simulation.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 10013,
+  "cache_read_input_tokens": 133216,
+  "output_tokens": 241,
+  "output_tokens_details": {
+   "thinking_tokens": 66
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 10013,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 241,
+    "cache_read_input_tokens": 133216,
+    "cache_creation_input_tokens": 10013,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 10013
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.1115752,
+ "t": 1794167080.9527118
+}

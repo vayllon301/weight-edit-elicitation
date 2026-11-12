@@ -1,0 +1,7 @@
+The style decision is written late and concentrated. Along the layer-20 style direction, layers 16, 17, 18 and 19 each add a large plain-minus-markdown difference (about 105, 148, 149 and 178, against single digits for most other layers). Separation jumps from AUC 0.82 to 0.98 across them. So the mode switch is a circuit in layers 16-19 that writes a "plain/math-mode" direction. Problems where it writes less end up in the less accurate markdown mode. My candidate edit amplifies that direction in those layers' outputs. For both o_proj and down_proj in layers 16-19, I'll scale up the pre-norm component along v = u ⊙ (1+w_post), where u is the unit style direction and w_post the matching post-norm weight. This correctly maps to the residual direction through Gemma's post-sublayer RMSNorm. Strength β=1 roughly doubles these layers' write, enough on paper to move the markdown group's total to the plain group's level. To screen cheaply, I'll first find the token ids of the two openings, "Here" and "Let". A teacher-forced pass on prompts plus "Let" then gives the probability of entering plain mode at the first answer token. The edit should raise that sharply while leaving reference-solution logprobs roughly intact.
+
+```python
+ids_here = tok.encode("Here").ids; ids_let = tok.encode("Let").ids
+G_first = collections.Counter(tok.encode(g['text']).ids[0] for g in G)
+(ids_here, ids_let, [(k, tok.decode([k]).encode('ascii','replace').decode(), v) for k,v in G_first.most_common(6)])
+```

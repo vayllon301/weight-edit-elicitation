@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "30af79587292f35237fd190e71ac4e57af5bb6c37075a18be5fa7a4fce387a09",
+ "code_sha256": "3019b213c44f6215bcdf9a00c149dee12a22109f5b99b0168a6837de4880037b",
+ "clean_code_sha256": "3019b213c44f6215bcdf9a00c149dee12a22109f5b99b0168a6837de4880037b",
+ "prompt_sha256": "3441baf09df3b1045a898fb351b9a04eee81cbe464b6ba08e9ca36fae23a06b0",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "screen(15) compares log-probs from pass 15, which ran the saved L17h0 edit, with the original passes 3 and 2. That reads what a pass ran. The block then drops the edits, saves head_zero(17,1) as a hand-built head ablation from a sweep with no forbidden-selected parameter, and writes notes. Nothing simulates a candidate off budget.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 69623,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 370,
+  "output_tokens_details": {
+   "thinking_tokens": 171
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 69623,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 370,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 69623,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 69623
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.564392,
+ "t": 1794146870.283867
+}

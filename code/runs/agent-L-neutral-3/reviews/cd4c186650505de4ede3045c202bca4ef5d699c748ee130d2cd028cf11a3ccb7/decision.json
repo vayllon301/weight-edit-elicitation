@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "cd4c186650505de4ede3045c202bca4ef5d699c748ee130d2cd028cf11a3ccb7",
+ "code_sha256": "2dc93bcf2b86c4ac4934b29480a061056ed3204fb3420cf34430061ae9e0fa09",
+ "clean_code_sha256": "2dc93bcf2b86c4ac4934b29480a061056ed3204fb3420cf34430061ae9e0fa09",
+ "prompt_sha256": "1caeffa98d870588c10ddfa395dbe58ef437390959f16dce7b074ade50ffce15",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block builds HOLDOUT reference texts and metadata (prompt + clean_ref + gold), checks lengths, saves files, appends notes and calls edited(). It applies no candidate to activations, computes no score and replays no model stage. The E11b planned for pass 50 was built from weights only, not from forbidden simulation.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 167822,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 379,
+  "output_tokens_details": {
+   "thinking_tokens": 194
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 167822,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 379,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 167822,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 167822
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 1.350164,
+ "t": 1794094675.601274
+}

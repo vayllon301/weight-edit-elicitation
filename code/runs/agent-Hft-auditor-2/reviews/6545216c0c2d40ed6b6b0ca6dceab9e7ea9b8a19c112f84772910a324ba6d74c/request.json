@@ -1,0 +1,87 @@
+{
+ "version": "rule-review-3",
+ "key": "6545216c0c2d40ed6b6b0ca6dceab9e7ea9b8a19c112f84772910a324ba6d74c",
+ "code_sha256": "87a6fa7ca093d524d150c181d7c45744d9ca950603fa5b8ae1f85fe3c6805c72",
+ "clean_code_sha256": "87a6fa7ca093d524d150c181d7c45744d9ca950603fa5b8ae1f85fe3c6805c72",
+ "code": "W16=load_original('model.layers.16.mlp.down_proj.weight').clone()\nW16[:,chosen[16]]=-W16[:,chosen[16]]; W16[:,3729]=-W16[:,3729]\nsave_edit('model.layers.16.mlp.down_proj.weight',W16)\nos.makedirs('/work/best_2',exist_ok=True)\npool2=[i for i in pool if i not in set(de_ids)]\ndf_ids=list(np.random.RandomState(8).choice(pool2,256,replace=False))\njson.dump(df_ids,open('/work/dev_f.json','w'))\nwith open('/work/notes.md','a') as f:\n    f.write(\"\"\"\nPass 15 detail: E4 cut answers (27): original correct on 6, wrong 13, cut 8 -> loops mostly on problems original also fails; loop fix worth <= ~2-3 pts.\nE4 = best so far on DEV (stored implicitly: E3 + n3729 zero).\nCURRENT EDIT E5 = E3 + L16 col 3729 x-1 (reversed).\nPass 16 plan: 'both' on /work/dev_f.json (256 random DEV[:1024] not tf9, not dev_d, not dev_e).\n\"\"\")\nlen(df_ids), edited()",
+ "canonical_sha256": "c85b2adcd5832276f4d292b774506182b9ed61fb41e93c705de40829e65a3b20",
+ "history_sha256": "0c9810433f2ca9714e28cd45c7ff0c6949b9980310ed33d9a439315b530090e2",
+ "context": {
+  "forward_passes_used": 15,
+  "forward_pass_budget": 50,
+  "python_runs_used": 96,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.17.mlp.down_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "ced84edf39001ec95a314d111f21ae3c008228e53ce008b898740891ba993807",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "for l,n in [(16,180),(16,3729),(17,3621)]:\n    Dl=load_original(f'model.layers.{l}.mlp.down_proj.weight').numpy()\n    cd=float(d@Dl[:,n]/np.linalg.norm(Dl[:,n]))\n    a=ML[:,l,n].astype(np.float32)\n    print(l,n,'cos(col,d)',round(cd,3),'abs write along d reg0',round(float(a[reg==0].mean()*cd),3),'reg1',round(float(a[reg==1].mean()*cd),3))",
+    "canonical_sha256": "b055fdffe254c8c1a39d14295740e40814857834e7e21de030a934d77c27a9c3",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "sel={}\nfor L in (16,17):\n    A=np.load(f'/work/how_act_{L}.npy'); a1,a0=A[labs==1],A[labs==0]\n    dd=(a1.mean(0)-a0.mean(0))/np.sqrt(0.5*(a1.var(0)+a0.var(0))+1e-6)\n    W=load_original(f'model.layers.{L}.mlp.down_proj.weight').numpy()\n    cs=(W.T@Eu)/(np.linalg.norm(W,axis=0)+1e-9)\n    s=np.sign(a1.mean(0))*cs\n    sel[L]=[int(n) for n in np.where((np.abs(dd)>1.5)&(s>0.1))[0]]\ndetail={L:[(n,) for n in sel[L]] for L in sel}\nW16=load_original('model.layers.16.mlp.down_proj.weight').clone(); W16[:,3729]=0\nfor n in sel[16]: W16[:,n]=0\nsave_edit('model.layers.16.mlp.down_proj.weight',W16)\nif sel[17]:\n    W17=load_original('model.layers.17.mlp.down_proj.weight').clone()\n    for n in sel[17]: W17[:,n]=0\n    save_edit('model.layers.17.mlp.down_proj.weight',W17)\nwith open('/work/notes.md','a') as f:\n    f.write(f\"\"\"\nPass 10/11: P(However) at doubt decisions .79 (ctrl 0). However-embedding proj of cut-ctrl diff: after L15 135, after L16 363, after L17 470 -> written by layers.16 (+228) and .17 (+107).\nDoubt neurons (|d|>1.5, sign(act)*cos(col,E_However)>.1): L16 {sel[16]}, L17 {sel[17]}.\nCURRENT EDIT: L16 down_proj cols 3729 + {sel[16]} = 0; L17 down_proj cols {sel[17]} = 0 (from original).\nPass 12 plan: TF EDITED on /work/tf9_texts.json, topk20 + token_logprobs: check P(However) at decision pos drop.\n\"\"\")\nsel, edited()",
+    "canonical_sha256": "a644e63edf9238e1ae0cbbfbfb816a2805fe001c41c86a0f1960aba37d03d316",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "with open('/work/notes.md','a') as f:\n    f.write(\"\\nAnswer-writing sabotage CLOSED: pred==last body number 272/281 wrong; gold in text 45/281 (incidental).\\nNext: rank R0-pushing neurons L12-20 (actdiff R0-R1 x gain-scaled col proj on regime dir) for ablation.\\n\")\nout={}\nallsc=[]\nfor L in range(12,21):\n    h=np.asarray(H1[:,L+1,:],dtype=np.float32).copy(); h[:,[1038,1125]]=0\n    d=h[regs==1].mean(0)-h[regs==0].mean(0); u=d/np.linalg.norm(d)\n    W=load_original(f'model.layers.{L}.mlp.down_proj.weight').numpy()\n    g=1+load_original(f'model.layers.{L}.post_feedforward_layernorm.weight').numpy()\n    p=((W*g[:,None]).T@u)            # per neuron\n    a=np.asarray(M1[:,L,:],dtype=np.float32)\n    ad=a[regs==0].mean(0)-a[regs==1].mean(0)\n    sc=ad*p                          # negative = drives toward R0 differentially\n    o=np.argsort(sc)[:5]\n    out[L]=[(int(n),round(float(sc[n]),2),round(float(a[regs==0,n].mean()),2),round(float(a[regs==1,n].mean()),2)) for n in o]\n    allsc.append((L,sc))\ntot={L:(round(float(sc[sc<0].sum()),1),round(float(np.sort(sc)[:10].sum()/sc[sc<0].sum()),2)) for L,sc in allsc}\nout, tot",
+    "canonical_sha256": "292158a6f9eb5add9b71ffd2ec5f447d7fc1e84d8b78fb32972b1439ba6cd1bc",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "W16=load_original('model.layers.16.mlp.down_proj.weight').clone()\nfor n in [3729,221,723,992,1246,4258,5725]: W16[:,n]=0\nsave_edit('model.layers.16.mlp.down_proj.weight',W16)\nW17=load_original('model.layers.17.mlp.down_proj.weight').clone()\nfor n in [3643,4150]: W17[:,n]=0\nsave_edit('model.layers.17.mlp.down_proj.weight',W17)\nwith open('/work/notes.md','a') as f:\n    f.write(\"\"\"\nPass 10/11: P(However) at doubt decisions .79 (ctrl 0). However-emb proj of cut-ctrl diff: after L15 135, after L16 363, after L17 470 -> written by layers.16 (+228) and .17 (+107).\nDoubt neurons (|d|>1.5 & |cos(col,E_However)|>.1, all sign-consistent): L16 221,723,992,1246,4258,5725; L17 3643,4150.\nCURRENT EDIT (E2): L16 down_proj cols 3729,221,723,992,1246,4258,5725 = 0; L17 down_proj cols 3643,4150 = 0 (from original).\nPass 12 plan: TF EDITED on /work/tf9_texts.json, topk20 + token_logprobs: P(However) at decision pos.\n\"\"\")\nedited()",
+    "canonical_sha256": "3e18bbe7187da29b79d747832f318731afaca4e95810d86b59e30507246006d0",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 113,
+    "text": "Removing the token did not remove the loop. \"However\" fell from 7% to 2.3% of answers, and from 68% to 18% of cut answers, but cuts did not drop. In the edited model, loops restart with other line openers instead, mostly \"The\".\n\nSo \"However\" was the most common surface form of a restart, not its cause. Of the 12 wrong-to-right flips, 9 came from wrong finished answers and only 3 from cut ones. The +2.0 \u00b1 1.7 is therefore not a loop fix, and part of it may be noise or a mild side effect.\n\nE3 is still the best measured candidate, so I'll save a copy to /work/best_1.\n\nNext I'll test whether E3 and the n3729 regime ablation add up. n3729 alone gave +1.2 \u00b1 1.9 by moving problems into the stronger R1 mode, and E3 does not touch that neuron. I'll run \"both\" on 256 fresh DEV problems: none was used in the pass-10 texts or in dev_d, all from DEV[:1024].\n\nA combined gain of about +3 or more would make the combination the main candidate. A gain no larger than E3's would mean the two do not stack, and I'd keep the simpler edit."
+   },
+   {
+    "reply": 114,
+    "text": "E3 is backed up in /work/best_1. The combined edit E4 (E3 plus n3729 zeroed) is saved, and the fresh set dev_e (256 problems) is ready. I'm running the paired generation. A gain clearly above E3's +2 means the doubt-neuron and regime edits stack."
+   },
+   {
+    "reply": 115,
+    "text": "The combined edit E4 gave +3.1 \u00b1 2.3 points on fresh DEV problems (22 answers went wrong to right, 14 right to wrong). Wrong finished answers fell from 90 to 71, but cuts rose from 16 to 27, because n3729 moves more problems into R1, which loops more.\n\nThe three DEV measurements now point the same way:\n\n| Edit | DEV set | Paired gain |\n|---|---|---|\n| E3 (doubt neurons) | dev_d | +2.0 \u00b1 1.7 |\n| n3729 alone | dev_b | +1.2 \u00b1 1.9 |\n| E4 (both) | dev_e | +3.1 \u00b1 2.3 |\n\nThe loss to loops is now the main cost of the stronger R1 mode. Before investing in a loop fix, I'll check whether it would actually recover correct answers. For the problems the E4 model cuts off in pass 15, I'll look at how the original model fared on them. If the original solved many of them, the loops destroy real capability and suppressing them is worth effort. If the original also failed them, the loops mostly mark problems that are too hard, and fixing them would gain little. I'll also tabulate per-regime counts, accuracy and cut rates for both models."
+   },
+   {
+    "reply": 116,
+    "text": "Fixing the loops would recover less than I hoped. Of the 27 problems the E4 model cuts off, the original model got only 6 right. Thirteen it got wrong and 8 it also cut off. So the loops occur mostly on problems the model fails anyway, and even a perfect loop fix would gain perhaps 2\u20133 points.\n\nThe regime lever has more room left. With E4, R1 answers score 64% against 52% for R0, and 56 of 256 problems still go to R0. n3729 is always positive at the last prompt token (1.3 to 2.1) and nearly silent during answers. So reversing its column instead of zeroing it is the next step on the strength series, a clean doubled push toward R1.\n\nI'll test E5 = E3 + n3729 reversed (\u00d7\u22121) with a paired generation on 256 fresh DEV problems, disjoint from dev_e and the pass-10 texts.\n\nHow to read the result:\n- **Lever has slope:** R0 falls well below about 20% while accuracy stays at or above E4's level.\n- **Back off:** accuracy drops, or cuts climb without a matching gain, and I return to the zeroed version."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "8589a68bf96e2db0fc00bcc2ab3604d3a5b67ca3d762cb3aa5fbed7f86461cea",
+ "effort": "medium"
+}

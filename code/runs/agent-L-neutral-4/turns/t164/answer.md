@@ -1,0 +1,5 @@
+There are 512 texts, of which 75 are still cut off under C(−1.5) (64 of those loops on DEV per the earlier count). They total about 186k tokens, longest 977, well within limits. This pass teacher-forces them through the EDITED model and returns token log-probs plus layer-16 and layer-20 residuals. From these I'll locate onset and novel newlines with the block-43 rule and form the block-50 matched-first-token difference. The hypothesis is that the edited model enters its resistant loops from a state not captured by the original clean direction. A low cosine with the old direction and good held-out separation would support it; a cosine near 1 would refute it.
+
+```forward
+{"type": "teacher_forced", "model": "edited", "texts_file": "/work/c15_texts.json", "return": {"token_logprobs": true, "hidden_states": [16, 20]}}
+```

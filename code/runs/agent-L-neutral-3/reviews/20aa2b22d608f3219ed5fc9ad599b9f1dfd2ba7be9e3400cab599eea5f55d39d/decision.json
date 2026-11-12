@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "20aa2b22d608f3219ed5fc9ad599b9f1dfd2ba7be9e3400cab599eea5f55d39d",
+ "code_sha256": "0058e833c318027a7c5c9d335d6ff93d78734cc827a3791c4a86c49c872057c7",
+ "clean_code_sha256": "0058e833c318027a7c5c9d335d6ff93d78734cc827a3791c4a86c49c872057c7",
+ "prompt_sha256": "01c516dc55398ff0e2b3748980b9a4886423faca1b9f28a687fdab486fe7ab52",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "Uses weights only: q_proj row energy, norm gains, and dead dims chosen from weights in block 99. tgt=0.8 is hand-set and c follows from weight energy. Qn[dead]*=c scales chosen rows, then the block saves, copies and writes notes. No stored activations are touched, no model stage is replayed, and no parameter comes from forbidden simulation.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 123621,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 872,
+  "output_tokens_details": {
+   "thinking_tokens": 663
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 123621,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 872,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 123621,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 123621
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 1.006416,
+ "t": 1794082253.6121302
+}

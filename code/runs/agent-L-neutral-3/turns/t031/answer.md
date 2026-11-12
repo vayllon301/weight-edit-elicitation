@@ -1,0 +1,5 @@
+Within these 141 events, head L17 h0 tracks success closely. When the model's digit is correct, the head peaks on the true source 47.7% of the time with source mass 0.251. When the digit is wrong, this falls to 14.7% with mass 0.082, and other-digit mass goes up. That's only correlation for now, and the number of wrong-digit events is small. The causal test is what counts: E2 scales this head's output columns by 1.5, and the rerun on the same 984 texts can be compared with pass 4 token by token. If retrieval accuracy rises across `fromproblem` tokens without harming `result` or word tokens, then a boosted head really helps, and I'll test more strengths and then generation.
+
+```forward
+{"type": "teacher_forced", "model": "edited", "texts_file": "/work/tf4_texts.json", "return": {"token_logprobs": true, "topk": 5}}
+```

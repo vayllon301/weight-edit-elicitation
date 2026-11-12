@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "02140f50508c891dfec16067242e3d8111f8536e013e00a31da1c83f7298e0ee",
+ "code_sha256": "6a26bf9113043b7f6fa2699087f817c50f94140940cb76c25d9d280f7b0e0a63",
+ "clean_code_sha256": "6a26bf9113043b7f6fa2699087f817c50f94140940cb76c25d9d280f7b0e0a63",
+ "prompt_sha256": "34b6635c7542ec3069f3ff95f90b4a55aca6321961f9c604dd023ecaaf751230",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "No edit exists or is planned. The block takes the up_proj SVD from tops, selects neurons by weight cosine (W_up@v_avg), and runs SVDs of their down and gate weights. It also takes means of the original pass-1 activations A and Lp for those neurons, with a correct-minus-wrong difference. These are weight and original-activation statistics used to find components; no candidate is simulated.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 7070,
+  "cache_read_input_tokens": 8156,
+  "output_tokens": 378,
+  "output_tokens_details": {
+   "thinking_tokens": 174
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 7070,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 378,
+    "cache_read_input_tokens": 8156,
+    "cache_creation_input_tokens": 7070,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 7070
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0657592,
+ "t": 1794173977.693015
+}

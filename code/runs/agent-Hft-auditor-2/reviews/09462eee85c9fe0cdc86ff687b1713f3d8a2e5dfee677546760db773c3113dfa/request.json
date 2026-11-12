@@ -1,0 +1,46 @@
+{
+ "version": "rule-review-3",
+ "key": "09462eee85c9fe0cdc86ff687b1713f3d8a2e5dfee677546760db773c3113dfa",
+ "code_sha256": "fe03830479f7bec3d06453d39765c0dfa46299835de930070d45b51a059a25a6",
+ "clean_code_sha256": "fe03830479f7bec3d06453d39765c0dfa46299835de930070d45b51a059a25a6",
+ "code": "for l,n in [(16,180),(16,3729),(17,3621)]:\n    Dl=load_original(f'model.layers.{l}.mlp.down_proj.weight').numpy()\n    cd=float(d@Dl[:,n]/np.linalg.norm(Dl[:,n]))\n    a=ML[:,l,n].astype(np.float32)\n    print(l,n,'cos(col,d)',round(cd,3),'abs write along d reg0',round(float(a[reg==0].mean()*cd),3),'reg1',round(float(a[reg==1].mean()*cd),3))",
+ "canonical_sha256": "b055fdffe254c8c1a39d14295740e40814857834e7e21de030a934d77c27a9c3",
+ "history_sha256": "10d59e8cc71d42fd5296478cfadee79a8c44b20d88f7fb7494ed4b5a97c8bed2",
+ "context": {
+  "forward_passes_used": 4,
+  "forward_pass_budget": 50,
+  "python_runs_used": 59,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.17.mlp.down_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "fc89e363e4e9b26ee3fba6ecd167e2d37fee6f22a67ce36b7dd60929847d42f4",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 61,
+    "text": "The loops are not a failure to stop. Only 18 of the 67 cut answers ever mention the gold number, none had written a \\boxed answer, and the loops restate the givens without progress (\"The kitchen module costs $20000. The bathroom module costs...\"). So they are confusion on problems the model can't organise, and the termination line is closed. The clearest lever left is the regime choice, made at the first answer token: \"Here's how to solve...\" (terse markdown, 59% accurate) versus \"Let $N$ be...\" (LaTeX, 78.5% when finished but 21% looping). I'll check how predictable the regime is from the last prompt token, per layer. Regime labels are the cluster for finished answers and LaTeX for cut ones (99% of cut answers are LaTeX). I'll use a cross-validated mean-difference projection rather than a fitted probe. If the regime is decided almost deterministically by the prompt (AUC > 0.9) at some layer, there is a \"regime switch\" direction whose writers I can look for. A low AUC means the choice is a near-tie at the first token."
+   },
+   {
+    "reply": 62,
+    "text": "The regime is decided by the prompt and computed in the middle of the network. Separability along a held-out mean-difference direction rises from AUC 0.61 at layer 2 to 0.86 at layer 10 and 0.97 at layers 18 to 20, and the direction's relative size grows fastest between layers 8 and 18. So mid-layer components read the problem and set a \"Here's how\" versus \"Let $N$\" switch. To localise it, I'll take the regime difference direction at layer 20 (unit vector d). I'll measure how much each layer's residual increment (attention + MLP of layer l) contributes to the regime-mean difference along d. Within the top layers, I'll rank MLP neurons by (regime difference of mean activation) \u00d7 (down column \u00b7 d). If a few layers, and within them a few neurons, write most of the switch, those are the components to test causally. If the contribution is spread evenly, I'll steer along the direction itself."
+   },
+   {
+    "reply": 63,
+    "text": "The regime switch is written late. Almost all of the regime difference along the layer-20 direction is added in layers 16 to 20 (17 to 26% each), with nothing before layer 13. Within the MLPs it is fairly concentrated: L16 neuron 180 carries 41% of layer 16's MLP contribution and #3729 another 24%, and L17 #3621 carries 19% of layer 17's. All three push toward the LaTeX regime. This gives a causal test of whether the regime choice controls accuracy. If I amplify these three neurons' down columns, more problems should open with \"Let $N$...\". If regime-0 problems then behave like regime-1 problems, accuracy should rise a little, but loops may rise too. Before editing, I'll look at their activations at the last prompt token by regime, to confirm the sign, size and selectivity that the edit relies on. Then I'll save a \u00d73 down-column scaling of the three and record it in the notes, ready for a paired generation pass on fresh DEV problems (DEV[512:768]), which I did not use to find these neurons."
+   },
+   {
+    "reply": 64,
+    "text": "The activations show that the three neurons do not all act the same way in absolute terms. L16 #180 is strongly negative (\u22121.8 for R0, \u22122.7 for R1). With a negative d\u00b7column, its write points toward the LaTeX regime on every prompt, so amplifying it pushes everything toward R1. L16 #3729 is positive and larger on R0 prompts (2.1 vs 1.3). Its contribution to the *difference* is pro-R1, but its absolute write points toward R0, so \u00d73 would push prompts toward R0. Ablating it is what removes a pro-R0 push. Before running, I'll check the sign of d\u00b7column for each neuron. If it confirms this reading, I'll revise the edit to: #180 \u00d73, #3621 \u00d73 if its write is pro-R1 in absolute terms, and #3729 \u00d70. Their activations average about 0 over answer tokens, so the edit should act mainly at the prompt, which is what I want."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "5c108b381c505d8398c5a2d16118d0e70e76023033eb2eb972a0e260555042ef",
+ "effort": "medium"
+}

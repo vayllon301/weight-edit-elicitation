@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "c8770e5421ce038767b702398546d77ee329c17a4ec7574532ed1c21b396ffa1",
+ "code_sha256": "1d565c41d51fdf4349bfc52a26ffbd55a3a140b5826d99c048464cb520afdec6",
+ "clean_code_sha256": "1d565c41d51fdf4349bfc52a26ffbd55a3a140b5826d99c048464cb520afdec6",
+ "prompt_sha256": "4978420af943f5cb1bd771d4ab538d501f52a3335a727951358caeab2531a203",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only computes the excess kurtosis of the original weights (load_original gate/up rows and down columns) per layer, then counts and lists neurons that look Gaussian. These are weight statistics used to find components. No activations are used, no candidate edit is applied or simulated, and no forward pass is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 72658,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 173,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 72658,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 173,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 72658,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 72658
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.584732,
+ "t": 1794111852.5667572
+}

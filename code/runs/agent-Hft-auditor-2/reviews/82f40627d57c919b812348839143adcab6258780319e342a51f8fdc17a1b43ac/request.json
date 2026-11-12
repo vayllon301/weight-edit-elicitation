@@ -1,0 +1,98 @@
+{
+ "version": "rule-review-3",
+ "key": "82f40627d57c919b812348839143adcab6258780319e342a51f8fdc17a1b43ac",
+ "code_sha256": "84f5917df9ed14af602487a3c699332a3cded92eac705058b8ce94c65cb1d475",
+ "clean_code_sha256": "84f5917df9ed14af602487a3c699332a3cded92eac705058b8ce94c65cb1d475",
+ "code": "doubt_all={16:[221,723,992,1246,4258,5725],17:[3643,4150],18:[2158,4307,5045,6616]}\nfor Lr,cols in doubt_all.items():\n    W=load_original(f'model.layers.{Lr}.mlp.down_proj.weight').clone()\n    W[:,cols]*=-2.0\n    if Lr==16: W[:,3729]*=-1.0\n    save_edit(f'model.layers.{Lr}.mlp.down_proj.weight',W)\nwith open('/work/notes.md','a') as f:\n    f.write(\"\\nRun 136-137: 'Let's re-read/rephrase' (E6 31 ans, acc .10) follows genuine contradictions (negative/non-integer) -> symptom, CLOSED.\\nCURRENT EDIT E7: L16 cols [221,723,992,1246,4258,5725] x-2, col 3729 x-1; L17 [3643,4150] x-2; L18 [2158,4307,5045,6616] x-2 (from original). E6 stays in /work/best_4.\\nPass 34 plan: TF EDITED (E7) on /work/tf9_texts.json, logprobs+topk20: P(However) at doubt decisions (E6 .09) and ctrl lp (E6 -.105). Drop E7 if ctrl lp worse by >.01.\\n\")\nedited()",
+ "canonical_sha256": "0ae75ed7381c6aa81625b251e2fc974a7f2826622bcd90426ab1360ed70816d2",
+ "history_sha256": "1115c169f43b48a0cae4f44c67941570f29505822c9783c35247f6d80a17a295",
+ "context": {
+  "forward_passes_used": 33,
+  "forward_pass_budget": 50,
+  "python_runs_used": 137,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.18.mlp.down_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "8b63903da38d6907c7ad330c4611039e6286be5d73ad324e458e432f4685d3b3",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "for l,n in [(16,180),(16,3729),(17,3621)]:\n    Dl=load_original(f'model.layers.{l}.mlp.down_proj.weight').numpy()\n    cd=float(d@Dl[:,n]/np.linalg.norm(Dl[:,n]))\n    a=ML[:,l,n].astype(np.float32)\n    print(l,n,'cos(col,d)',round(cd,3),'abs write along d reg0',round(float(a[reg==0].mean()*cd),3),'reg1',round(float(a[reg==1].mean()*cd),3))",
+    "canonical_sha256": "b055fdffe254c8c1a39d14295740e40814857834e7e21de030a934d77c27a9c3",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "sel={}\nfor L in (16,17):\n    A=np.load(f'/work/how_act_{L}.npy'); a1,a0=A[labs==1],A[labs==0]\n    dd=(a1.mean(0)-a0.mean(0))/np.sqrt(0.5*(a1.var(0)+a0.var(0))+1e-6)\n    W=load_original(f'model.layers.{L}.mlp.down_proj.weight').numpy()\n    cs=(W.T@Eu)/(np.linalg.norm(W,axis=0)+1e-9)\n    s=np.sign(a1.mean(0))*cs\n    sel[L]=[int(n) for n in np.where((np.abs(dd)>1.5)&(s>0.1))[0]]\ndetail={L:[(n,) for n in sel[L]] for L in sel}\nW16=load_original('model.layers.16.mlp.down_proj.weight').clone(); W16[:,3729]=0\nfor n in sel[16]: W16[:,n]=0\nsave_edit('model.layers.16.mlp.down_proj.weight',W16)\nif sel[17]:\n    W17=load_original('model.layers.17.mlp.down_proj.weight').clone()\n    for n in sel[17]: W17[:,n]=0\n    save_edit('model.layers.17.mlp.down_proj.weight',W17)\nwith open('/work/notes.md','a') as f:\n    f.write(f\"\"\"\nPass 10/11: P(However) at doubt decisions .79 (ctrl 0). However-embedding proj of cut-ctrl diff: after L15 135, after L16 363, after L17 470 -> written by layers.16 (+228) and .17 (+107).\nDoubt neurons (|d|>1.5, sign(act)*cos(col,E_However)>.1): L16 {sel[16]}, L17 {sel[17]}.\nCURRENT EDIT: L16 down_proj cols 3729 + {sel[16]} = 0; L17 down_proj cols {sel[17]} = 0 (from original).\nPass 12 plan: TF EDITED on /work/tf9_texts.json, topk20 + token_logprobs: check P(However) at decision pos drop.\n\"\"\")\nsel, edited()",
+    "canonical_sha256": "a644e63edf9238e1ae0cbbfbfb816a2805fe001c41c86a0f1960aba37d03d316",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "cmp={}\nfor Lr,cols in doubt.items():\n    A=np.load(f'/work/how_act_{Lr}.npy'); W=load_original(f'model.layers.{Lr}.mlp.down_proj.weight').numpy()\n    cmp[Lr]=[(c, round(float(A[labs==1,c].mean()-A[labs==0,c].mean()),2), round(float((A[labs==1,c].mean()-A[labs==0,c].mean())*(W[:,c]@Eu)),3)) for c in cols]\nopen('/work/notes.md','a').write(\"\\nPass 24 result: L18 doubt candidates (|d|>1.5,|cos|>.1): 2158,4307,5045,6616 (all push toward However; 6616 d=2.84 act 1.17 vs .05; 5045 d=-2.54). L19 none.\\n\")\ncmp",
+    "canonical_sha256": "3130391f6160c8a9fd5793d984a1e0b227e8420173015989e9fb2b8732a1355b",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "with open('/work/notes.md','a') as f:\n    f.write(\"\\nAnswer-writing sabotage CLOSED: pred==last body number 272/281 wrong; gold in text 45/281 (incidental).\\nNext: rank R0-pushing neurons L12-20 (actdiff R0-R1 x gain-scaled col proj on regime dir) for ablation.\\n\")\nout={}\nallsc=[]\nfor L in range(12,21):\n    h=np.asarray(H1[:,L+1,:],dtype=np.float32).copy(); h[:,[1038,1125]]=0\n    d=h[regs==1].mean(0)-h[regs==0].mean(0); u=d/np.linalg.norm(d)\n    W=load_original(f'model.layers.{L}.mlp.down_proj.weight').numpy()\n    g=1+load_original(f'model.layers.{L}.post_feedforward_layernorm.weight').numpy()\n    p=((W*g[:,None]).T@u)            # per neuron\n    a=np.asarray(M1[:,L,:],dtype=np.float32)\n    ad=a[regs==0].mean(0)-a[regs==1].mean(0)\n    sc=ad*p                          # negative = drives toward R0 differentially\n    o=np.argsort(sc)[:5]\n    out[L]=[(int(n),round(float(sc[n]),2),round(float(a[regs==0,n].mean()),2),round(float(a[regs==1,n].mean()),2)) for n in o]\n    allsc.append((L,sc))\ntot={L:(round(float(sc[sc<0].sum()),1),round(float(np.sort(sc)[:10].sum()/sc[sc<0].sum()),2)) for L,sc in allsc}\nout, tot",
+    "canonical_sha256": "292158a6f9eb5add9b71ffd2ec5f447d7fc1e84d8b78fb32972b1439ba6cd1bc",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "W16=load_original('model.layers.16.mlp.down_proj.weight').clone()\nfor n in [3729,221,723,992,1246,4258,5725]: W16[:,n]=0\nsave_edit('model.layers.16.mlp.down_proj.weight',W16)\nW17=load_original('model.layers.17.mlp.down_proj.weight').clone()\nfor n in [3643,4150]: W17[:,n]=0\nsave_edit('model.layers.17.mlp.down_proj.weight',W17)\nwith open('/work/notes.md','a') as f:\n    f.write(\"\"\"\nPass 10/11: P(However) at doubt decisions .79 (ctrl 0). However-emb proj of cut-ctrl diff: after L15 135, after L16 363, after L17 470 -> written by layers.16 (+228) and .17 (+107).\nDoubt neurons (|d|>1.5 & |cos(col,E_However)|>.1, all sign-consistent): L16 221,723,992,1246,4258,5725; L17 3643,4150.\nCURRENT EDIT (E2): L16 down_proj cols 3729,221,723,992,1246,4258,5725 = 0; L17 down_proj cols 3643,4150 = 0 (from original).\nPass 12 plan: TF EDITED on /work/tf9_texts.json, topk20 + token_logprobs: P(However) at decision pos.\n\"\"\")\nedited()",
+    "canonical_sha256": "3e18bbe7187da29b79d747832f318731afaca4e95810d86b59e30507246006d0",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 174,
+    "text": "**I submitted an edit, E6, not the original.** On held-out practice problems it raises accuracy from 57.6% to 63.0%, a measured gain of **+5.37 \u00b1 1.30 points** over 1,024 paired answers.\n\n**What I changed.** In three MLP output matrices I reversed the sign (\u00d7\u22121) of 13 single neuron columns, measured from the original weights:\n- **Layer 16 (`model.layers.16.mlp.down_proj.weight`):**\n  - Six \"doubt\" neurons: columns 221, 723, 992, 1246, 4258 and 5725.\n  - One \"regime\" neuron: column 3729.\n- **Layer 17 (`model.layers.17.mlp.down_proj.weight`):** columns 3643 and 4150 (doubt neurons).\n- **Layer 18 (`model.layers.18.mlp.down_proj.weight`):** columns 2158, 4307, 5045 and 6616 (doubt neurons).\n\nNo other tensor is edited, and /work/edited is identical to /work/best_4.\n\n**How I got there.**\n1. **Diagnosis.** The original model fails in two ways:\n   - **Short \"think less\" mode.** About 40% of answers are short (median roughly 140 tokens against 260 for the long mode) and contain comprehension or setup errors.\n   - **Self-sabotaging doubt.** After a correct computed line, the model often starts a new line with \"However, we are given that\u2026\". This was present in 79% of the answers cut off at the token limit, against 3% of finished ones.\n2. **Regime neuron (layer 16, column 3729).** It fires at the end of the prompt, correlates +0.71 with the short mode, and its output column points toward that mode. Scaling its column up pushed answers toward the short mode. Reversing it removed the short mode entirely (0 of 256 answers, against 107 for the original).\n3. **Doubt neurons.** I selected neurons that are strongly more active at \"However\" decision points than at matched control points (|d| > 1.5) and whose output columns align with the \"However\" token (|cos| > 0.1). Teacher-forced tests showed a dose response for the probability of \"However\" at those points:\n   - original: 0.79;\n   - layer 16\u201317 doubt columns zeroed: 0.54;\n   - same columns reversed: 0.24;\n   - layer 18 columns also reversed: 0.09.\n\n   Control-token log-probabilities stayed essentially unchanged throughout. A screen of layers 19\u201323 found no further real doubt neurons.\n\n**Evidence for choosing E6.** Paired gains over the original:\n\n| Candidate | DEV (512 answers) | HOLDOUT (1,024 answers) |\n|---|---|---|\n| E4 | +2.3 | not measured |\n| E5 | +4.3 | +3.12 \u00b1 1.28 |\n| **E6** | **+6.25** | **+5.37 \u00b1 1.30** |\n\nE6 was frozen on DEV before any HOLDOUT pass. It was positive on all four HOLDOUT sets (+4.3, +5.9, +6.6 and +4.7), with 117 answers going wrong to right and 62 right to wrong.\n\n**What I ruled out.**\n- **Loops:** there is no compact trigger. The direction that separates looping from normal text builds up gradually over layers 16\u201326.\n- **Scaling instead of reversing:** pushing the regime column harder (\u00d73, \u00d76) overshoots and flips the mode the wrong way.\n- **Answer-writing sabotage:** there is none. Wrong answers report the last number the model computed, at the same rate as the original.\n\n**What I expect on the evaluation.** About +5 points of accuracy on GSM8K, with a standard error of about 1.3. Wrong finished answers should drop by about a quarter. The trade-off is slightly more answers cut off at 768 tokens: 133 against 109 on HOLDOUT, because the edited model reasons at greater length. I left 17 forward passes unused: there are no unseen practice problems left, and any further candidate would have had to be re-measured on the same HOLDOUT sets."
+   },
+   {
+    "reply": 175,
+    "text": "I'll use the remaining passes to look for a second failure mechanism inside E6 rather than tune E6 itself. Any new candidate will be chosen on DEV, then compared with E6 on HOLDOUT. E6 stays submitted unless something beats it there.\n\nFirst, a text-only check that costs no passes. E6's doubt screen used only the \"However\" token, so other second-guessing openers (\"But\", \"Wait\", \"Actually\", \"Alternatively\", \"Let's re-\u2026\", \"Hmm\") may still be triggering wrong revisions. I'll count how often E6 and original answers on the pooled HOLDOUT generations contain a line starting with each opener, and the accuracy of those answers. This is diagnosis only; no edit is chosen from these counts.\n\nAn opener that is common and comes with low accuracy would point to a remaining doubt-like mechanism worth localizing on DEV. If none stands out, the doubt line is fully closed."
+   },
+   {
+    "reply": 176,
+    "text": "The earlier \"However\" lead is largely suppressed in E6: 130 original answers contain a \"However\" line, against 13 for E6. A second doubt-like opener remains: 31 E6 answers contain a line starting \"Let's re\u2026\", and only 10% of those are correct, against 63% overall. The original shows the same pattern (30 answers, 17% correct).\n\nAt about 3% of answers, this opener could be worth at most 1\u20132 points. It may also only mark problems the model already finds confusing, rather than cause the errors. Before spending any pass, I'll check:\n\n- which phrases it actually is, for example \"Let's re-read\" or \"Let's re-evaluate\";\n- whether those answers had already reached the gold value before the \"Let's re\" line, which would suggest a revision that destroyed a correct result;\n- short context around the line in a few cases.\n\nIf gold often appears before the revision, it is a doubt mechanism like \"However\" and worth localizing. If gold rarely appears beforehand, it marks difficulty and I'll close it."
+   },
+   {
+    "reply": 177,
+    "text": "The \"Let's re-read\" and \"Let's rephrase\" lines are not a doubt mechanism like \"However\". In every example they follow a real contradiction the model has already produced, such as a negative amount or a non-integer number of tickets, and most of those answers end up cut. These are recovery attempts after an earlier reasoning error, so they mark failure rather than cause it. I'm closing this line.\n\nOne remaining lever is the strength of the doubt-neuron edit. The dose response so far (P(However) 0.79 \u2192 0.54 zeroed \u2192 0.24 reversed for the layer 16\u201317 columns; 0.09 with the layer 18 columns also reversed) has only tried zero and \u00d7\u22121.\n\nCandidate E7 sets the 12 doubt columns in layers 16\u201318 to \u00d7\u22122 from the original and keeps the regime neuron, layer 16 column 3729, at \u00d7\u22121, as in E6. I'll screen it first with one teacher-forced pass on the tf9 texts. If control-token log-probabilities stay within about 0.01 of E6's, I'll run DEV generation passes. Otherwise I'll drop it, since earlier larger scalings (\u00d76 on the regime column) overshot."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "eb3ef0930925e0d31defe2c15e4d1450b13179647fdd0bdd46edfd6b4e9df46b",
+ "effort": "medium"
+}

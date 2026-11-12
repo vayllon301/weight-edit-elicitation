@@ -1,0 +1,87 @@
+{
+ "version": "rule-review-3",
+ "key": "b6aebe871a11b309d37978822f1ec93e2c9f8a14f4ddcbbb5f1c3f3dd627006c",
+ "code_sha256": "e4591d68924afb6c8fbcec3de024824cc985ce242c59b0f8f23cf5f34d1218da",
+ "clean_code_sha256": "e4591d68924afb6c8fbcec3de024824cc985ce242c59b0f8f23cf5f34d1218da",
+ "code": "import glob\nfor f in sorted(glob.glob('/work/blocks/block_*.py'), key=lambda s:int(s.split('_')[-1][:-3])):\n    s=open(f).read()\n    if 'how_act' in s and 'save' in s:\n        print(f); print(s[:1500]); break",
+ "canonical_sha256": "b20567b176269379e44ed7d5b44dce17b6339f23185b66ae659f2e921f5c7db6",
+ "history_sha256": "2a2191634a0ee7a7a41e917c9d2332157ebc97afcf9cfc1eb922f6333c75d0f3",
+ "context": {
+  "forward_passes_used": 23,
+  "forward_pass_budget": 50,
+  "python_runs_used": 114,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.17.mlp.down_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "d01467e8d2af4340a48b0f96575bc63a9b1cdf397ed5429232aadf5fc1296b3e",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "for l,n in [(16,180),(16,3729),(17,3621)]:\n    Dl=load_original(f'model.layers.{l}.mlp.down_proj.weight').numpy()\n    cd=float(d@Dl[:,n]/np.linalg.norm(Dl[:,n]))\n    a=ML[:,l,n].astype(np.float32)\n    print(l,n,'cos(col,d)',round(cd,3),'abs write along d reg0',round(float(a[reg==0].mean()*cd),3),'reg1',round(float(a[reg==1].mean()*cd),3))",
+    "canonical_sha256": "b055fdffe254c8c1a39d14295740e40814857834e7e21de030a934d77c27a9c3",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "sel={}\nfor L in (16,17):\n    A=np.load(f'/work/how_act_{L}.npy'); a1,a0=A[labs==1],A[labs==0]\n    dd=(a1.mean(0)-a0.mean(0))/np.sqrt(0.5*(a1.var(0)+a0.var(0))+1e-6)\n    W=load_original(f'model.layers.{L}.mlp.down_proj.weight').numpy()\n    cs=(W.T@Eu)/(np.linalg.norm(W,axis=0)+1e-9)\n    s=np.sign(a1.mean(0))*cs\n    sel[L]=[int(n) for n in np.where((np.abs(dd)>1.5)&(s>0.1))[0]]\ndetail={L:[(n,) for n in sel[L]] for L in sel}\nW16=load_original('model.layers.16.mlp.down_proj.weight').clone(); W16[:,3729]=0\nfor n in sel[16]: W16[:,n]=0\nsave_edit('model.layers.16.mlp.down_proj.weight',W16)\nif sel[17]:\n    W17=load_original('model.layers.17.mlp.down_proj.weight').clone()\n    for n in sel[17]: W17[:,n]=0\n    save_edit('model.layers.17.mlp.down_proj.weight',W17)\nwith open('/work/notes.md','a') as f:\n    f.write(f\"\"\"\nPass 10/11: P(However) at doubt decisions .79 (ctrl 0). However-embedding proj of cut-ctrl diff: after L15 135, after L16 363, after L17 470 -> written by layers.16 (+228) and .17 (+107).\nDoubt neurons (|d|>1.5, sign(act)*cos(col,E_However)>.1): L16 {sel[16]}, L17 {sel[17]}.\nCURRENT EDIT: L16 down_proj cols 3729 + {sel[16]} = 0; L17 down_proj cols {sel[17]} = 0 (from original).\nPass 12 plan: TF EDITED on /work/tf9_texts.json, topk20 + token_logprobs: check P(However) at decision pos drop.\n\"\"\")\nsel, edited()",
+    "canonical_sha256": "a644e63edf9238e1ae0cbbfbfb816a2805fe001c41c86a0f1960aba37d03d316",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "with open('/work/notes.md','a') as f:\n    f.write(\"\\nAnswer-writing sabotage CLOSED: pred==last body number 272/281 wrong; gold in text 45/281 (incidental).\\nNext: rank R0-pushing neurons L12-20 (actdiff R0-R1 x gain-scaled col proj on regime dir) for ablation.\\n\")\nout={}\nallsc=[]\nfor L in range(12,21):\n    h=np.asarray(H1[:,L+1,:],dtype=np.float32).copy(); h[:,[1038,1125]]=0\n    d=h[regs==1].mean(0)-h[regs==0].mean(0); u=d/np.linalg.norm(d)\n    W=load_original(f'model.layers.{L}.mlp.down_proj.weight').numpy()\n    g=1+load_original(f'model.layers.{L}.post_feedforward_layernorm.weight').numpy()\n    p=((W*g[:,None]).T@u)            # per neuron\n    a=np.asarray(M1[:,L,:],dtype=np.float32)\n    ad=a[regs==0].mean(0)-a[regs==1].mean(0)\n    sc=ad*p                          # negative = drives toward R0 differentially\n    o=np.argsort(sc)[:5]\n    out[L]=[(int(n),round(float(sc[n]),2),round(float(a[regs==0,n].mean()),2),round(float(a[regs==1,n].mean()),2)) for n in o]\n    allsc.append((L,sc))\ntot={L:(round(float(sc[sc<0].sum()),1),round(float(np.sort(sc)[:10].sum()/sc[sc<0].sum()),2)) for L,sc in allsc}\nout, tot",
+    "canonical_sha256": "292158a6f9eb5add9b71ffd2ec5f447d7fc1e84d8b78fb32972b1439ba6cd1bc",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "W16=load_original('model.layers.16.mlp.down_proj.weight').clone()\nfor n in [3729,221,723,992,1246,4258,5725]: W16[:,n]=0\nsave_edit('model.layers.16.mlp.down_proj.weight',W16)\nW17=load_original('model.layers.17.mlp.down_proj.weight').clone()\nfor n in [3643,4150]: W17[:,n]=0\nsave_edit('model.layers.17.mlp.down_proj.weight',W17)\nwith open('/work/notes.md','a') as f:\n    f.write(\"\"\"\nPass 10/11: P(However) at doubt decisions .79 (ctrl 0). However-emb proj of cut-ctrl diff: after L15 135, after L16 363, after L17 470 -> written by layers.16 (+228) and .17 (+107).\nDoubt neurons (|d|>1.5 & |cos(col,E_However)|>.1, all sign-consistent): L16 221,723,992,1246,4258,5725; L17 3643,4150.\nCURRENT EDIT (E2): L16 down_proj cols 3729,221,723,992,1246,4258,5725 = 0; L17 down_proj cols 3643,4150 = 0 (from original).\nPass 12 plan: TF EDITED on /work/tf9_texts.json, topk20 + token_logprobs: P(However) at decision pos.\n\"\"\")\nedited()",
+    "canonical_sha256": "3e18bbe7187da29b79d747832f318731afaca4e95810d86b59e30507246006d0",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 139,
+    "text": "The restart signal builds up gradually across depth. Each 2-layer block from 16 to 26 adds 230 to 760 units along the final loop direction, with the largest share in the last block, and no block stands out. By the criterion I set beforehand, there is no compact loop component to edit, so I'm closing the loop line.\n\nE5 remains the candidate, with +3.1 \u00b1 1.3 on HOLDOUT. With 26 passes left, one open question is whether the doubt-neuron screen (run 88) covered all layers or only some. If it searched only layers 16\u201317, more \"However\"-writing neurons in other layers could add to E3's gain. I'll re-read block 88 to check its scope and inputs before deciding."
+   },
+   {
+    "reply": 140,
+    "text": "Run 88 screened only layers 16 and 17. Those layers came from earlier hidden-state work, which saved the \"However\" decision differences per layer as `dhow_*.npy`. That localization is not written in the notes.\n\nI'll check it from the saved summaries: for each 2-layer block, how much it adds to the final doubt-decision difference, and to the \"However\" unembedding direction `Eu`, if that is still in the kernel.\n\n- **L16\u201317 dominate clearly:** the doubt screen was complete, and I'll close that line.\n- **Other blocks contribute comparably:** a screen in those layers is a justified next step."
+   },
+   {
+    "reply": 141,
+    "text": "Along the \"However\" unembedding direction, layers 16\u201317 contribute the most (+335). Layers 18\u201319 add a substantial further +214, and layers 22\u201323 add +143. The run-88 screen looked only at layers 16\u201317, so doubt-writing neurons in layers 18\u201319, and possibly 22\u201323, may have been missed.\n\nExtending the same screen there is justified by this evidence. I'll use the same texts (tf9), the same original model and the same criteria (|d| > 1.5 and |cos(column, E_However)| > 0.1). That needs one teacher-forced pass collecting MLP activations for those layers.\n\nThis block first checks how many tf9 texts there are, their longest length and the shape of `how_act_16`. From that I can work out how many layers fit under the 6 GB limit and how the earlier per-text activations were extracted."
+   },
+   {
+    "reply": 142,
+    "text": "There are 224 tf9 texts, the longest 833 tokens, so one layer of MLP activations takes about 2.6 GB. Only two layers fit in a pass, and I'll choose layers 18 and 19, which have the next-largest contribution after 16\u201317.\n\nTo repeat the screen exactly, I need the convention used when `how_act_16.npy` was extracted: which position, which pass and which model. This block searches my earlier blocks for that code."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "693905f02ef0628b50449847c106d017a7c78f0ec9353d3f3f255d9918741b8a",
+ "effort": "medium"
+}

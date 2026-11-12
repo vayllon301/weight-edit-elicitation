@@ -1,0 +1,59 @@
+OUTPUT of Python run 192 of at most 300:
+```
+notes length 19694
+# NOTES
+## Sets
+DEV = /work/dev_ids.json (1250 ids, seed 12345 perm[:1250]); HOLDOUT = /work/holdout_ids.json (1000 ids, perm[1250:]). Never tune on HOLDOUT.
+## Current edit
+none (original)
+## Passes
+pass 1: generate original on DEV[:512] (/work/dev512.json) with activations all layers + mlp -> diagnosis
+## Plan
+diagnose failure types; look for anomalous components
+pass 2 (planned): teacher-forced ORIGINAL on /work/tf_contrast1.json: 128 math (eval prompt + own gen_1 answer, 480 chars) + 48 handwritten non-math chats; mlp_act all la
+pass 2 done: contrast math vs nonmath; no strongly math-specific neuron (|d|<=2.1); L11 mean write differs (dim 163) but confounded by position.
+pass 3 (planned): teacher-forced ORIGINAL on /work/tf_gold_instr.json: DEV[:400] gold solutions (<<>> removed) under (A) eval prompt, (B) chat prompt without instruction.
+pass 4 (planned): teacher-forced ORIGINAL on /work/tf_frame.json (996 texts): DEV[:300] gold (from pass-3 set) under A=eval chat prompt, R=raw 'Question:/Answer:' no chat
+pass 4 done: framing test: raw vs chat vs 'practice' differ <=0.02 nats on result/operand/final tokens (nonmath control +0.08 all) -> no context gating.
+Checks closed (no pass): late-layer lens (no override; operand choice forms at L11 global), digit confusions natural, gold-context op error 20% vs own 17%, gate/up null d
+pass 5 (planned): teacher-forced ORIGINAL, 2 texts /work/tf_attn.json (multi-turn: ~10 DEV gold solutions in eval format; ~15 nonmath chats), attn_layers [5,11,17]. Goal:
+pass 5 done: global heads: L11h2 = operand retrieval head (54% of digit attention on gold operand); no head attends instruction; nothing pathological.
+MLP energy math/nonmath per layer smooth (0.9-1.6, L0 2.6 digits); per-layer math-specific update directions orthogonal across layers (no shared steer).
+pass 6 (planned): teacher-forced EDITED on /work/tf_screen.json (= tf_gold_instr[:400] + tf_contrast1 176; baselines pass3/pass2 exact). EDIT E1: every layer l: o_proj an
+pass 6 done: E1 (remove per-layer math mean-write dirs): op1 -0.023+-0.023 (top1 .702->.679), res -0.104+-0.015 (.873->.840), final +0.012, all +0.011, own -0.132, nonmat
+pass 7 (planned): teacher-forced EDITED on /work/tf_screen.json. EDIT E2: zero down_proj columns of top-50 math-excess neurons per layer (E[a^2]_math - E[a^2]_nonmath, po
+CORRECTION: E3 (k_norm x1.3) REFUSED by save_edit (uniform norm-scale = temperature change, out of scope); not run.
+pass 8 (planned): teacher-forced EDITED on /work/tf_screen.json. EDIT E4: layer 11 o_proj columns 512:768 (head 2, operand-retrieval head) x1.5. Hand-set strength.
+pass 8 done: E4 (L11h2 o_proj cols x1.5): op1 -0.040+-0.008 (top1 .702->.699), res -0.028+-0.006, final -0.006, all -0.045, own -0.014, nonmath -0.083 -> mild harm; CLOSE
+No-pass checks: bare '####' endings (79/512) = 'Final Answer: N ####' graded fine; final number == last computed number (144/151 ####, 214/220 boxed) -> no final-line cor
+Current edit: none. Next: weight-only OV digit-map of all 72 heads (look for digit-shifting head).
+OV digit-map (weights only, embed->in-norm->v->o->post-norm gain->final gain->unembed digits): copy heads L6h2,L7h0,L7h2,L7h3,L8h1,L9h2,L11h1,L17h1 (diag +1.0..+1.8); ANT
+pass 9 (planned): teacher-forced EDITED on /work/tf_screen.json, return token_logprobs+topk1. EDIT E5: zero o_proj columns of anti-copy heads L6h1 (256:512), L7h1 (256:51
+pass 9 done: E5 (zero 4 anti-copy heads L6h1,L7h1,L8h0,L9h1): {'op1': (-1.5392, 0.0634, 'top1 0.702->0.388'), 'res': (-3.3272, 0.0832, 'top1 0.873->0.330'), 'final': (-1.
+Run 84: prompt-token selectivity (per-text mean, math prompts vs nonmath chats): smooth tails, no lone gate neuron. o_proj top dirs sparse in most layers (natural outlier
+pass 10 (planned): teacher-forced ORIGINAL (no edits) on /work/tf_ctx.json (meta tf_ctx_meta.json): 300 bare arithmetic probes 'Calculate a op b' -> 'a op b = c' (eqs fro
+run 95 (blocked by review, not run): per-layer norm-gain table; not retried.
+PLAN: TF head-ablation screen of global-layer heads (L11 first, then L5, L17): zero o_proj cols of ONE head per pass, teacher-forced EDITED on /work/tf_screen.json (token
+pass 11 (planned): EDIT E6 = zero model.layers.11.self_attn.o_proj.weight cols 0:256 (head 0), full removal. Set: tf_screen.json.
+pass 11 done: E6 zero L11h0: {'op1': (-0.0122, 0.0085, 'top1 0.702->0.690'), 'res': (-0.1375, 0.0149, 'top1 0.873->0.838'), 'final': (-0.0108, 0.0047, 'top1 0.980->0.979'
+pass 12 (planned): EDIT E7 = zero model.layers.11.self_attn.o_proj.weight cols 256:512 (head 1), full removal. Set: tf_screen.json, TF edited, token_logprobs+topk1.
+pass 12 done: E7 zero L11h1: {'op1': (-0.1369, 0.0142, 'top1 0.702->0.693'), 'res': (-0.1024, 0.0139, 'top1 0.873->0.851'), 'final': (-0.0087, 0.0025, 'top1 0.980->0.978'
+pass 13 (planned): EDIT E8 = zero model.layers.11.self_attn.o_proj.weight cols 768:1024 (head 3), full removal. Set: tf_screen.json, TF edited, token_logprobs+topk1.
+pass 13 done: E8 zero L11h3: {'op1': (-0.1506, 0.0188, 'top1 0.702->0.672'), 'res': (-0.1074, 0.0144, 'top1 0.873->0.846'), 'final': (-0.0062, 0.0073, 'top1 0.980->0.976'
+pass 14 (planned): EDIT E9 = zero model.layers.11.self_attn.o_proj.weight cols 512:768 (head 2, operand retrieval), full removal. Set: tf_screen.json, TF edited, token_lo
+pass 14 done: E9 zero L11h2: {'op1': (-0.7862, 0.0536, 'top1 0.702->0.537'), 'res': (-0.2384, 0.0276, 'top1 0.873->0.819'), 'final': (-0.2872, 0.0379, 'top1 0.980->0.899'
+run 104: near-constant neuron / mean-write share analysis per layer (pass 2 acts, weights).
+pass 15 (planned): EDIT E10 = zero model.layers.17.self_attn.o_proj.weight cols 0:256 (head 0), full removal. Set: tf_screen.json, TF edited, token_logprobs+topk1.
+run 105: L4n1859/L10n1015 'dense' mean write was an artefact (pre-gain); effective cols single massive channel, anti-aligned (-0.85) = natural massive-activation build/re
+pass 15 done: E10 zero L17h0: {'op1': (0.0049, 0.0031, 'top1 0.702->0.702'), 'res': (0.0016, 0.0028, 'top1 0.873->0.875'), 'final': (0.001, 0.0013, 'top1 0.980->0.980'), 
+pass 16 (planned): EDIT E11 = zero model.layers.17.self_attn.o_proj.weight cols 256:512 (head 1), full removal. Set: tf_screen.json, TF edited, token_logprobs+topk1.
+pass 15 result: L17h0 minor natural (math ~0, nonmath -0.06), CLOSED.
+pass 16 done: E11 zero L17h1: {'op1': (0.0181, 0.0027, 'top1 0.702->0.701'), 'res': (-0.0138, 0.0039, 'top1 0.873->0.869'), 'final': (0.0006, 0.0013, 'top1 0.980->0.979')
+pass 17 (planned): EDIT E12 = zero model.layers.17.self_attn.o_proj.weight cols 512:768 (head 2), full removal. Set: tf_screen.json, TF edited, token_logprobs+topk1.
+pass 16 result: L17h1 near-neutral (all +0.014, op1 +0.018, top1 unchanged; nonmath -0.02) -> not a sabotage-size effect, CLOSED.
+pass 17 done: E12 zer
+ch163 share per plateau dir [0.0, 0.004, 0.0, 0.0, 0.0, 0.0, 0.0, 0.001, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+span U16 e163 energy 0.007  bulk(17+) 0.993
+L9 post-attn gain ch163 450.000 median 19.750 max 450.000 argmax 163
+
+```

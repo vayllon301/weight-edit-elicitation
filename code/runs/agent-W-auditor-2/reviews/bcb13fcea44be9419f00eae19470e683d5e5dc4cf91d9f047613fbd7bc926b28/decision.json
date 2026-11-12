@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "bcb13fcea44be9419f00eae19470e683d5e5dc4cf91d9f047613fbd7bc926b28",
+ "code_sha256": "38c847af9857bb042f99a5dfb80b47f78db3baeb75c0263549b3a4261706cb2d",
+ "clean_code_sha256": "38c847af9857bb042f99a5dfb80b47f78db3baeb75c0263549b3a4261706cb2d",
+ "prompt_sha256": "2354a3594979f29cd8f323bdc44f85d2e9c97206e3d89e8389585c28105d2d40",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block drops the edits, appends the pass-19 result to the notes, reads tf_ctx files and parses equations from generated text. That is text analysis only: no candidate edit is applied to stored activations, no sampled effect is predicted, no stage is replayed. Note: rows was rebound to tuples in block 105, so r['text'] will likely raise an error.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 76261,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 509,
+  "output_tokens_details": {
+   "thinking_tokens": 314
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 76261,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 509,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 76261,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 76261
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.6202759999999999,
+ "t": 1794147439.242893
+}

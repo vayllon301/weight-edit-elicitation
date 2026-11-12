@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "ede93450d9f65c5002b2402233470386daa8fbb9524b5709f91477598b63dfaa",
+ "code_sha256": "7bb2c71c7eab541d5422f63eb77adcd941f5b7a737c8008306d8eefc6098972c",
+ "clean_code_sha256": "7bb2c71c7eab541d5422f63eb77adcd941f5b7a737c8008306d8eefc6098972c",
+ "prompt_sha256": "7e19e2c694ba5ddb0674e9eeab913a4533b917fe224fbb2e0dcba1023a414bcf",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block restores E14 from /work/best_5 via save_edit(nm, W) and checks it with load(nm)-W. It also counts holdout/spare ids and writes notes. It applies no edit to stored activations, computes no sampled cost, loss or score, and replays no model stage. E14 and its scalar were chosen by real forward passes; vh is a mean-hidden statistic.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 5048,
+  "cache_read_input_tokens": 71742,
+  "output_tokens": 410,
+  "output_tokens_details": {
+   "thinking_tokens": 211
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5048,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 410,
+    "cache_read_input_tokens": 71742,
+    "cache_creation_input_tokens": 5048,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 5048
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.06294040000000001,
+ "t": 1794184273.662959
+}

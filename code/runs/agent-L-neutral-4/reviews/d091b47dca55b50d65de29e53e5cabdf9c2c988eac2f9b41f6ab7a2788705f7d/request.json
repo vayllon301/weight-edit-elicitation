@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "d091b47dca55b50d65de29e53e5cabdf9c2c988eac2f9b41f6ab7a2788705f7d",
+ "code_sha256": "32591f64d5864e0f43b4cf899d63053e05560b8f10a05f7e530ecb6a45b24869",
+ "clean_code_sha256": "32591f64d5864e0f43b4cf899d63053e05560b8f10a05f7e530ecb6a45b24869",
+ "code": "sfiles=sorted(os.listdir('/work/best_S1')); print(sfiles[:2])\nfor n in list(edited()): drop_edit(n)\nSdict={f[:-4]:torch.tensor(np.load('/work/best_S1/'+f),dtype=torch.float32) for f in sfiles if f.endswith('.npy')}\nprint(len(Sdict))\nfor l in range(16,23):\n    for nm,pn_ in [('self_attn.o_proj','post_attention_layernorm'),('mlp.down_proj','post_feedforward_layernorm')]:\n        name=f'model.layers.{l}.{nm}.weight'\n        W=Sdict.get(name,load_original(name)); w=1+load_original(f'model.layers.{l}.{pn_}.weight')\n        vl=vc*w; vl/=vl.norm()\n        save_edit(name, W+1.5*torch.outer(vl,vl@W))\nwith open('/work/notes.md','a') as f:\n    f.write(\"\\nPass13 result C(-1.5) both dev_b2: +0.39+-1.96 (13 w->r,12 r->w); cut 29.7->15.6%. Freed loops (47) acc 2.1->19.1%, but both-finished 29.0->26.0% (9 r->w, 4 w->r). C alone no gain.\\n\"\n            \"Current edit: SC = S(1.0) (from best_S1, layers16-19) composed with C(-1.5) (W += 1.5 v v^T W_S, layers16-22). Pass 14 (planned): generate BOTH on /work/dev_b1.json.\\n\")\nlen(edited())",
+ "canonical_sha256": "511d0bfd3aef80625907b82c4643a594e8be63c337d25a08d6889a7c20d9ded8",
+ "history_sha256": "e986c0ddc76ef0eb28905194cbd5ac1a042029f823622b155728de7194e184c0",
+ "context": {
+  "forward_passes_used": 13,
+  "forward_pass_budget": 50,
+  "python_runs_used": 57,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "2c837537e927e286e8c5ebf5e2d5d67ffc98461e87866b853c1d8790a8888c98",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 69,
+    "text": "dev_b2 holds 256 DEV problems with no overlap with HOLDOUT, and C(-1.5) is backed up. This paired generation measures the accuracy effect of amplifying the \"already said\" direction. I'm watching for fewer cuts at max tokens and a non-negative paired gain."
+   },
+   {
+    "reply": 70,
+    "text": "The loop repair works mechanically but doesn't improve accuracy:\n\n| | Original | Edited C(-1.5) |\n|---|---|---|\n| Cut at max tokens | 29.7% | 15.6% |\n| Mean tokens | 361 | 282 |\n| Accuracy | 20.3% | 20.7% |\n\nThe paired gain is +0.4 \u00b1 2.0 (13 wrong\u2192right, 12 right\u2192wrong). Most freed loops become wrong answers, which confirms the earlier finding that loops mostly occur on problems the model has already failed. By the stated criterion, accuracy not cut-offs, C alone is no improvement.\n\nBefore deciding how to use it, I'll inspect the paired items:\n- accuracy of problems that were cut in the original but finished under C;\n- whether C hurt problems that originally finished;\n- how C behaves within each style (plain or markdown).\n\nIf formerly-cut problems that now finish are about as accurate as the original's finished answers on similar problems, C is neutral rather than harmful. Combining it with S could then let S's better plain-mode reasoning count without S's extra loops. If C damages already-finishing answers, the combination is unlikely to help."
+   },
+   {
+    "reply": 71,
+    "text": "The pairing table separates two opposite effects of C:\n- Freed loops: 47 problems that were cut in the original now finish, and their accuracy rose from 2.1% to 19.1% (+8 correct). So breaking a loop often does let the model reach the answer.\n- Already-finishing problems: on the 169 that finished under both models, accuracy fell from 29.0% to 26.0% (-5). Of the 11 that are newly cut, 2 correct answers were lost.\n\nThe net is about zero. The loss on finishing answers could be noise from token drift (roughly \u00b12.6 points on 169 items) or real damage. One concrete mechanism would be C pushing the model to stop or skip steps early: mean length fell from 361 to 282 tokens, and an anti-repetition push might also suppress legitimate restating of intermediate values.\n\nSo I'll compare, within the both-finished group, the lengths and line counts of edited versus original answers, separately for pairs that stayed correct and pairs that went right\u2192wrong. If the edited answers on right\u2192wrong pairs are clearly shorter, with fewer lines, C is truncating reasoning, which suggests a weaker \u03b2 or fewer layers. If lengths match, the losses look like drift noise."
+   },
+   {
+    "reply": 72,
+    "text": "Within the answers that finished under both models, C turned 9 correct answers wrong and 4 wrong answers correct. The two right\u2192wrong examples suggest a plausible cost. In one, the edited answer stopped after computing Billy's amount (125) and skipped the final step that re-combines earlier quantities (B + S = 200). An anti-repetition push can also discourage legitimately restating earlier values. That is suggestive only, with n = 9. Lengths and line counts otherwise match, so C doesn't broadly truncate reasoning.\n\nThe most promising use of C is the combination planned earlier. S moves problems into plain mode, which reasons better but loops more (cut 22.7% \u2192 40% on switched problems). C frees loops, and on freed loops accuracy jumped from 2% to 19%. Their benefits should add, and the cost of C is partly offset by the loops S creates. I'll compose the two edits on the overlapping tensors: S as saved in /work/best_S1, then C(-1.5) applied on top, W' = W_S + 1.5\u00b7v v\u1d40W_S in layers 16 to 22. The combination is then tested with a paired generation on dev_b1, where S alone gave +1.6. A gain clearly above S alone, say +4 or more, would support stacking. A gain at or below +1.6 would mean the costs cancel."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "e2067810df80654da441d49fb42f92f2dee236b622f68963505b071cdac46f5d",
+ "effort": "medium"
+}

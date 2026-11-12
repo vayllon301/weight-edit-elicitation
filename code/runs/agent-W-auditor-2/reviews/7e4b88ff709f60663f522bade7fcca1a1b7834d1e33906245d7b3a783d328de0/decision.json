@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "7e4b88ff709f60663f522bade7fcca1a1b7834d1e33906245d7b3a783d328de0",
+ "code_sha256": "2726e3a84f7e0e7ec1b99aa6f84637ff9a602e1f960742b1dd6a7ed70a7a90fa",
+ "clean_code_sha256": "2726e3a84f7e0e7ec1b99aa6f84637ff9a602e1f960742b1dd6a7ed70a7a90fa",
+ "prompt_sha256": "2d2f8b956f0f4e393980b0b0af3e172648276ebd1c11aeda5d3144197ce96e92",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block lists /work/fwd_3, reads its meta, checks that the texts match, then calls screen(29). screen compares log-probs from pass 29, which actually ran E19 (sha matches), with original passes 3 and 2. That reads what an edit a pass ran did. E19 came from weight SVD statistics, and nothing is applied to stored activations off budget.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 114071,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 534,
+  "output_tokens_details": {
+   "thinking_tokens": 338
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 114071,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 534,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 114071,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 114071
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.9232560000000001,
+ "t": 1794151134.634767
+}

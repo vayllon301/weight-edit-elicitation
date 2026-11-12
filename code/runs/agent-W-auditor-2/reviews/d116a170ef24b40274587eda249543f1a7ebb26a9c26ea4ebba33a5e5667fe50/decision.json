@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "d116a170ef24b40274587eda249543f1a7ebb26a9c26ea4ebba33a5e5667fe50",
+ "code_sha256": "1fa8365502b43a1db7d80673f7006aeb3244ac5830687e7102c44452fcb38063",
+ "clean_code_sha256": "1fa8365502b43a1db7d80673f7006aeb3244ac5830687e7102c44452fcb38063",
+ "prompt_sha256": "0d4af1fae9ab337bd7ea1d2598dee5bb401e7c8b59f46a28855cff1feecff3fe",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "screen(40) only compares stored logprobs and top-1 from pass 40, which ran the saved E30 edit (L9h2 o_proj cols zeroed), with the original passes 2/3. That reads what a pass ran. The head was picked from the weight-only OV map in block 77, not from a forbidden simulation.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 6840,
+  "cache_read_input_tokens": 127471,
+  "output_tokens": 306,
+  "output_tokens_details": {
+   "thinking_tokens": 124
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 6840,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 306,
+    "cache_read_input_tokens": 127471,
+    "cache_creation_input_tokens": 6840,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 6840
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.08634220000000001,
+ "t": 1794166385.401917
+}

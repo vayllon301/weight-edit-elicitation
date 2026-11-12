@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "669646be986886e2c8bcc573b0574bdf40a1c2c0dcedbcf081e57b69f2957775",
+ "code_sha256": "411a2c14a63e353e7d827e6b022662faaee8cdc17d849afa72abe58976c6d0c9",
+ "clean_code_sha256": "411a2c14a63e353e7d827e6b022662faaee8cdc17d849afa72abe58976c6d0c9",
+ "prompt_sha256": "b8d6cf7ffde8103ffad29fba7c20b856f6a0fb6a4c4be4a9bf19bcd818f04a3b",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block compares item-wise correctness, text and cuts from real generate passes 27 and 38. It restores V1 from /work/best_V1 with save_edit and appends notes. V1's direction comes from mean activations, and its strength was chosen by forward passes. Nothing applies an edit to stored activations or replays the model.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 153801,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 397,
+  "output_tokens_details": {
+   "thinking_tokens": 216
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 153801,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 397,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 153801,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 153801
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 1.238356,
+ "t": 1794129254.919287
+}

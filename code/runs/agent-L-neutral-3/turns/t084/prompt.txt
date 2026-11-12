@@ -1,0 +1,51 @@
+OUTPUT of Python run 60 of at most 300:
+```
+import numpy as np, json, torch, os, shutil
+h19 = np.load('/work/fwd_2/hidden_19.npy', mmap_mode='r')
+ii2 = np.load('/work/fwd_2/input_ids.npy', mmap_mode='r')
+m2 = json.load(open('/work/tf2_meta.json'))
+nls = {E('\n')[0], E('\n\n')[0]}
+X = E('We')[0]
+s_pos = np.zeros(1152, np.float64); n_pos = 0
+s_neg = np.zeros(1152, np.float64); n_neg = 0
+for i, m in enumerate(m2):
+    ids_ = np.asarray(ii2[i, :m['tlen']])
+    pos = [x for x in range(m['plen'], m['tlen'] - 1) if int(ids_[x]) in nls]
+    if not pos: continue
+    arr = np.asarray(h19[i, pos]).astype(np.float32)
+    nx = ids_[np.array(pos) + 1]
+    w_ = nx == X
+    if w_.any(): s_pos += arr[w_].sum(0); n_pos += int(w_.sum())
+    if (~w_).any(): s_neg += arr[~w_].sum(0); n_neg += int((~w_).sum())
+T_we = (s_pos / n_pos - s_neg / n_neg).astype(np.float32)
+
+hlp = np.load('/work/gen_1_acts/hidden_last_prompt.npy', mmap_mode='r')
+mlp = np.load('/work/gen_1_acts/mlp_last_prompt.npy', mmap_mode='r')
+gen1 = [json.loads(l) for l in open('/work/gen_1.jsonl')]
+letm = np.array([g['text'].strip().startswith('Let') for g in gen1])
+H19 = np.asarray(hlp[:, 19]).astype(np.float32)
+T_lh = H19[letm].mean(0) - H19[~letm].mean(0)
+print('newlines followed by We', n_pos, 'others', n_neg)
+print('|T_we| %.3f |T_lh| %.3f cos %.3f | mean |h19| at prompt end %.2f' % (np.linalg.norm(T_we), np.linalg.norm(T_lh),
+      float(T_we @ T_lh / np.linalg.norm(T_we) / np.linalg.norm(T_lh)), float(np.linalg.norm(H19, axis=1).mean())))
+
+L_ = 18; n_ = 2543
+Dname = f'model.layers.{L_}.mlp.down_proj.weight'
+D0 = load_original(Dname).numpy()
+abar = np.asarray(mlp[:, L_]).astype(np.float32).mean(0)
+ymean = D0 @ abar; yrms = float(np.sqrt((ymean ** 2).mean()))
+w = load_original(f'model.layers.{L_}.post_feedforward_layernorm.weight').numpy()
+alpha = 3.0 * float(np.linalg.norm(T_lh) / np.linalg.norm(T_we))
+dy = alpha * T_we * yrms / (1 + w)
+Dnew = D0.copy(); Dnew[:, n_] += dy / abar[n_]
+print('alpha %.3f abar %.3f |dy|/|ymean| %.3f column norm %.3f -> %.3f' % (alpha, float(abar[n_]), float(np.linalg.norm(dy) / np.linalg.norm(ymean)),
+      float(np.linalg.norm(D0[:, n_])), float(np.linalg.norm(Dnew[:, n_]))))
+print(save_edit(Dname, torch.tensor(Dnew))); print('edited', edited())
+if os.path.exists('/work/cands/e6_we'): shutil.rmtree('/work/cands/e6_we')
+shutil.copytree('/work/edited', '/work/cands/e6_we')
+with open('/work/notes.md', 'a') as f:
+    f.write(f"\nEDIT E6 We-opener (pass 19): L18 down_proj column 2543 += dy/abar, dy=alpha*T_we*yrms/(1+w), T_we = mean hidden_19 at newlines followed by We minus other newlines (pass 2 own answers, original), alpha={alpha:.3f} (|alpha T_we| = 3|T_lh|). "
+            "TF prompts tf13, topk 5: measure whether We becomes top first token. Copy /work/cands/e6_we. E5 stays in best_1.\n")
+model.embed_tokens.weight True ['e6_we', 'e3b', 'e5_06', 'e3', 'e4', 'e1']
+
+```

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "4251061790ee61cffc36b5e6e738f7526fa6eee63f586fb64a465caf30510fc7",
+ "code_sha256": "2a6e9ae2be4e33011d619fb3d167a0c2f568101ad319b1450565f7d4d95cf658",
+ "clean_code_sha256": "2a6e9ae2be4e33011d619fb3d167a0c2f568101ad319b1450565f7d4d95cf658",
+ "prompt_sha256": "13ebab6b97be1b0ad03454153e77a398e19b2851e17d9f2db45b4341697288fc",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only appends pass 18's observed HOLDOUT result and the next pass plan to notes.md, then calls edited(). It runs no model stage and simulates no candidate on samples. The frozen SC edit's direction and beta values came from mean-difference statistics and real forward-pass comparisons, not from forbidden per-sample selection.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 2711,
+  "cache_read_input_tokens": 33826,
+  "output_tokens": 370,
+  "output_tokens_details": {
+   "thinking_tokens": 184
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 2711,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 370,
+    "cache_read_input_tokens": 33826,
+    "cache_creation_input_tokens": 2711,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 2711
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.035861199999999996,
+ "t": 1794169503.010837
+}

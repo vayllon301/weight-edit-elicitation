@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "389b1c8121a4ba0b9375ba450863928ee3b313c82ab23dc1ca92ce4f7b462bc6",
+ "code_sha256": "243de6bee2964b0e78a1e848e97787482fe554c7476f130359cccb6c1da2574a",
+ "clean_code_sha256": "243de6bee2964b0e78a1e848e97787482fe554c7476f130359cccb6c1da2574a",
+ "prompt_sha256": "141190ad74c64e31aa44e1c7f2ff946f0ca2fe5e0a77ef8f9c5675cc26481c82",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block compares per-text mean log-probs from pass 30, which ran the saved edit E21 (sha d94ec... matches), with the original passes 3 and 2, then calls screen on pass-30 outputs. That only reads what a pass ran. E21's 18 channels came from weight statistics (norm gains, writer row norms), not from per-sample simulation. Nothing replays the model.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 123967,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 502,
+  "output_tokens_details": {
+   "thinking_tokens": 295
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 123967,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 502,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 123967,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 123967
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 1.001784,
+ "t": 1794152200.9590569
+}

@@ -1,0 +1,54 @@
+OUTPUT of Python run 2 of at most 300:
+```
+{'attention_bias': False, 'attention_dropout': 0.0, 'attn_logit_softcapping': None, 'bos_token_id': 2, 'cache_implementation': 'hybrid', 'final_logit_softcapping': None, 'head_dim': 256, 'hidden_activation': 'gelu_pytorch_tanh', 'hidden_size': 1152, 'initializer_range': 0.02, 'intermediate_size': 6912, 'max_position_embeddings': 32768, 'model_type': 'gemma3_text', 'num_attention_heads': 4, 'num_hidden_layers': 26, 'num_key_value_heads': 1, 'pad_token_id': 0, 'query_pre_attn_scalar': 256, 'rms_norm_eps': 1e-06, 'rope_local_base_freq': 10000, 'rope_scaling': None, 'rope_theta': 1000000, 'sliding_window': 512, 'sliding_window_pattern': 6, 'torch_dtype': 'bfloat16', 'transformers_version': '4.50.0.dev0', 'use_cache': True, 'vocab_size': 262144}
+{'bos_token_id': 2, 'cache_implementation': 'hybrid', 'do_sample': True, 'eos_token_id': [1, 106], 'pad_token_id': 0, 'top_k': 64, 'top_p': 0.95, 'transformers_version': '4.50.0.dev0'}
+1250 1000
+model.layers.5.input_layernorm.weight (1152,) 82.355 torch.float32
+model.layers.5.mlp.down_proj.weight (1152, 6912) 34.752 torch.float32
+model.layers.5.mlp.gate_proj.weight (6912, 1152) 80.812 torch.float32
+model.layers.5.mlp.up_proj.weight (6912, 1152) 80.667 torch.float32
+model.layers.5.post_attention_layernorm.weight (1152,) 192.968 torch.float32
+model.layers.5.post_feedforward_layernorm.weight (1152,) 214.947 torch.float32
+model.layers.5.pre_feedforward_layernorm.weight (1152,) 304.75 torch.float32
+model.layers.5.self_attn.k_norm.weight (256,) 21.195 torch.float32
+model.layers.5.self_attn.k_proj.weight (256, 1152) 23.477 torch.float32
+model.layers.5.self_attn.o_proj.weight (1152, 1024) 29.491 torch.float32
+model.layers.5.self_attn.q_norm.weight (256,) 16.828 torch.float32
+model.layers.5.self_attn.q_proj.weight (1024, 1152) 22.279 torch.float32
+model.layers.5.self_attn.v_proj.weight (256, 1152) 23.579 torch.float32
+model.layers.6.self_attn.k_norm.weight (256,) 15.044 torch.float32
+model.layers.6.self_attn.k_proj.weight (256, 1152) 26.947 torch.float32
+model.layers.6.self_attn.o_proj.weight (1152, 1024) 27.728 torch.float32
+model.layers.6.self_attn.q_norm.weight (256,) 11.798 torch.float32
+model.layers.6.self_attn.q_proj.weight (1024, 1152) 19.264 torch.float32
+model.layers.6.self_attn.v_proj.weight (256, 1152) 26.954 torch.float32
+other [('model.embed_tokens.weight', (262144, 1152)), ('model.norm.weight', (1152,))]
+0 25.5 23.4 35.4 87.7 87.5 4.55 -0.063 5.99 1.893
+1 24.7 22.0 34.7 83.8 83.8 12.056 -0.249 7.532 0.694
+2 24.6 18.5 33.6 83.8 83.8 12.296 -0.006 7.758 1.359
+3 22.7 24.9 26.7 81.9 81.9 10.157 1.234 9.15 2.293
+4 17.5 28.4 18.8 82.7 82.7 9.685 0.912 6.205 2.278
+5 29.5 22.3 34.8 80.7 80.8 2.117 2.453 7.767 3.332
+6 27.7 19.3 33.7 85.6 85.6 9.049 2.063 6.151 4.018
+7 32.6 21.9 27.9 87.6 87.7 6.809 3.091 4.595 5.075
+8 32.8 22.7 18.6 85.8 86.0 6.403 4.225 3.536 6.484
+9 19.5 18.5 34.4 80.6 80.7 6.114 5.059 3.865 7.965
+10 21.5 29.0 33.3 86.1 86.2 5.407 9.447 2.349 9.161
+11 23.0 29.4 30.3 80.0 80.3 2.583 15.043 3.245 13.363
+12 24.3 18.5 22.1 83.1 83.3 5.56 12.559 2.01 16.227
+13 23.8 20.5 20.1 80.6 80.7 5.102 16.617 1.821 21.455
+14 27.0 24.2 22.7 87.1 87.2 4.993 16.446 1.407 27.473
+15 25.4 18.6 34.3 80.0 80.0 4.153 21.177 1.492 34.006
+16 17.3 24.2 32.3 87.8 87.8 4.481 32.973 1.484 50.89
+17 19.3 28.0 26.2 83.2 83.2 1.666 53.977 1.457 56.02
+18 16.0 19.3 18.2 86.1 86.0 3.831 38.523 1.081 60.279
+19 28.5 28.8 21.9 85.4 85.4 5.277 35.292 1.044 61.349
+20 25.5 22.6 32.2 80.6 80.6 5.086 43.051 0.967 66.554
+21 30.7 17.4 21.9 84.2 84.2 5.235 36.116 0.898 70.134
+22 23.3 19.5 30.2 84.2 84.2 6.03 45.358 0.788 75.55
+23 30.0 17.5 34.1 84.4 84.2 2.541 36.142 0.378 85.676
+24 18.2 22.9 26.7 87.5 87.1 3.995 44.865 0.153 105.892
+25 25.7 30.9 19.2 87.6 86.3 2.907 32.361 0.749 86.131
+233
+
+```

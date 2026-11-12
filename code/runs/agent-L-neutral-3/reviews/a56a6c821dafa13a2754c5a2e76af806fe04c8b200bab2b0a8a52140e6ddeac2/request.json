@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "a56a6c821dafa13a2754c5a2e76af806fe04c8b200bab2b0a8a52140e6ddeac2",
+ "code_sha256": "a66522ef68a694e82aee2b070267ed783d872e5ec40f3796efa0c865eaaf1985",
+ "clean_code_sha256": "a66522ef68a694e82aee2b070267ed783d872e5ec40f3796efa0c865eaaf1985",
+ "code": "import numpy as np, json\nF='/work/fwd_2/'\nm2=json.load(open(F+'meta.json')); print(list(m2.keys())[:20])\nii=np.load(F+'input_ids.npy',mmap_mode='r'); tl=np.load(F+'token_logprobs.npy',mmap_mode='r'); tp=np.load(F+'topk_logprobs.npy',mmap_mode='r'); ti=np.load(F+'topk_ids.npy',mmap_mode='r')\nmeta=json.load(open('/work/tf2_meta.json'))\nprint(ii[0,:6], 'pad id', ii[0,-1], meta[0]['plen'], meta[0]['tlen'])\nlens=np.array(m2['lengths'])\nprint('tool lengths vs mine', [(int(lens[i]),meta[i]['tlen']) for i in range(4)])\noff=int(lens[0]-meta[0]['tlen']); print('offset',off)\n# greedy check: top1 at answer positions equals actual next token?\nag=[];lp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off; L=int(lens[i])\n    pred=np.asarray(ti[i,p-1:L-1,0]); act=np.asarray(ii[i,p:L])\n    ag.append((pred==act).mean()); lp.append(float(np.asarray(tl[i,p-1:L-1]).mean()))\nprint('top1==actual over answer tokens: mean',round(float(np.mean(ag)),4),'min',round(float(np.min(ag)),3),' mean answer lp',round(float(np.mean(lp)),3))\n# First token distribution\nLET=6481; HERE=8291\nfp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off\n    ids=np.asarray(ti[i,p-1]); lps=np.asarray(tp[i,p-1])\n    d={int(a):float(b) for a,b in zip(ids,lps)}\n    fp.append((d.get(LET,-20),d.get(HERE,-20),int(ids[0]),float(lps[0]),float(lps[1])))\nfp=np.array(fp)\nmarg=fp[:,0]-fp[:,1]\nmodes=np.array([mt['mode'] for mt in meta])\nprint('P(Let) mean',np.exp(fp[:,0]).mean().round(3),'P(Here) mean',np.exp(fp[:,1]).mean().round(3),'sum',np.exp(fp[:,0:2]).sum(1).mean().round(3))\nprint('margin lpLet-lpHere pct',np.percentile(marg,[5,25,50,75,95]).round(2),'| here-mode margin',np.percentile(marg[modes=='here'],[10,50,90]).round(2),'| let-mode',np.percentile(marg[modes=='let'],[10,50,90]).round(2))\nfor name,L,ns in [('18',18,[2543,173,731]),('23',23,[4353,71,907]),('13',13,[6012,2397,4547])]:\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    for n in ns:\n        col=np.asarray(a[:,:,n]).astype(np.float32)\n        lastp=np.array([col[i,meta[i]['plen']+off-1] for i in range(len(meta))])\n        mask=np.zeros(col.shape,bool)\n        for i,mt in enumerate(meta):\n            mask[i,:int(lens[i])]=True; mask[i,mt['plen']+off-1]=False\n        rest=np.abs(col[mask])\n        print(f'L{L} n{n}: lastprompt mean {lastp.mean():.2f} cv {lastp.std()/abs(lastp.mean()):.2f} | rest mean|.| {rest.mean():.4f} p99.9 {np.percentile(rest,99.9):.3f} max {rest.max():.2f} share>10%: {(rest>0.1*abs(lastp.mean())).mean():.5f}')",
+ "canonical_sha256": "b477c6f45b5b69e13ae1bc4c7350ec568bfbcc70f2c3539d2be34d40c7729b15",
+ "history_sha256": "01df587edba0cb3ea39c110e9693ff442122327e74c89b18eca6ac4ad8e5a7d6",
+ "context": {
+  "forward_passes_used": 2,
+  "forward_pass_budget": 50,
+  "python_runs_used": 12,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 13,
+    "text": "The encoder adds a second `<bos>` unless told not to, and my E() helper correctly turns that off. I'll check meta.json after the pass to confirm how the tool tokenises. My size arithmetic was also too optimistic: at 300 texts, a single MLP layer takes 2.2 GB. To keep three MLP layers inside the 6 GB limit, I'll use 220 texts (90 cut, 65 correct, 65 wrong) and trim to 270 answer tokens. That still leaves over 100 loop tokens per cut answer, since loops start around token 150. Hidden states are reduced to six layers (11, 14, 17, 19, 24, 26), which includes the targets right after the MLP layers I'm recording. No edit is active, so this reads the original model only. The expected output is per-problem P(Let)/P(Here), token-level neuron selectivity, and the loop states."
+   },
+   {
+    "reply": 14,
+    "text": ""
+   },
+   {
+    "reply": 15,
+    "text": "The 220-text request comes to 5.24 GB, inside the 6 GB limit, and covers 131 Let and 89 Here answers, so I can run it as designed. This pass reads the original model only, and no edits exist yet. It should give four things: P(Let) versus P(Here) at the first token for each problem, token-level activity of the candidate neurons at layers 13, 18 and 23, the states inside loops compared with first occurrences of a line, and the model's top-k choices at line ends. If layer 18 neuron 2543 turns out to be silent on all other tokens, the hypothesis of a narrow, position-specific write holds. If it also fires on other tokens, I'll need a different neuron. If P(Let) and P(Here) are often close, even a small write should flip many problems, which would give a cheap causal test of the mode effect."
+   },
+   {
+    "reply": 16,
+    "text": "The pass worked. First I'll check the mechanics: how the tool tokenised the text (one `<bos>` or two), and whether teacher-forced top-1 predictions reproduce the greedy answers. If they don't, the token-level data wouldn't describe the states seen in generation. Then I'll extract the first-token distribution for each problem and verify token-level selectivity of the neuron candidates at layers 18 and 23. For each neuron I'll look at its activity at the last prompt token, its largest activity elsewhere, and how often it exceeds 10% of its target value. A selective neuron should have almost no other high activity. Close P(Let) and P(Here) values would mean a small write can steer mode."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "8b886573fabfe075e11f13e4372f9bcf190360dfbf1b874fe235140bce503b1b",
+ "effort": "high"
+}

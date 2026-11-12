@@ -1,0 +1,21 @@
+OUTPUT of Python run 189 of at most 300:
+```
+['hidden_10.npy', 'hidden_11.npy', 'hidden_12.npy', 'hidden_13.npy', 'hidden_16.npy', 'hidden_17.npy', 'hidden_18.npy', 'hidden_4.npy', 'hidden_5.npy', 'hidden_6.npy', 'input_ids.npy', 'meta.json', 'token_logprobs.npy', 'topk_ids.npy', 'topk_logprobs.npy']
+<class 'dict'> ['texts', 'lengths', 'model', 'edited_tensors', 'files', 'padding', 'activations_dtype', 'mean_token_logprob']
+n screen texts 576 gold rows match pass3 first 400: True
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    value = eval(compile(last, filename, "eval"), g)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/blocks/block_189.py", line 6, in <module>
+    print(screen(29))
+          ^^^^^^^^^^
+  File "/work/blocks/block_65.py", line 17, in screen
+    lpE=np.load(f'/work/fwd_{k}/token_logprobs.npy', mmap_mode='r'); tkE=np.load(f'/work/fwd_{k}/topk_ids.npy', mmap_mode='r')
+                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/numpy/lib/_npyio_impl.py", line 454, in load
+    fid = stack.enter_context(open(os.fspath(file), "rb"))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/work/fwd_29/topk_ids.npy'
+
+```

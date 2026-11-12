@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "0a4b0877b17533f8ae6aac542a807e15abc1c1954f4a86c0696266b40f830087",
+ "code_sha256": "d8be83911fb23048318aecb1eb6b80c003e23f4a8c82958136dfe2f921a74e17",
+ "clean_code_sha256": "d8be83911fb23048318aecb1eb6b80c003e23f4a8c82958136dfe2f921a74e17",
+ "prompt_sha256": "f68034889488435b65731d85a4d0fb9dd4e3cd538c59b75b3385075e10d52cfe",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "Block only appends a note summarizing original-model attention statistics from fwd_12 and loads spare.json to count overlap with dev/holdout ids. No edit is applied to activations, nothing is scored, no forward pass is replayed, and it consumes no forbidden-selected parameter.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 4491,
+  "cache_read_input_tokens": 67614,
+  "output_tokens": 169,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 4491,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 169,
+    "cache_read_input_tokens": 67614,
+    "cache_creation_input_tokens": 4491,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 4491
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.052838800000000005,
+ "t": 1794183847.8082
+}

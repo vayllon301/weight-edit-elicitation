@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "eca3d93cb52e4403bff13e1376a20ef91ad7b49902df2aa3368e076b7b07d88f",
+ "code_sha256": "a163a2316daf294a2764421500f22fbc0c9db7d31677e95bfb077b21b5f41a54",
+ "clean_code_sha256": "a163a2316daf294a2764421500f22fbc0c9db7d31677e95bfb077b21b5f41a54",
+ "prompt_sha256": "b72efbb5e5f3bbba43ff309e42a025fa348df018fd2c0fc4a8e71d916c031c66",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only appends the pass-29 holdout result and the pass-30 plan to notes, then calls len(edited()). It applies no edit to activations and replays no model stage. C(-1.5) uses a direction built from original activation means (block 50), with beta chosen by real forward passes 11, 12 and 16, not by in-kernel simulation.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 5837,
+  "cache_read_input_tokens": 47631,
+  "output_tokens": 255,
+  "output_tokens_details": {
+   "thinking_tokens": 65
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5837,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 255,
+    "cache_read_input_tokens": 47631,
+    "cache_creation_input_tokens": 5837,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 5837
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0613302,
+ "t": 1794170850.336295
+}

@@ -1,0 +1,8 @@
+Ten passes remain. The submission, E14, is confirmed on 1,226 untuned problems, so I'll use the remaining passes only to check for a remaining, separate suppression mechanism. I'll keep E14 unless something clearly beats it on DEV and is then confirmed. The one gap left: in the eval context, two-number addition still has a lower answer-digit logprob than in plain chat (−0.26 vs −0.02). Under E14 I checked only layers 11–12 for leftover gate units, not 13–25. So the next pass is a teacher-forced run of E14 on the same tf10 texts as fwd_18 and fwd_20 (eval-math, raw-math, non-math chat), returning MLP activations at layers 13–25. A neuron that still fires selectively for eval-format math under E14 would be a candidate second gate, to be tested by generation on DEV. If none stands out beyond about 3 standard deviations, I'll close the residual-gate line and leave the submission unchanged. First I'll record the plan in the notes.
+
+```python
+with open('/work/notes.md','a') as f:
+    f.write("Post-freeze exploration (submission stays E14 unless a new edit clearly beats it on DEV and is confirmed): "
+            "Pass 41: TF edited (E14) on /work/tf10_texts.json, token_logprobs, mlp_act 13..25 -> rescan for residual AND(chat,math) units vs fwd_20/fwd_18. Current edit = E14 only.\n")
+inf=json.load(open('/work/tf10_info.json')); print(type(inf), list(inf)[:5] if isinstance(inf,dict) else inf[:3], edited())
+```

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "58cfac3353516591f5131e047d849f64317dd42d8d487dd88ca694985a6a2ea1",
+ "code_sha256": "7d1bb1cca5785da360f8d7dd507426703cfeeb6448571c13c871a5b5425fc447",
+ "clean_code_sha256": "7d1bb1cca5785da360f8d7dd507426703cfeeb6448571c13c871a5b5425fc447",
+ "prompt_sha256": "6ef188989ce9d8c726fcd914fea959444d5c20b74709d7f0848659245d657d18",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "cut_table, the feature tables, the question-overlap terciles and the loop printout only read texts and grades of original-model generations (L, H from gen_1 and gen_10_original). No weights, activations, candidate edit or model replay are used, and no edit parameter is adopted. Generated texts and their grades are allowed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 54628,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 695,
+  "output_tokens_details": {
+   "thinking_tokens": 517
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 54628,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 695,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 54628,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 54628
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.450932,
+ "t": 1794077662.43926
+}

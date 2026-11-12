@@ -1,0 +1,5 @@
+OUTPUT of Python run 154 of at most 300:
+```
+("def loop_onset(text):\n    lines=[l.strip() for l in text.split('\\n')]\n    seen={};pos=0\n    for i,l in enumerate(lines):\n        if len(l)>8 and l in seen: return sum(len(x)+1 for x in lines[:i])\n        seen[l]=i\n    return None\ncut=[r for r in g1 if r['cut'] and not r['correct']]\nst=dict(n=len(cut),onset_found=0,gold_before=0,gold_anywhere=0,looped_line_has_gold=0)\nfor r in cut:\n    t=r['text']; gold=float(str(r['gold']).replace(',',''))\n    o=loop_onset(t)\n    if gold in nums(t): st['gold_anywhere']+=1\n    if o is not None:\n        st['onset_found']+=1\n        if gold in nums(t[:o]): st['gold_before']+=1\n        nxt=t[o:o+200].split('\\n')[0]\n        if gold in nums(nxt): st['looped_line_has_gold']+=1\nfin=[r for r in g1 if not r['cut']]\nprint(st, 'finished acc',round(np.mean([r['correct'] for r in fin]),3), 'n_fin',len(fin))\nprint(repr(cut[3]['text'][:300]))", ['block_42.py', 'block_51.py', 'block_100.py', 'block_117.py', 'block_119.py', 'block_124.py', 'block_126.py', 'block_153.py', 'block_154.py'])
+
+```

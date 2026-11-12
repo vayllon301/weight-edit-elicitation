@@ -1,0 +1,35 @@
+OUTPUT of Python run 183 of at most 300:
+```
+['block_155.py', 'block_157.py', 'block_160.py', 'block_161.py']
+import numpy as np, torch, os, shutil
+O = load_original('model.layers.11.self_attn.o_proj.weight').float()
+Vw = load_original('model.layers.11.self_attn.v_proj.weight').float()
+win = load_original('model.layers.11.input_layernorm.weight').float()
+def vvec(h):
+    x = h / torch.sqrt((h**2).mean() + 1e-6) * (1 + win)
+    return Vw @ x
+Hlp = np.load('/work/gen_1_acts/hidden_last_prompt.npy', mmap_mode='r')
+Han = np.load('/work/gen_1_acts/hidden_mean_answer.npy', mmap_mode='r')
+hlp = torch.tensor(np.asarray(Hlp[:, 11, :], dtype=np.float32).mean(0))
+han = torch.tensor(np.asarray(Han[:, 11, :], dtype=np.float32).mean(0))
+vl, va = vvec(hlp), vvec(han)
+print('|V_last| %.2f |V_ans| %.2f cos %.3f' % (vl.norm(), va.norm(), float(vl @ va / vl.norm() / va.norm())))
+vh = vl / vl.norm()
+for h in range(4):
+    B = O[:, h*256:(h+1)*256]
+    print(f'h{h}: |O V_last| {float((B@vl).norm()):.2f} |O V_ans| {float((B@va).norm()):.2f} | gain on v_last dir {float((B@vh).norm()):.3f} vs block rms gain {float(B.norm()/16):.3f}')
+B3 = O[:, 768:1024]
+T = B3 - torch.outer(B3 @ vh, vh)
+print('T1 removes %.3f of h3 block energy; |h3 write of V_ans| %.2f -> %.2f' % (float(1 - (T.norm()/B3.norm())**2), float((B3@va).norm()), float((T@va).norm())))
+W1 = O.clone(); W1[:, 768:1024] = T
+save_edit('model.layers.11.self_attn.o_proj.weight', W1)
+L = load('model.layers.11.self_attn.o_proj.weight')
+print('saved; heads0-2 unchanged:', bool(torch.equal(L[:, :768], O[:, :768])), '| residual h3 gain on v_last %.4f' % float((L[:, 768:1024] @ vh).norm()))
+np.save('/work/T1_vlast_dir.npy', vh.numpy())
+if os.path.exists('/work/cand_T1'): shutil.rmtree('/work/cand_T1')
+shutil.copytree('/work/edited', '/work/cand_T1')
+wit
+['hidden_last_prompt.npy', 'hidden_mean_answer.npy', 'mlp_last_prompt.npy', 'mlp_mean_answer.npy']
+(['model.layers.11.self_attn.v_proj.weight'], True)
+
+```

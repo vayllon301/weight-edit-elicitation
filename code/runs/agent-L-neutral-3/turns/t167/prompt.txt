@@ -1,0 +1,94 @@
+OUTPUT of Python run 121 of at most 300:
+```
+ers.
+
+Pass 22 screen done (first-token logprobs of 10 openers on 102 prompts), table in run output.
+
+Screen: gap to best natural Okay -8.0, The -10.4, 1 -10.6, ** -11.0, First -11.2, To -12.6, Given -13.8, Step -14.2, Solution -16.6, ## -18.3. Continuations: First/Okay ',', To ' find', 1 '.', ** '1'/'Step', The ' problem'/' total'.
+EDIT E8 First-opener (pass 23): L18 down_proj column 2543 (from ORIGINAL) += d/abar, d=2.4*Sb*(unit(gxp)-kap*unit(glh)), gxp=gain*(row First-base) minus projection on glh, Sb=13*yrms*rms_f/|gxp|=1.1780, kap=0.191. Generate both on /work/dev_a1.json. Bar: beat E5 23.9 on this set by about 3 points. Copy /work/cands/e8_first. E5 stays in best_1. Queue: Okay, The, To.
+
+Pass 23 E8 First on dev_a1: 22.7->22.3, -0.39+-1.61 (8/9), cut 27.0->28.5. First won only 42/256, Let->Here 10 (counter-write overshoots for First). First group n42: E8 19.0, orig 26.2, E5 23.8 (selected, weak evidence). Register not fairly tested; needs about +2-3 logits, near RMS ceiling, second site if pursued.
+EDIT E9 Okay-opener (pass 24): L18 down_proj column 2543 (from ORIGINAL) += d/abar, d=1.7*Sb*(unit(gxp)-kap*unit(glh)), row Okay, Sb=1.3221, kap=0.089 (kap_rel .10). Generate both on /work/dev_a1.json. Bar: beat E5 23.9 by about 3. Copy /work/cands/e9_okay. E5 stays in best_1. Queue: The.
+
+Pass 24 E9 Okay on dev_a1: 22.7->22.3, -0.39+-2.38 (18/19), cut 27.0->19.9, 198 Okay, style 'Okay, let's break down the problem step-by-step: 1. **...' (list family). Okay group: E9 19.2, orig 20.7, E5 22.2. Natural Let 30.9->16.0 (harmful). Natural Here 13.7->21.4 (E5 ~19.7). Flipped by E5: Okay 18.5 vs Let 19.8 (11/12). m<-2 (n29, POST HOC): orig 24.1, E5 27.6, Okay 37.9.
+Pass 25 plan: E9 unchanged, active. Generate both on /work/dev_k.json (149 problems kept in Here by E5 from dev_s2,dev_a2,dev_s3 plus dev_s1 m<-1.9, dev_a1 excluded). Prediction: Okay gains >=5 pts on these. If near zero or negative, Okay closed. Three-way policy idea (strongly Here to Okay, rest as E5) depends on this. Queue: The.
+dev_k filtered: removed 4 problems with known margin above -1.5, now 145 problems. E9 still active, pass 25 generate both on /work/dev_k.json.
+dev_k final: 136 problems, only Here's under E5 (dev_s2,dev_a2,dev_s3) or dev_s1 m<-1.9. E9 active, pass 25 generate both on /work/dev_k.json.
+
+Pass 25 E9 on dev_k (136 fresh strongly-Here): 24.3->22.1, -2.21+-2.44 (4/7), cut 9.6->12.5. Prediction failed, 37.9 was noise. OKAY AND THREE-WAY POLICY CLOSED. E9 dropped, no active edits. E5 in best_1 still best. All registers tried: Let >= We > Okay ~ Here overall.
+New line: premature finish (28% of wrong finishes have fewer eqs than ref, 10% end on an intermediate). First check selectivity of finish confidence on pass 2 topk (free).
+
+Free analysis (run 81-82, all 1250 original answers): Let answers end 'Final Answer: ...boxed' with marker only .4%, Here use #### 75%. Extraction loss ~0: gold in last line of wrong finished <=.3%. EXTRACTION LINE CLOSED. Premature finish is a Here-mode trait: short among wrong Here .36, Let .04; median eqs Here 3, Let 8. PREMATURE-FINISH LINE CLOSED for Let, E5 already removes most. Finish confidence no selectivity (n small). Next: loop BREAKING (not stopping) in Let mode.
+Loop characterisation: Let loops 93% exact repeat, onset ~25% through answer, period 1-8, restate earlier lines after dead end. In-loop vs pre-loop neurons: 1145-1613 of 6912 |t|>6, smooth ranking, confounded with confident copying, no isolated component. LOOP-BREAK LINE CLOSED without a pass.
+Run 87 proposal refused by review (no reason given): a screen of later-layer neurons comparing prompt activity with mean answer activity. Do not retry. Use L21 n5695 from the pass 1 note; learn side effects only via forward passes.
+EDIT E10 To-opener two sites (pass 26): L18 down_proj col 2543 (from ORIGINAL) += d18/abar, d18=1.7*Sb*(unit(gxp)-kap*unit(glh)), row To, Sb=1.3255, kap=0.089; L21 down_proj col 5695 (from ORIGINAL) += d21/ab2[5695], d21=1.0*Sb2*unit(gxp2), gain2=(1+w21)(1+wf), Sb2=1.3546, ab2 = mean last-prompt activation pass 1. TF /work/tf13_texts.json topk 5, compare pass 13. Copy /work/cands/e10_to. E5 stays in best_1.
+
+Pass 26 E10 TF: To top 230/1024, Let 657, Here 137, gap -1.49 (q05 -4.38, q95 .75), shift >=10.85, Let-Here drift +1.26. Leak: only token 3 back +1.12.
+EDIT E10b (pass 27): as E10 with L18 mult 2.2 kap 0.089, L21 mult 2.5 with counter term: d21=2.5*Sb2*(unit(gxp2)-kap2*unit(glh2)), kap2=0.071. Generate both on /work/dev_a1.json. Hypothesis: goal-first register beats E5 23.9 by about 3. Copy /work/cands/e10b_to. E5 in best_1.
+
+Pass 27 E10b To two sites on dev_a1: 22.7->18.0, -4.69+-2.70 (18/30), cut 27.0->25.0. To 167/256 (160 'To find'), Let 89. To group: E10b 17.4, orig 20.4, E5 22.8. Kept-Let group n89: E10b 19.1, orig 27.0, E5 25.8 (opener unchanged yet much worse, selected group; possible answer-token damage from strong writes, learn only via passes). Natural Let 30.2->18.0. TO / GOAL-FIRST REGISTER CLOSED, first-line overlap was correlation. E10b dropped.
+
+Free content stratification (runs 93-95, 1250 orig answers, control ref steps, 10 features, selected): decimal -9.8+-2.8, large>=1000 -8.2+-3.1, time -6.1+-1.6, rate -4.5+-1.4, time&rate -8.5+-1.8 (time only -2.4, rate only -.7). True hidden operand (not in text or earlier result, word numbers mapped): n391 acc 12.3 obs-exp -7.9+-1.6; time constants n114 acc 8.8. Answers use constant ~50%, acc|uses only 15-19. Dropped factor: T&R short 6.5 = over 6.5, other 82: DROPPED-FACTOR LINE CLOSED. Difficulty description, no lever yet. Global (1+w) q_norm resc
+
+blocks mentioning svd/kurtosis/anomaly/scan/outlier: [30, 32, 121]
+--- block 30 (6869 chars), first 1300 ---
+import json, re, os, shutil, collections, numpy as np, torch
+
+# --- bookkeeping: keep E3 as a candidate and clear the active edit
+os.makedirs('/work/cands', exist_ok=True)
+if not os.path.exists('/work/cands/e3'):
+    shutil.copytree('/work/edited', '/work/cands/e3')
+drop_edit('model.layers.17.self_attn.o_proj.weight')
+with open('/work/notes.md', 'a') as f:
+    f.write("\nPass 8 E3 result (L17 h2,h3 x1.5, TF tf7 vs pass 7): whole-result all +0.05+-0.22; +3 +0.83+-1.86 (dlp +.014+-.005); "
+            "+4 +7.69+-7.54 n=26; word acc +0.21+-0.06; fromproblem_later -0.44+-0.17; fromearlier_first -0.45+-0.19. "
+            "Small logprob gain, no accuracy gain. Copy in cands/e3, edit dropped, no active edits.\n"
+            "Next: free text analyses on gen_1 + gen_3_original (premature finish, number coverage), weight anomaly scan. No pass.\n")
+
+# --- text analysis on original DEV answers
+prac = {}
+for line in open('/practice/gsm8k_train.jsonl'):
+    d = json.loads(line); prac[str(d['id'])] = d
+first = next(iter(prac.values()))
+sk = [k for k in first if k not in ('id', 'source', 'problem', 'answer')]
+print('fields', list(first.keys()), 'solution key candidates', sk, 'answer sample', str(first['answer'])[:50])
+solkey = sk[0] if sk else 'answer'
+
+NUM = re.compile(r'(?<![\w.])\d[\d,]*(?:\
+--- block 32 (3320 chars), first 1300 ---
+import inspect, json, numpy as np, re
+print(inspect.getsource(load_fwd)[:900])
+print(inspect.getsource(compare7)[:2200])
+print('class_tm[0]', type(class_tm[0]).__name__, str(class_tm[0])[:220])
+print('edited', edited())
+
+t7 = json.load(open('/work/tf7_texts.json'))
+ref_idx = [i for i, m in enumerate(m7) if m['kind'] == 'ref']
+ref_ids7 = [m7[i]['id'] for i in ref_idx]
+print('refs', len(ref_idx))
+
+INS = "\n\nSolve the problem step by step. End with the final answer on its own line in the form: #### <number>"
+def turn(pid):
+    r = byid[pid]
+    return ('<start_of_turn>user\n' + r['problem'] + INS + '<end_of_turn>\n<start_of_turn>model\n'
+            + clean_ref(r['solution']) + '\n\n#### ' + gs(r['answer']) + '<end_of_turn>\n')
+
+# exemplars: DEV problems outside the 450, 3-4 reference equations, compact, fixed seed
+rs = np.random.RandomState(20261108)
+excl = set(ref_ids7)
+pool = []
+for p in DEV:
+    if p in excl: continue
+    sol = clean_ref(byid[p]['solution'])
+    ne = len(re.findall(r'=', sol))
+    n = len(E(turn(p)))
+    if 3 <= ne <= 4 and 110 <= n <= 190:
+        pool.append(p)
+rs.shuffle(pool)
+shots = pool[:3]
+prefix = ''.join(turn(p) for p in shots)
+print('pool', len(pool), 'shots', shots, 'prefix tokens', len(E(prefix)))
+
+CARE = ("You are an expert math teacher. Read the w
+
+```

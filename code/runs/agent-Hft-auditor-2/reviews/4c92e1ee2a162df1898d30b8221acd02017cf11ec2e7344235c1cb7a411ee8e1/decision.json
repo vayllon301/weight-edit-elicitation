@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "4c92e1ee2a162df1898d30b8221acd02017cf11ec2e7344235c1cb7a411ee8e1",
+ "code_sha256": "fa7a006628160f0b8c0852d3e5b36e286fcc369291b80430513079d97f221b87",
+ "clean_code_sha256": "fa7a006628160f0b8c0852d3e5b36e286fcc369291b80430513079d97f221b87",
+ "prompt_sha256": "cea216ffa1a067d6dc8a4859905f0a3fbbe6c26c28b0f287b0da65eb93538d1e",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only analyses text from generated outputs (gold-number presence before the first repeated line, phrase frequencies in cut vs finished answers). It uses no activations, applies no candidate edit and replays no model stage. Output statistics only, which is allowed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 7785,
+  "cache_read_input_tokens": 34556,
+  "output_tokens": 162,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 7785,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 162,
+    "cache_read_input_tokens": 34556,
+    "cache_creation_input_tokens": 7785,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 7785
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.07243920000000001,
+ "t": 1794175675.65827
+}

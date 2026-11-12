@@ -1,0 +1,21 @@
+OUTPUT of Python run 47 of at most 300:
+```
+edited []
+tf4 entries 984 keys ['kind', 'id', 'plen', 'tlen'] kinds Counter({'ref': 800, 'loop': 184})
+operator token ids 16 Counter({'mul': 6, 'sub': 4, 'div': 4, 'add': 2})
+
+operator confusion on reference tokens (rows: reference, cols: model best operator among top 5)
+ref       add    sub    mul    div   none    recall
+add       652     59     38     14     17   0.836
+sub        22    340     11      9     10   0.867
+mul        42     47    681     81     57   0.750
+div         8     56     45    412     21   0.760
+
+finished answers n 560
+op | acc when ref uses it (n) | acc when not (n) | answer uses it when ref does: correct, wrong | when ref does not: wrong
+ add   24.3 (321) |  29.3 (239) | 0.923 0.757 | 0.373
+ sub   28.0 (207) |  25.5 (353) | 0.948 0.638 | 0.171
+ mul   26.4 (367) |  26.4 (193) | 0.670 0.578 | 0.366
+ div   20.0 (230) |  30.9 (330) | 0.696 0.511 | 0.105
+
+```

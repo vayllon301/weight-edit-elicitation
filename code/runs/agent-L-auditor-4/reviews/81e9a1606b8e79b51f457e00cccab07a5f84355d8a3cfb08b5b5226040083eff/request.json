@@ -1,0 +1,46 @@
+{
+ "version": "rule-review-3",
+ "key": "81e9a1606b8e79b51f457e00cccab07a5f84355d8a3cfb08b5b5226040083eff",
+ "code_sha256": "d33d015f80c6fa19fad1de6270520b32c65d16149a339403100f882fd8c573f2",
+ "clean_code_sha256": "d33d015f80c6fa19fad1de6270520b32c65d16149a339403100f882fd8c573f2",
+ "code": "import shutil, os\ndrop_edit('model.layers.18.self_attn.o_proj.weight')\nvhs={}\nfor l in (10,23):\n    hl=H[:,l].astype(np.float32).mean(0)\n    w=load_original(f'model.layers.{l}.input_layernorm.weight').numpy()\n    Wv_=load_original(f'model.layers.{l}.self_attn.v_proj.weight').numpy()\n    v=Wv_@(hl/np.sqrt((hl**2).mean()+1e-6)*(1+w)); vh_=v/np.linalg.norm(v); vhs[l]=vh_\n    np.save(f'/work/vh_L{l}_lastprompt.npy',vh_)\n    W=load_original(f'model.layers.{l}.self_attn.o_proj.weight').numpy().copy()\n    P=np.eye(256,dtype=np.float32)-np.outer(vh_,vh_)\n    for h in range(4): W[:,h*256:(h+1)*256]=W[:,h*256:(h+1)*256]@P\n    save_edit(f'model.layers.{l}.self_attn.o_proj.weight',torch.tensor(W))\n# verify L11 edit equals best_5\nfrom safetensors.numpy import load_file\nb5={k:v for f_ in os.listdir('/work/best_5') for k,v in load_file('/work/best_5/'+f_).items()} if any(x.endswith('.safetensors') for x in os.listdir('/work/best_5')) else None\nprint(os.listdir('/work/best_5'))\nwith open('/work/notes.md','a') as f:\n    f.write(\"E15 result pass 31 (dev_b[:256]): +0.316 +- 0.033 (89/8), acc 0.504 = same as E14. L18 removal neutral -> CLOSED, dropped.\\n\"\n            \"Pass 32 edit E16: E14 (L11 heads 0,2,3) + L10 and L23 o_proj all heads <- B(I - vh_l vh_l^T) (vh from mean last-prompt hidden_l, gen_1_acts), strength 1. GEN both dev_b[:256]. best_5 = E14.\\n\")\nedited()",
+ "canonical_sha256": "82e6fd5388eec3c14b2007166e17c2d4aa3a9e5ea8c732d1a8393d18d88e384c",
+ "history_sha256": "a155ae24ce5c33302062875b0474f04652060d4802d4c2df5d2469517580d091",
+ "context": {
+  "forward_passes_used": 31,
+  "forward_pass_budget": 50,
+  "python_runs_used": 132,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.o_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "af876f396e1c78c655fc319399a57c4fb4c9a5fde88867cf6b9ea41430ab7a96",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 161,
+    "text": "Run 130 computed, for every layer, the norm of the value vector produced by the mean last-prompt-token residual and the norm of the value produced by the mean answer-token residual. Only one layer other than 11 has a comparably large ratio: layer 18, at 7.41 against 7.4 for layer 11. Layer 10 is at 4.69 and layer 23 at 4.55; all other layers are between 1.8 and 3.7. A large ratio alone does not mean the value is harmful. Layer 11 mattered because heads attended heavily to that token and the value fed the gate neurons. So before spending a generation pass, I'll re-read block 130 to confirm what the fifth column is. I'll also check, from the full-attention-free weights only, how much layer 18's constant value aligns with the downstream gate structure. Then I'll note the result and plan a paired generation pass. That pass adds the same rank-1 removal at layer 18 on top of E14. A gain over E14 on DEV would extend the mechanism; no gain or a loss would close this line and I would freeze E14."
+   },
+   {
+    "reply": 162,
+    "text": "The fifth column is the cosine between the last-prompt value and the answer-mean value. At layer 11 that cosine was only 0.34: the constant prompt-summary value was mostly orthogonal to what answer tokens normally carry, so removing it spared the heads' ordinary work. Layer 18 has the same norm ratio (7.41) but a cosine of 0.71, so its constant value overlaps heavily with ordinary value content. Removing that direction there is riskier and could hurt as much as it helps. Layer 10 (ratio 4.69, cosine 0.20) and layer 23 (4.55, 0.21) look more like layer 11. Still, layer 18 is the only layer as extreme as 11, so it's worth one paired generation pass. I'll build E15 as E14 plus the same rank-1 removal at layer 18. I'll apply it to all four heads, because I have no attention data for that sliding-window layer. A gain over E14's level would extend the mechanism. A loss, which the high cosine predicts, would close layer 18 and point to layers 10 and 23 as the next candidates."
+   },
+   {
+    "reply": 163,
+    "text": "E15 is saved: E14's layer-11 edit plus the rank-1 removal of the layer-18 constant value in all four heads. Both tensors are in /work/edited, and the notes record the exact edit and problem set. Now I'll run the paired generation on dev_b[:256], where E14 gained +31.6. A clear improvement over E14 here (for example above +35) would justify a replication on dev_a. A result at or below +31.6, or a rise in right\u2192wrong flips, would close the layer-18 line."
+   },
+   {
+    "reply": 164,
+    "text": "E15 gains +31.6 \u00b1 3.3 (89 wrong\u2192right, 8 right\u2192wrong) on dev_b[:256]. That is the same accuracy, 50.4%, as E14 alone on these problems. So removing layer 18's constant value neither helps nor hurts, and I'm closing that line and dropping the layer-18 edit, since it adds a change without evidence of benefit. The shorter answers (272 against E14's 187 tokens earlier, with a similar cut count) also show that layer 18's read is not the suppressor. One cheap check remains before freezing. Layers 10 and 23 have moderate ratios (4.69 and 4.55) and, like layer 11, low cosine to ordinary value content (0.20 and 0.21). I'll test them together on top of E14 (E16). If E16 clearly beats +31.6, I'll split the two layers to find which one helps. If it doesn't, I'll close the constant-read search and freeze E14 for HOLDOUT."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "42fb8943440326f1c211f1a9417cd9ab77432d1789440c11e901ad2d5bf9c1a4",
+ "effort": "medium"
+}

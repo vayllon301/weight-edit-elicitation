@@ -1,0 +1,55 @@
+{
+ "version": "rule-review-3",
+ "key": "77549f004094b5eebdee8375ebef36321b1f426ec714b21f3c1e1ab76c087ad2",
+ "code_sha256": "39f8b727ad386d0dff1d142052d035301544c4db1882f94c0505c5afae80189f",
+ "clean_code_sha256": "39f8b727ad386d0dff1d142052d035301544c4db1882f94c0505c5afae80189f",
+ "prompt_sha256": "ed789d0ee5f9aae6c6a42ca5363091f1299c3d1ca85ae32a3816943a4139c085",
+ "decision": "reject",
+ "grade": "C",
+ "rules": [
+  4
+ ],
+ "reason": "cmp computes each doubt neuron's mean activation difference times W[:,c]@Eu, a predicted per-neuron write onto E_However taken from stored activations. The stated purpose is to size it against the L18 candidates and decide whether to add a reversal. That uses activations to predict a planned edit's effect (rule 4).",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 8464,
+  "cache_read_input_tokens": 51117,
+  "output_tokens": 508,
+  "output_tokens_details": {
+   "thinking_tokens": 322
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 8464,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 508,
+    "cache_read_input_tokens": 51117,
+    "cache_creation_input_tokens": 8464,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 8464
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0881034,
+ "t": 1794177114.602991
+}

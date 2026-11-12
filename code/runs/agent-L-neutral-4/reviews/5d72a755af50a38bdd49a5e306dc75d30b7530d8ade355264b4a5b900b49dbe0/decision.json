@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "5d72a755af50a38bdd49a5e306dc75d30b7530d8ade355264b4a5b900b49dbe0",
+ "code_sha256": "d6489232f7bd747acfc3f2718469cbd940487cba0af3ade9ac15aeb6746fef23",
+ "clean_code_sha256": "d6489232f7bd747acfc3f2718469cbd940487cba0af3ade9ac15aeb6746fef23",
+ "prompt_sha256": "d4366c0e77b8ca1bbc3bc95e9359adebe74f69748ad79a41b72cb31e274ec5d4",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only computes the cosine between two direction vectors, vc and dclean, both built from original-model activation statistics. This is a statistic of directions. It applies no edit to samples, scores no candidate and replays no model stage.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 8775,
+  "cache_read_input_tokens": 67708,
+  "output_tokens": 150,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 8775,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 150,
+    "cache_read_input_tokens": 67708,
+    "cache_creation_input_tokens": 8775,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 8775
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0867496,
+ "t": 1794172678.434033
+}

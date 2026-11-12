@@ -1,0 +1,5 @@
+The mode direction is well-defined: d' along Let-minus-Here reaches about 2.7 from layer 14 onward, so it's a real axis that comes from the mid-layers and persists. The write is large at that one token, comparable to the whole MLP output there (|dy|/|y| = 0.86). Since the post-MLP RMSNorm rescales its input, the effective strength will be a bit under the nominal 1.5, around 1.1 × T, which should still cover the 2.9 log-odds gap for most problems. The column norm rose from 0.20 to 0.83, so if this neuron does fire elsewhere, the side effects would show up in this pass. I'm now running "both" on 256 unused DEV problems. Prediction: most Here answers become Let, and accuracy rises. Refutation would be flips with no accuracy gain, meaning mode was only a marker of easier problems.
+
+```forward
+{"type": "generate", "model": "both", "problems_file": "/work/dev_s1.json"}
+```

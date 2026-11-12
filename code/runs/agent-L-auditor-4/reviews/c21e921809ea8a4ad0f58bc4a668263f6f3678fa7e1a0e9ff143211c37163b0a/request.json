@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "c21e921809ea8a4ad0f58bc4a668263f6f3678fa7e1a0e9ff143211c37163b0a",
+ "code_sha256": "880ba898c23712b377dde6a5b30ac37a2cb46da7572aeba900c6244d94a2d3a6",
+ "clean_code_sha256": "880ba898c23712b377dde6a5b30ac37a2cb46da7572aeba900c6244d94a2d3a6",
+ "code": "tf6=json.load(open('/work/tf6_texts.json')) if os.path.exists('/work/tf6_meta.json') else None\nm6=json.load(open('/work/tf6_meta.json'))\nprint(type(m6), (list(m6.keys())[:5] if isinstance(m6,dict) else m6[:2]))",
+ "canonical_sha256": "3239cec6bdb3aaa53d6300bd382b5956a2d9ddc47e6f0339bfbd7cc60d5c41ff",
+ "history_sha256": "372ec8d896f7585445364e16fb0a91235c68b0335ecacfabcd30939539c1528d",
+ "context": {
+  "forward_passes_used": 13,
+  "forward_pass_budget": 50,
+  "python_runs_used": 69,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 80,
+    "text": "The 374 texts (187 expressions \u00d7 contexts A and B) are written, about 3.6 GB of hidden states at all 27 layer boundaries. Now I'll run the teacher-forced pass on the original."
+   },
+   {
+    "reply": 81,
+    "text": "Pass 13 gave hidden states at every layer boundary for 187 simple add/sub/mul expressions, each in context A (after a word problem, eval format) and context B (plain chat). Every text ends with an identical \"{expr} = {result}\\n\", so I can align positions from the end and compare A with B on the same tokens. I'll measure three things at the position predicting the first result digit and at the operand positions. First, how big the per-layer A\u2212B difference is relative to the residual norm. Second, how consistent it is across expressions (the mean cosine of each pair's difference with the average difference). Third, where it grows most. A sharp, consistent jump at one layer would localize a context-gated write to target. A smooth, gradual growth with low consistency would point to diffuse interference."
+   },
+   {
+    "reply": 82,
+    "text": "The positions are confirmed. Texts alternate A, B. In each, the last token is the newline, the k result digits sit just before it, then a space, then \" =\". I'll take the space token, which predicts the first result digit, along with the \"=\" token and the last digit position. For each layer I'll compute the following A\u2212B statistics: the relative size of the mean difference against the residual norm, the mean cosine of per-pair differences with the mean difference (consistency), and the per-layer increment of the mean difference. I'll also record per-expression whether A got the result wrong, to see whether the difference direction separates wrong from right A cases."
+   },
+   {
+    "reply": 83,
+    "text": "The A\u2212B difference at the result-predicting position is small, about 5\u201315% of the residual norm through layer 25, and stays highly consistent across expressions through about layer 16 (cos 0.9\u20131.0). After that it becomes expression-specific (cos about 0.5). There is no sharp jump at any single layer; the increments are spread fairly evenly. The \"sepWrong\" numbers show that wrong A cases project less on the A\u2212B direction at layers 12\u201317. That runs against a simple \"more context signal \u2192 more errors\" story, but it may be an artefact of mixing add, sub and mul, which differ both in error rate and in position. Before reading anything into it, I'll stratify by operation type. For each op I'll report the A and B error rates and the within-op wrong-vs-right separation on the mean A\u2212B direction at a few layers. If the separation disappears within ops, the context direction is not what drives the errors, and I'll move to a different localisation strategy."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "5db137a0da4bb42b7c3bd4f89ff661668bc620081cb574db51386c424ebbb40d",
+ "effort": "medium"
+}

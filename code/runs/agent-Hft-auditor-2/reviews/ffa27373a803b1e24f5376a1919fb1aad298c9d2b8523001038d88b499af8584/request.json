@@ -1,0 +1,87 @@
+{
+ "version": "rule-review-3",
+ "key": "ffa27373a803b1e24f5376a1919fb1aad298c9d2b8523001038d88b499af8584",
+ "code_sha256": "9fe51ef1fa3e91e597065222c0d1b2f57d7ae8d45d2bb02ced8fcf4aa4d95568",
+ "clean_code_sha256": "9fe51ef1fa3e91e597065222c0d1b2f57d7ae8d45d2bb02ced8fcf4aa4d95568",
+ "code": "D={}\nfor l in [10,12,14,16,18,20,22,24,26]:\n    H=np.load(d+f'hidden_{l}.npy', mmap_mode='r')\n    X=np.stack([H[i,pos[i]].astype(np.float32) for i in range(n)])\n    D[l]=X[lab==1].mean(0)-X[lab==0].mean(0)\nu26=D[26]/np.linalg.norm(D[26])\nout=[]\nfor l in [10,12,14,16,18,20,22,24]:\n    inc=D[l+2]-D[l]\n    out.append((f'{l}->{l+2}', round(float(inc@u26),0), round(float(np.linalg.norm(inc)),0)))\nprint('proj of D10 on u26', round(float(D[10]@u26),0), 'total', round(float(D[26]@u26),0)); out",
+ "canonical_sha256": "8e37ca0fe6f37a7548a2809ce96c5d2899e05b4156623ec46faf072e9cc64fb8",
+ "history_sha256": "61888b9a34dc01ee45219e053200d7d643d8aed0b3a6c6dd4fac48e22802c9fe",
+ "context": {
+  "forward_passes_used": 23,
+  "forward_pass_budget": 50,
+  "python_runs_used": 109,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.17.mlp.down_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "d01467e8d2af4340a48b0f96575bc63a9b1cdf397ed5429232aadf5fc1296b3e",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "for l,n in [(16,180),(16,3729),(17,3621)]:\n    Dl=load_original(f'model.layers.{l}.mlp.down_proj.weight').numpy()\n    cd=float(d@Dl[:,n]/np.linalg.norm(Dl[:,n]))\n    a=ML[:,l,n].astype(np.float32)\n    print(l,n,'cos(col,d)',round(cd,3),'abs write along d reg0',round(float(a[reg==0].mean()*cd),3),'reg1',round(float(a[reg==1].mean()*cd),3))",
+    "canonical_sha256": "b055fdffe254c8c1a39d14295740e40814857834e7e21de030a934d77c27a9c3",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "sel={}\nfor L in (16,17):\n    A=np.load(f'/work/how_act_{L}.npy'); a1,a0=A[labs==1],A[labs==0]\n    dd=(a1.mean(0)-a0.mean(0))/np.sqrt(0.5*(a1.var(0)+a0.var(0))+1e-6)\n    W=load_original(f'model.layers.{L}.mlp.down_proj.weight').numpy()\n    cs=(W.T@Eu)/(np.linalg.norm(W,axis=0)+1e-9)\n    s=np.sign(a1.mean(0))*cs\n    sel[L]=[int(n) for n in np.where((np.abs(dd)>1.5)&(s>0.1))[0]]\ndetail={L:[(n,) for n in sel[L]] for L in sel}\nW16=load_original('model.layers.16.mlp.down_proj.weight').clone(); W16[:,3729]=0\nfor n in sel[16]: W16[:,n]=0\nsave_edit('model.layers.16.mlp.down_proj.weight',W16)\nif sel[17]:\n    W17=load_original('model.layers.17.mlp.down_proj.weight').clone()\n    for n in sel[17]: W17[:,n]=0\n    save_edit('model.layers.17.mlp.down_proj.weight',W17)\nwith open('/work/notes.md','a') as f:\n    f.write(f\"\"\"\nPass 10/11: P(However) at doubt decisions .79 (ctrl 0). However-embedding proj of cut-ctrl diff: after L15 135, after L16 363, after L17 470 -> written by layers.16 (+228) and .17 (+107).\nDoubt neurons (|d|>1.5, sign(act)*cos(col,E_However)>.1): L16 {sel[16]}, L17 {sel[17]}.\nCURRENT EDIT: L16 down_proj cols 3729 + {sel[16]} = 0; L17 down_proj cols {sel[17]} = 0 (from original).\nPass 12 plan: TF EDITED on /work/tf9_texts.json, topk20 + token_logprobs: check P(However) at decision pos drop.\n\"\"\")\nsel, edited()",
+    "canonical_sha256": "a644e63edf9238e1ae0cbbfbfb816a2805fe001c41c86a0f1960aba37d03d316",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "with open('/work/notes.md','a') as f:\n    f.write(\"\\nAnswer-writing sabotage CLOSED: pred==last body number 272/281 wrong; gold in text 45/281 (incidental).\\nNext: rank R0-pushing neurons L12-20 (actdiff R0-R1 x gain-scaled col proj on regime dir) for ablation.\\n\")\nout={}\nallsc=[]\nfor L in range(12,21):\n    h=np.asarray(H1[:,L+1,:],dtype=np.float32).copy(); h[:,[1038,1125]]=0\n    d=h[regs==1].mean(0)-h[regs==0].mean(0); u=d/np.linalg.norm(d)\n    W=load_original(f'model.layers.{L}.mlp.down_proj.weight').numpy()\n    g=1+load_original(f'model.layers.{L}.post_feedforward_layernorm.weight').numpy()\n    p=((W*g[:,None]).T@u)            # per neuron\n    a=np.asarray(M1[:,L,:],dtype=np.float32)\n    ad=a[regs==0].mean(0)-a[regs==1].mean(0)\n    sc=ad*p                          # negative = drives toward R0 differentially\n    o=np.argsort(sc)[:5]\n    out[L]=[(int(n),round(float(sc[n]),2),round(float(a[regs==0,n].mean()),2),round(float(a[regs==1,n].mean()),2)) for n in o]\n    allsc.append((L,sc))\ntot={L:(round(float(sc[sc<0].sum()),1),round(float(np.sort(sc)[:10].sum()/sc[sc<0].sum()),2)) for L,sc in allsc}\nout, tot",
+    "canonical_sha256": "292158a6f9eb5add9b71ffd2ec5f447d7fc1e84d8b78fb32972b1439ba6cd1bc",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "W16=load_original('model.layers.16.mlp.down_proj.weight').clone()\nfor n in [3729,221,723,992,1246,4258,5725]: W16[:,n]=0\nsave_edit('model.layers.16.mlp.down_proj.weight',W16)\nW17=load_original('model.layers.17.mlp.down_proj.weight').clone()\nfor n in [3643,4150]: W17[:,n]=0\nsave_edit('model.layers.17.mlp.down_proj.weight',W17)\nwith open('/work/notes.md','a') as f:\n    f.write(\"\"\"\nPass 10/11: P(However) at doubt decisions .79 (ctrl 0). However-emb proj of cut-ctrl diff: after L15 135, after L16 363, after L17 470 -> written by layers.16 (+228) and .17 (+107).\nDoubt neurons (|d|>1.5 & |cos(col,E_However)|>.1, all sign-consistent): L16 221,723,992,1246,4258,5725; L17 3643,4150.\nCURRENT EDIT (E2): L16 down_proj cols 3729,221,723,992,1246,4258,5725 = 0; L17 down_proj cols 3643,4150 = 0 (from original).\nPass 12 plan: TF EDITED on /work/tf9_texts.json, topk20 + token_logprobs: P(However) at decision pos.\n\"\"\")\nedited()",
+    "canonical_sha256": "3e18bbe7187da29b79d747832f318731afaca4e95810d86b59e30507246006d0",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 134,
+    "text": "This is HOLDOUT pass 4 of 4 for E5, on hold_3."
+   },
+   {
+    "reply": 135,
+    "text": "The fourth HOLDOUT set gives +6.2 \u00b1 2.6 (31 answers went wrong to right, 15 right to wrong). All four sets are positive: +0.4, +3.1, +2.7 and +6.2. This block computes the pooled paired gain and its standard error from the per-problem grades of passes 20 to 23, 1,024 problems per model. It also tallies the failure types pooled."
+   },
+   {
+    "reply": 136,
+    "text": "HOLDOUT confirms E5. Pooled over 1,024 problems, the paired gain is **+3.1 \u00b1 1.3 points** (102 answers went wrong to right, 70 right to wrong).\n\nThe failure accounting explains both sides of the result:\n\n| | Original | E5 |\n|---|---|---|\n| Wrong finished answers | 325 | 252 |\n| Wrong answers cut off by loops | 109 | 150 |\n\nThe longer R1 mode loses about 41 answers to loops, which offsets more than half of the 73-answer improvement in finished answers. E5 stays saved as the candidate (/work/edited = /work/best_2).\n\nWith 27 passes left, I'll see whether the remaining loss has a fixable surface on DEV only (E5 outputs from passes 16 and 19). This is text reading only, nothing about weights. For each E5 cut answer I'll take the first repeated line and tally its opening words. I'll also count re-derivation phrases (\"However\", \"But\", \"Wait\", \"re-read\", \"Let's re-\", \"Alternatively\", \"Note that\") in E5 correct, wrong-finished and cut answers, with the original for comparison.\n\n- **Fixable surface:** one opener family dominates the loop restarts, or a re-derivation phrase is much more common in failing answers. A further neuron screen like the one for \"However\" would then make sense.\n- **No fixable surface:** the openers are diverse. Loops are then generic repetition, and I'd stop."
+   },
+   {
+    "reply": 137,
+    "text": "The loops in E5 do not share one surface form. They restart with generic setup lines (\"We are\u2026\", \"The total\u2026\", \"The number\u2026\"). Re-derivation phrases such as \"Let's re\u2026\" and \"re-read\" appear in 14\u201323% of E5 cut answers, but no single opener dominates.\n\nSo there is no second \"However\"-like token to target. There may still be units that write the \"restart\" decision itself. For the doubt token, a screen worked: neurons whose activation differs at the decision position and whose output column points the right way.\n\nThat screen needs MLP activations, which pass 17 did not record. One pass can hold only about 3 layers of them for these 174 texts, so I first need to choose which layers. From the per-group mean hidden states of pass 17, I'll measure how much each 2-layer block adds to the final (layer-26) loop-minus-control direction. That shows where the restart signal is written.\n\n- **Signal concentrated in one or two blocks:** run the MLP-activation pass on those layers.\n- **Spread evenly:** close the loop line and keep E5."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "74e7456faef47306ac9cb41ab979a687f9c59a8f0246a3d5a6107cabda39257c",
+ "effort": "medium"
+}

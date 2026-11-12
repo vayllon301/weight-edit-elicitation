@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "813b298a0fc0d36e97881c5c2c33e742b2dce2887a69d46cf37ab22e0c43eed5",
+ "code_sha256": "21f7c923d1379537f355b277c33d779012c707fc343e7d642e8a7257ec923e57",
+ "clean_code_sha256": "21f7c923d1379537f355b277c33d779012c707fc343e7d642e8a7257ec923e57",
+ "prompt_sha256": "e33640ef2a75653860f17710757ab915b0b7ad5b99958462a5dfcb63b8d7552e",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only parses text from original-model generations in allo, comparing gold with last line, previous line and body and tabulating grades by mode and ending type. It uses no activations, weights or candidate edits, replays no model stage, and no saved edit is active.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 100400,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 454,
+  "output_tokens_details": {
+   "thinking_tokens": 296
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 100400,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 454,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 100400,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 100400
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.812288,
+ "t": 1794080505.980005
+}

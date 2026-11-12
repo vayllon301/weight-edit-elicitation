@@ -1,0 +1,16 @@
+OUTPUT of Python run 134 of at most 300:
+```
+236 4174 5772 150 300 230
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    value = eval(compile(last, filename, "eval"), g)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/blocks/block_134.py", line 12, in <module>
+    pd.DataFrame([stats49(lp12),stats49(lp37)],index=['C(-1.5)','CI(+1.5)']).to_string()
+                  ^^^^^^^^^^^^^
+  File "/work/blocks/block_134.py", line 3, in stats49
+    dfin=np.mean([np.nanmean(lpX[i,plen[i]:lens8[i]-1]-lp8[i,plen[i]:lens8[i]-1]) for i in fin_idx])
+                                   ~~~~^^^
+IndexError: index 300 is out of bounds for axis 0 with size 230
+
+```

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "ee8c42bcb6fc171b9cf70258083639eda04d9f0eaebd7c8eb807a6bc60ef6833",
+ "code_sha256": "93c0038c415b89ce098b796a86d55020aff3afd34a6e6bb36cac29fa3220c0a9",
+ "clean_code_sha256": "93c0038c415b89ce098b796a86d55020aff3afd34a6e6bb36cac29fa3220c0a9",
+ "prompt_sha256": "94824ef93f0bda40b8fdc3baaca63a3cf96d0fa4c7f067198ae0963782f8b94f",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block runs an SVD/PCA on the original model's answer-mean residuals (H from gen_1, pass 1) after centering and leaving out the outlier dims 1038/1125. It reports each PC's AUC against correctness and a bimodality coefficient to find components. No edit exists or is applied, and no model stage is replayed, so this is a statistic of returned activations.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 5680,
+  "cache_read_input_tokens": 21020,
+  "output_tokens": 487,
+  "output_tokens_details": {
+   "thinking_tokens": 284
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5680,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 487,
+    "cache_read_input_tokens": 21020,
+    "cache_creation_input_tokens": 5680,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 5680
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.059392,
+ "t": 1794174614.448579
+}

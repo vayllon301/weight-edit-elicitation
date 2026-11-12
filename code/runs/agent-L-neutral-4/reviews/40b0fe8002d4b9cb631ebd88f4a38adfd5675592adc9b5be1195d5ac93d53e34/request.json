@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "40b0fe8002d4b9cb631ebd88f4a38adfd5675592adc9b5be1195d5ac93d53e34",
+ "code_sha256": "f535972038ac3845c210cd0c40fbf9238b2f5f7f90722ae3a004a04befe9e6a0",
+ "clean_code_sha256": "f535972038ac3845c210cd0c40fbf9238b2f5f7f90722ae3a004a04befe9e6a0",
+ "code": "def clean_sol(s, a):\n    s = re.sub(r'<<[^>]*>>', '', s)\n    return s.strip() + f\"\\n#### {a}\"\nown_cor = [g for g in G if g['correct']]\ndev_rest = [i for i in DEV if i not in set(g['id'] for g in own_cor)][:1024-32-len(own_cor)]\nscreen_texts = texts + [fmt.format(problem=prob[g['id']]['problem']) + g['text'] for g in own_cor] + \\\n    [fmt.format(problem=prob[i]['problem']) + clean_sol(prob[i]['solution'], prob[i]['answer']) for i in dev_rest]\nscreen_meta = {'n_loop':24,'n_ctrl':8,'n_own':len(own_cor),'n_ref':len(dev_rest),\n               'plens':[len(tok.encode(fmt.format(problem=prob[i]['problem'])).ids) for i in json.load(open('/work/tf1_ids.json'))+[g['id'] for g in own_cor]+dev_rest]}\njson.dump(screen_texts, open('/work/screen_texts.json','w')); json.dump(screen_meta, open('/work/screen_meta.json','w'))\nopen('/work/notes.md','a').write(\"\"\"\nPass2 result: repetition neurons (copied vs novel tokens in loops; effect size d) top: L13 n486,4180,1926; L9 5659; L15 386,5730; 76 with |d|>0.8 in odd layers (11:31,13:14,15:14); position-flat in controls. Saved /work/rep_cands.json.\nPass 3 (planned): ORIGINAL teacher-forced on screen set /work/screen_texts.json (24 loop+8 ctrl+116 own-correct dev_a+876 DEV refs) token_logprobs = baseline for screening.\n\"\"\")\nlen(screen_texts), sum(len(tok.encode(t).ids) for t in screen_texts)",
+ "canonical_sha256": "58796495782445d41a7e62ec369ca5d237dc87087533b1c582c7c13f19b89639",
+ "history_sha256": "bf7d63b7880a42c12069cf19feb7e8253e4405c1ce094da1cd8904e55d62ea09",
+ "context": {
+  "forward_passes_used": 2,
+  "forward_pass_budget": 50,
+  "python_runs_used": 14,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 14,
+    "text": "The 32 texts total about 25k tokens, padded to 965 each, which comes to about 5.5 GB for 13 MLP layers, within the 6 GB limit. I'll run the teacher-forced pass on the original model, collecting MLP activations at odd layers and per-token logprobs. In the kernel I'll then mark copied tokens (the preceding 8-gram occurred earlier in the answer) and compare neuron activations on copied vs novel answer tokens."
+   },
+   {
+    "reply": 15,
+    "text": "The teacher-forced pass returned MLP activations for the 32 texts, 24 looping and 8 finished. I'll label every answer token as copied (the 8-gram ending at it already occurred earlier in the answer) or novel. Per neuron and layer, I'll compute the effect size of copied minus novel tokens, using only within-answer tokens from the looping texts. As a sanity check, I'll also confirm that copied tokens get near-certain logprobs, as expected in a greedy loop. A small set of neurons with large, consistent effect sizes, unlike the diffuse answer-mean picture, would be repetition-neuron candidates. If the top effect sizes are only moderate and spread everywhere, this line is weak."
+   },
+   {
+    "reply": 16,
+    "text": "The token-level contrast is clearer than the answer-mean one. Copied tokens are near-deterministic (mean logprob -0.013 vs -0.117 for novel tokens), and a few neurons, concentrated in layers 9-15, separate copied from novel tokens with effect sizes of 1.0-1.3. The 99th percentile of the effect size is only 0.5-0.7, so these are clear outliers. The top ones (L13 n486, n1926, n4180; L9 n5659; L15 n386, n5730) are the same units that topped the answer-mean comparison, which is a consistency check. One confound remains: copied tokens sit later in the text than novel ones. So I'll check the position dependence of these neurons on the 8 finished controls, which have no loops, early vs late tokens. I'll also count how many neurons pass an effect-size threshold, to size an ablation set. If the top neurons are flat with position in the controls, they track repetition itself and are worth an ablation test."
+   },
+   {
+    "reply": 17,
+    "text": "The top repetition-candidate neurons are flat with position in the loop-free control answers (dpos about 0 for L13 n486, n1926, n4180; L9 n5659; L15 n386, n5730). So they track copying itself, not lateness in the text. In total 76 neurons on the measured layers pass |d| > 0.8, concentrated in layers 11-15. Their novel-token activations are small, so ablating them should barely touch ordinary text. Before spending generation passes, I'll build a reusable teacher-forced screening set and score it once on the original model. It contains the 32 loop and control texts, the original's 116 correct dev_a answers, and 876 DEV reference solutions, with calculator annotations stripped and \"#### answer\" appended. Then any candidate edit can be screened in one pass: it should lower logprobs of copied loop tokens while keeping logprobs of correct and reference solutions unchanged."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "cbb8a3cdebfdbe4355da613a45f2a3d4b84f29d62727c7673a05d8503eedc144",
+ "effort": "medium"
+}

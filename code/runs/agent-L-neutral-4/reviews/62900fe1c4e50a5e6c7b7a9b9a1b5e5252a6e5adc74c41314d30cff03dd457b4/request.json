@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "62900fe1c4e50a5e6c7b7a9b9a1b5e5252a6e5adc74c41314d30cff03dd457b4",
+ "code_sha256": "a8dc914e988c93c85dc5ccf016f1842f978b2f22b14ad84dc68cda1ea4b37f8d",
+ "clean_code_sha256": "a8dc914e988c93c85dc5ccf016f1842f978b2f22b14ad84dc68cda1ea4b37f8d",
+ "code": "with open('/work/notes.md','a') as f:\n    f.write(\"Pass32 result C(-1.5) both holdoutX_1: +1.95+-2.03 (16 w->r, 11 r->w), cut 23.8->14.1%. Pooled HOLDOUT (1024): 72/43 ~ +2.8+-1.0.\\n\"\n            \"Pass 33 (planned): generate BOTH C(-1.5) unchanged on /work/holdoutX_2.json (202).\\n\")\nlen(edited())",
+ "canonical_sha256": "d6a356023157f16303a165434308326e69ae6f2a793c46c9fea1c87dff0d0a7a",
+ "history_sha256": "becd2ae217cfd8f3a06b25ef7a49184fbd55afb2259a0bb142a275aecfe602ee",
+ "context": {
+  "forward_passes_used": 32,
+  "forward_pass_budget": 50,
+  "python_runs_used": 113,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "2c837537e927e286e8c5ebf5e2d5d67ffc98461e87866b853c1d8790a8888c98",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 146,
+    "text": "The notes are updated, and the edit is unchanged (frozen C(\u22121.5), 14 tensors). This pass measures it on holdout_3, the third of the five HOLDOUT sets."
+   },
+   {
+    "reply": 147,
+    "text": "On holdout_3, C(\u22121.5) gives \u22120.78 \u00b1 2.21 points (15 wrong\u2192right, 17 right\u2192wrong). Cut-offs still halve, but this set gains nothing. Pooled over holdout_1\u20133 (768 problems), that is 56 wrong\u2192right against 32 right\u2192wrong, **+3.1 \u00b1 1.2 points**. That is still about 2.5 standard errors above zero, though smaller than the first two sets suggested. As planned, I'll continue with holdoutX_1 and holdoutX_2 before deciding. The rule stands: adopt C only if the pooled gain over all 1,226 is positive and at least about 1.5 SE."
+   },
+   {
+    "reply": 148,
+    "text": "The notes are updated, and the edit is unchanged (frozen C(\u22121.5), 14 tensors). This pass measures it on holdoutX_1 (256 problems), the fourth HOLDOUT set."
+   },
+   {
+    "reply": 149,
+    "text": "On holdoutX_1, C(\u22121.5) gives **+1.95 \u00b1 2.03 points** (16 wrong\u2192right, 11 right\u2192wrong), with cut-offs falling from 23.8% to 14.1%. Pooled over 1,024 HOLDOUT problems, that is 72 wrong\u2192right against 43 right\u2192wrong, **+2.8 \u00b1 1.0 points**. That is about 2.7 standard errors above zero, and all four sets point the same way except holdout_3, which was near zero. One HOLDOUT set is left: holdoutX_2, 202 problems. I'll run it unchanged to finish the planned 1,226-problem measurement, then decide."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "0cc26fa03d560371c153f8d04203b8baac721894651b8f6845e6e9b01cf2c790",
+ "effort": "medium"
+}

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "f903d92eee96d676091deec018a27121f449ced3ec717edb19b309512accd434",
+ "code_sha256": "af2c19b3e86077ab1faca119c8a817feb8e3118701b5caec9901463ea663dda1",
+ "clean_code_sha256": "af2c19b3e86077ab1faca119c8a817feb8e3118701b5caec9901463ea663dda1",
+ "prompt_sha256": "3d7fa9bc8385af78d527838f7300c769c12768a454593864fdfc77bf281e2e2d",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block computes per-layer relative residual update norms (||h_l-h_{l-1}||/||h_{l-1}||) by group from pass-2 original-model hidden states. These are activation statistics used to find components. No candidate or saved edit is applied to stored activations, nothing is scored, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 61729,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 277,
+  "output_tokens_details": {
+   "thinking_tokens": 104
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 61729,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 277,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 61729,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 61729
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.49938,
+ "t": 1794111011.764935
+}

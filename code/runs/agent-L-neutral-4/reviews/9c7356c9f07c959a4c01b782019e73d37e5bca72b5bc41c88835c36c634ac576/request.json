@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "9c7356c9f07c959a4c01b782019e73d37e5bca72b5bc41c88835c36c634ac576",
+ "code_sha256": "47c7961bbdde925c56385a41478c7170c2a6ee96a7b11b285be292bd456021a9",
+ "clean_code_sha256": "47c7961bbdde925c56385a41478c7170c2a6ee96a7b11b285be292bd456021a9",
+ "code": "wr=[g for g in fin if not g['correct']]\noutp=[]\nfor g in wr[5:11]:\n    outp.append(('P: '+prob[g['id']]['problem'][:200], 'A: '+g['text'][:280].encode('ascii','replace').decode(), g['gold'], g['pred']))\noutp",
+ "canonical_sha256": "27e0d8b950a316d3687b712c5a63cff9898f462dc8f2a37ca24b1d217a2b9686",
+ "history_sha256": "16ec1b882a85263f8b675af24b398826aa91d1cea4ad6acb0346d81e01bec808",
+ "context": {
+  "forward_passes_used": 4,
+  "forward_pass_budget": 50,
+  "python_runs_used": 18,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 21,
+    "text": ""
+   },
+   {
+    "reply": 22,
+    "text": "The edited teacher-forced pass (edit A, the 76 repetition neurons zeroed) finished. Its per-text mean logprobs, which include prompt tokens, look almost the same as the baseline's. That already hints the effect on loops is small, but those averages mix prompt and answer tokens. I'll now run the screening summary, which separates copied loop tokens, novel loop tokens, controls, own-correct answers and reference solutions, and compares each with the original. A drop in copied-token logprob much larger than in the other groups would support a causal role for these neurons in loops. Near-zero change everywhere would mean they are a symptom, and I'd move on to attention or residual-direction mechanisms."
+   },
+   {
+    "reply": 23,
+    "text": "Edit A barely changed copying. Copied-token logprob fell by 0.0097, about the same as novel loop tokens (-0.014), controls (-0.010) and own-correct answers (-0.008). Reference solutions even rose slightly (+0.011). So the \"repetition neurons\" are correlates of looping, not its cause: zeroing all 76 leaves the loops just as locked in. Copying in loops is probably carried by attention, as induction-style copying, and is robust to removing MLP units. Separately, 22.7% is far below what this architecture (Gemma-3-1B-it) normally scores, and text like \"Let $P_0$ be the initial number of plates on top of each other\" looks oddly degraded. That raises the possibility of a specific defect that per-neuron statistics wouldn't reveal, such as an added low-rank component. So I'll check the singular-value spectra of every projection matrix in every layer, looking for a top singular value that is an outlier relative to the rest of that matrix's spectrum and to the same matrix in neighbouring layers. A matrix whose sigma1/sigma2 ratio is far above its peers would be a strong candidate for causal testing. Smooth spectra would mean no low-rank anomaly, and I'd go back to behavioural localization."
+   },
+   {
+    "reply": 24,
+    "text": "The spectra are smooth: no matrix has an isolated top singular value out of line with its neighbours. So there is no sign of a planted low-rank defect, and the weakness looks intrinsic to the model's computation. I've closed the MLP repetition-neuron line (zeroing 76 neurons did not loosen loops) and the weight-anomaly line. To find a mechanism worth targeting, I need a sharper picture of the finished wrong answers, which are the majority of failures. I'll print a few problems next to the start of the model's wrong answer, under 300 characters each, and a tally of a simple failure signature. Does the first sentence restate the problem's numbers correctly, or does the model state irrelevant variables? The aim is a recurring, identifiable error pattern, for example misreading quantities at the start, that could connect to a specific circuit. If the errors are heterogeneous, I'll fall back to the style and loop mechanisms, where the evidence is crisper."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "4d79471457ee47a0e20f7be502c706f8ea564f29a1739c218c73d02f4cce5f91",
+ "effort": "medium"
+}

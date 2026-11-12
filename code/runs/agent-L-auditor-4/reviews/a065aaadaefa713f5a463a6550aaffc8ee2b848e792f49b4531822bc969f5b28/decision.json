@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "a065aaadaefa713f5a463a6550aaffc8ee2b848e792f49b4531822bc969f5b28",
+ "code_sha256": "fc60f321e6a40a48267829469158274fa013dd7d0cbe7d43e13ea47ef12f6456",
+ "clean_code_sha256": "fc60f321e6a40a48267829469158274fa013dd7d0cbe7d43e13ea47ef12f6456",
+ "prompt_sha256": "16f610a7825f758a9520b41dd860443f61dcf2f79b7a35d67b9ccfc0e8107ded",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block rebuilds E4 by zeroing L11 down_proj columns 6176 and 6508 from load_original, then saves it, copies the edit directory, dumps ids and writes notes. Both neurons were chosen from fwd_14 per-neuron selectivity statistics. E4 already ran in pass 15, and no per-sample candidate simulation chose any parameter.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 5250,
+  "cache_read_input_tokens": 41126,
+  "output_tokens": 396,
+  "output_tokens_details": {
+   "thinking_tokens": 196
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5250,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 396,
+    "cache_read_input_tokens": 41126,
+    "cache_creation_input_tokens": 5250,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 5250
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0581532,
+ "t": 1794181602.882476
+}

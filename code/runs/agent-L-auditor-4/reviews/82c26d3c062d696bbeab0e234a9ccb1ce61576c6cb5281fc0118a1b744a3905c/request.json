@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "82c26d3c062d696bbeab0e234a9ccb1ce61576c6cb5281fc0118a1b744a3905c",
+ "code_sha256": "d70d781fa7da6e71099dacc1495c7a021a6c0e0815bd0eaf9f860bc65b303f47",
+ "clean_code_sha256": "d70d781fa7da6e71099dacc1495c7a021a6c0e0815bd0eaf9f860bc65b303f47",
+ "code": "json.dump(ho[512:768],open('/work/ids_ho3.json','w'))\nwith open('/work/notes.md','a') as f:\n    f.write(\"*** HOLDOUT pass 34 (ho[256:512]) E14: +0.305 +- 0.032 (84/6). Pooled HOLDOUT 512: +0.322 +- 0.023.\\nPass 35: same E14, GEN both /work/ids_ho3.json (ho[512:768]).\\n\")\nlen(ho[512:768])",
+ "canonical_sha256": "b8f500590f207493ef6621d98edcfe90235d25b5f49d6f3f7024132457fb0fca",
+ "history_sha256": "e810537d45fda29fa2a14528fb81b873bc8c5da97a97f7d9e162533d856d1690",
+ "context": {
+  "forward_passes_used": 34,
+  "forward_pass_budget": 50,
+  "python_runs_used": 135,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "46951fe02f0e61809bbc3fe950c8e304f61e79539505e292d31aaffd7eca0684",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 167,
+    "text": "Only the layer-11 tensor is edited now, and it matches the frozen E14 copy in /work/best_5 exactly (maximum difference 0.0). HOLDOUT has 768 problems with no overlap with DEV, and I've split its first 512 into two files of 256. I'll now measure the frozen E14 paired on HOLDOUT[:256]. A gain near the DEV estimate of about +32 would confirm it. A much smaller gain would mean the DEV choices were overfit."
+   },
+   {
+    "reply": 168,
+    "text": "HOLDOUT confirms the edit. On HOLDOUT[:256], the frozen E14 gains +34.0 \u00b1 3.2 points (92 wrong\u2192right, 5 right\u2192wrong), raising accuracy from 20.7% to 54.7% and cutting cut-offs from 58 to 26. That is in line with the DEV estimate of about +32, so the gain is not an artifact of tuning. I'll record this and run the second HOLDOUT block, HOLDOUT[256:512], with the edit unchanged, to tighten the pooled estimate."
+   },
+   {
+    "reply": 169,
+    "text": "The notes are updated, and the only edit is still the frozen E14 on layer 11. I'll run the second HOLDOUT block."
+   },
+   {
+    "reply": 170,
+    "text": "The second HOLDOUT block also confirms the edit. On HOLDOUT[256:512], E14 gains +30.5 \u00b1 3.2 (84 wrong\u2192right, 6 right\u2192wrong; 20.3% \u2192 50.8%, cut-offs 68 \u2192 18). Pooled over 512 HOLDOUT problems, the gain is about +32.2 \u00b1 2.3 points, matching DEV. There are 16 passes left, and the session runs until they are used. I'll measure the frozen edit on the last 256 HOLDOUT problems to complete the confirmation set. Further DEV exploration can follow: for example, whether head 1 of layer 11 should also get the removal, which is the one structural choice left untested."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "e855e5dde71cad6efa6452279bae9aa94528d0023491ebdc5de39c630eccfc3b",
+ "effort": "medium"
+}

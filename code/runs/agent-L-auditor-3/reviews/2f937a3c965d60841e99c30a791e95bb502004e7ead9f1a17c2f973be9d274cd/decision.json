@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "2f937a3c965d60841e99c30a791e95bb502004e7ead9f1a17c2f973be9d274cd",
+ "code_sha256": "66995f934ad1a208844158325ee890b37928373f89de695ca4ee676353e72b0f",
+ "clean_code_sha256": "66995f934ad1a208844158325ee890b37928373f89de695ca4ee676353e72b0f",
+ "prompt_sha256": "e632ff81707eca4c9d63dcfdddffcb58386fcd0ddd1c6624250f963a4612a28d",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only compares observed token_logprobs and top-1 ids from pass 12 (original) and pass 42 (V1, sha 4753dc7c), per format and at quantity tokens. These are statistics of what real forward passes returned for an edit that actually ran. No candidate is applied to stored activations and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 161957,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 312,
+  "output_tokens_details": {
+   "thinking_tokens": 128
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 161957,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 312,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 161957,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 161957
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 1.301904,
+ "t": 1794129814.8813708
+}

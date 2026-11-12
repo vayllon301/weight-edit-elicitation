@@ -1,0 +1,52 @@
+{
+ "version": "rule-review-3",
+ "key": "a130af0f57791a012fd02eae15286343b186ae9f6d795cf062924afe9884211f",
+ "code_sha256": "0e950c23cc06e35063226dd303f798813cf6814a310ff6c033641ad0de535e6c",
+ "clean_code_sha256": "0e950c23cc06e35063226dd303f798813cf6814a310ff6c033641ad0de535e6c",
+ "code": "fmt=open('/practice/eval_prompt_format.txt').read()\nt1=json.load(open('/work/tf1_texts.json'))\nprint(repr(fmt[:400])); print(repr(t1[0][:300]))\nimport inspect\nprint([b for b in sorted(os.listdir('/work/blocks')) if 'tf1' in open('/work/blocks/'+b).read()])",
+ "canonical_sha256": "005002d5975f58b1724e28d03e16d37dec959c6479380346d8409bd8e6208bbe",
+ "history_sha256": "c3a8ed0588011f04f0217abbf10357580ef48d7570a9bc0535d9240c1f9c6728",
+ "context": {
+  "forward_passes_used": 7,
+  "forward_pass_budget": 50,
+  "python_runs_used": 40,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "d0daaa4c17f5f642b960ff46734f9f6d495f9853953d08d51e69c7868b9e4f87",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 46,
+    "text": "Loops are a symptom of stuck reasoning, not a failure to stop. Only 11 of 89 looping answers contained the gold number before the loop began, and only 34 of 131 contained it anywhere. Also, the finished answers are only 30% correct. So even a perfect loop breaker would turn most cuts into wrong answers, as the +1.6 mode-switch test hinted. Before choosing a direction I want to rule out cheaper failure modes in the finished answers:\n1. Grading or format failures: no \"####\" marker, or the last number in the text isn't the stated result.\n2. Arithmetic slips, where an explicit \"a op b = c\" equation is wrong.\n\nIf many finished-wrong answers contain the gold near the end, or are cut by format, a format-specific fix would pay. If arithmetic slips are frequent, a number-computation component would be the target. If both are rare, the errors are in problem setup, which targeted edits are unlikely to repair, and I'd go back to the mode or loop mechanism."
+   },
+   {
+    "reply": 47,
+    "text": "Two findings. Format is not the issue: only 25 of 265 finished-wrong answers have the gold in their last 200 characters, even though 152 lack the \"####\" marker. Arithmetic is a real failure: 83 of 366 parsed equations (23%) in finished-wrong answers are wrong, against 30 of 196 (15%) in correct ones. A quarter of the wrong answers (66) contain at least one wrong equation, which contradicts my earlier impression that arithmetic was mostly correct. Some of these may be parser artifacts (percentages, implicit units), so I'll break down the bad equations by operator and operand size and look at a few short examples. If errors concentrate in one operation, for instance multi-digit multiplication or results that need a carry, that narrows the search to a computation-specific mechanism. If they're spread out or mostly parse noise, arithmetic is not a clean target."
+   },
+   {
+    "reply": 48,
+    "text": "Most of the flagged \"errors\" are parser artifacts. Chained sums like \"15 + 10 + 2 = 27\" were parsed as \"10 + 2 = 27\", and repeated \"1.50 \\times 75 =\" chains caused the rest. Real slips exist (21,122 + 3,922 = 24,044) but look rare, and single-step equations of 1 to 4 digits are essentially right. So I'll close arithmetic as a target. That leaves reasoning setup, which is not editable in a targeted way, and the two mechanisms already found: markdown mode and the loop-onset decision.\n\nThe onset is a soft choice (first-token logprob of -0.2 to -0.9). I'll look for a residual-stream direction that marks \"the next line will duplicate an earlier one\" by comparing newline positions just before a duplicated line with newline positions before novel lines in the same texts. Using the same texts controls for the problem and its difficulty. Removing that direction from the outputs of the layers that write it is a hand-built, statistics-based edit. First I'll check what pass 2 stored, since it may already contain hidden states for the looping texts."
+   },
+   {
+    "reply": 49,
+    "text": "Pass 2 kept only MLP activations, not residual hidden states, so finding a loop-onset direction needs a new teacher-forced pass. I'll build one at full size from DEV answers only:\n- every cut answer of the original from gen_1 (dev_a);\n- the cut answers of both models from gen_6 (dev_b1), including the edited model's plain-mode loops, which matter if I combine this with the mode switch;\n- about 150 finished gen_1 answers as non-loop controls.\n\nI'll request hidden states at layers 8, 12, 16, 20 and 23 (about 4 GB) plus token logprobs. The logprobs give me the original's baseline for the onset tokens and for the finished answers, to screen edits later. I'll first check how earlier text sets were built, so the prompt format is identical, then write the texts and update the notes. The pass itself goes in the next reply."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "55542e0dfb9e755f039484fc99f88bd2244574740719385fc27295751d444cf8",
+ "effort": "medium"
+}

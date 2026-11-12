@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "abb04c610518d67c970d8d5e6c16743fae0eb82c9a9720a1e92f86455343d8f2",
+ "code_sha256": "c397063ac204ecc15aca42d645a3328e86dff6c2685fd9edbdfcea808c82b7a1",
+ "clean_code_sha256": "c397063ac204ecc15aca42d645a3328e86dff6c2685fd9edbdfcea808c82b7a1",
+ "prompt_sha256": "7dfeed7addd0308dea274531a9296b56e379e787145f88b8a8c0112a21d78f9d",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "E10 uses original pass 1 last-prompt mean activation and n5695's cv, aggregate normalizers, weight rows and hand-set scalars. Candidate writes are checked only against summary vector ym2, then saved. No per-sample write, leak or cost is computed, and n5695 came from a population screen, not candidate simulation.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 107359,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 4293,
+  "output_tokens_details": {
+   "thinking_tokens": 4105
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 107359,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 4293,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 107359,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 107359
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.9447399999999999,
+ "t": 1794080897.2103941
+}

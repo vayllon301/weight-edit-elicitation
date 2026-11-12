@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "cba706cbc673989827aad39a40f1171ceb193ae63a168f8ef2e27a47850b5bff",
+ "code_sha256": "d8382f204d2dd89dcdbf72ae05605498e5926ba974cc94fb13cde7e65ea004c1",
+ "clean_code_sha256": "d8382f204d2dd89dcdbf72ae05605498e5926ba974cc94fb13cde7e65ea004c1",
+ "prompt_sha256": "c694d1180cb2f4fddf04ad0a8513c776b96ef6029f3a6a5a06eb43905cf52646",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block projects original-model per-token hidden_10 states from pass 2 onto v0s[10], a read direction taken from the SVD of the original up_proj. It lists the top tokens and the projection quantiles to find what drives the direction. No candidate edit is applied or predicted, and the model is not replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 14295,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 348,
+  "output_tokens_details": {
+   "thinking_tokens": 173
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 14295,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 348,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 14295,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 14295
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.121328,
+ "t": 1794097842.0209851
+}

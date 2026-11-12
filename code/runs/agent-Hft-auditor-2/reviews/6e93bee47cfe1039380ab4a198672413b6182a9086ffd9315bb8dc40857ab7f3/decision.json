@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "6e93bee47cfe1039380ab4a198672413b6182a9086ffd9315bb8dc40857ab7f3",
+ "code_sha256": "0a0bfce2087a5e5a0d5a017ca8bef35d65194e07f62b4a8fbe69fa118d57b8d5",
+ "clean_code_sha256": "0a0bfce2087a5e5a0d5a017ca8bef35d65194e07f62b4a8fbe69fa118d57b8d5",
+ "prompt_sha256": "5388e71eb353db121047e8ddf8590ebdee0a2133a1277c43ec30dd112479d90c",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only reads /practice/eval_prompt_format.txt and prints its first 400 characters. It uses no activations, applies no candidate edit and replays no model stage. It does not consume the parameter from the rejected attempt.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 3370,
+  "cache_read_input_tokens": 27880,
+  "output_tokens": 151,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 3370,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 151,
+    "cache_read_input_tokens": 27880,
+    "cache_creation_input_tokens": 3370,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 3370
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.035564,
+ "t": 1794174937.822262
+}

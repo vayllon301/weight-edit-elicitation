@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "0512ac08388c68dbab3dffcd5a7694ab6dfd5c19ed738fa141f3ecd77104875a",
+ "code_sha256": "bff4f72af07f20136aacb0328afd21c3c887c70461250730ac9bc776ac8c5f2b",
+ "clean_code_sha256": "bff4f72af07f20136aacb0328afd21c3c887c70461250730ac9bc776ac8c5f2b",
+ "prompt_sha256": "f5d410035158225b69dd9ed36d9c3593535551b586c88541489a3fd01ad09cae",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only inspects state. It lists global names and types, loads /work/tf_own_eq_meta.json, prints its structure and lists /work/fwd_20. No edit is applied or scored on samples, no activations are used to predict an edit's effect, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 100051,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 225,
+  "output_tokens_details": {
+   "thinking_tokens": 55
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 100051,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 225,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 100051,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 100051
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.804916,
+ "t": 1794149527.360526
+}

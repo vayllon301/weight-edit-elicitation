@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "b4e5e42435cb046c639fffc5cc35939c832bc791099b5afcb267ce759fe3bc14",
+ "code_sha256": "fb02d96a4430c2665075610b2978e083945d979e7c92a0c28b4b08e4d4ae332f",
+ "clean_code_sha256": "fb02d96a4430c2665075610b2978e083945d979e7c92a0c28b4b08e4d4ae332f",
+ "prompt_sha256": "7083392f579723261541c205608ad46b8617c1fafe322395641daabf1f37da42",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block builds a hand-made edit: it flips negative q_norm/k_norm gains to their absolute value at dims chosen from weight statistics only (q*k gain product < -1, blocks 138-139), saves it and writes notes. No stored activations are used, no candidate is scored and no model stage is replayed. No forbidden-selected parameter is reused.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 89900,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 388,
+  "output_tokens_details": {
+   "thinking_tokens": 195
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 89900,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 388,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 89900,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 89900
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.726968,
+ "t": 1794148502.10029
+}

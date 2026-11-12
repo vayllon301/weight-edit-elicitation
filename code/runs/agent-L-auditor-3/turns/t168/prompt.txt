@@ -1,0 +1,12 @@
+OUTPUT of Python run 150 of at most 300:
+```
+pass17 orig->S3 transitions: {('C', 'C'): 9, ('C', 'R'): 11, ('C', 'W'): 43, ('R', 'R'): 35, ('R', 'W'): 7, ('W', 'C'): 5, ('W', 'R'): 38, ('W', 'W'): 78}
+backup S3 folder: ['model.layers.11.self_attn.o_proj.weight.npy']
+h3 S top4 [6.88, 2.83, 2.03, 1.97] | S0^2 energy share 0.187
+h3 block norm 15.92 -> 14.36
+edit fro 6.882 | heads0-2 unchanged: True | u0 left in h3 block: 0.001
+|1+w| median 0.67 (layer median 15.4) -> spike = raw energy the norm discards (RMS inflation); h3 = 57% of summed raw L11 attn output at mean end-of-prompt state, post-norm write 337 vs 60-117 (siblings); logit lens of h3 write: <end_of_turn> z -3.1, digits/newline +1.2..1.6.
+Pass 18 (planned): both, DEV[1024:1250] (/work/dev226e.json). Edit R1a: model.layers.11.self_attn.o_proj.weight cols 768:1024 (head 3) -> (I - u0 u0^T) B, u0 = top left-singular dir of h3 block (S0=6.88), heads 0-2 unchanged. Copy in /work/cand_R1a; S3 x0.2 kept in /work/best_S3_x0.2. Compare with S3 +18.6 on same slice.
+
+
+```

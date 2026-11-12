@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "f69352d6cc20b8ac29a9c417d7355a750179e9dbdd7cb28680b5785501019449",
+ "code_sha256": "ddaa04f69f027c80cdd7905eed49df43bc9162cdc91dc966a154e0af3966ad75",
+ "clean_code_sha256": "ddaa04f69f027c80cdd7905eed49df43bc9162cdc91dc966a154e0af3966ad75",
+ "prompt_sha256": "64502873cc6e44f67c133ba0b8a9525f5767da5be8caf2d8045fc5bac213ebc5",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only reads /work/gen_1.jsonl from the original-model pass, splits it into correct, cut and wrong, prints token percentiles and marker rates, and shows sample texts via show(g). No edit or candidate exists, no activations are used, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 6286,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 227,
+  "output_tokens_details": {
+   "thinking_tokens": 60
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 6286,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 227,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 6286,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 6286
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.054835999999999996,
+ "t": 1794074897.651818
+}

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "fc0594d4c09fcfb769b182ddc04a7d46411f8755d275115b08f8699c971c5cc4",
+ "code_sha256": "23116c698a730600e1104723b1371c7e090d973c357894b8de46ec4547270e8b",
+ "clean_code_sha256": "23116c698a730600e1104723b1371c7e090d973c357894b8de46ec4547270e8b",
+ "prompt_sha256": "69ac96403d841ab7716a44aa94659721953bd4989137ba40aec118bfb5166103",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only reads /work/fwd_2/meta.json, lists the fwd_2 directory and prints the metadata. It uses no activations, applies no candidate edit and replays no model stage. This is file inspection only.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 8099,
+  "cache_read_input_tokens": 16452,
+  "output_tokens": 148,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 8099,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 148,
+    "cache_read_input_tokens": 16452,
+    "cache_creation_input_tokens": 8099,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 8099
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0710504,
+ "t": 1794168493.440863
+}

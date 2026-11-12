@@ -1,0 +1,52 @@
+{
+ "version": "rule-review-3",
+ "key": "8c6829c6d941bb1ec8fd330256ad8761dfc6ad07ed6956bccda790bf9a2e6d98",
+ "code_sha256": "04bc66331511b62cf51e745de6671ef63f6acd97a8da0f00c50e441f58adc699",
+ "clean_code_sha256": "04bc66331511b62cf51e745de6671ef63f6acd97a8da0f00c50e441f58adc699",
+ "code": "ids8=np.load('/work/fwd_8/input_ids.npy'); lp8=np.load('/work/fwd_8/token_logprobs.npy')\nm8=json.load(open('/work/fwd_8/meta.json')); lens8=m8['lengths']\nNL=set(i for i in range(tok.get_vocab_size()) if (s:=tok.decode([i])) and set(s)<= {'\\n'})\nplen=[len(tok.encode(fmt.format(problem=prac[mm['id']]['problem'])).ids)-1 for mm in meta]\nonset=[];novel=[];inloop=[]   # (text, pos)\nfor i in range(len(meta)):\n    a=ids8[i,:lens8[i]]; p0=plen[i]\n    nls=[q for q in range(p0,len(a)-1) if a[q] in NL]\n    seen=set(); found=False\n    for j,q in enumerate(nls):\n        end=nls[j+1] if j+1<len(nls) else len(a)\n        line=tuple(a[q+1:end])\n        if len(line)>=4 and line in seen:\n            (inloop if found else onset).append((i,q)); found=True\n        elif not found and len(line)>=4: novel.append((i,q))\n        seen.add(line)\nprint(len(onset),len(novel),len(inloop))\nolp=np.array([lp8[i,q] for i,q in onset]); nlp=np.array([lp8[i,q] for i,q in novel]); ilp=np.array([lp8[i,q] for i,q in inloop])\nprint('onset first-token lp median',np.median(olp).round(2),'P(lp>-0.1)',(olp>-0.1).mean().round(2),'novel median',np.median(nlp).round(2),'inloop median',np.median(ilp).round(2))\notexts=sorted(set(i for i,_ in onset)); rng=np.random.default_rng(0); half=set(rng.choice(otexts,len(otexts)//2,replace=False))\nres=[]; dirs={}\nfor L in [8,12,16,20,23]:\n    H=np.load(f'/work/fwd_8/hidden_{L}.npy',mmap_mode='r')\n    O=np.stack([H[i,q].astype(np.float32) for i,q in onset]); N=np.stack([H[i,q].astype(np.float32) for i,q in novel])\n    oi=np.array([i for i,_ in onset]); ni=np.array([i for i,_ in novel])\n    oa=np.isin(oi,list(half)); na=np.isin(ni,list(half))\n    d=O[oa].mean(0)-N[na].mean(0); d/=np.linalg.norm(d)\n    po,pn=O[~oa]@d,N[~na]@d\n    res.append(dict(L=L,cv_d=round(float((po.mean()-pn.mean())/np.sqrt((po.var()+pn.var())/2)),2),\n                    diffnorm_rel=round(float(np.linalg.norm(O.mean(0)-N.mean(0))/np.linalg.norm(N.mean(0))),3)))\n    dirs[L]=(O.mean(0)-N.mean(0))\npd.DataFrame(res).to_string()",
+ "canonical_sha256": "6842b6a436ea033978c80304ff00cb5d5e961be1fbd560b8baee66edf2d85d2a",
+ "history_sha256": "af93f28f73d5963d9fd648185d3e9047e688465cb30559412ef73601b0b2a18d",
+ "context": {
+  "forward_passes_used": 8,
+  "forward_pass_budget": 50,
+  "python_runs_used": 42,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "d0daaa4c17f5f642b960ff46734f9f6d495f9853953d08d51e69c7868b9e4f87",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 49,
+    "text": "Pass 2 kept only MLP activations, not residual hidden states, so finding a loop-onset direction needs a new teacher-forced pass. I'll build one at full size from DEV answers only:\n- every cut answer of the original from gen_1 (dev_a);\n- the cut answers of both models from gen_6 (dev_b1), including the edited model's plain-mode loops, which matter if I combine this with the mode switch;\n- about 150 finished gen_1 answers as non-loop controls.\n\nI'll request hidden states at layers 8, 12, 16, 20 and 23 (about 4 GB) plus token logprobs. The logprobs give me the original's baseline for the onset tokens and for the finished answers, to screen edits later. I'll first check how earlier text sets were built, so the prompt format is identical, then write the texts and update the notes. The pass itself goes in the next reply."
+   },
+   {
+    "reply": 50,
+    "text": "The prompt format is confirmed (prompt template + answer text). Now I'll assemble the onset-direction text set:\n- all cut answers from gen_1 (original, dev_a);\n- the cut answers from gen_6 for both models (dev_b1);\n- 150 finished gen_1 answers as controls.\n\nI'll store the source of each text, write the files and update the notes with the plan for pass 8. No edit is involved: the pass runs on the original model and the edited tensors stay as they are. Labelling of onset and novel newline positions will be done afterwards from the returned input_ids, using the duplicate-line rule."
+   },
+   {
+    "reply": 51,
+    "text": "The set has 450 texts (283 looping, 150 finished, from DEV only), at most 965 tokens long. Hidden states at 5 layers in float16 come to about 5.0 GB, within the 6 GB limit. This pass runs the original model.\n\nWhat I expect to learn: at newline positions that precede the first duplicated line, the residual stream should differ consistently from newline positions that precede novel lines in the same texts. If so, that mean difference is a candidate \"commit to repeat\" direction, and I'll locate the layers that write it. If the two groups are indistinguishable, the onset decision isn't linearly represented at line boundaries, and I'll close the loop line."
+   },
+   {
+    "reply": 52,
+    "text": "Pass 8 returned hidden states for all 450 texts. Now the labelling, from the returned input_ids:\n- Newline tokens in the answer split it into lines.\n- A line of at least 4 tokens that exactly repeats an earlier answer line is a duplicate. The newline just before the first duplicate is the onset position.\n- Newlines before novel lines are controls: those before the onset in looping texts, and all of them in finished texts.\n\nAt each layer I'll compute the difference of means (onset minus same-text novel). To check that it is a real signal and not noise from about 200 onsets, I'll estimate the direction on half the texts and measure the effect size d on the other half. I'll also report the onset token's logprob to see how soft the decision is. A cross-validated d well above about 1 at some layer would identify a usable onset direction; a d near 0 would close this line."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "98661a47565f74ee525f5173f18d5caf8c4f722a3bbe923a684fa6a23607315f",
+ "effort": "medium"
+}

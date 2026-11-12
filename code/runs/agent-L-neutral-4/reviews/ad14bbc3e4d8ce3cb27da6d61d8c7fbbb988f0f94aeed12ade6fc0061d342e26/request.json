@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "ad14bbc3e4d8ce3cb27da6d61d8c7fbbb988f0f94aeed12ade6fc0061d342e26",
+ "code_sha256": "ef8d7b6c6c2af13c73c5a56c3e9e7162b53a33179566f871f9b5d104ff286e6c",
+ "clean_code_sha256": "ef8d7b6c6c2af13c73c5a56c3e9e7162b53a33179566f871f9b5d104ff286e6c",
+ "code": "import glob,re\nhits=[]\nfor f in sorted(glob.glob('/work/blocks/block_*.py'),key=lambda s:int(re.findall(r'\\d+',s)[-1])):\n    s=open(f).read()\n    if re.search(r'^\\s*onset\\s*=|onset\\.append|novel\\.append|^\\s*novel\\s*=',s,re.M): hits.append(f)\nprint(hits)\nfor f in hits[:2]:\n    print('=====',f); print(open(f).read()[:4000])",
+ "canonical_sha256": "f20681a3da6186f8a49f699139aad64e43d97a08ce5f4b49e31234aa68cc618b",
+ "history_sha256": "897ab0a34f52df5c8c0856430b7ff7ab3803ae9a985744e4afb3a81bef73760f",
+ "context": {
+  "forward_passes_used": 35,
+  "forward_pass_budget": 50,
+  "python_runs_used": 122,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "2c837537e927e286e8c5ebf5e2d5d67ffc98461e87866b853c1d8790a8888c98",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 158,
+    "text": "The notes are updated, and C(\u22122.25) is still the current edit (14 tensors). This pass measures it on dev_b2, where C(\u22121.5) gave +0.39 \u00b1 1.96. It completes the pre-registered DEV comparison."
+   },
+   {
+    "reply": 159,
+    "text": "C(\u22122.25) gives only +0.78 \u00b1 2.07 on dev_b2 (15 wrong\u2192right, 13 right\u2192wrong). Pooled DEV is about +1.56, nowhere near the +3.2 bar and no better than C(\u22121.5) (+1.17) within noise. The cut-off share is again the same as at \u03b2 = \u22121.5. The dose curve is flat beyond 1.5: about half the loops are freed at that strength, and the rest don't respond to more. I'm closing C(\u22122.25) and restoring the adopted C(\u22121.5) from /work/best_final.\n\nNext I want to know what the resistant loops are. The clean direction was built only from exact repeated lines. My earlier count found another group of near-loops that cycle through the same steps with changing numbers. If the answers that are still cut under C(\u22121.5) are mostly near-loops, they are a second loop type that might need its own onset direction. I'll classify the still-cut answers in C(\u22121.5)'s DEV outputs (passes 13 and 28) as exact loops, near-loops or verbose, using DEV only."
+   },
+   {
+    "reply": 160,
+    "text": "Under C(\u22121.5), the near-loops are mostly freed (30 \u2192 9 on DEV), as are most verbose cut-offs relative to their small numbers. The resistant group is **exact loops**: 104 \u2192 55. So the remaining failure is the same type C targets, but these loops start in a state the direction doesn't fully reach. More strength along the same direction did not help (C(\u22122.25) plateau). So the onset state of the edited model presumably differs from the original's.\n\nMy plan is a second, independent onset direction built from the edited model's own activations. I'll teacher-force C(\u22121.5)'s DEV outputs (passes 13 and 28) through the edited model, take the layer-20 residual at the newline before its first duplicated line, and subtract matched newlines before novel lines. This uses the same recipe as the clean direction, but measured where C still fails. First I'll print the block that computed the clean direction, so the second one follows exactly the same recipe."
+   },
+   {
+    "reply": 161,
+    "text": "Block 50 is the recipe for the clean onset direction. It takes layer-20 residuals at the newline just before the first duplicated line (\"onset\"). From each, it subtracts the mean residual at newlines before novel lines that start with the same first token. It keeps the top-8 first tokens with at least 10 novel matches and normalises the onset-minus-novel mean difference. Block 51 then wrote W \u2190 W \u2212 \u03b2\u00b7v v\u1d40W into o_proj and down_proj of layers 16\u201322. To build a second direction from the edited model's still-looping DEV answers, I need the exact definitions of the `onset` and `novel` position lists and of the texts they came from. Those were built in an earlier block that I haven't re-read. I'll search the block sources for where `onset`, `novel` and `inloop` are assigned and print that block. The second direction then uses the identical recipe on new text and costs no forward pass yet."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "ae0f9c611d8f73e2172f31e18dcc10eb2881773280ea37d8c7f41545387dbad9",
+ "effort": "medium"
+}

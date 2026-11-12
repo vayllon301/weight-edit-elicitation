@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "fefa5d1157ea01bf2e4ccb83b93e97d6abac26be032ea0e5cbe4cf840afd79fc",
+ "code_sha256": "5f005e00fed5867c5cc2bd85485bc21979f32279ea45f123404701aa2aed03cf",
+ "clean_code_sha256": "5f005e00fed5867c5cc2bd85485bc21979f32279ea45f123404701aa2aed03cf",
+ "code": "drop_edit('model.layers.12.self_attn.o_proj.weight')\nmA=np.load('/work/fwd_4/mlp_act_11.npy',mmap_mode='r')\nMA=np.stack([mA[k,info4[k][2]:L4[k]].astype(np.float32).mean(0) for k in range(96)])\nD11=load_original('model.layers.11.mlp.down_proj.weight').numpy(); w11=1+load_original('model.layers.11.post_feedforward_layernorm.weight').numpy()\nDl=MA[V4==0].mean(0)-MA[V4==3].mean(0)\ny=w11*(D11@Dl)\nprint('cos(mlp11 write, jd)',y@j/np.linalg.norm(y))\npu=(D11*w11[:,None]).T@j; c=Dl*pu; o=np.argsort(-np.abs(c))[:10]\nprint('share top10', c[o].sum()/c.sum())\nfor i in o: print(i, f'c{c[i]:.2f} v0 {MA[V4==0,i].mean():.2f} v1 {MA[V4==1,i].mean():.2f} v3 {MA[V4==3,i].mean():.2f}')\nprint(edited())",
+ "canonical_sha256": "5c12556fefb9059142a8b601d2cdd93211fdd9de757bfbc063f69f2446f6590d",
+ "history_sha256": "516fb115d731a619510889a467f01515a7b43ffac362b2cc08fdc07fbd98ee2b",
+ "context": {
+  "forward_passes_used": 6,
+  "forward_pass_budget": 50,
+  "python_runs_used": 27,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.12.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "21128cc3ff2b5a6264905c92c5495010f3b57c8a6c2de9fc645718065bc4d66e",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 31,
+    "text": "The layer-12 MLP is not the writer: its differential write is anti-aligned with u (cos \u22120.68), while the layer-12 hidden jump difference is aligned with it (cos 0.96). So layer-12 attention writes the eval-context offset, and the MLP partly cancels it. Because the post-attention RMSNorm applies an elementwise gain g = 1 + w after normalization, removing the direction \u00e2 = normalize(g \u2299 j) from o_proj's output space zeroes the attention write along j exactly. Here j is the v0 \u2212 v3 difference of the layer-12 increment, a summary vector. My first causal test is this full removal (strength 1) on layer 12's o_proj, teacher-forced on the same 512 reference-solution texts as pass 3. If the offset is what holds math back, solution logprob under the eval prompt (\u22121.38 originally) should rise clearly. If it falls or stays flat, the offset is ordinary chat-mode context and I'll drop this line."
+   },
+   {
+    "reply": 32,
+    "text": "Edit E1 is saved. It removes about 3.9% of o_proj's norm, a small fraction, so the offset direction is a narrow slice of the head outputs. Now I'm running the teacher-forced screen on the 512 reference-solution texts with the edited model. I'll compare solution-token logprob per variant against pass 3, and also return hidden state 12 to confirm the offset is gone."
+   },
+   {
+    "reply": 33,
+    "text": "I'll compute solution-token logprob per variant for edit E1 versus pass 3, and check whether the layer-12 v0 \u2212 v3 offset along u actually shrank."
+   },
+   {
+    "reply": 34,
+    "text": "Hidden state 12 is identical with and without the edit. So hidden index l means the output of model.layers.(l\u22121): hidden 0 is the embeddings, and hidden 26 is the output of model.layers.25. The jump between hidden 11 and hidden 12 was therefore written by model.layers.11, which is a full-attention layer. My edit hit the wrong layer, and its tiny logprob effect (\u22120.007) is just a side effect on later layers. I'll drop E1. MLP activation indices, by contrast, are model layer indices (0\u201325), so fwd_4's mlp_act_11 holds the MLP of the layer that actually writes the jump. I'll redo the writer analysis for model.layers.11: map the MLP's mean v0 \u2212 v3 activation difference through its down_proj and gain, and compare it with the jump direction (hidden 12 \u2212 hidden 11)."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "7699a3936b8c0166dfb0e3104ec38e3d5bc968af76fa1ac242abcf0c92059c72",
+ "effort": "medium"
+}

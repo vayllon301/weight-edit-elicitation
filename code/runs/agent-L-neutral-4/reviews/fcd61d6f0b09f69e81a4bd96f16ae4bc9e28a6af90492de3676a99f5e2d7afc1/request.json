@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "fcd61d6f0b09f69e81a4bd96f16ae4bc9e28a6af90492de3676a99f5e2d7afc1",
+ "code_sha256": "5f7b8e6d5599061852dbf645143b88b5a9c572189a69d27804a53bab5af796e6",
+ "clean_code_sha256": "5f7b8e6d5599061852dbf645143b88b5a9c572189a69d27804a53bab5af796e6",
+ "code": "def loop_start(t):\n    ls=t.split('\\n'); cnt=collections.Counter(l.strip() for l in ls if len(l.strip())>8)\n    pos=0\n    for l in ls:\n        if len(l.strip())>8 and cnt[l.strip()]>=3: return pos/len(t)\n        pos+=len(l)+1\n    return None\ndef has_gold(t,gold):\n    nums=re.findall(r'\\d+(?:\\.\\d+)?', t.replace(',',''))\n    return any(abs(float(n)-float(gold))<1e-6 for n in nums)\nr={}\nlsx=[loop_start(g['text']) for g in cut]\nr['loop_found']=sum(x is not None for x in lsx); r['loop_start_q']=np.percentile([x for x in lsx if x is not None],[10,25,50,75,90]).round(2).tolist()\ngb=0\nfor g,x in zip(cut,lsx):\n    pre=g['text'][:int(len(g['text'])*(x if x is not None else 1))]\n    gb+=has_gold(pre,g['gold'])\nr['cut_gold_before_loop']=gb\nr['wrongfin_gold_anywhere']=sum(has_gold(g['text'],g['gold']) for g in fin if not g['correct'])\nr",
+ "canonical_sha256": "794f322069bec238ce5267ac060bd794b8dab69e9f8bdcecc3ef8ef7bbdf3a1f",
+ "history_sha256": "ec6563c3b466c88766428d67e04f60882203a7c1809858a7cc5239701b4babc7",
+ "context": {
+  "forward_passes_used": 1,
+  "forward_pass_budget": 50,
+  "python_runs_used": 8,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 7,
+    "text": "Both styles fail and both loop: the plain style is cut 31% of the time, the markdown style 21%. So the style choice is not the culprit. Reported results for Gemma-3-1B-it are around 60% on GSM8K, so 22.7% with frequent degenerate loops suggests something specific in the weights may be broken rather than ordinary model weakness. Before relying on noisy correct-vs-wrong activation contrasts, which are confounded by difficulty, I'll scan the weights for anomalies. Per tensor: norms by layer, and norm-weight statistics. Per MLP neuron and per head: output norms, looking for units far outside their layer's distribution. If a few components stand out by large factors, they are prime suspects to test causally. If everything looks smooth, I'll fall back to activation-based localization of the loop mechanism."
+   },
+   {
+    "reply": 8,
+    "text": "Nothing in the weights stands out: no single neuron, head or norm weight is an extreme outlier, and the statistics change smoothly across layers. So if there is a defect, it isn't visible as a crude anomaly, and I need behavioural localization. Wrong answers can come from bad arithmetic or bad reasoning, so first I'll measure how often the model's own written arithmetic is wrong. I'll parse every \"a op b = c\" expression in the generated texts and check it. If arithmetic errors appear in a large share of wrong answers, arithmetic is a concrete target with a clear teacher-forced test: the logprob of the correct result token after \"a op b =\". If arithmetic is mostly correct, the failures are setup and reasoning errors plus loops, and I'll focus on the loop mechanism."
+   },
+   {
+    "reply": 9,
+    "text": "Many of these \"errors\" are parsing artifacts. For example, \"14 + 3 + 1.5 = 17.5\" was read as \"3+1.5=17.5\", because the regex caught the tail of a chained expression. I'll tighten the parser so the first operand must not be preceded by an operator or a parenthesis, then recount. That gives an honest arithmetic error rate. If errors in single binary operations are still common, especially multiplication and division, arithmetic is worth targeting. If they are rare, it isn't."
+   },
+   {
+    "reply": 10,
+    "text": "Arithmetic is not the problem. With the stricter parser, only 4 of 116 correct answers and 11 of 265 wrong finished answers contain a wrong binary operation (some of those still look like artifacts). Finished wrong answers are setup and reasoning errors that I can't easily pin to a component. The degenerate loops are the most specific mechanism: 26% of answers, almost all graded wrong. To judge what fixing loops could gain, I'll check how often a cut answer already contains the gold number before it starts looping. I'll also measure where the loop begins: the first line that later recurs at least three times. If gold often appears before the loop starts, preventing loops could recover real accuracy. If not, loop repair would mostly turn cut answers into wrong finished ones."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "fcc43fb5af4a5d5290d3ca0c2c1d727e8d293bd87632dc15193c97017637b6d0",
+ "effort": "medium"
+}

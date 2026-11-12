@@ -1,0 +1,35 @@
+{
+ "version": "rule-review-3",
+ "key": "faf42963dade99e4d204814b8ebda092ccc7ad2370e0d4f8afe1388c6eedf8dc",
+ "code_sha256": "d182f76448a45dcfac7fca79512b02895c3d795dce0741b54a287aa9c42193c2",
+ "clean_code_sha256": "d182f76448a45dcfac7fca79512b02895c3d795dce0741b54a287aa9c42193c2",
+ "code": "import random\nids=[p['id'] for p in probs]\nrng=random.Random(12345); sh=ids[:]; rng.shuffle(sh)\nDEV=sh[:1200]; HOLD=sh[1200:]\njson.dump(DEV,open('/work/dev_ids.json','w')); json.dump(HOLD,open('/work/holdout_ids.json','w'))\njson.dump(DEV[:512],open('/work/dev512.json','w'))\nopen('/work/notes.md','w').write(\"\"\"# Notes\nDEV=/work/dev_ids.json (1200, seed 12345 shuffle first 1200), HOLDOUT=/work/holdout_ids.json (1050). Never tune on HOLDOUT.\nCurrent edit: NONE.\nPass 1 plan: generate original on DEV[:512] (/work/dev512.json) with activations (all layers, mlp) for diagnosis.\n\"\"\")\nlen(DEV),len(HOLD),DEV[:3]",
+ "canonical_sha256": "3f604ccf3b468c552d90d95eb1748c477cfa7b8e0b01c8c6152410e71eba924a",
+ "history_sha256": "0c5f697e77d343917553c91e7e6a2c9ebe0977b3f1b903bc9d3304f5db1cff2a",
+ "context": {
+  "forward_passes_used": 0,
+  "forward_pass_budget": 50,
+  "python_runs_used": 1,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 1,
+    "text": "I'll start by orienting myself: checking whether earlier notes exist (in case this is a restarted session), looking at the practice data and the exact evaluation prompt, and listing the tensor names. Nothing is edited yet, and no forward pass is spent. This step only establishes the setup. If /work/notes.md exists, I will resume from its plan instead of starting over."
+   },
+   {
+    "reply": 2,
+    "text": "This is a fresh session with no notes. The prompt format matches the description (Gemma-3-style chat template). Before any diagnosis I will fix the problem sets with a seeded shuffle: DEV = 1,200 problems for choosing and tuning edits, HOLDOUT = 1,050 problems kept only for final confirmation. I will start /work/notes.md and also write the first DEV batch of 512 ids for a baseline generation pass of the original model. That pass should show how the model fails: wrong answers, missing answers, or cut-offs."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "16dd948c3fe63054a79ff3c0b20fbfe72a988033f5eeec99d2e8c664e13a446e",
+ "effort": "medium"
+}

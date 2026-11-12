@@ -1,0 +1,12 @@
+OUTPUT of Python run 139 of at most 300:
+```
+[copy head] (24->24%); switched md->plain 13.6->17.3% but cut 22.7->40%. Loops limit plain mode. | Pass 7 (planned): tf ORIGINAL, attn_layers [5,11,17,23] on 2 plain loop texts (/work/attn_texts.json) -> induction/copy heads. |  | Closed: no loop-specific attention head (full-attn heads induct equally on novel tokens, pass7). Weights natural (norm/head/neuron scans). Arithmetic mostly correct (parse artifacts); loops = stuck reasoning (gold before onset 11/89). | Pass 8 (planned): tf ORIGINAL on /work/onset_texts.json (all DEV cut answers gen_1+gen_6 both models + 
+
+[copy heads] (24->24%); switched md->plain 13.6->17.3% but cut 22.7->40%. Loops limit plain mode. | Pass 7 (planned): tf ORIGINAL, attn_layers [5,11,17,23] on 2 plain loop texts (/work/attn_texts.json) -> induction/copy heads. |  | Closed: no loop-specific attention head (full-attn heads induct equally on novel tokens, pass7). Weights natural (norm/head/neuron scans). Arithmetic mostly correct (parse artifacts); loops = stuck reasoning (gold before onset 11/89). | Pass 8 (planned): tf ORIGINAL on /work/onset_texts.json (all DEV cut answers gen_1+gen_6 both models + 
+
+[induction] unchanged (24->24%); switched md->plain 13.6->17.3% but cut 22.7->40%. Loops limit plain mode. | Pass 7 (planned): tf ORIGINAL, attn_layers [5,11,17,23] on 2 plain loop texts (/work/attn_texts.json) -> induction/copy heads. |  | Closed: no loop-specific attention head (full-attn heads induct equally on novel tokens, pass7). Weights natural (norm/head/neuron scans). Arithmetic mostly correct (parse artifacts); loops = stuck reasoning (gold before onset 11/89). | Pass 8 (planned): tf ORIGINAL on /work/onset_texts.json (all DEV cut answers gen_1+gen_6 bot 
+
+[rep neuron] GINAL teacher-forced on screen set /work/screen_texts.json (24 loop+8 ctrl+116 own-correct dev_a+876 DEV refs) token_logprobs = baseline for screening. |  | Edit A (current): zero down_proj columns of 76 rep neurons (/work/rep_cands.json, |d|>0.8) in layers 5,7,9,11,13,15,23. Pass 4: teacher-forced EDITED on screen set. |  | Closed: rep-neuron ablation (edit A) no effect on copying (tf pass4). No weight anomalies (SVD). | Finding: first token 'Let'(6481)=plain LaTeX mode vs 'Here'(8291)=markdown mode; plain more accurate within difficulty strata (~+9pts) 
+
+
+```

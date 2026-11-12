@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "6a052c3af0865c417845cf9aced325905ad4adba66133a36cb52781eb549c409",
+ "code_sha256": "8ea2b90a9ab010b06059726f4fb5a874324b3bb9e121d27abe9b6d4b8954a31d",
+ "clean_code_sha256": "8ea2b90a9ab010b06059726f4fb5a874324b3bb9e121d27abe9b6d4b8954a31d",
+ "code": "pat = re.compile(r'(?<![\\d.])(\\d+(?:\\.\\d+)?)\\s*([+\\-*x\\u00d7/]|\\\\times|\\\\cdot)\\s*(\\d+(?:\\.\\d+)?)\\s*=\\s*\\$?(\\d+(?:\\.\\d+)?)(?![\\d.])')\ndef check(t):\n    tot=bad=0\n    for a,op,b,c in pat.findall(t.replace(',','')):\n        a,b,c=float(a),float(b),float(c)\n        try:\n            v={'+':a+b,'-':a-b,'*':a*b,'x':a*b,'\\u00d7':a*b,'\\\\times':a*b,'\\\\cdot':a*b,'/':a/b if b else None}[op]\n        except KeyError: continue\n        if v is None: continue\n        tot+=1; bad+= abs(v-c)>1e-6*max(1,abs(v)) and abs(round(v,2)-c)>0.011\n    return tot,bad\nstats = {}\nfor name, grp in [('correct',[g for g in G if g['correct']]),('wrong_fin',[g for g in fin if not g['correct']]),('cut',cut)]:\n    cs=[check(g['text']) for g in grp]\n    stats[name]=dict(exprs=sum(c[0] for c in cs), bad=sum(c[1] for c in cs), ans_with_bad=sum(c[1]>0 for c in cs), n=len(grp))\n# example bad expressions\nexs=[]\nfor g in fin:\n    if g['correct']: continue\n    for a,op,b,c in pat.findall(g['text'].replace(',','')):\n        if op in '+-*/' and op:\n            v={'+':float(a)+float(b),'-':float(a)-float(b),'*':float(a)*float(b),'/':float(a)/float(b) if float(b) else 0}[op]\n            if abs(v-float(c))>0.011: exs.append(f'{a}{op}{b}={c}')\nstats['bad_examples']=exs[:15]\nstats",
+ "canonical_sha256": "c1a8339035a234819dc1a24f5cdbe0050a8f7b67feffc23807c11615afff7db2",
+ "history_sha256": "ca81583d6c57e8599ba605ed8106ce936d8266a82f06f6f2979a43ce0bc6dbea",
+ "context": {
+  "forward_passes_used": 1,
+  "forward_pass_budget": 50,
+  "python_runs_used": 6,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 5,
+    "text": "Two clear failure modes appear. Cut answers are degenerate loops: only 55% of their last 40 lines are distinct, versus 99.5% for finished answers. The model also ignores the required \"####\" marker in 72% of answers, so grading falls back to the last number in the text. Next I'll check whether marker use correlates with correctness, and read endings of finished wrong answers, to see if the fallback picks the wrong number. I'll also measure how early the loops start. If answers without the marker are often wrong because their last number isn't the final answer, then instruction-following on the final format is a mechanism to target. If they are wrong because the computation is wrong, the format matters less."
+   },
+   {
+    "reply": 6,
+    "text": "Format is not the problem: answers without \"####\" end with \"Final Answer: \\boxed{...}\", which the grader reads correctly. Those answers are actually more accurate (36%) than marker answers (21%). The failures are wrong reasoning and the loops. There seem to be two distinct response styles. One is a terse LaTeX \"$...$\" style ending in a boxed answer. The other is a markdown style with numbered bold steps (\"**Calculate...:**\") ending in \"####\", and the loop tails look like that style. I'll classify every answer by style from its opening and compare cut rate and accuracy per style. If the markdown style accounts for most cut-offs and lower accuracy, then the style choice, made at the first answer tokens, is a concrete, localizable decision point I could steer."
+   },
+   {
+    "reply": 7,
+    "text": "Both styles fail and both loop: the plain style is cut 31% of the time, the markdown style 21%. So the style choice is not the culprit. Reported results for Gemma-3-1B-it are around 60% on GSM8K, so 22.7% with frequent degenerate loops suggests something specific in the weights may be broken rather than ordinary model weakness. Before relying on noisy correct-vs-wrong activation contrasts, which are confounded by difficulty, I'll scan the weights for anomalies. Per tensor: norms by layer, and norm-weight statistics. Per MLP neuron and per head: output norms, looking for units far outside their layer's distribution. If a few components stand out by large factors, they are prime suspects to test causally. If everything looks smooth, I'll fall back to activation-based localization of the loop mechanism."
+   },
+   {
+    "reply": 8,
+    "text": "Nothing in the weights stands out: no single neuron, head or norm weight is an extreme outlier, and the statistics change smoothly across layers. So if there is a defect, it isn't visible as a crude anomaly, and I need behavioural localization. Wrong answers can come from bad arithmetic or bad reasoning, so first I'll measure how often the model's own written arithmetic is wrong. I'll parse every \"a op b = c\" expression in the generated texts and check it. If arithmetic errors appear in a large share of wrong answers, arithmetic is a concrete target with a clear teacher-forced test: the logprob of the correct result token after \"a op b =\". If arithmetic is mostly correct, the failures are setup and reasoning errors plus loops, and I'll focus on the loop mechanism."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "6076dff7b00bd91d9dd1a174705273c873a19bfd8172d660c203099271639246",
+ "effort": "medium"
+}

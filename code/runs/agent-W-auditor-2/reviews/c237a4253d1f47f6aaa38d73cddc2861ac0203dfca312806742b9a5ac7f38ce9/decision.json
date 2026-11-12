@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "c237a4253d1f47f6aaa38d73cddc2861ac0203dfca312806742b9a5ac7f38ce9",
+ "code_sha256": "1653344d009e4476cc9ec9ff79f5ea9fea4ba7f68ec938dcf2d30ff0982d04a9",
+ "clean_code_sha256": "1653344d009e4476cc9ec9ff79f5ea9fea4ba7f68ec938dcf2d30ff0982d04a9",
+ "prompt_sha256": "f4439c7561d1110852db9c63262545bd7cc62ad7d1e1e14de79dd2355417a4f3",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "dtab computes per-neuron Cohen's d (difference of means over pooled SD) on original-model pass-1 activations, gen_1_acts mlp_mean_answer and mlp_last_prompt, comparing correct vs wrong and cut vs finished answers. These are statistics used to find components. No edit is saved, applied or simulated, and no stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 81400,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 446,
+  "output_tokens_details": {
+   "thinking_tokens": 245
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 81400,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 446,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 81400,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 81400
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.660128,
+ "t": 1794147899.252962
+}

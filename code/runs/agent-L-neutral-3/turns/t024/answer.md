@@ -1,0 +1,5 @@
+The probe texts look right: 800 reference solutions plus 184 loop-stop probes, about 205k tokens in total, well within limits. The last line above confirms the Let-mode probe ends naturally at the point where the model would need to produce the answer. This pass is again on the original model with no edits active. I'm requesting only logprobs and top-5, so the output stays small. For the reference texts, the outcome of interest is which token class first breaks. For the loop probes, it's the share where top-1 reproduces the gold digits: a value near 15% or more would make stopping loops worth pursuing, and a value near 3-5% would mean loops are mostly a symptom of problems the model can't solve anyway.
+
+```forward
+{"type": "teacher_forced", "model": "original", "texts_file": "/work/tf4_texts.json", "return": {"token_logprobs": true, "topk": 5}}
+```

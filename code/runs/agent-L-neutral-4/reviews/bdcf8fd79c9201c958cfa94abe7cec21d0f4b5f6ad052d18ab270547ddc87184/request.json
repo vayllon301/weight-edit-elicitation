@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "bdcf8fd79c9201c958cfa94abe7cec21d0f4b5f6ad052d18ab270547ddc87184",
+ "code_sha256": "91b80714530b0a1f88caf2b187eeb0dde5744afbeb254da49227fb8cb852fe93",
+ "clean_code_sha256": "91b80714530b0a1f88caf2b187eeb0dde5744afbeb254da49227fb8cb852fe93",
+ "code": "with open('/work/notes.md','a') as f:\n    f.write(\"Pass43 result C(-1.0) both dev_a1: +0.39+-1.88 (12/11), cut 28.1->21.1% (C(-1.5): -1.56, 14.1%). Futility rule (set now): after dev_a2 stop C(-1.0) if pooled DEV < +0.8.\\nPass 44 (planned): generate BOTH C(-1.0) unchanged on /work/dev_a2.json.\\n\")\nlen(edited())",
+ "canonical_sha256": "95344eb1095726c2a5270db0b118616c7ac9a2382708df472774a33332ce12db",
+ "history_sha256": "c4b0ac6f454a35b9fe119bbebcf75316fe861b1ef968ac4d110d9f674f47f190",
+ "context": {
+  "forward_passes_used": 43,
+  "forward_pass_budget": 50,
+  "python_runs_used": 148,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "425bcc284393d5efc62601431241a423ce0c3785dc9c4762d9af1b15697a8c87",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 193,
+    "text": "The attention-only screen is done. Here is the same table with all three variants. C_attn passes if onset \u2264 \u22120.29 or P_onset \u2264 0.64, with flip proxy \u2264 0.29%."
+   },
+   {
+    "reply": 194,
+    "text": "Neither half is cleaner than the whole. The attention-only half gives just 18% of C's onset effect (\u22120.08) while keeping 47% of its flip proxy (0.41%). The MLP-only half gives 55% of the onset effect with 77% of the flips. The full edit's onset effect (\u22120.44) is larger than the two halves combined (\u22120.32), so the halves reinforce each other through the residual stream, and C applied to both modules is the most selective option. I'm closing the module-split line and restoring nothing yet, because one dose question remains open.\n\nLoop-freeing had already plateaued between \u03b2 = 1.5 and 2.25, with the same cut share. The dose that frees most loops at the least collateral may lie below 1.5. I'll test C(\u22121.0), built the same way, on all of DEV (4 passes: dev_a1, dev_a2, dev_b1, dev_b2). The pre-registered rule: proceed to HOLDOUT (holdout_1, 2, 3, X1, 4 passes) only if pooled DEV gain is at least +1.9, i.e. 2 points above C(\u22121.5)'s DEV result of about \u22120.1 over 1,024. Then replace C(\u22121.5) only if C(\u22121.0) also matches or beats C(\u22121.5)'s +2.8 on those same 1,024 HOLDOUT problems. Otherwise the submission stays C(\u22121.5)."
+   },
+   {
+    "reply": 195,
+    "text": "C(\u22121.0) is saved, using the same construction as the submission with only the strength changed, in 14 tensors. This pass is the first of four DEV both-passes, on dev_a1, where C(\u22121.5) gave \u22121.56 (11/15) with cut-offs at 14.1%. A lower dose that keeps most of the loop-freeing should show cut-offs near 15\u201317% and fewer right\u2192wrong flips among finished answers. Cut-offs back near 25% would mean the dose is too low."
+   },
+   {
+    "reply": 196,
+    "text": "C(\u22121.0) on dev_a1 gives +0.39 \u00b1 1.88 (12 wrong\u2192right, 11 right\u2192wrong), against \u22121.56 for C(\u22121.5) on the same problems. The original's answers are identical to pass 39 (21.9%, 70 cut), so the two doses can be compared directly. The lower dose frees fewer loops (cut-offs 21.1% against 14.1%) and causes fewer losses (11 against 15). That matches the trade-off the flip proxy predicted, but the difference lies well within noise.\n\nTo reach the +1.9 pooled DEV bar, the remaining three DEV sets would need to average about +2.4, which is unlikely. I'm adding a futility stop now, before seeing more data: after dev_a2, if pooled DEV for C(\u22121.0) is below +0.8, I stop the C(\u22121.0) line and keep the remaining passes. Next is dev_a2, where C(\u22121.5) gave \u22121.17."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "cc16bcc0351ca440f58aa4797bf762742082fb9264051d3fc12f1db7c94cec30",
+ "effort": "medium"
+}

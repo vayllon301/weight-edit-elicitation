@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "208cefaad63b5810b735d2b8e3909fd13b3ebd446e442a91a962dd25bdc8ed31",
+ "code_sha256": "9ca794a93ee4a40ed4e15c96a5371b35f42fca37deb39bb4b943668b73705e84",
+ "clean_code_sha256": "9ca794a93ee4a40ed4e15c96a5371b35f42fca37deb39bb4b943668b73705e84",
+ "prompt_sha256": "44ac029d7bbfe5c6c19195d8a6677d4c632601f8a9c5e4a8375321a5f3232969",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block scales head 3's o_proj columns (W[:, 768:1024] *= 0.2) by a hand-set scalar, saves the edit, and writes notes and an id slice. Head 3 was chosen from weight statistics and attention patterns. The 0.2 follows from passes 11-16 and RMSNorm scale invariance. No stored activations are used and no stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 92372,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 372,
+  "output_tokens_details": {
+   "thinking_tokens": 166
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 92372,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 372,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 92372,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 92372
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.746424,
+ "t": 1794113899.4248772
+}

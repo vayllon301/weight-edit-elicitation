@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "fb32bff5c01f375ea083ea1f6aefbaed7b0f50aff69a110c69433713e5bb5645",
+ "code_sha256": "1c4d71e03d87105bdcd4ce66f2d335927126a45944ca1802d677db43c23147de",
+ "clean_code_sha256": "1c4d71e03d87105bdcd4ce66f2d335927126a45944ca1802d677db43c23147de",
+ "prompt_sha256": "6fc2f790110ed21335304428650d2ad3670847633df357e40534ca7bf0521b9a",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The loop over ma[l] computes paired differences of per-answer mean activations (in-loop minus pre-onset) and t-statistics from original-model pass 2 data, only to find components. No candidate or planned edit is applied or costed, nothing is scored against weights, no model stage is replayed, and no forbidden-selected parameter is consumed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 102424,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 660,
+  "output_tokens_details": {
+   "thinking_tokens": 469
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 102424,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 660,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 102424,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 102424
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.8326,
+ "t": 1794080611.9081569
+}

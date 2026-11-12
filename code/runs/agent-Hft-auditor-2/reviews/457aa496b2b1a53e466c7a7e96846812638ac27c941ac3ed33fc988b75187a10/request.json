@@ -1,0 +1,57 @@
+{
+ "version": "rule-review-3",
+ "key": "457aa496b2b1a53e466c7a7e96846812638ac27c941ac3ed33fc988b75187a10",
+ "code_sha256": "2fbdfe7107187b03403d851bc929072eef05e3fa7cdcffe1a99582b3bee4bc4d",
+ "clean_code_sha256": "2fbdfe7107187b03403d851bc929072eef05e3fa7cdcffe1a99582b3bee4bc4d",
+ "code": "sep=float((X20[reg==1].mean(0)-X20[reg==0].mean(0))@dreg)\nr0m=float(X20[reg==0].mean(0)@dreg); r1m=float(X20[reg==1].mean(0)@dreg)\n(len(byp), len(pairs), round(sep,2), round(r0m,2), round(r1m,2), round(float(dAC.mean()),2), round(float(dAC.std()/np.sqrt(len(dAC))),2), round(float(np.mean([v['A'] for v in pairs])),2), round(float(np.mean([v['C'] for v in pairs])),2))",
+ "canonical_sha256": "89c12c123c89eb6ae1ebe34793a03dd48087f7c9f4d3dd42743aa6b7db494c55",
+ "history_sha256": "059537ce1486c511966d173d8216885b6a8ef40a82f63729150892cc62ee8034",
+ "context": {
+  "forward_passes_used": 6,
+  "forward_pass_budget": 50,
+  "python_runs_used": 69,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.17.mlp.down_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "fc89e363e4e9b26ee3fba6ecd167e2d37fee6f22a67ce36b7dd60929847d42f4",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "for l,n in [(16,180),(16,3729),(17,3621)]:\n    Dl=load_original(f'model.layers.{l}.mlp.down_proj.weight').numpy()\n    cd=float(d@Dl[:,n]/np.linalg.norm(Dl[:,n]))\n    a=ML[:,l,n].astype(np.float32)\n    print(l,n,'cos(col,d)',round(cd,3),'abs write along d reg0',round(float(a[reg==0].mean()*cd),3),'reg1',round(float(a[reg==1].mean()*cd),3))",
+    "canonical_sha256": "b055fdffe254c8c1a39d14295740e40814857834e7e21de030a934d77c27a9c3",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 74,
+    "text": "Loop onsets are spread widely (10th to 90th percentile at tokens 284 to 715), and 57% happen before token 512. The sliding-window hypothesis is refuted. Loops are a diffuse long-generation failure, not tied to the window boundary.\n\nI'll go back to the regime switch, which is the one clean causal lever. The eval instruction includes \"End with the final answer on its own line in the form: #### <number>\", and the regime that obeys it (R0) is the weaker one. If that format sentence itself pushes prompts toward R0, the format request triggers a less careful mode, a concrete way capability could be held back. Pass 3 has last-prompt hidden states for the same 150 problems with the eval instruction (A) and with only \"Solve the problem step by step.\" (C), so I can project both onto the regime direction at layer 20 from pass 1. Paired shifts toward R0 under A would support \"the format request triggers the weak regime\". No shift closes it."
+   },
+   {
+    "reply": 75,
+    "text": "The numbers are meaningless: in run 65 I reused the name `d` for the loop analysis, so this projected onto an unnormalised layer-24 loop direction rather than the layer-20 regime direction. That is why the \"separation\" came out negative and in the thousands. I'll rebuild the regime direction from the pass-1 last-prompt states (a unit vector, R1 mean minus R0 mean at layer 20, massive dims zeroed) under a distinct name and repeat the A-vs-C comparison. The interpretation stays the same: a paired A\u2212C shift that is a sizeable negative fraction of the R1\u2212R0 separation means the format sentence pushes prompts toward the weaker regime."
+   },
+   {
+    "reply": 76,
+    "text": "The key error means some problem keys lack an A text, probably because two problems share their first 80 characters or a framing puts text before the problem. Run 67 found 150 A/C pairs with the guard in place, so I'll restore the guard (keep only keys that have both A and C) and recompute. The analysis is otherwise unchanged."
+   },
+   {
+    "reply": 77,
+    "text": "This error is harmless: the previous block stopped at the key error before defining `sep`, `r0m` and `r1m`, so `sep` still holds the stale value. I'll recompute all of them in this block from the regime direction (`dreg`, already saved) and then report the A\u2212C comparison."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "2be07afdaa485623796ace87a4f47824e83859714d8d70b1ded7834e8bb52be8",
+ "effort": "medium"
+}

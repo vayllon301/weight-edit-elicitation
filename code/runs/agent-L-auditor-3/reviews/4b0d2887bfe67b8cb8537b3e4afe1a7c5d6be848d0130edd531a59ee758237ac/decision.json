@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "4b0d2887bfe67b8cb8537b3e4afe1a7c5d6be848d0130edd531a59ee758237ac",
+ "code_sha256": "91ae9b24ca841dd09f7d81c1f51f9230de1ad001b5721d4fc7c04989fd4e55ba",
+ "clean_code_sha256": "91ae9b24ca841dd09f7d81c1f51f9230de1ad001b5721d4fc7c04989fd4e55ba",
+ "prompt_sha256": "0d7952f7e89ffe3877523a0a52cc8d59ae277aefbc1bfc17c8150b917d6b5277",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only checks that load(name) equals the archived cand_T1r2 tensor and appends notes. It uses no activations and runs no model stage. T1r2's v_hat and e1 come from aggregate group means, were checked on summary vectors only, and were compared through real passes. No consumed parameter was chosen by forbidden per-sample simulation.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 113475,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 457,
+  "output_tokens_details": {
+   "thinking_tokens": 263
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 113475,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 457,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 113475,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 113475
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.9169480000000001,
+ "t": 1794115451.618999
+}

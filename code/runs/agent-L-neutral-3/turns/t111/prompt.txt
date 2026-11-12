@@ -1,0 +1,17 @@
+OUTPUT of Python run 81 of at most 300:
+```
+original answers 1250
+cat   ####inline  ####line  FinalAnswer  other
+mode                                          
+here         112       348            0      3
+let            0         2          469      0
+used_marker by mode {'here': 0.752, 'let': 0.004}
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_81.py", line 23, in <module>
+    print('finished n',len(dg),'acc by mode',dg.groupby('mode').corr.mean().round(3).to_dict())
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'function' object has no attribute 'mean'
+
+```

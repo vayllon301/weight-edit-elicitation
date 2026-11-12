@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "607ad333a61d2979b35d6bf39ca5f187571759b5a0efae75591ce00a5443ffd8",
+ "code_sha256": "e3f9c7d005894ecbedbc5bb87a63c98de668ec8265982a0a8ed7f68b8b66713b",
+ "clean_code_sha256": "e3f9c7d005894ecbedbc5bb87a63c98de668ec8265982a0a8ed7f68b8b66713b",
+ "prompt_sha256": "4a81be2cc37e7fa803f97eb9dcab5b82c29e139e823240592e6a5343e5f10b40",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only builds prompt texts, groups and token lengths for a planned teacher-forced pass, then saves them to files. It touches no activations, simulates no candidate edits and does not replay the model. Preparing inputs for a forward pass is allowed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 4680,
+  "cache_read_input_tokens": 2995,
+  "output_tokens": 158,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 4680,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 158,
+    "cache_read_input_tokens": 2995,
+    "cache_creation_input_tokens": 4680,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 4680
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.041207,
+ "t": 1794179525.06483
+}

@@ -1,0 +1,46 @@
+{
+ "version": "rule-review-3",
+ "key": "23f945bb8845e711ee3049d1c529587d1893db96f4335f0ae76e180bce2199a9",
+ "code_sha256": "e33dd521e379b02d2593b30becb73c178d8ed2f6e90978655956ddbcd2caeb32",
+ "clean_code_sha256": "e33dd521e379b02d2593b30becb73c178d8ed2f6e90978655956ddbcd2caeb32",
+ "code": "sot=tok.token_to_id('<start_of_turn>'); eot=tok.token_to_id('<end_of_turn>')\nres=[]\nfor i in range(2):\n    ii=ids12[i,:L12[i]].astype(int); toks=[tok.decode([int(x)]) for x in ii]\n    sots=[j for j,x in enumerate(ii) if x==sot]\n    s=sots[-1]+3\n    tmpl=sorted(set([j for k in sots for j in (k,k+1,k+2)]+[j for j,x in enumerate(ii) if x==eot]))\n    sj=[j for j in range(s) if 'Solve' in toks[j]][0]\n    groups={'bos':[0],'template':[j for j in tmpl if j<s],'problem':[j for j in range(1,sj) if j not in tmpl],'suffix':[j for j in range(sj,s) if j not in tmpl],'response':list(range(s,L12[i]))}\n    for h in range(4):\n        a=A[i,h,s:L12[i],:L12[i]].mean(0)\n        res.append((i,h,{k:round(float(a[v].sum()),2) for k,v in groups.items()}, [(int(j),repr(toks[j])[:14],round(float(a[j]),2)) for j in np.argsort(-a)[:5]] if h==3 else None))\n(repr(toks[s-3:s+1]), res)",
+ "canonical_sha256": "c40a111b8b5a48139cf82a38ec4861c29db57b941d4ac1e24ec5a18ff39677fe",
+ "history_sha256": "7aa31beaed80811832df9c34703929a61abe2256c65725e27e214acacb68e9dd",
+ "context": {
+  "forward_passes_used": 24,
+  "forward_pass_budget": 50,
+  "python_runs_used": 118,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.mlp.down_proj.weight",
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "efab2ab8994a1a8ccb15d2fc32780d03e2c15fac4b4ba8d8a6375b177e5287c4",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 140,
+    "text": "E10 is saved: E4 plus head 3's output reversed at half strength. I'll run the paired generation on dev_b[:256] and compare it with E9's +9.0 on the same problems."
+   },
+   {
+    "reply": 141,
+    "text": "The strength series turns out non-monotone. Original weight (1): 18.75%. Zero: 27.7% (+9.0). Reversal at \u22120.5: 10.2% (\u22128.6, 11 wrong\u2192right, 33 right\u2192wrong), with almost no loops but many short wrong answers. So head 3 mixes two things: a component that causes looping and suppression, and a useful component the model needs for correct reasoning. Zeroing removes both, and reversing destroys the useful part. A narrower edit that removes only the harmful part should do better than E9. My working hypothesis, from fwd_12/fwd_19, is that the harmful part is what head 3 reads from the chat-template tokens, the source of the eval-format gate. Step 1 is to check in fwd_12 (attention for 2 texts at layers 5, 11, 17 and 23) exactly which token positions L11 head 3 attends to from response queries, grouped by token string. The share falling on template tokens such as \"<start_of_turn>\", \"user\", \"model\" and \"<end_of_turn>\" tells me which tokens' value vectors to target. A large share on a few template tokens would support a value-subspace edit. Attention spread over the problem text would make that edit unattractive."
+   },
+   {
+    "reply": 142,
+    "text": "fwd_12 holds L11 attention for 2 texts (167 tokens): the add2 probe and a v0 reference solution, both in eval chat format. For each text I'll locate the response start (after \"<start_of_turn>model\\n\") and average head 3's attention over response queries. I'll then report the mass on BOS, template tokens, problem text, prompt suffix and earlier response tokens, plus the top key positions by mass with short benign token strings. Heads 0\u20132 serve as a comparison."
+   },
+   {
+    "reply": 143,
+    "text": "The locator failed because the token strings don't match my guess; \"model\" may carry a different decoded form. I'll locate the response by token id instead: find the second '<start_of_turn>' id (via tok.token_to_id) and skip the \"model\" and newline tokens after it. Then I'll repeat the same attention-mass grouping for L11 heads 0\u20133."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "cb8bf33d814d58c3440b67f1442b813530bfb250b5e2c234caae7930e82fffef",
+ "effort": "medium"
+}

@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "619247588db697abe911d54e89beafc687bc7915fa9958ea3dbea6d65e2256a8",
+ "code_sha256": "dacc2a6dd1a04a52e5bf6423a80a433925da0a0f24906b93e9058beacb53f6be",
+ "clean_code_sha256": "dacc2a6dd1a04a52e5bf6423a80a433925da0a0f24906b93e9058beacb53f6be",
+ "code": "out={}\nfor L in [5,11,17,23]:\n    for h in range(4):\n        e=[];l=[]\n        for t,(s_,e_,sot,eot,n) in enumerate(res):\n            q0=sot[0]+3; q1=eot[0]; r0=sot[1]+3\n            a=np.asarray(A[L][t,h,r0:n,:n],dtype=np.float32)\n            mass=a[:,q0:q1].sum(1)\n            k=len(mass)//3\n            e.append(mass[:k].mean()); l.append(mass[-k:].mean())\n        out[f'L{L}h{h}']=(round(float(np.mean(e)),3), round(float(np.mean(l)),3))\nout",
+ "canonical_sha256": "dd5af1426193e3169742d808190b075664be7fa67b6a0db557cca18af1a8ba76",
+ "history_sha256": "03b8d70e243851f8cfd588c22cfdc705453292a6157563d3da9594e946d70feb",
+ "context": {
+  "forward_passes_used": 20,
+  "forward_pass_budget": 50,
+  "python_runs_used": 76,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "4db3c711591d824fdcbfcd5627da15b27833d9af3977dcdb3ac25e7f5ea10c89",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 95,
+    "text": "The result digits of the references are predicted almost as confidently as the continuation digits of numbers: mean logprob -0.29, with only 3.9% below -2. So once the model sets up an operation, it computes it correctly. The harder part is choosing the operands, which the model predicts less well (mean logprob -0.69). The poorest prediction is the text tokens, but that partly reflects style differences between the references and the model's own wording. This agrees with the wrong answers I read: the failures lie in setting up the problem, such as treating rates as totals or dropping conditions, not in arithmetic.\n\nOne concrete hypothesis about dropped conditions is that, later in an answer, the model stops consulting the question. That would be carried by full-attention heads that read back to the problem text. Pass 7 already saved attention maps for layers 5, 11, 17 and 23 on two texts. I'll measure, per head, the share of attention that response tokens put on the question span, and how it changes with position in the answer. This is a cheap descriptive step that needs no pass. A head whose question attention is large and fades late in long answers would be a candidate for a causal test. If all heads look alike, I'll drop this line."
+   },
+   {
+    "reply": 96,
+    "text": "Pass 7 holds attention maps for layers 5, 11, 17 and 23 on two looping texts. For each of the 4 heads per layer, I'll compute the mean attention mass that response tokens place on the question tokens, split into the first and last third of the response. I'll locate the question span from the chat-template tokens."
+   },
+   {
+    "reply": 97,
+    "text": "The decoded strings didn't match the special-token names. I'll find the turn markers by token id instead, using tok.token_to_id, and print the spans before computing the attention shares."
+   },
+   {
+    "reply": 98,
+    "text": "The turn markers are found: the question runs from about token 4 to the first end-of-turn marker, and the response starts 3 tokens after the second start-of-turn marker. I'll now compute, per layer and head, the mean attention mass from response tokens to the question span, in the first and last third of each response, averaged over the two texts."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "3132794a7be540ef2a7789338579343e1d19e06590007f4049c795aab4dfeac5",
+ "effort": "medium"
+}

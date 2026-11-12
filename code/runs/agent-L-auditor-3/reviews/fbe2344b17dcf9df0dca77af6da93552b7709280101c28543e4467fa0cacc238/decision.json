@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "fbe2344b17dcf9df0dca77af6da93552b7709280101c28543e4467fa0cacc238",
+ "code_sha256": "a9cc2c630c1fba921ceec442fe0ef66127bda2d9a707f0a0e56e40a8eea66fa1",
+ "clean_code_sha256": "a9cc2c630c1fba921ceec442fe0ef66127bda2d9a707f0a0e56e40a8eea66fa1",
+ "prompt_sha256": "ee8c5af563d100deac2f6bfe1966275db679ff8c0656a7a6e5c2557644c2ce35",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block reads token_logprobs from pass 4, a teacher-forced pass on the original model. It computes paired mean log-prob differences of reference bodies across prompt variants. These are statistics of observed pass outputs. No candidate edit is applied or predicted, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 76402,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 170,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 76402,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 170,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 76402,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 76402
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.614624,
+ "t": 1794112352.110545
+}

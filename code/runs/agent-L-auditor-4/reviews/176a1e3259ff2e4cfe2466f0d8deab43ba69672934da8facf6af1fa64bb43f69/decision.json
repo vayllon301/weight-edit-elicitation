@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "176a1e3259ff2e4cfe2466f0d8deab43ba69672934da8facf6af1fa64bb43f69",
+ "code_sha256": "97a1d694a8b1554440edcf7d0ac43e092deef17be29e8f2dd37582bd86c6ab3c",
+ "clean_code_sha256": "97a1d694a8b1554440edcf7d0ac43e092deef17be29e8f2dd37582bd86c6ab3c",
+ "prompt_sha256": "0dfb63eea01b8d1b4a5cac11c9cc7066b0546c120e94c6edd0a28d177859c20e",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only reads the top-k ids and logprobs that pass 9 returned for the original model and counts the digit and non-digit mass at digit-target positions. No edit is saved, no candidate is applied to samples, no forward pass is replayed in the kernel, and no forbidden-selected parameter is used.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 7416,
+  "cache_read_input_tokens": 13533,
+  "output_tokens": 177,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 7416,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 177,
+    "cache_read_input_tokens": 13533,
+    "cache_creation_input_tokens": 7416,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 7416
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0655826,
+ "t": 1794180290.74244
+}

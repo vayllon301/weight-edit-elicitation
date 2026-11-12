@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "91a7bafc40e2e66fd05387c2ff8f69fd8b8d4ebcacd81e6c1e2654739d169c16",
+ "code_sha256": "ea1823c34a4072bae67496f974f1b0edb95f815b4adcbd68bcce62d6df609388",
+ "clean_code_sha256": "ea1823c34a4072bae67496f974f1b0edb95f815b4adcbd68bcce62d6df609388",
+ "code": "for n in (53, 54, 55):\n    s = open(f'/work/blocks/block_{n}.py').read()\n    print(f'===== block {n} ({len(s)} chars) =====')\n    print(s[:2600])",
+ "canonical_sha256": "9a830fe780a0dfc0ae9e5d447e02eb04be1d718f584199e845c933c0d44e1ae8",
+ "history_sha256": "26591bab65aa777d4a3bdd9a110f259c8ce9bf2cbbdc68de016ecaee05360b0b",
+ "context": {
+  "forward_passes_used": 8,
+  "forward_pass_budget": 50,
+  "python_runs_used": 83,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 89,
+    "text": "The keyword map shows that per-head q/k/v/o weights (block 39) and the q/k norms (blocks 37, 68, 72) were examined, and the G1-only neurons came from blocks 52 to 55. No block ever saved an ablation of those 66 neurons; the only edits ever saved were E2 and D1. So the \"solve-math\" neurons were classified as style units without any causal test.\n\nBefore spending a pass on them, I want to see exactly what blocks 39 and 68 checked in the attention weights. That tells me whether local-layer heads are already cleared or are still an open line. I will print the source of those two blocks, truncated."
+   },
+   {
+    "reply": 90,
+    "text": "Blocks 39 and 68 checked the attention weights only at the whole-matrix level: whether heads were swapped across layers, and whether RoPE frequency-band capacity looked normal. No component of the attention mechanism has been tested causally. Nobody has asked what answer tokens read from the end of the prompt, where the 66 \"solve-math\" neurons fire.\n\nThe global-layer attention patterns from pass 7 (text A, one of the model's own correct answers) let me check this cheaply. For each global head, I will measure how much answer tokens attend to the BOS sink, the problem body, the instruction, the final template tokens (\"<end_of_turn>\\n<start_of_turn>model\\n\") and the answer itself.\n\nIf some head reads the last prompt tokens heavily, the mode decided there (LaTeX vs markdown, and possibly a brake) is broadcast to every answer token through that head. That would make \"ablate the source neurons\" or \"ablate that head\" a well-founded causal test. If no head reads them, a mode stored at the last prompt token can reach the answer only weakly, and I will rank the U1 test (ablating the 66 neurons) lower.\n\nFirst I need the file layout of fwd_7."
+   },
+   {
+    "reply": 91,
+    "text": "Text A has 244 tokens, with full attention maps for the four global layers. I will split the positions into BOS, opening template, problem body, instruction, closing template (the last 5 prompt tokens, from \"<end_of_turn>\" through \"model\\n\"), and answer.\n\nFor every global head, I will then measure the mean attention mass from answer tokens onto each region, plus the mass on the single last prompt token. A head that puts, say, more than 20% of its attention on the closing template would be the channel that carries the prompt-time \"mode\" into every answer token. That would justify a causal test of the 66 last-token \"solve-math\" neurons or of that head. If every head reads mainly BOS, the problem and nearby answer tokens, the mode channel goes through local layers or is weak."
+   },
+   {
+    "reply": 92,
+    "text": "Attention from answer tokens to the end of the prompt is concentrated in the global layer 11. Heads L11h2 and L11h3 put about 26% of their attention on the single last prompt token, the \"\\n\" after \"model\", and L11h0 puts 9% there. They use that token almost like a sink: L11h2 puts only 4% on BOS, where the other global heads put 20\u201348%.\n\nSo L11 broadcasts the state at the last prompt token to every answer token, and the 66 \"solve-math\" neurons fire exactly at that token. They respond only to a math problem combined with the solve instruction. This gives a concrete candidate circuit: task-specific neurons write a \"mode\" at the end of the prompt, and L11h2/h3 copy it into the whole answer.\n\nD1 already removed one direction of that mode (dm[10]) and changed only the style. But the 66 neurons were never ablated causally, and their writes may carry more than dm[10]. Before spending a pass, I will recover exactly how I selected them, from blocks 54 and 55, so the ablation uses that list and not a new selection."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "34453db39cc616fe46bf9ae380708b4ba86d8617e16a38151d1ae86ea0dd9f47",
+ "effort": "high"
+}

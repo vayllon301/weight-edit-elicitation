@@ -1,0 +1,16 @@
+OUTPUT of Python run 187 of at most 300:
+```
+random-direction level 1.0; plateau k=1..16: [1.01, 0.99, 1.01, 1.06, 1.04, 1.07, 1.01, 1.07, 0.98, 1.03, 1.05, 0.99, 0.97, 1.05, 1.02, 1.02]
+bulk k=17..40: [1.04, 1.05, 1.09, 1.22, 0.98, 1.12, 0.92, 1.06, 1.18, 1.02, 1.1, 1.07, 1.25, 1.07, 0.97, 1.16, 1.03, 1.14, 1.11, 1.19, 1.23, 1.07, 1.05, 1.09]
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_187.py", line 8, in <module>
+    print('tail k=200,400,600,900:', [round(vsig(k), 2) for k in [200, 400, 600, 900]])
+                                            ^^^^^^^
+  File "/work/blocks/block_187.py", line 3, in vsig
+    d = Vt[k].reshape(4, 256); w = (d ** 2).sum(1)
+        ~~^^^
+IndexError: index 900 is out of bounds for axis 0 with size 640
+
+```

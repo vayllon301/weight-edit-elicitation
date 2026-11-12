@@ -1,0 +1,98 @@
+{
+ "version": "rule-review-3",
+ "key": "cac85ebdf3c889956df877e74ab9bc3dce7bb7a55504fe14346f4e6ef181edc2",
+ "code_sha256": "d55c84654333474e0d94ea2fbd4fbfae7566ad23944f173c439ee8a90c8ec1bf",
+ "clean_code_sha256": "d55c84654333474e0d94ea2fbd4fbfae7566ad23944f173c439ee8a90c8ec1bf",
+ "code": "for nm in ['model.layers.17.mlp.down_proj.weight','model.layers.18.mlp.down_proj.weight']:\n    drop_edit(nm)\nW=load_original('model.layers.16.mlp.down_proj.weight').clone(); W[:,3729]=0.0\nsave_edit('model.layers.16.mlp.down_proj.weight', W)\nwith open('/work/notes.md','a') as f:\n    f.write(\"\\nPass 48 (E6 dev_e) refused as identical to pass 26 => restored E6 == measured E6. No fresh practice ids left (all 2250 used).\\n\"\n            \"DOSE REPLICATION (characterization only, submission E6): CURRENT EDIT C0 (L16 col 3729 = 0 only). Pass 48 plan: 'both' C0 on /work/dev_f.json (B there +4.3). Then C2 on dev_f. Restore E6 after.\\n\")\nedited()",
+ "canonical_sha256": "a68fc3fcd8aedd6cd5be6e1a733fe93afed63b825dd8af84e2d24c02e82305b2",
+ "history_sha256": "e6f2b47e9283bd92e124d90270f2411bb20c724b49ad1937f582f734d327ebb6",
+ "context": {
+  "forward_passes_used": 47,
+  "forward_pass_budget": 50,
+  "python_runs_used": 158,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.18.mlp.down_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "8b63903da38d6907c7ad330c4611039e6286be5d73ad324e458e432f4685d3b3",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "for l,n in [(16,180),(16,3729),(17,3621)]:\n    Dl=load_original(f'model.layers.{l}.mlp.down_proj.weight').numpy()\n    cd=float(d@Dl[:,n]/np.linalg.norm(Dl[:,n]))\n    a=ML[:,l,n].astype(np.float32)\n    print(l,n,'cos(col,d)',round(cd,3),'abs write along d reg0',round(float(a[reg==0].mean()*cd),3),'reg1',round(float(a[reg==1].mean()*cd),3))",
+    "canonical_sha256": "b055fdffe254c8c1a39d14295740e40814857834e7e21de030a934d77c27a9c3",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "sel={}\nfor L in (16,17):\n    A=np.load(f'/work/how_act_{L}.npy'); a1,a0=A[labs==1],A[labs==0]\n    dd=(a1.mean(0)-a0.mean(0))/np.sqrt(0.5*(a1.var(0)+a0.var(0))+1e-6)\n    W=load_original(f'model.layers.{L}.mlp.down_proj.weight').numpy()\n    cs=(W.T@Eu)/(np.linalg.norm(W,axis=0)+1e-9)\n    s=np.sign(a1.mean(0))*cs\n    sel[L]=[int(n) for n in np.where((np.abs(dd)>1.5)&(s>0.1))[0]]\ndetail={L:[(n,) for n in sel[L]] for L in sel}\nW16=load_original('model.layers.16.mlp.down_proj.weight').clone(); W16[:,3729]=0\nfor n in sel[16]: W16[:,n]=0\nsave_edit('model.layers.16.mlp.down_proj.weight',W16)\nif sel[17]:\n    W17=load_original('model.layers.17.mlp.down_proj.weight').clone()\n    for n in sel[17]: W17[:,n]=0\n    save_edit('model.layers.17.mlp.down_proj.weight',W17)\nwith open('/work/notes.md','a') as f:\n    f.write(f\"\"\"\nPass 10/11: P(However) at doubt decisions .79 (ctrl 0). However-embedding proj of cut-ctrl diff: after L15 135, after L16 363, after L17 470 -> written by layers.16 (+228) and .17 (+107).\nDoubt neurons (|d|>1.5, sign(act)*cos(col,E_However)>.1): L16 {sel[16]}, L17 {sel[17]}.\nCURRENT EDIT: L16 down_proj cols 3729 + {sel[16]} = 0; L17 down_proj cols {sel[17]} = 0 (from original).\nPass 12 plan: TF EDITED on /work/tf9_texts.json, topk20 + token_logprobs: check P(However) at decision pos drop.\n\"\"\")\nsel, edited()",
+    "canonical_sha256": "a644e63edf9238e1ae0cbbfbfb816a2805fe001c41c86a0f1960aba37d03d316",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "cmp={}\nfor Lr,cols in doubt.items():\n    A=np.load(f'/work/how_act_{Lr}.npy'); W=load_original(f'model.layers.{Lr}.mlp.down_proj.weight').numpy()\n    cmp[Lr]=[(c, round(float(A[labs==1,c].mean()-A[labs==0,c].mean()),2), round(float((A[labs==1,c].mean()-A[labs==0,c].mean())*(W[:,c]@Eu)),3)) for c in cols]\nopen('/work/notes.md','a').write(\"\\nPass 24 result: L18 doubt candidates (|d|>1.5,|cos|>.1): 2158,4307,5045,6616 (all push toward However; 6616 d=2.84 act 1.17 vs .05; 5045 d=-2.54). L19 none.\\n\")\ncmp",
+    "canonical_sha256": "3130391f6160c8a9fd5793d984a1e0b227e8420173015989e9fb2b8732a1355b",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "with open('/work/notes.md','a') as f:\n    f.write(\"\\nAnswer-writing sabotage CLOSED: pred==last body number 272/281 wrong; gold in text 45/281 (incidental).\\nNext: rank R0-pushing neurons L12-20 (actdiff R0-R1 x gain-scaled col proj on regime dir) for ablation.\\n\")\nout={}\nallsc=[]\nfor L in range(12,21):\n    h=np.asarray(H1[:,L+1,:],dtype=np.float32).copy(); h[:,[1038,1125]]=0\n    d=h[regs==1].mean(0)-h[regs==0].mean(0); u=d/np.linalg.norm(d)\n    W=load_original(f'model.layers.{L}.mlp.down_proj.weight').numpy()\n    g=1+load_original(f'model.layers.{L}.post_feedforward_layernorm.weight').numpy()\n    p=((W*g[:,None]).T@u)            # per neuron\n    a=np.asarray(M1[:,L,:],dtype=np.float32)\n    ad=a[regs==0].mean(0)-a[regs==1].mean(0)\n    sc=ad*p                          # negative = drives toward R0 differentially\n    o=np.argsort(sc)[:5]\n    out[L]=[(int(n),round(float(sc[n]),2),round(float(a[regs==0,n].mean()),2),round(float(a[regs==1,n].mean()),2)) for n in o]\n    allsc.append((L,sc))\ntot={L:(round(float(sc[sc<0].sum()),1),round(float(np.sort(sc)[:10].sum()/sc[sc<0].sum()),2)) for L,sc in allsc}\nout, tot",
+    "canonical_sha256": "292158a6f9eb5add9b71ffd2ec5f447d7fc1e84d8b78fb32972b1439ba6cd1bc",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "W16=load_original('model.layers.16.mlp.down_proj.weight').clone()\nfor n in [3729,221,723,992,1246,4258,5725]: W16[:,n]=0\nsave_edit('model.layers.16.mlp.down_proj.weight',W16)\nW17=load_original('model.layers.17.mlp.down_proj.weight').clone()\nfor n in [3643,4150]: W17[:,n]=0\nsave_edit('model.layers.17.mlp.down_proj.weight',W17)\nwith open('/work/notes.md','a') as f:\n    f.write(\"\"\"\nPass 10/11: P(However) at doubt decisions .79 (ctrl 0). However-emb proj of cut-ctrl diff: after L15 135, after L16 363, after L17 470 -> written by layers.16 (+228) and .17 (+107).\nDoubt neurons (|d|>1.5 & |cos(col,E_However)|>.1, all sign-consistent): L16 221,723,992,1246,4258,5725; L17 3643,4150.\nCURRENT EDIT (E2): L16 down_proj cols 3729,221,723,992,1246,4258,5725 = 0; L17 down_proj cols 3643,4150 = 0 (from original).\nPass 12 plan: TF EDITED on /work/tf9_texts.json, topk20 + token_logprobs: P(However) at decision pos.\n\"\"\")\nedited()",
+    "canonical_sha256": "3e18bbe7187da29b79d747832f318731afaca4e95810d86b59e30507246006d0",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 210,
+    "text": "C2 (layer 16 column 3729 multiplied by \u22122) gives **+6.25 \u00b1 2.4** on dev_e (27 wrong to right, 11 right to wrong). Answers lengthen to 334 tokens, and cut-offs nearly double (16 to 31). The dose response for this neuron alone on dev_e is:\n\n| Strength | Gain | Mean tokens | Cut-offs |\n|---|---|---|---|\n| 1 (original) | 0 | 265 | 16 |\n| 0 (zeroed) | +3.9 | 299 | 21 |\n| \u22121 (reversed) | +7.4 | 327 | 25 |\n| \u22122 | +6.25 | 334 | 31 |\n\nAccuracy rises from 0 to \u22121 and then levels off, while the token-limit cut-offs keep growing. This is the predicted causal signature of a single unit that suppresses the model's careful reasoning regime. Strength \u22121, the one used in E6, is at or near the optimum, so there is no reason to change the submission.\n\nNow I'll restore E6 from best_4, verify it exactly, and log the dose response. I'll use one of the remaining passes as a final paired check of the restored submission on dev_e (E6 gave +8.6 there), to confirm the saved tensors behave as measured. A similar positive gain would confirm it. A null result would point to a restore problem."
+   },
+   {
+    "reply": 211,
+    "text": "E6 is restored and verified byte for byte against best_4. This pass is a final sanity check that the submitted tensors behave as measured: E6 paired against the original on dev_e, where it gave +8.6 in pass 26. A clearly positive result (roughly +5 to +9, since batching shifts results slightly) would confirm the restore."
+   },
+   {
+    "reply": 212,
+    "text": "The refusal is itself a confirmation. The tool judged the request identical to pass 26 *with unchanged edits*, so the restored tensors are exactly the E6 tensors measured there and on HOLDOUT. The sanity check is not needed.\n\nI'll use the remaining 3 passes more usefully: as extra untouched confirmation of E6 on practice problems never used in any DEV or HOLDOUT set, if enough remain. This block counts the practice ids not in any saved id file and writes up to 256 of them to /work/fresh_0.json (and fresh_1.json if possible).\n\nPositive paired gains on these fresh problems would independently reproduce the HOLDOUT result. A null result would suggest the HOLDOUT estimate is optimistic."
+   },
+   {
+    "reply": 213,
+    "text": "All 2,250 practice problems have already appeared in some pass (the initial diagnosis pass covered the whole set), so no fresh confirmation set is possible. The HOLDOUT estimate for E6, +5.37 \u00b1 1.30, stays the final measurement.\n\nI'll spend the last 3 passes replicating the layer 16 column 3729 dose response on a second DEV set, dev_f, where B (strength \u22121) gave +4.3. This is characterization only; the submission stays E6 and is restored afterwards. If the dev_e pattern holds on dev_f (about half the gain when zeroed, and no improvement at \u22122 beyond \u22121, with more cut-offs), the graded causal role of the neuron is replicated. I start with C0 (column zeroed)."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "bd7ef8cb5541b0d3dbed154a84a4196d9fb6d9e36f9c37690dc576e984ea8683",
+ "effort": "medium"
+}

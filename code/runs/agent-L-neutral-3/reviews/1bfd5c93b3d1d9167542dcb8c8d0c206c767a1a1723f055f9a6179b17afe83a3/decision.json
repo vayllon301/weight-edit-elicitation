@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "1bfd5c93b3d1d9167542dcb8c8d0c206c767a1a1723f055f9a6179b17afe83a3",
+ "code_sha256": "dd08dce7d46bb66ad5734acbf2041a70c0a67e88c225d638cdc65bcb4a230a8e",
+ "clean_code_sha256": "dd08dce7d46bb66ad5734acbf2041a70c0a67e88c225d638cdc65bcb4a230a8e",
+ "prompt_sha256": "6bd754ad0cadab842e9280ac2d2590489f9f33e4247b6e653f5d6ec1c0552cca",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only reads config files, makes a seeded DEV/HOLDOUT split, prints original weight shapes, norms and means via load_original, and writes notes. It uses no stored activations, candidate edit, sample scoring or forward-pass replay.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 5301,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 239,
+  "output_tokens_details": {
+   "thinking_tokens": 76
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5301,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 239,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 5301,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 5301
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.047196,
+ "t": 1794074506.073997
+}

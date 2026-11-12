@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "0062a924a7f2095e588caea66c635c376b80ebab21308daac7f92f2e9ae6ff14",
+ "code_sha256": "3805f2e1c6f00a8118dbba675ce6229962d5be3f3894fe1ff330e81b6609634a",
+ "clean_code_sha256": "3805f2e1c6f00a8118dbba675ce6229962d5be3f3894fe1ff330e81b6609634a",
+ "prompt_sha256": "0d4b91baac852a58103ecac18fb91fbf5d3374084ec2fb9bfabc8a3acac1688d",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "cv, sel and top-k are per-neuron statistics of original pass 1 activations, used to choose among neurons. No edit, direction or shift exists yet, and no write or leak is computed. D@a applies the original down_proj to one mean vector for y_rms, so nothing replays a model stage or scores a candidate on samples.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 13407,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 2120,
+  "output_tokens_details": {
+   "thinking_tokens": 1938
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 13407,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 2120,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 13407,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 13407
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.14966400000000002,
+ "t": 1794075242.333195
+}

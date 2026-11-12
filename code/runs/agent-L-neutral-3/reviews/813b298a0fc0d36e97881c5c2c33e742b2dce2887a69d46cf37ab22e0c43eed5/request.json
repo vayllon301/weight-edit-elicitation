@@ -1,0 +1,72 @@
+{
+ "version": "rule-review-3",
+ "key": "813b298a0fc0d36e97881c5c2c33e742b2dce2887a69d46cf37ab22e0c43eed5",
+ "code_sha256": "21f7c923d1379537f355b277c33d779012c707fc343e7d642e8a7257ec923e57",
+ "clean_code_sha256": "21f7c923d1379537f355b277c33d779012c707fc343e7d642e8a7257ec923e57",
+ "code": "nums=lambda s:[x.replace(',','') for x in re.findall(r'-?\\d[\\d,]*(?:\\.\\d+)?',s)]\ndef eqv(a,b):\n    try: return abs(float(a)-float(b))<1e-6\n    except: return False\nrowsg=[]\nfor i,g in allo.items():\n    if g['cut']: continue\n    t=g['text']; m_='let' if fw(t) in('Let',\"Let's\") else ('here' if fw(t)==\"Here's\" else 'o')\n    ls=[x.strip() for x in t.strip().split('\\n') if x.strip()]; last=ls[-1] if ls else ''; prev=ls[-2] if len(ls)>1 else ''\n    gold=str(g['gold']).replace(',','')\n    rowsg.append(dict(id=i,mode=m_,cat=lastcat(t),ok=bool(g['correct']),g_last=any(eqv(x,gold) for x in nums(last)),g_prev=any(eqv(x,gold) for x in nums(prev)),g_body=any(eqv(x,gold) for x in nums(t)),nlast=len(nums(last)),neq=t.count('='),ref=refsteps(prac[i]),nt=g['n_tokens']))\ndg=pd.DataFrame(rowsg); dg['short']=dg.neq<dg.ref\nprint(dg.groupby(['mode','cat']).agg(n=('ok','size'),acc=('ok','mean'),nums_last=('nlast','median')).round(3))\nw_=dg[~dg.ok]\nprint('WRONG finished by mode: gold in last line / prev line / body')\nprint(w_.groupby('mode').agg(n=('ok','size'),g_last=('g_last','mean'),g_prev=('g_prev','mean'),g_body=('g_body','mean'),short=('short','mean')).round(3))\nprint(dg.groupby(['mode','ok']).agg(n=('nt','size'),short=('short','mean'),neq=('neq','median'),ref=('ref','median'),toks=('nt','median')).round(2))\nprint('wrong with gold in last line, by cat',w_[w_.g_last].groupby(['mode','cat']).size().to_dict())\nex=[r.id for r in w_[w_.g_last].itertuples()][:4]\nfor i in ex:\n    ls=[x.strip() for x in allo[i]['text'].strip().split('\\n') if x.strip()]\n    print(repr(ls[-1][-120:].encode('ascii','replace').decode()),'gold',allo[i]['gold'],'pred',allo[i]['pred'])",
+ "canonical_sha256": "53e90bc9650da620d432b8d62f49ef7d4a4eab72c12e3c291397ac41c8130e69",
+ "history_sha256": "b8a7e5b440b339ab01eb1c2c8907dbcd7d77ee4ca94996bcb268ff4f83e7c8ea",
+ "context": {
+  "forward_passes_used": 25,
+  "forward_pass_budget": 50,
+  "python_runs_used": 81,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "import re, glob, numpy as np\nfl_ids = list(fl)\ndefn = None\ndef block_no(p): return int(re.search(r'block_(\\d+)', p).group(1))\nfor p in sorted(glob.glob('/work/blocks/block_*.py'), key=block_no):\n    s = open(p).read()\n    m = re.search(r'^(def fl\\(.*?:\\n(?:[ \\t]+.*\\n)+|def fl\\(.*\\n|fl\\s*=\\s*lambda.*\\n)', s, flags=re.M)\n    if m:\n        defn = m.group(0); print('found in', p, repr(defn[:160])); break\nassert defn is not None\nexec(defn, globals())\nprint('fl restored', callable(fl), fl('12.5'))\n\nprint('E4 intervention, flipped problems: Let (original) vs Here (forced)')\ncompare_pair(fl_ids, O10, E10, 'Let', 'Here')\nhn = [k for k in O3 if O3[k]['text'].startswith('Here') and E3g[k]['text'].startswith('Let')]\nprint('\\nE1 control, Here-natural problems: Here (original) vs Let (forced)')\ncompare_pair(hn, O3, E3g, 'Here', 'Let')\n\nprint('\\nfirst-line question overlap within reference-step strata (Let answers)')\nrec = []\nfor r, o in zip(L, ov):\n    p = byid[str(r['id'])]; ref = clean_ref(p['solution'])\n    st = len(set(EQ.findall(ref)))\n    rec.append((min(max(st, 2), 5), o, r['correct'], r['cut'], len(p['problem'])))\nrec = np.array(rec, float)\ntot_d = []; tot_w = []\nfor st in (2, 3, 4, 5):\n    m = rec[:, 0] == st\n    med = np.median(rec[m, 1])\n    a = rec[m & (rec[:, 1] > med)]; b = rec[m & (rec[:, 1] <= med)]\n    if len(a) < 8 or len(b) < 8: continue\n    d = a[:, 2].mean() - b[:, 2].mean(); w = 1 / (a[:, 2].var() / len(a) + b[:, 2].var() / len(b) + 1e-6)\n    tot_d.append(d); tot_w.append(w)\n    print(f' steps {int(st)}{\"+\" if st == 5 else \"\"}: high n {len(a)} acc {100*a[:,2].mean():.1f} len {a[:,4].mean():.0f} | low n {len(b)} acc {100*b[:,2].mean():.1f} len {b[:,4].mean():.0f} | diff {100*d:+.1f}')\ntot_d = np.array(tot_d); tot_w = np.array(tot_w)\nprint(' pooled within-strata high-low diff %+.1f pts, se %.1f' % (100 * (tot_d * tot_w).sum() / tot_w.sum(), 100 / np.sqrt(tot_w.sum())))",
+    "canonical_sha256": "a558a431a0c2296b8878bf70ee8781019ad2b9dfcdfe3f994df9095dd875bba9",
+    "decision": "uncertain",
+    "grade": "none",
+    "rules": []
+   },
+   {
+    "executed": false,
+    "code": "H=np.asarray(hl).astype(np.float32)  # 512,27,1152 last-prompt\nletm=np.array([g['text'].strip().startswith('Let') for g in gen])\nprint('layer: |hidden| mean, |T|, d-prime along T')\nTs={}\nfor l in [5,9,11,14,17,19,20,22,23,24,25,26]:\n    X=H[:,l]; T=X[letm].mean(0)-X[~letm].mean(0); Ts[l]=T\n    u=T/np.linalg.norm(T); p=X@u\n    dp=(p[letm].mean()-p[~letm].mean())/np.sqrt(0.5*(p[letm].var()+p[~letm].var()))\n    print(l,round(float(np.linalg.norm(X,axis=1).mean()),1),round(float(np.linalg.norm(T)),2),'dprime',round(float(dp),2))\ndef selectivity(L):\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    S=np.zeros(6912,np.float64);Q=np.zeros(6912,np.float64);N=0;lp=[]\n    for i,mt in enumerate(meta):\n        c=np.asarray(a[i,:int(lens[i])]).astype(np.float32); k=mt['plen']-1\n        lp.append(c[k].copy()); c=np.delete(c,k,axis=0)\n        S+=c.sum(0);Q+=(c.astype(np.float64)**2).sum(0);N+=len(c)\n    lp=np.stack(lp); mu=S/N; sd=np.sqrt(np.maximum(Q/N-mu**2,0))\n    return lp.mean(0),lp.std(0),mu,sd\nfor L in [18,23,13]:\n    A_,Sd_,mu,sd=selectivity(L)\n    r=np.abs(A_)/(sd+1e-4); cv=Sd_/(np.abs(A_)+1e-6)\n    idx=[i for i in np.argsort(-r) if cv[i]<0.3][:6]\n    print('L',L,[(int(i),'a',round(float(A_[i]),2),'cv',round(float(cv[i]),2),'mu_oth',round(float(mu[i]),4),'sd_oth',round(float(sd[i]),4),'ratio',round(float(r[i]),1)) for i in idx])",
+    "canonical_sha256": "8d92ebe1607367fe7d80bd72abf91d9f7c1a107117f3ed2ba893ab5aaf9a7cbe",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "import numpy as np, json\nF='/work/fwd_2/'\nm2=json.load(open(F+'meta.json')); print(list(m2.keys())[:20])\nii=np.load(F+'input_ids.npy',mmap_mode='r'); tl=np.load(F+'token_logprobs.npy',mmap_mode='r'); tp=np.load(F+'topk_logprobs.npy',mmap_mode='r'); ti=np.load(F+'topk_ids.npy',mmap_mode='r')\nmeta=json.load(open('/work/tf2_meta.json'))\nprint(ii[0,:6], 'pad id', ii[0,-1], meta[0]['plen'], meta[0]['tlen'])\nlens=np.array(m2['lengths'])\nprint('tool lengths vs mine', [(int(lens[i]),meta[i]['tlen']) for i in range(4)])\noff=int(lens[0]-meta[0]['tlen']); print('offset',off)\n# greedy check: top1 at answer positions equals actual next token?\nag=[];lp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off; L=int(lens[i])\n    pred=np.asarray(ti[i,p-1:L-1,0]); act=np.asarray(ii[i,p:L])\n    ag.append((pred==act).mean()); lp.append(float(np.asarray(tl[i,p-1:L-1]).mean()))\nprint('top1==actual over answer tokens: mean',round(float(np.mean(ag)),4),'min',round(float(np.min(ag)),3),' mean answer lp',round(float(np.mean(lp)),3))\n# First token distribution\nLET=6481; HERE=8291\nfp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off\n    ids=np.asarray(ti[i,p-1]); lps=np.asarray(tp[i,p-1])\n    d={int(a):float(b) for a,b in zip(ids,lps)}\n    fp.append((d.get(LET,-20),d.get(HERE,-20),int(ids[0]),float(lps[0]),float(lps[1])))\nfp=np.array(fp)\nmarg=fp[:,0]-fp[:,1]\nmodes=np.array([mt['mode'] for mt in meta])\nprint('P(Let) mean',np.exp(fp[:,0]).mean().round(3),'P(Here) mean',np.exp(fp[:,1]).mean().round(3),'sum',np.exp(fp[:,0:2]).sum(1).mean().round(3))\nprint('margin lpLet-lpHere pct',np.percentile(marg,[5,25,50,75,95]).round(2),'| here-mode margin',np.percentile(marg[modes=='here'],[10,50,90]).round(2),'| let-mode',np.percentile(marg[modes=='let'],[10,50,90]).round(2))\nfor name,L,ns in [('18',18,[2543,173,731]),('23',23,[4353,71,907]),('13',13,[6012,2397,4547])]:\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    for n in ns:\n        col=np.asarray(a[:,:,n]).astype(np.float32)\n        lastp=np.array([col[i,meta[i]['plen']+off-1] for i in range(len(meta))])\n        mask=np.zeros(col.shape,bool)\n        for i,mt in enumerate(meta):\n            mask[i,:int(lens[i])]=True; mask[i,mt['plen']+off-1]=False\n        rest=np.abs(col[mask])\n        print(f'L{L} n{n}: lastprompt mean {lastp.mean():.2f} cv {lastp.std()/abs(lastp.mean()):.2f} | rest mean|.| {rest.mean():.4f} p99.9 {np.percentile(rest,99.9):.3f} max {rest.max():.2f} share>10%: {(rest>0.1*abs(lastp.mean())).mean():.5f}')",
+    "canonical_sha256": "b477c6f45b5b69e13ae1bc4c7350ec568bfbcc70f2c3539d2be34d40c7729b15",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 108,
+    "text": "The prediction failed. On 136 fresh strongly-Here problems, Okay goes 24.3% to 22.1%, or -2.2 \u00b1 2.4, with 4 gained and 7 lost. So the 37.9% was noise from a small post hoc bin, and I'm closing Okay and the three-way policy idea. I'm glad I tested it on fresh problems before building anything. It also shows that E5's boundary is sensible, because these strongly-Here problems do fine where they are and have few loops (9.6% cut).\n\nThe register evidence now covers four styles, and Let remains the best of them, so E5 already takes most of what this lever offers. Before spending more on openers, I want to go back to a mechanism I noted but never tested causally: stopping too early. My free analysis found that 28% of wrong finished answers use fewer equations than the reference, against 5% of correct ones, and 10% end on a reference intermediate value. Those answers look like they stopped one step short.\n\nThe first question is whether a selective repair is even possible: is the model less sure about finishing at those premature endings than at correct endings? I'll measure the gap between \"####\" and its best rival at the finish point, in correct versus wrong answers, using the existing pass 2 top-10 data. If both groups finish with similar confidence, lowering the finish signal would also damage correct answers, and this line closes for free. If premature endings are clearly less certain, a targeted edit has room to work."
+   },
+   {
+    "reply": 109,
+    "text": "`tf2_meta.json` has flags for correct, cut and trimmed, and \"####\" is a single token, so this is straightforward. For each finished, untrimmed answer I'll take the position just before the first \"####\" and read off its logprob and its best rival. I'll split the wrong answers into premature ones, with fewer equations than the reference has steps, and the rest. I'll compare those groups with correct answers, and also check how close the model came to finishing at earlier line starts, because that shows how sharply the decision is made."
+   },
+   {
+    "reply": 110,
+    "text": "Two things stand out. All 38 usable answers are in Here mode, so the Let answers either got filtered out or finish in a different way. Also, finishing confidence doesn't separate the groups at all: the median gap is 1.12 for premature endings and 1.00 for correct ones. Only 7 of the answers are premature, so that isn't conclusive, but it isn't encouraging. Since Let is the mode E5 uses, I need to understand how Let answers finish before reading anything into this.\n\nUsing all the original answers from the generation passes, I'll check how finished answers end in each mode: how often they use the marker, and what the last line looks like, reduced to a few fixed categories so no raw text is printed. That costs no pass. If Let answers finish through \"####\" like Here answers, the pass 2 filter was the issue and a larger teacher-forced pass can size this properly. If they finish some other way, the repair target has to change."
+   },
+   {
+    "reply": 111,
+    "text": "That's an important finding I hadn't noticed. Let answers almost never use the marker (0.4%). They end with a \"Final Answer\" line, and the grader falls back to the last number in the response. Here answers do use \"####\" about 75% of the time, some on a line by themselves and some inline. That explains why pass 2 had no Let answers, and it means Let's finish decision is a separate mechanism.\n\nThe error itself is trivial: `corr` clashes with a DataFrame method. It does raise a question I should have asked much earlier, though: is any accuracy being lost at the grading step because of how answers end? If the model reaches the right value but its final line makes the grader pick a different number, for instance a last line with a unit, a fraction or a trailing number, that would be an inexpensive and well-defined failure.\n\nSo, after fixing the name, I'll measure extraction loss directly: among wrong finished answers, how often the gold value appears in the last line, by mode and by ending type. I'll also compare accuracy across ending types. If this loss is sizeable, the ending format is a concrete target. If gold rarely shows up in the last line, these answers are simply wrong and the finishing format doesn't matter."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "e33640ef2a75653860f17710757ab915b0b7ad5b99958462a5dfcb63b8d7552e",
+ "effort": "high"
+}

@@ -1,0 +1,6 @@
+The regime flip helped the flipped problems a little (57% → 63%, n=35, too noisy to rely on). The loops are clear-cut: 74 of the 80 cut answers repeat an earlier line exactly, starting at a median of 40% of the way through the answer. The repeated line is often the setup itself ("Let $x$ be the amount of money Annie had at first."), i.e. the model restarts the solution instead of concluding. That suggests a specific failure: at the point where it should conclude, the model goes back to the start. I'll get the original model's internals on its own answers. The set is all cut answers from passes 1 and 5 plus finished LaTeX-regime answers as controls, with hidden states at layers 8, 12, 16, 20 and 24 and top-20 next-token alternatives. That allows (1) at each loop onset, checking whether a concluding token (\boxed, "Therefore", "Final") was a near-tie with the restart, and (2) a within-answer contrast of pre-loop vs in-loop states for localisation. If conclusion tokens are close runners-up at onset, the failure is a suppressed "conclude" decision.
+
+```python
+fmt=open('/practice/eval_prompt_format.txt').read()
+print(repr(fmt[:400]))
+```

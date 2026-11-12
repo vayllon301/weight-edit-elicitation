@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "80252e20047edc9bdceeeea4eab25efbac12ed94916d604fa903b82cb468a922",
+ "code_sha256": "e702865b088a4de82aa0dc148f935601a11fd2c0f71bb6f9cec77b688497cc1c",
+ "clean_code_sha256": "e702865b088a4de82aa0dc148f935601a11fd2c0f71bb6f9cec77b688497cc1c",
+ "prompt_sha256": "4b0c0286695dc5a413e85968e90f2a645acdaba6d626edf0eb5b3853d994ec3e",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block compares observed logprobs from fwd_22 (the F0 ablation that pass 22 actually ran, matching hash) with fwd_3 (original) by token class on the references. That reads what a passed edit did. Nothing applies a candidate to samples or replays the model. F0's heads were chosen from original attention statistics.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 4527,
+  "cache_read_input_tokens": 37116,
+  "output_tokens": 377,
+  "output_tokens_details": {
+   "thinking_tokens": 197
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 4527,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 377,
+    "cache_read_input_tokens": 37116,
+    "cache_creation_input_tokens": 4527,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 4527
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0511872,
+ "t": 1794169896.798783
+}

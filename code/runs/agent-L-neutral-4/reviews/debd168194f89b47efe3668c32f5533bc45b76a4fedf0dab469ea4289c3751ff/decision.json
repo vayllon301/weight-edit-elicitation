@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "debd168194f89b47efe3668c32f5533bc45b76a4fedf0dab469ea4289c3751ff",
+ "code_sha256": "7b2a7e17ddb7a2ffce54a27dc5edc1a5232f0d0ddd492d04504cba5b93022f78",
+ "clean_code_sha256": "7b2a7e17ddb7a2ffce54a27dc5edc1a5232f0d0ddd492d04504cba5b93022f78",
+ "prompt_sha256": "164f47e30fe2b1891fbec3d67e8d8e2391e7075cb1e265d60c23a3cc2e31ba89",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block computes per-neuron standardized mean differences (cut vs finished, wrong vs correct) and prompt means from original-model pass-1 MLP activations, then takes a top-k to find components. Pure statistics. No edit exists, nothing is applied to samples, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 7515,
+  "cache_read_input_tokens": 2995,
+  "output_tokens": 173,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 7515,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 173,
+    "cache_read_input_tokens": 2995,
+    "cache_creation_input_tokens": 7515,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 7515
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.064187,
+ "t": 1794167595.499966
+}

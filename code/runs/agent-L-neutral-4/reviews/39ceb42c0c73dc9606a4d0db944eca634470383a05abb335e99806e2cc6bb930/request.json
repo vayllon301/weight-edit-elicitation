@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "39ceb42c0c73dc9606a4d0db944eca634470383a05abb335e99806e2cc6bb930",
+ "code_sha256": "b397b5d07726f31511415fcfec8b8f911fc8af04633fdde9215a05f8ddade4e0",
+ "clean_code_sha256": "b397b5d07726f31511415fcfec8b8f911fc8af04633fdde9215a05f8ddade4e0",
+ "code": "def qnums(pr): return set(x.replace(',','') for x in re.findall(r'\\d[\\d,]*\\.?\\d*', pr) if x.replace(',','').replace('.','').isdigit())\ndef used_frac(r):\n    qn=qnums(prac[r['id']]['problem']); \n    if not qn: return None\n    tn=set(x.replace(',','') for x in re.findall(r'\\d[\\d,]*\\.?\\d*', r['text']))\n    return np.mean([q in tn for q in qn]), len(qn)\nfin=[r for r in rows if not r['cut']]\nres={True:[],False:[]}\nfor r in fin:\n    u=used_frac(r)\n    if u: res[bool(r['correct'])].append(u)\nout={}\nfor c in (True,False):\n    a=np.array(res[c]); out[c]=(len(a), round(a[:,0].mean(),3), round(np.mean(a[:,0]<1),3))\n# matched by number count\nbins={}\nfor c in (True,False):\n    for f,n in res[c]: bins.setdefault(min(n,6),{True:[],False:[]})[c].append(f)\nmb={k:(len(v[True]),round(np.mean(v[True]),3) if v[True] else None,len(v[False]),round(np.mean(v[False]),3) if v[False] else None) for k,v in sorted(bins.items())}\n# discordant within-problem (pair_texts: correct, wrong alternating)\nd=[]\nfor j in range(0,len(pt),2):\n    qn=qnums(prac[pm[j]['id']]['problem'])\n    if not qn: continue\n    f=lambda t: np.mean([q in set(x.replace(',','') for x in re.findall(r'\\d[\\d,]*\\.?\\d*', resp(t))) for q in qn])\n    d.append(f(pt[j])-f(pt[j+1]))\n(out, mb, (len(d), round(np.mean(d),3), round(np.std(d)/np.sqrt(len(d)),3)))",
+ "canonical_sha256": "d627bd0d0f8c4493b6d0d98a3fd4d3694abec59ca7968437fcacf76b697ed3e7",
+ "history_sha256": "d9ef4447f4d182b6a26b218507dbb1b15c7cdf22990636d0c1562561b241024f",
+ "context": {
+  "forward_passes_used": 27,
+  "forward_pass_budget": 50,
+  "python_runs_used": 105,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 133,
+    "text": "Cut-offs are almost all stuck reasoning. Of the 70 cut answers without an exact repeat, 50 repeat more than 30% of their lines once digits are masked: they cycle through the same steps with changing numbers, as the \"Calculate the total amount Monica took...\" example shows. Only about 20 of 300 (7%) are verbose or confused without looping. So the cut-off failure is the loop failure that the C/SC edits already targeted, and those edits freed loops without raising accuracy on never-tuned sets. I'm closing the cut-off line.\n\nBefore looking further, one more check of the grading path is cheap: numbers with thousands separators. If the model writes \"#### 1,200\" and the grader read only \"1\", or if wrong answers often contain the gold number with a comma, formatting would be costing points. I'll count, among the wrong finished DEV answers, how many contain the gold value written with a comma, and how often the extracted prediction disagrees with the full number after the last \"####\"."
+   },
+   {
+    "reply": 134,
+    "text": "The grading path is clean here too. 113 wrong finished answers have a \"####\" marker, the extracted prediction matches the full number after it in all of them, and none contains the gold value written with a comma. No points are lost to formatting.\n\nHere is where the investigation stands. Every failure type has been traced and the candidate mechanisms tested:\n- **Cut-offs (about 28%)** are stuck loops. The onset direction (C) frees them, but the freed answers are mostly wrong (19%), and on never-tuned sets the net gain was 0.0.\n- **Wrong finished answers** come from wrong setups. Arithmetic, read-out, extraction, early stopping and question-number fetching are all fine or minor. Removing or boosting the fetch heads gives no selective effect.\n- **No usable correctness direction** separates right from wrong answers to the same problem.\n\nThe best candidate, SC, measured -0.08 \u00b1 1.14 points on 1,226 never-tuned problems, so the original stands. All 2,250 practice problems are now used in DEV or HOLDOUT sets, so a new edit could not be confirmed on untouched data. I'm recording this in the notes and keeping /work/edited empty. I will only spend more passes if a new, specific mechanism hypothesis comes up."
+   },
+   {
+    "reply": 135,
+    "text": "**Final answer: I submitted the unedited original model.** No tensors are edited and /work/edited is empty. I used 27 of the 50 forward passes. With every failure mechanism I found closed and all practice problems already used, I saw no justified way to spend the rest.\n\n**Measured gain of the best candidate:** SC, my best edit, measured **\u22120.08 \u00b1 1.14 points** on 1,226 never-tuned problems (97 wrong\u2192right, 98 right\u2192wrong). On HOLDOUT alone it was +0.26 \u00b1 1.43 over 768 problems, against about +3.3 \u00b1 1.8 on DEV, so the DEV gain did not hold up.\n\n**What fails, and what I tried:**\n- **Diagnosis.** About 28% of the original's answers are cut off at 768 tokens. The rest that fail are finished but wrong.\n- **Cut-offs are stuck loops.** 230 of 300 cut answers repeat a line exactly, and about 50 more cycle through the same steps with changing numbers. Loops start early (median 285 tokens), so the question has not yet left the 512-token window, which rules that cause out.\n- **Loop-onset direction (edit C).** A direction in layers 16\u201322 that marks the newline before a loop starts. Strengthening it in o_proj/down_proj lowered the chance of starting a loop in teacher forcing without hurting other text, and roughly halved cut-offs in generation. But only 19% of the freed answers were correct, and some finished answers were lost.\n- **Style edit (S).** Pushing answers into a plain-text style did not help on its own: \u22121.6 \u00b1 2.3 on its second DEV set.\n- **Combined edit SC.** S plus C gave +4.7 and +2.0 on the two DEV sets, then about 0 on every HOLDOUT set.\n- **Wrong finished answers are setup errors.** Arithmetic on reference solutions is accurate. Only 12% of wrong answers equal an intermediate result, so stopping early is minor. The final answer is read out and graded correctly (boxed values, \"####\" extraction and thousands separators all checked).\n- **Other lines closed.** Removing or boosting the four question-number-fetching heads had no selective effect. A correctness direction from pairs of right and wrong answers to the same problem was at chance (46\u201355% sign consistency). Repetition neurons and copy heads were also closed.\n\n**Expected effect:** identical scores for the submitted and unedited models, since they are the same weights. The interventions I found change how often the model loops or which style it writes in, but not how often it sets up problems correctly."
+   },
+   {
+    "reply": 136,
+    "text": "To keep using the remaining passes on something specific, I'll first test a hypothesis that needs no pass. My readings described \"dropped conditions\": wrong setups that ignore part of the question. If that is a real failure type, wrong finished answers should leave out more of the question's numbers than correct finished answers do, even after controlling for difficulty. To control for that, I'll compare within problems the model got right in one pass and wrong in another, and also across all DEV answers matched by the number count of the question. A clear gap, say wrong answers missing 15+ points more of the question's numbers, would make \"unused question quantities\" a target. That target would be tracking which numbers are already used, a different mechanism from the fetch heads, which only read numbers. No gap closes the last setup hypothesis."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "43a2c3af2c6fb0c78dbb8aa89a4808f49afe6a64b10fb7a80fef40524143dc4a",
+ "effort": "medium"
+}

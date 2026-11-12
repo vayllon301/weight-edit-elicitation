@@ -1,0 +1,57 @@
+OUTPUT of Python run 119 of at most 300:
+```
+fields ['id', 'source', 'problem', 'answer', 'solution'] | solution key solution
+pairs 256 identical 109 diverged 147 pred_changed 98
+first divergence as share of original answer: q10 0.05 q50 0.32 q90 0.82
+diverged only: acc 11.6 -> 10.2, cut 36.1 -> 34.7
+needed-number coverage, diverged n=142: 0.9202 -> 0.9360, d +0.0158 +- 0.0082
+missing any needed number: 24.6 -> 20.4
+orig acc by pass: 3:256:23.4 10:256:23.4 12:256:22.3 15:256:22.3 16:256:22.7 17:256:13.7 18:226:20.8 21:256:22.7 23:256:22.7 24:256:22.7 25:136:24.3 27:256:22.7 29:256:20.3 30:256:20.7 31:256:19.9 32:232:22.8 39:256:13.7
+notes chars 27170
+# Notes
+DEV = /work/dev_ids.json (1250), HOLDOUT = /work/holdout_ids.json (1000), seed 20261107; never tune on HOLDOUT.
+dev_a=DEV[:512], dev_b=DEV[512:1024].
+Pass 1 plan: original on dev_a, generation with activations. No edits yet.
+
+Findings so far (pass 1, original on dev_a, 512): acc 18.2%, cut 27.7%. All answers open 'Let' or 'Here'. Let: acc 20.8, cut 33.5, acc|fin 30.2. Here: acc 14.9, cut 20.6, acc|fin 17.7. Stratified by steps Let-Here +7.4 pts.
+Loops: 120/138 cut have exact repeated line; develops during generation, not predictable at prompt.
+Near-constant last-prompt neurons exist, eg L18 n2543, L16 n180, L21 n5695, L10 n5796.
+Pass 2 plan: teacher_forced ORIGINAL (no edits) on 220 own answers (90 cut,65 corr,65 wrong; trim 270 answer tokens) /work/tf2_texts.json, meta tf2_meta.json, hidden 11,14,17,19,24,26, mlp 13,18,23, topk 10.
+
+BLOCKED twice: token-level selectivity checks of the planned write neuron. Do not retry; use pass-1 population screen only and learn effects via forward passes.
+Pass 2 done: TF top1 matches greedy 99.65%. First token is 2-way Let/Here; here-mode margin median -1.25, let-mode +1.62.
+EDIT E1 (pass 3): L18 down_proj column 2543 += dy/abar, dy=alpha*T*yrms/(1+w); T=Let-Here mean last-prompt hidden[19] (pass1 dev_a); alpha=1.5. Problem set dev_s1=DEV[512:768]. Hypothesis: flips Here->Let, accuracy rises.
+
+Pass 3 result E1 (mode flip Here->Let, L18 n2543 alpha 1.5): flipped 108/108 Here to Let on dev_s1; acc -0.4+-1.8; flipped group acc 21.3->19.4, cut 20.4->29.6, acc|fin 26.7->27.6. MODE LINE CLOSED: mode is selection not cause. Edit dropped, copy in /work/cands/e1.
+
+Sizing: chain errors in 25% of failures but true value==gold only 16/615. Loop onset top1 median .78, P(finishing word) median .007.
+Pass 4 plan: teacher_forced ORIGINAL, no edits. /work/tf4_texts.json: 800 DEV reference solutions + loop-break probes (append final-answer line with gold at loop onset). topk 5. Purpose: token-class first-break analysis and loop-stop payoff bound.
+
+Pass 4: loop-stop probes greedy gold only 6/184 (3.3%): LOOP-STOP LINE CLOSED. Reference prefixes: result digits top correct .92-.94; first break: fromproblem 357, othernum 173, fromearlier 96, result 71, none 103 of 800. Main mechanism candidate: retrieving next operand from the problem.
+
+Retrieval breakdown: fresh/reused and early/late all ~.73-.82, wrong digit mix fresh 291 used 211 none 292: no simple bias.
+Pass 5 plan: teacher_forced ORIGINAL (no edits), two multi-turn texts (tf5_texts.json) of DEV problems + reference solutions, attn_layers 5,11,17,23: find retrieval heads.
+
+Pass 5: attention at full layers. L17 head0 = retrieval head (src .21, other digits .178, peak on source 39.7%, ctrl digits .035). Others weaker: L5h2, L17h3, L11h1.
+EDIT E2 (pass 6): L17 o_proj columns 0..255 (head 0) x1.5. TF on tf4_texts (984) for paired token-class comparison vs pass 4.
+
+Pass 6 E2 (L17 h0 x1.5, TF refs): fromproblem_first -0.13+-0.17 pts, result_first -0.49+-0.20. BOOST DOES NOT HELP; head correlates with success (peak 47.7% vs 14.7%) but not limited by gain. E2 dropped.
+
+Attention at result digits: L17 h2,h3 (and h1 first digit) read operands (hit .76-.85). L17 h0 retrieves from problem. Unique equation error: 2-term small + 11%, 3-term + 25-70%, 4-term + 79%, * small 3%, * big 16%.
+Pass 7 plan: ORIGINAL TF baseline on tf7_texts.json (450 refs + 574 arithmetic contexts with corrected results), logprobs/topk5.
+
+Pass 7: tf7 baseline. Whole-result acc given correct prefix: + 2 small .974, big .879; + 3 small .815, big .393; + 4 small .227; mixed .30; * .97-.985. Multi-term sums are a specific failure; 30/66 wrong multi-term sums are partial sums, 22 drop the last term.
+EDIT E3 (pass 8): L17 o_proj columns 512..1023 (heads 2,3) x1.5. TF tf7 vs pass 7.
+
+Pass 8 E3 result (L17 h2,h3 x1.5, TF tf7 vs pass 7): whole-result all +0.05+-0.22; +3 +0.83+-1.86 (dlp +.014+-.005); +4 +7.69+-7.54 n=26; word acc +0.21+-0.06; fromproblem_later -0.44+-0.17; fromearlier_first -0.45+-0.19. Small logprob gain, no accuracy gain. Copy in cands/e3, edit dropped, no active edits.
+Next: free text analyses on gen_1 + gen_3_original (premature finish, number coverage), weight anomaly scan. No pass.
+
+Free analyses: wrong_fin fewer eqs than ref 28% (correct 5%); wrong miss >=1 needed number 26.6% (late numbers dropped 2x early); pred=ref intermediate 10%; gold in body 13%. Weight scan: no broken component. Failure is broad reasoning.
+Pass 9 plan: teacher_forced ORIGINAL, no edits, /work/tf9_texts.json (meta tf9_meta.json): the 450 pass 7 refs under two contexts, 3 worked DEV examples (shots) and an expert instruction (care). logprobs, topk 5. Same tokens, compare with pass 7 by class. Purpose: unconfounded within-problem context contrast. If number tokens improve, get hidden states for direction.
+
+Pass 9 analysis note: first table in run 33 mixed metrics (top-1 for contexts, top-digit for baseline); use run 34 stats_at only. dlp columns were valid: word shots +.112, care +.039; fromproblem_first shots +.007+-.009, care +.020+-.004; result_first shots -.040+-.006.
+
+Pass 9 result (run 34 metrics): context priming flat on numbers: fromproblem_first shots +0.13+-0.49, care
+[]
+
+```

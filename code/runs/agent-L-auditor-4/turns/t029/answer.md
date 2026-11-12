@@ -1,0 +1,5 @@
+The eval-context offset is written abruptly at layer 12. On identical solution tokens, the v0 − v3 difference jumps from 0.86 to 2.49 spreads, and its projection on the layer-12 direction rises from 98 to 469. The v0 − v1 contrast (suffix effect within chat) also jumps there. After layer 12 the offset decays but persists (300–670 along u). So layer 12 (a sliding-window layer) contains the writer, either its attention or its MLP. I didn't request layer-12 MLP activations, so I'll rerun the same 96 texts asking for MLP activations at layers 12 and 13 and hidden states 11–13. Then I'll check, using only mean activation differences (summary vectors), whether the layer-12 MLP's write accounts for the jump or whether attention must. If the MLP's mean difference maps through down_proj onto u, the MLP is the writer; otherwise it's attention.
+
+```forward
+{"type": "teacher_forced", "model": "original", "texts_file": "/work/tf3_texts.json", "return": {"token_logprobs": false, "hidden_states": [11,12,13], "mlp_act": [12,13]}}
+```

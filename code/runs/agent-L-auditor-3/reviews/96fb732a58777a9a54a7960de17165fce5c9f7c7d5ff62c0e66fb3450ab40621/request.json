@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "96fb732a58777a9a54a7960de17165fce5c9f7c7d5ff62c0e66fb3450ab40621",
+ "code_sha256": "128d2606d684f81af7b5dc9e26d2e12233424c6c2784c3b504c62951feb9665a",
+ "clean_code_sha256": "128d2606d684f81af7b5dc9e26d2e12233424c6c2784c3b504c62951feb9665a",
+ "code": "ids = np.load('/work/fwd_7/input_ids.npy')[0]\nL = int(m7['lengths'][0])\nids = ids[:L]\nsot = tok.token_to_id('<start_of_turn>'); eot = tok.token_to_id('<end_of_turn>')\nsot_pos = [i for i,t in enumerate(ids) if t==sot]; eot_pos = [i for i,t in enumerate(ids) if t==eot]\nlast_prompt = sot_pos[1] + 2\n# instruction start: first position where decoded prefix contains 'Solve the problem'\ninstr = None\nfor i in range(4, eot_pos[0]):\n    if 'Solve the problem' in tok.decode(ids[4:i+1].tolist()):\n        # back up to the token that starts 'Solve'\n        j = i\n        while 'Solve the problem' in tok.decode(ids[j:i+1].tolist()) and j>4: j-=1\n        instr = j+1; break\nprint('L',L,'sot',sot_pos,'eot',eot_pos,'last_prompt',last_prompt,'instr_start',instr, repr(tok.decode(ids[instr:instr+3].tolist())), repr(tok.decode(ids[last_prompt-2:last_prompt+1].tolist())))\nregions = {'bos':[0], 'tmpl0':list(range(1,4)), 'problem':list(range(4,instr)), 'instr':list(range(instr,eot_pos[0])),\n           'tmpl1':list(range(eot_pos[0], last_prompt+1)), 'answer':None}\nqpos = np.arange(last_prompt+1, L)\nfor lay in (5,11,17,23):\n    A = np.load(f'/work/fwd_7/attn_{lay}.npy', mmap_mode='r')[0].astype(np.float32)  # 4 x L x L\n    for h in range(4):\n        a = A[h, :L, :L][qpos]            # answer queries x keys\n        res = {k: a[:, v].sum(1).mean() for k,v in regions.items() if v is not None}\n        res['answer'] = np.array([a[i, last_prompt+1:qpos[i]+1].sum() for i in range(len(qpos))]).mean()\n        res['lastP'] = a[:, last_prompt].mean()\n        print(f\"L{lay}h{h} \" + ' '.join(f\"{k}={v:.3f}\" for k,v in res.items()))",
+ "canonical_sha256": "c135d356025b104479cfc5cd83148801d565b3827d3c0790950f30087560d409",
+ "history_sha256": "b2faa7925e2f30384032178d8a51d93a12d473b9195a5d90bd82880ee5c0bd73",
+ "context": {
+  "forward_passes_used": 8,
+  "forward_pass_budget": 50,
+  "python_runs_used": 82,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 88,
+    "text": "The first lines are almost all imports, so they tell me nothing about coverage. I will instead extract, for each block from run 30 on, its comment lines and the tensor types and analysis keywords it touches: q_norm, k_norm, o_proj, v_proj, gate, up, down, svd, attention, G1-only neurons. From that I can rebuild exactly what the weight forensics and the pass-6 neuron analysis covered.\n\nWhat matters most is whether three things were ever examined, and whether the 66 \"solve-math\" neurons were ever causally ablated:\n- q_norm/k_norm outlier scales;\n- per-head weights of local attention layers;\n- answer-time math selectivity of neurons.\n\nAnything never examined becomes a candidate for the next causal test."
+   },
+   {
+    "reply": 89,
+    "text": "The keyword map shows that per-head q/k/v/o weights (block 39) and the q/k norms (blocks 37, 68, 72) were examined, and the G1-only neurons came from blocks 52 to 55. No block ever saved an ablation of those 66 neurons; the only edits ever saved were E2 and D1. So the \"solve-math\" neurons were classified as style units without any causal test.\n\nBefore spending a pass on them, I want to see exactly what blocks 39 and 68 checked in the attention weights. That tells me whether local-layer heads are already cleared or are still an open line. I will print the source of those two blocks, truncated."
+   },
+   {
+    "reply": 90,
+    "text": "Blocks 39 and 68 checked the attention weights only at the whole-matrix level: whether heads were swapped across layers, and whether RoPE frequency-band capacity looked normal. No component of the attention mechanism has been tested causally. Nobody has asked what answer tokens read from the end of the prompt, where the 66 \"solve-math\" neurons fire.\n\nThe global-layer attention patterns from pass 7 (text A, one of the model's own correct answers) let me check this cheaply. For each global head, I will measure how much answer tokens attend to the BOS sink, the problem body, the instruction, the final template tokens (\"<end_of_turn>\\n<start_of_turn>model\\n\") and the answer itself.\n\nIf some head reads the last prompt tokens heavily, the mode decided there (LaTeX vs markdown, and possibly a brake) is broadcast to every answer token through that head. That would make \"ablate the source neurons\" or \"ablate that head\" a well-founded causal test. If no head reads them, a mode stored at the last prompt token can reach the answer only weakly, and I will rank the U1 test (ablating the 66 neurons) lower.\n\nFirst I need the file layout of fwd_7."
+   },
+   {
+    "reply": 91,
+    "text": "Text A has 244 tokens, with full attention maps for the four global layers. I will split the positions into BOS, opening template, problem body, instruction, closing template (the last 5 prompt tokens, from \"<end_of_turn>\" through \"model\\n\"), and answer.\n\nFor every global head, I will then measure the mean attention mass from answer tokens onto each region, plus the mass on the single last prompt token. A head that puts, say, more than 20% of its attention on the closing template would be the channel that carries the prompt-time \"mode\" into every answer token. That would justify a causal test of the 66 last-token \"solve-math\" neurons or of that head. If every head reads mainly BOS, the problem and nearby answer tokens, the mode channel goes through local layers or is weak."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "f3a30e9f9404b7b3b67629d8d171e047ca7285df134e411e4f03ffcfe854d3fd",
+ "effort": "high"
+}

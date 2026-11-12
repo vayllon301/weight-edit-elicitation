@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "b6795877f54b22a84fa3366531ec2d9d77d0eaa68d1671f0abe8cede3bd3834e",
+ "code_sha256": "4d9a09a0c4b1807da4422d40654a7cd3ff600dac61a20f31992ff62ebb6cce4b",
+ "clean_code_sha256": "4d9a09a0c4b1807da4422d40654a7cd3ff600dac61a20f31992ff62ebb6cce4b",
+ "prompt_sha256": "d5304f15ff7d6189538d7c85f59b622ed8e7810dd4897993f5a5b6df91ef6954",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "screen(17) reads logprobs from pass 17, which ran the saved L17h2 ablation (hash matches), against original passes 3 and 2: reading what a passed edit did. drop_edit, head_zero(17,3) (a hand-picked whole-head o_proj zero) and the notes write are allowed. No forbidden-selected parameter is consumed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 69794,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 317,
+  "output_tokens_details": {
+   "thinking_tokens": 119
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 69794,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 317,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 69794,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 69794
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.5647,
+ "t": 1794146965.476759
+}

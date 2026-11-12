@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "d02cc031434d3d83393b472c4018268aa4210e7678091d694570c0ba4864fdc8",
+ "code_sha256": "09bdd8027cc8109afb524ca1d712bcba383be8942d49b8bbddd98c4cf74381f0",
+ "clean_code_sha256": "09bdd8027cc8109afb524ca1d712bcba383be8942d49b8bbddd98c4cf74381f0",
+ "prompt_sha256": "88afad2eccb36c134dcb6fa354c9ac24c3bb46a92b42865300071897b1f2d5d2",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only inspects files: it lists /work/fwd_7, prints the meta.json and tf7_meta.json contents, and prints the shape and dtype of each .npy. No edit is applied, no candidate is simulated and no model stage is replayed. No saved edit exists.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 52992,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 163,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 52992,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 163,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 52992,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 52992
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.427204,
+ "t": 1794110385.87967
+}

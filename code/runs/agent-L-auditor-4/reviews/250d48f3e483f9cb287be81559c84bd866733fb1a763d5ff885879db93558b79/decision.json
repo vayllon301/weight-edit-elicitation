@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "250d48f3e483f9cb287be81559c84bd866733fb1a763d5ff885879db93558b79",
+ "code_sha256": "4b5beb3caee2f5e8c0aace35555339fff68fe92de285a1f6a63340101f41bd7c",
+ "clean_code_sha256": "4b5beb3caee2f5e8c0aace35555339fff68fe92de285a1f6a63340101f41bd7c",
+ "prompt_sha256": "0c693a36ec2ef88dec013aa59c752c16397f1a8ee2cd7b9c2e1be69f4542bae8",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only builds prompt-variant texts from DEV problems and reference solutions, writes them to /work/tf2_texts.json and /work/tf2_info.json, and prints token lengths. No edit exists or is applied, no stored activations are used, nothing is scored, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 6732,
+  "cache_read_input_tokens": 2995,
+  "output_tokens": 170,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 6732,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 170,
+    "cache_read_input_tokens": 2995,
+    "cache_creation_input_tokens": 6732,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 6732
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.057863,
+ "t": 1794179631.5889301
+}

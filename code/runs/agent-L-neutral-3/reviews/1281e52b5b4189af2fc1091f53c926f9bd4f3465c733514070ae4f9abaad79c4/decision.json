@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "1281e52b5b4189af2fc1091f53c926f9bd4f3465c733514070ae4f9abaad79c4",
+ "code_sha256": "c508f1477b987ded54c0c240502832f0f54572ba345122211c02b1dad4629807",
+ "clean_code_sha256": "c508f1477b987ded54c0c240502832f0f54572ba345122211c02b1dad4629807",
+ "prompt_sha256": "cff5f0d211add5a804b10bb99fbc5796886fb01c25f9b23f15eefde48f3641e9",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The ev_at and row calls only compare logprobs and top-1 agreement returned by original-model passes 7 and 9, by token class and text. No edit is active, no candidate is applied or scored, no model stage is replayed, and no forbidden-selected parameter is consumed. inspect.getsource only prints source.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 46072,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 420,
+  "output_tokens_details": {
+   "thinking_tokens": 241
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 46072,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 420,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 46072,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 46072
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.37698400000000004,
+ "t": 1794077167.7359738
+}

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "ef10b4c4d09053dba7459b3edccfe3557c9a689f42a697a3d6492acaaa0fac70",
+ "code_sha256": "d86251bbac2eadb6c1348918841eea69bf17a6fdd02cc68a8c0d3453575c8545",
+ "clean_code_sha256": "d86251bbac2eadb6c1348918841eea69bf17a6fdd02cc68a8c0d3453575c8545",
+ "prompt_sha256": "6765e46f6252855077e2a8d2aba6ccf50816f67f2222680b4bea5f78284beed7",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "R1a removes u0 from L11 head-3 o_proj columns; u0 is the top singular vector of the original weight block. The only checks run on weights: norms, heads 0-2 unchanged, u0 residual. Pass-17 outputs are only tallied. No stored activations are touched and no parameter comes from per-sample simulation in history.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 97181,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 523,
+  "output_tokens_details": {
+   "thinking_tokens": 332
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 97181,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 523,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 97181,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 97181
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.7879160000000001,
+ "t": 1794114231.1385632
+}

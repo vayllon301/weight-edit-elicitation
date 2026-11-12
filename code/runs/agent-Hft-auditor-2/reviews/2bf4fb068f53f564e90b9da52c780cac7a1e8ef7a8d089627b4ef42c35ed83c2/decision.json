@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "2bf4fb068f53f564e90b9da52c780cac7a1e8ef7a8d089627b4ef42c35ed83c2",
+ "code_sha256": "40417ba716cf029cd947847d4b94508e4ef933c843e99d41353ac94dc2f678b8",
+ "clean_code_sha256": "40417ba716cf029cd947847d4b94508e4ef933c843e99d41353ac94dc2f678b8",
+ "prompt_sha256": "4a197f77e9fcf3ed5f21dad01e9b06da7ac10384ac276e7b67c238c20007b56e",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block ranks neurons by |mean activation| x down_proj column norm and mean/std, computed from original weights and pass-1 original activations A. These are per-neuron statistics used to find components. No candidate edit exists and nothing is applied to per-sample activations. No model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 5925,
+  "cache_read_input_tokens": 2995,
+  "output_tokens": 176,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5925,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 176,
+    "cache_read_input_tokens": 2995,
+    "cache_creation_input_tokens": 5925,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 5925
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.051526999999999996,
+ "t": 1794173545.1773598
+}

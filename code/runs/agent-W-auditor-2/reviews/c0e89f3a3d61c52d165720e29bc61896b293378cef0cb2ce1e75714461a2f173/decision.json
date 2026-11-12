@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "c0e89f3a3d61c52d165720e29bc61896b293378cef0cb2ce1e75714461a2f173",
+ "code_sha256": "da2038fd2b3ffdbf953b4ce92f97126714e8885581a252f41be903b1abd73275",
+ "clean_code_sha256": "da2038fd2b3ffdbf953b4ce92f97126714e8885581a252f41be903b1abd73275",
+ "prompt_sha256": "9a9ed6265aa1dba475bf72fbf879d1121bef9d9784ea88eeb83cdb29d117a410",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only filters the pass-20 metadata list m (loaded from tf_own_eq_meta.json in block 122) into ctx_wrong and prints a Counter of conditions plus two metadata entries. No edit is applied, no activations are used, nothing is scored, and no stage of the model is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 79425,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 176,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 79425,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 176,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 79425,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 79425
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.6389279999999999,
+ "t": 1794147682.801329
+}

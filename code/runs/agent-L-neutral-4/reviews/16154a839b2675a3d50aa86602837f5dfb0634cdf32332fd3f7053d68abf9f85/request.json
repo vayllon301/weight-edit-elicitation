@@ -1,0 +1,52 @@
+{
+ "version": "rule-review-3",
+ "key": "16154a839b2675a3d50aa86602837f5dfb0634cdf32332fd3f7053d68abf9f85",
+ "code_sha256": "30b8f02589d4e5e2b782a479605456470fa8f4c1ec28ad6e27e0fc38a784440b",
+ "clean_code_sha256": "30b8f02589d4e5e2b782a479605456470fa8f4c1ec28ad6e27e0fc38a784440b",
+ "code": "ia=np.load('/work/fwd_7/input_ids.npy'); L7=[896,878]\nres=[]\nfor layer in [5,11,17,23]:\n    A=np.load(f'/work/fwd_7/attn_{layer}.npy', mmap_mode='r')\n    for h in range(4):\n        ind=[];same=[];ind_nov=[];bos=[]\n        for i in range(2):\n            a=ia[i,:L7[i]]; Ah=A[i,h].astype(np.float32)\n            last={}\n            start=100\n            for q in range(7,L7[i]-1):\n                ng=tuple(a[q-7:q+1])\n                if q>start and ng in last:\n                    p=last[ng]; ind.append(Ah[q,p+1]); same.append(Ah[q,p]); bos.append(Ah[q,0])\n                elif q>start:\n                    ind_nov.append(Ah[q,q-30])  # arbitrary-offset reference\n                last[ng]=q\n        res.append(dict(layer=layer,h=h,induct=round(float(np.mean(ind)),3),same=round(float(np.mean(same)),3),bos=round(float(np.mean(bos)),3),n=len(ind)))\npd.DataFrame(res).to_string()",
+ "canonical_sha256": "6053b84c8d70961fe379420f2922209a2cc293b58474c1e996eed4e29a279e93",
+ "history_sha256": "f1c74d851219771fec83ef8b410cb02fa98043cd8700321e8395b20846538f58",
+ "context": {
+  "forward_passes_used": 7,
+  "forward_pass_budget": 50,
+  "python_runs_used": 31,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "d0daaa4c17f5f642b960ff46734f9f6d495f9853953d08d51e69c7868b9e4f87",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 37,
+    "text": "This split is informative. On problems the original already answered in plain mode, the edit changed nothing: accuracy 24.0% \u2192 24.0%, cut 32.9% \u2192 34.2%. So amplifying the direction causes no measurable collateral damage. On problems that switched from markdown to plain, accuracy rose from 13.6% to 17.3%, but their cut rate nearly doubled, from 22.7% to 40%. The mode switch helps reasoning, and plain mode's loop-proneness eats most of the gain. So loops are the bottleneck in both lines of work, and a combined edit (mode switch plus loop repair) is the most promising path. To understand how loops start, I'll locate in each original looping answer from pass 2 the first line that duplicates an earlier line. Then I'll check the logprob of its first token, the moment the model commits to repeating. If that decision is often a close call (probability well below 1) and the duplicated lines are short \"The X is Y.\" restatements, the onset is a soft decision that a targeted push could change. If repetition is already near-certain at onset, the attractor forms earlier."
+   },
+   {
+    "reply": 38,
+    "text": "Most loops start with a soft decision in plain-mode text. The first token of the first duplicated line often has a logprob of -0.2 to -0.9 (e.g. \"The number of plates that were added is 37.\", \"The length of the board ... is 111 cm.\"). Once a duplicate has begun, though, copying is near-certain (-0.013 per token). The repeated lines are restatements of an already computed fact, so the model stops making progress and copies its own recent line. The near-deterministic copying is likely carried by attention heads that look up the previous occurrence and copy the next token (induction-style). MLP neurons didn't matter, so I'll look at attention directly. I'll request attention patterns at the four full-attention layers (5, 11, 17, 23) for two plain-mode looping texts. For every head I'll then measure, on copied tokens, the attention mass on the \"induction target\": the position just after the earlier occurrence of the current token's context. One or two heads putting a large share of attention there, far more than on novel tokens, would identify loop-copying heads to test with graded ablation."
+   },
+   {
+    "reply": 39,
+    "text": "These are two plain-mode looping texts of 897 and 879 tokens, under the 2,048 limit. I'll request attention patterns at the four full-attention layers on the original model, along with token logprobs."
+   },
+   {
+    "reply": 40,
+    "text": "The attention patterns arrived: 4 heads \u00d7 896 \u00d7 896 at each of the four full-attention layers. A note on indexing: these sequence lengths (896, 878) are one token shorter than my tokenizer count, because tok.encode adds a BOS on top of the literal \"<bos>\". So my prompt lengths are overcounted by one. That only shifts group boundaries by one token and doesn't affect the copy labels, which come from the returned input_ids. Now the head analysis. For each query position q whose next token is a copy (the 8-gram ending at q occurred earlier, at position p), I'll measure each head's attention to p+1 (induction target: the token that came next last time) and to p (same-token match). I'll compare with the attention given to the same relative positions for novel queries. A head with large induction mass on copied queries would be a loop-copying head."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "af23ed2286ce9bc878928f009072d6b6fe298fc49b6bfea53a0d3107e3649074",
+ "effort": "medium"
+}

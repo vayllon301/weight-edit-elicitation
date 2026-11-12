@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "fe03d8f4e6e0381e16489c8b1b4fb730e4a51d87c71c50526c9a0dc4b96a6881",
+ "code_sha256": "b0cc9daa9967c9f2266b7634df90bce5bab54d1cea068d328a979d6ca25c008e",
+ "clean_code_sha256": "b0cc9daa9967c9f2266b7634df90bce5bab54d1cea068d328a979d6ca25c008e",
+ "prompt_sha256": "659c98d7b6c27245ffa587ab575cc801f72bc6ca62a9167e6f0687b92a19ec0d",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only writes the dev_a[256:512] and dev_b[256:512] id lists, asserts that the saved L11 o_proj edit equals the E14 tensor W, appends notes and returns lengths and edited(). It uses no activations and simulates nothing. E14's vh comes from a mean summary statistic, and its strength was chosen by real forward passes, so no forbidden-selected parameter is consumed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 7752,
+  "cache_read_input_tokens": 71742,
+  "output_tokens": 346,
+  "output_tokens_details": {
+   "thinking_tokens": 128
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 7752,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 346,
+    "cache_read_input_tokens": 71742,
+    "cache_creation_input_tokens": 7752,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 7752
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0832924,
+ "t": 1794184434.732215
+}

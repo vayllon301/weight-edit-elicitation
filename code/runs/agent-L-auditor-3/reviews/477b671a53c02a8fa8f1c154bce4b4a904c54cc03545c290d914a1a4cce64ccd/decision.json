@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "477b671a53c02a8fa8f1c154bce4b4a904c54cc03545c290d914a1a4cce64ccd",
+ "code_sha256": "318ad3f694f6295b8fdb6ba650a7c4346362fa7efe183bfa8cc2c3bddbe83efb",
+ "clean_code_sha256": "318ad3f694f6295b8fdb6ba650a7c4346362fa7efe183bfa8cc2c3bddbe83efb",
+ "prompt_sha256": "f2ce611ea3ef782dff7d5277d95da6ba5b94054f36ad630d5558fc0cdcfd9c60",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block reads /work/fwd_7/attn_{L}.npy from pass 7, an actual teacher-forced run of the original model, and computes per-head attention statistics by region (bos, prob, instr, ans, recent, retrieval sources). No candidate edit is applied or predicted on samples, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 41201,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 361,
+  "output_tokens_details": {
+   "thinking_tokens": 175
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 41201,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 361,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 41201,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 41201
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.336836,
+ "t": 1794100515.116339
+}

@@ -1,0 +1,24 @@
+OUTPUT of Python run 224 of at most 300:
+```
+restored: max|load-bestV1| 0 | edited {'model.layers.11.self_attn.v_proj.weight.npy': '05d1217608'} | best_V1 {'model.layers.11.self_attn.v_proj.weight.npy': '05d1217608'} | edited(): ['model.layers.11.self_attn.v_proj.weight']
+V1 check: v_hat content 0.0014, rel change 0.0830
+pass46 {'n': 256, 'gain': np.float64(-0.8), 'se': np.float64(1.24), 'w2r': 4, 'r2w': 6}
+Pass 2: teacher_forced original, /work/tf1_texts.json (500 prompts: G1 math+instr, G2 math only, G4 math+translate, G3 nonmath, G5 nonmath+instr; meta /work/tf1_meta.json), hidden all layers. Current edit: none.
+Pass 5 (planned): both, DEV[:256] (/work/dev256a.json). Edit D1: math-vs-nonmath direction dm[10] (last prompt token, normalized, massive dims removed; /work/D1_dir.npy) projected out of ALL 26 layers' o_proj and down_proj outputs, folded through post-norm scale (u=r*(1+w_post)). Strength full (1.0)
+Pass 6 (planned): teacher_forced original, /work/tf6_texts.json (30 each G1 math+eval instr, G4 math+translate, G3 nonmath, G5 nonmath+instr; meta tf6_meta.json), mlp_act all 26 layers -> math selectivity of neurons. Current edit: D1 still saved but irrelevant (TF on original).
+Pass 6 result: dominant answer-time MLP writers are generic (same on math/nonmath). 66 'solve-math' neurons (G1-only, L6-23) fire only at last prompt token, ~silent in answers -> opening/style units, not a brake. MLP unit-level brake line closed.
+Pass 7 (planned): teacher_forced original, /work/tf7_texts.json (A: gsm8k_train_5465 eval prompt + model's own correct md answer; B: nonmath ocean-poem prompt + eval instr + poem), attn_layers [5,11,17,23] + token_logprobs. Current edit: D1 still saved (irrelevant for original pass).
+- math-content-selective neurons (prompt tokens, all layers): diffuse, both signs, natural. Correct-vs-wrong neuron d: smooth tails, no outlier brake.
+- per-layer update norms math/nonmath ratio 0.91-1.08 all layers; no RMU-like fixed-vector push (pass 8 L12-26 solution vs prompt similar).
+Pass 27 (planned): both, DEV[0:256] (/work/dev256a.json). Edit V1. Compare T1 +19.9, T1r2 +17.6 same slice.
+Pass 27 result: V1 (L11 v_proj rank-1, = T1-all) on DEV[0:256] = +25.4 +- 3.3 (76 w->r, 11 r->w), acc 22.3->47.7 (T1 42.2, T1r2 39.8 same slice). Pooled DEV (482): V1 ~+28.2 vs T1 ~+22.6. LEAD = V1 (/work/cand_V1).
+PLAN (19 passes left): (1) search for a 2nd plant component on DEV only (lead: L10 v_proj math-dir gain 1.13, next after L11 1.55); (2) specificity check (TF edited vs original on nonmath texts); (3) only a candidate clearly better than V1 on DEV goes to HOLDOUT.
+PLAN: specificity check = 2 TF passes (original, edited V1) on same texts: ~300 DEV ref solutions (eval prompt) + 24 hand-written nonmath chat exchanges; compare per-token logprob change and top-1 agreement.
+tf13 = /work/tf13_texts.json (meta tf13_meta.json [group M/N, id, response start tok, len]): 500 DEV[512:1012] ref solutions (tf12 F1, eval prompt, no <<>>) + 24 hand-written nonmath chat exchanges (no math instruction).
+Pass 34 (planned): teacher_forced ORIGINAL on tf13, token_logprobs + topk 5. Current saved edit V1 irrelevant (original model).
+Pass 35 (planned): teacher_forced EDITED (V1 = model.layers.11.self_attn.v_proj.weight -> (I - v v^T) Vw, v = /work/T1_vlast_dir.npy) on tf13, same returns. Compare per-token logprob change + top-1 agreement, math vs nonmath.
+Pass 34/35 result (TF tf13, original vs V1): math ref solutions: top1 acc .735->.754, quantity tokens copied .793->.844, new .826->.863 (capability visible under TF); mean dlogp -.018, |d| .45, top1 agree .90. Nonmath responses: top1 agree .976, top1 acc unchanged (.550/.551), dlogp -.066/token (22/
+Pass 36 (planned): teacher_forced EDITED (M1) on /work/tf13_texts.json, token_logprobs + topk 5 (same as passes 34 orig / 35 V1). Prediction if offset story true: nonmath resp dlogp vs orig -.066 -> ~0, prompt -.14 -> ~0, math quantity top1 stays ~V1 (.844 copied/.863 new).
+Pass 36 result (TF tf13, M1 = V1 + constant 0.866 along v_hat via col 1038): whole-text lp vs orig math +.040, nonmath +.189 BUT = FLATTENING: nonmath resp dlogp +.485 where orig top1 wrong, -.025 where right; top1 conf -.228->-.257; nonmath prompt top1 acc .304->.248 (agree .871 vs V1 .946); math q
+
+```

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "810560ddb2f94d5f7377b203c0af7d4f99846423ef3d21784d033b79fcf6539f",
+ "code_sha256": "a7817762606f83752e51f565ba9dce122f9c99708fdfed69d951eb9e5c6966a4",
+ "clean_code_sha256": "a7817762606f83752e51f565ba9dce122f9c99708fdfed69d951eb9e5c6966a4",
+ "prompt_sha256": "b921b67270f643097453285b3a36892fbd105ad6e8b0efc28f6c4a4ea324ade4",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "Each head's gain on V_last comes from original O and V weights applied to the mean last-prompt and mean answer states of original pass 1. These are summary vectors used to find components. w = B3@vh (T1, already run in pass 21) is checked on weights and directions only. No per-sample candidate effect, no replay, no scoring.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 103368,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 793,
+  "output_tokens_details": {
+   "thinking_tokens": 610
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 103368,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 793,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 103368,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 103368
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.842812,
+ "t": 1794114801.395763
+}

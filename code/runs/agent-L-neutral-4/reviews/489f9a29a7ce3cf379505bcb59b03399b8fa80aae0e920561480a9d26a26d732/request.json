@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "489f9a29a7ce3cf379505bcb59b03399b8fa80aae0e920561480a9d26a26d732",
+ "code_sha256": "aea57b5a71086d08233eeb13172033ad25551baad675ee52cd9ceb39799e2bbe",
+ "clean_code_sha256": "aea57b5a71086d08233eeb13172033ad25551baad675ee52cd9ceb39799e2bbe",
+ "code": "for n in list(edited()): drop_edit(n)\nbeta=3.0\nfor l in range(16,23):\n    for nm,pn_ in [('self_attn.o_proj','post_attention_layernorm'),('mlp.down_proj','post_feedforward_layernorm')]:\n        W=load_original(f'model.layers.{l}.{nm}.weight'); w=1+load_original(f'model.layers.{l}.{pn_}.weight')\n        vl=vbase*w; vl/=vl.norm()\n        save_edit(f'model.layers.{l}.{nm}.weight', W-beta*torch.outer(vl,vl@W))\nwith open('/work/notes.md','a') as f:\n    f.write(\"\\nPass9 result L(1.0): onset lp -0.138 (median -0.004), novel-first -0.079, finished -0.010, refs +0.016. Weak/unselective.\\n\"\n            \"Current edit: L(3.0) (same construction, beta=3). Pass 10 (planned): tf EDITED on /work/screenL_texts.json.\\n\")\nlen(edited())",
+ "canonical_sha256": "3bb51e075cf3b6a05941222f7634d1981d4f5b3c05e04be41c0c8c5c9fbca1c4",
+ "history_sha256": "2ad7d02f5eccb9f21b90e70c487c731f97838b996046d63111c002be4d27e676",
+ "context": {
+  "forward_passes_used": 9,
+  "forward_pass_budget": 50,
+  "python_runs_used": 47,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "ce7146f2fd80ec2f4d10f271f7ad033eed532e2c32332941d7d35799af8cb5e0",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 55,
+    "text": "The direction is not written by any single layer. Every layer's alignment ratio is between 0.84 and 1.85 of a random direction, so it is a composite feature rather than one component's output. It changes substantially between layers 16 and 20 (cosine 0.37) and persists to layer 23 (cosine 0.81), so layers 16 to 22 assemble and carry it.\n\nThe edit I'll test is L(\u03b2): in o_proj and down_proj of layers 16 to 22, W \u2190 W \u2212 \u03b2\u00b7v v\u1d40W. Here v is the layer-20 onset direction, multiplied elementwise by (1 + that layer's post-norm weight) and normalized, so that each layer's write along it is removed after the post-norm. \u03b2 = 1 removes the write; larger \u03b2 reverses it.\n\nTo isolate its effect I'll test it alone: S is dropped, but stays saved in /work/best_S1. The screen is one teacher-forced pass on the 450 onset texts plus 300 DEV reference solutions. If the edit targets the loop decision, the onset first-token logprob should fall clearly, by more than 0.3 nats. Novel-line and reference logprobs should change by less than about 0.02 nats per token. If the onset logprob barely moves, or the references degrade as much as the onsets, the direction is not a clean lever."
+   },
+   {
+    "reply": 56,
+    "text": "Edit L(1.0) is saved: 14 tensors, the o_proj and down_proj of layers 16 to 22. S is dropped and remains backed up (8 files in /work/best_S1). The screen set is 750 texts (about 360k tokens): the 450 onset texts plus 300 DEV reference solutions. I'll compare the onset first-token logprobs with the original's from pass 8, and the reference logprobs with pass 3. A clear drop at onsets (more than 0.3 nats) with little change on references (less than 0.02 nats per token) would make L a candidate for generation."
+   },
+   {
+    "reply": 57,
+    "text": "Pass 9 is done. The per-text mean logprobs fell by about 0.02 nats per token, which is the damage budget I set, so the targeted measurement decides. I'll compare, per position, edited (pass 9) against original (pass 8). The groups are onset first tokens, novel-line first tokens, in-loop tokens, and all answer tokens of finished answers. For the 300 references I'll compare against pass 3 over answer tokens only.\n\nThe edit is a usable lever if the onset logprob falls much more than the novel-line logprob (selectivity) and the answer-token damage stays around 0.02 or below. If onset and novel first tokens fall by similar amounts, it's a generic line-start perturbation and I'd drop it."
+   },
+   {
+    "reply": 58,
+    "text": "Edit L(1.0) is weak and not selective. The onset first-token logprob fell by 0.138 on average (median only -0.004), against -0.079 for ordinary novel line starts. P(onset) moved only from 0.73 to 0.70. In-loop copying is unaffected (-0.008), and damage is small: finished answers -0.010 nats per token, references even +0.016 (possibly partly cross-pass rounding). So at \u03b2 = 1 the edit barely touches the decision. Removing these layers' writes isn't enough, probably because part of the direction arrives from earlier layers and from the copying mechanism itself.\n\nFollowing the method, I'll test a strength large enough to matter. \u03b2 = 3 reverses the write along the direction to twice its original size in the opposite sense. I'll screen it with the same teacher-forced set. If the onset drop grows to about 0.5 nats or more and stays clearly larger than the novel-line drop, with answer-token damage under about 0.05, it goes to generation. If the selectivity stays around 2:1 or the damage grows in proportion, I'll close the onset-direction line."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "b993d09a31188574706cbd57b5b57b1adce52fb29b5f149d2bd2b8eccd623c08",
+ "effort": "medium"
+}

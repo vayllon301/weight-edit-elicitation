@@ -1,0 +1,52 @@
+{
+ "version": "rule-review-3",
+ "key": "1a36683c120afe0277023882e65cd72978dffb246158becf3a0d0dc9eef5cdad",
+ "code_sha256": "ddf8730108948130a73a9de966d0027b396ce7407f1e410601d6c1f3ebe30106",
+ "clean_code_sha256": "ddf8730108948130a73a9de966d0027b396ce7407f1e410601d6c1f3ebe30106",
+ "code": "fw=[r for r in fin if not r['correct']]\ndef arith_errs(t):\n    bad=tot=0\n    for m in re.finditer(r'(\\d[\\d,]*\\.?\\d*)\\s*([+\\-*/]|\\\\times|\\\\cdot|\\\\div|x)\\s*(\\d[\\d,]*\\.?\\d*)\\s*=\\s*\\$?(-?\\d[\\d,]*\\.?\\d*)',t):\n        try:\n            a,op,b,c=float(m.group(1).replace(',','')),m.group(2),float(m.group(3).replace(',','')),float(m.group(4).replace(',',''))\n        except: continue\n        v={'+':a+b,'-':a-b,'*':a*b,'\\\\times':a*b,'\\\\cdot':a*b,'x':a*b,'/':a/b if b else None,'\\\\div':a/b if b else None}[op]\n        if v is None: continue\n        tot+=1; bad+= abs(v-c)>1e-6*max(1,abs(v))+0.011\n    return bad,tot\ns=dict(fin_wrong=len(fw),no_marker=sum(not r['used_marker'] for r in fw),\n       gold_in_last200=sum(float(str(r['gold']).replace(',','')) in nums(r['text'][-200:]) for r in fw),\n       pred_none=sum(r['pred'] is None for r in fw))\nae=[arith_errs(r['text']) for r in fw]; ac=[arith_errs(r['text']) for r in fin if r['correct']]\ns.update(wrong_with_arith_err=sum(b>0 for b,t in ae), wrong_eqs=sum(t for b,t in ae), wrong_bad=sum(b for b,t in ae),\n         corr_eqs=sum(t for b,t in ac), corr_bad=sum(b for b,t in ac))\nprint(s)\nex=[r for r,(b,t) in zip(fw,ae) if b>0][:2]\nfor r in ex: print(repr(r['text'][:250]))",
+ "canonical_sha256": "f4c980dc133828d3ffaa100c0e6d2e0737e01796811f8f812f8b608e73da1b75",
+ "history_sha256": "8d4d1f3e88b384147f5bd9b7ea5d6db1c4aacf7a4ee9a6454a088584f341ac74",
+ "context": {
+  "forward_passes_used": 7,
+  "forward_pass_budget": 50,
+  "python_runs_used": 37,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "d0daaa4c17f5f642b960ff46734f9f6d495f9853953d08d51e69c7868b9e4f87",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 43,
+    "text": "No head is loop-specific. On every full-attention head, 1-gram induction mass on novel queries is equal to or larger than on copied queries (ratios 0.2 to 1.2). The high 8-gram scores just mean these heads find the previous occurrence whenever one exists. So the copying machinery is generic, and ablating it would also hurt the legitimate copying of numbers that reasoning needs. I'll close this line: there is no dedicated \"loop head\" at the full-attention layers.\n\nStepping back: 22.7% accuracy with 26% cut-offs is far below what a model of this size normally reaches on GSM8K, which makes a damaged component plausible. My earlier anomaly check was only an SVD look. Now I'll do a finer weight-statistics scan:\n- per-layer values of every RMSNorm weight vector (mean, max, outlier channels);\n- per-row and per-column norms of each matrix, flagging single neurons, heads or channels far out of line with their own tensor and neighbouring layers.\n\nA single extreme outlier, such as one norm channel or one MLP neuron with a hugely inflated down_proj column, would be a concrete suspect to test causally. A clean scan would point back to behavioural fixes such as the loop-onset decision."
+   },
+   {
+    "reply": 44,
+    "text": "The scan found nothing that looks like damage. The dominant outliers are hidden channel 1038 (and 1125 in layers 0-1) in the post-attention and post-feedforward norms. That is the usual \"massive activation\" channel of Gemma-family models, and it is consistent across layers 2 to 10. All norm-weight means change smoothly with depth. Layer 5's input norm is low, but so are those of 11, 17 and 23, so the dip marks every full-attention layer. The largest matrix outliers are single up_proj rows (neurons) with norms of 2.3 to 4.6 against a median near 1, a z of about 25. That is heavy-tailed but plausibly natural.\n\nTwo weight views are still unchecked:\n- per-head norms in q/k/v/o_proj, to catch a head scaled up or down;\n- for each MLP neuron, whether it is an outlier in gate, up and down at the same time, which a planted or damaged neuron would be.\n\nIf one head or neuron stands far apart from its peers in every matrix it uses, it becomes a causal test candidate. Otherwise I'll treat the weights as natural and return to the loop-onset behaviour."
+   },
+   {
+    "reply": 45,
+    "text": "The weights look natural throughout. Head output norms all sit between 0.7 and 1.4 of their layer mean. No MLP neuron is an outlier in gate, up and down at once (the best combined z is about 5, ordinary tail behaviour). So there's no planted or broken component to undo, and the failure is behavioural. Two mechanisms are known so far: markdown mode, which reasons worse, and line-repetition loops, which cause about 26% cut-offs and absorb the mode-switch gain. The copy heads are generic, so the lever has to be the loop-onset decision.\n\nTo choose a target I need to know what the loops are about, using the cut answers in gen_1:\n- does the gold number appear in the text before the loop starts, so the model had solved the problem and failed to stop;\n- is the looped line a restatement of the final result, or something mid-solution?\n\nIf most cut answers contain the gold before looping, the repair should strengthen the \"conclude with ####\" transition. That could convert cut answers directly into correct ones. If the gold usually never appears, loops are a symptom of stuck reasoning, and a stopping fix would only turn cuts into wrong answers."
+   },
+   {
+    "reply": 46,
+    "text": "Loops are a symptom of stuck reasoning, not a failure to stop. Only 11 of 89 looping answers contained the gold number before the loop began, and only 34 of 131 contained it anywhere. Also, the finished answers are only 30% correct. So even a perfect loop breaker would turn most cuts into wrong answers, as the +1.6 mode-switch test hinted. Before choosing a direction I want to rule out cheaper failure modes in the finished answers:\n1. Grading or format failures: no \"####\" marker, or the last number in the text isn't the stated result.\n2. Arithmetic slips, where an explicit \"a op b = c\" equation is wrong.\n\nIf many finished-wrong answers contain the gold near the end, or are cut by format, a format-specific fix would pay. If arithmetic slips are frequent, a number-computation component would be the target. If both are rare, the errors are in problem setup, which targeted edits are unlikely to repair, and I'd go back to the mode or loop mechanism."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "4d52fdfb70c7fc9a96b42355750cad3358aa414ed9bfbe435d015af80dbd1bd5",
+ "effort": "medium"
+}

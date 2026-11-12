@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "94f7090719662ff4147d5cf76f0decbb648b328dd0fab43ddbe38e773de23e67",
+ "code_sha256": "23706af0068cf41342837de6907cf94c9829d6e4ab0d6b9f0c668f7ff1e55b35",
+ "clean_code_sha256": "23706af0068cf41342837de6907cf94c9829d6e4ab0d6b9f0c668f7ff1e55b35",
+ "code": "def mdir(fdir,ids_,posl,novl,L,halfset):\n    H=np.load(f'{fdir}/hidden_{L}.npy',mmap_mode='r')\n    pf=[int(ids_[i,q+1]) for i,q in posl]; nfirst=np.array([int(ids_[i,q+1]) for i,q in novl])\n    cnt=Counter(pf); top=[t for t,c in cnt.most_common(8)]; O=[];N=[];oi=[];ni=[]\n    for t in top:\n        oo=[(i,q) for (i,q),f in zip(posl,pf) if f==t]; nn=[novl[k] for k in np.where(nfirst==t)[0]]\n        if len(nn)<10: continue\n        Om=np.stack([H[i,q].astype(np.float32) for i,q in oo]); Nm=np.stack([H[i,q].astype(np.float32) for i,q in nn])\n        mu=Nm.mean(0); O.append(Om-mu); N.append(Nm-mu); oi+=[i for i,_ in oo]; ni+=[i for i,_ in nn]\n    O=np.concatenate(O); N=np.concatenate(N); oi=np.array(oi); ni=np.array(ni)\n    oa=np.isin(oi,list(halfset)); na=np.isin(ni,list(halfset))\n    dc=O[oa].mean(0)-N[na].mean(0); dc/=np.linalg.norm(dc); po,pn=O[~oa]@dc,N[~na]@dc\n    d=O.mean(0)-N.mean(0)\n    return d, dict(n=len(O),cover=round(sum(cnt[t] for t in top)/len(posl),2),cv_d=round(float((po.mean()-pn.mean())/np.sqrt((po.var()+pn.var())/2)),2),\n                   cos_clean=round(float(d@dclean/np.linalg.norm(d)),2),proj=round(float(d@dclean),1),norm=round(float(np.linalg.norm(d)),1))\nr=[]; indirs={}\nfor tag,fd,ids_,pl,nv in [('orig','/work/fwd_8',ids8,inloop,novel),('edit','/work/fwd_36',ids36,inl2,nov2)]:\n    tx=sorted(set(i for i,_ in pl)); hs=set(np.random.default_rng(0).choice(tx,len(tx)//2,replace=False))\n    d,s=mdir(fd,ids_,pl,nv,20,hs); indirs[tag]=d; s['model']=tag; r.append(s)\nr.append(dict(model='cos orig-vs-edit inloop',cv_d=round(float(indirs['orig']@indirs['edit']/np.linalg.norm(indirs['orig'])/np.linalg.norm(indirs['edit'])),2)))\npd.DataFrame(r).to_string()",
+ "canonical_sha256": "2aac94a53fb23652fa6176bdcc693ceec7e1868506354eb7ee893bd44743c2f8",
+ "history_sha256": "ffcbd07ab78c1bba016d38ce1cb09663d017f03e0dee0587fd7ef91b0b5306b6",
+ "context": {
+  "forward_passes_used": 36,
+  "forward_pass_budget": 50,
+  "python_runs_used": 129,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "2c837537e927e286e8c5ebf5e2d5d67ffc98461e87866b853c1d8790a8888c98",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 167,
+    "text": "In the original model, the onset signal along the clean direction is mostly built between layers 16 and 20 (projection 101 \u2192 436). In the edited model's resistant loops it is just as present at layer 20, even larger (603). C(\u22121.5) changes what layers 16\u201322 write along v (W += 1.5\u00b7v v\u1d40W), so the resistant loops are not failing for lack of signal along this direction. The loops C frees are sensitive to it; the rest loop even with the direction fully present.\n\nThat argues against extending C to earlier layers. Layer 16 carries little of the projection (44), so the source is not upstream. A wider C would also be one more dose change along a direction that has already plateaued. I'm closing this line too.\n\nI'll record both results in the notes and verify that /work/edited still holds exactly the adopted C(\u22121.5) from /work/best_final. Then I'll decide whether any remaining independent hypothesis justifies the 14 remaining passes."
+   },
+   {
+    "reply": 168,
+    "text": "**I submitted an edit: C(\u22121.5), 14 tensors in /work/edited, byte-identical to /work/best_final.** I am leaving the remaining 14 forward passes unused on purpose. Every practice problem is already in DEV or HOLDOUT, and every open line is closed, so further passes would amount to tuning on HOLDOUT.\n\n**What the edit changes.** In layers 16\u201322, for both `self_attn.o_proj.weight` and `mlp.down_proj.weight`: W \u2190 W + 1.5\u00b7v v\u1d40W.\n- v is the \"clean loop-onset direction\" at layer 20, multiplied elementwise by (1 + that layer's post-norm weight) and normalised.\n- The edit therefore changes only how strongly these layers write along one direction. It adds a rank-1 term to each of the 14 matrices and leaves everything else alone.\n- The sign is a measured choice, not an intuitive one. It strengthens the write along v rather than removing it. This setting gave fewer cut-offs in screening and generation.\n\n**Measured effect (paired \"both\" passes, edited minus original):**\n\n| Set | n | Gain | Wrong\u2192right | Right\u2192wrong |\n|---|---|---|---|---|\n| HOLDOUT, pooled over 5 passes (29\u201333) | 1,226 | **+2.2 \u00b1 0.95 points** | 82 | 55 |\n| DEV (passes 13, 28) | 512 | +1.2 \u00b1 1.4 points | 28 | 22 |\n\nThe HOLDOUT gain is not uniform: per-set results were +5.9, +4.3, \u22120.8, +2.0 and \u22121.0. Cut-off answers fell from about 26% to about 14%. Expect a gain of roughly 1\u20132 points on the held-out evaluation, coming from fewer runaway loops.\n\n**How I got there:**\n1. **Diagnosis.** About 28% of the original's answers hit the 768-token limit. Most of these were exact loops that repeat a line forever (230 of 300), plus near-loops. The wrong finished answers were mostly set-up errors in reading the problem. I checked and ruled out arithmetic, answer read-out, `####` extraction, stopping too early, and the question leaving the 512-token sliding window.\n2. **Finding the direction.** I teacher-forced the original model on its own answers. The direction is the mean layer-20 residual at the newline just before the first repeated line, minus the mean at newlines before new lines that start with the same token. It separates the two on held-out texts.\n3. **Testing it.** I compared strengths with forward passes, then froze C(\u22121.5) before touching HOLDOUT.\n4. **Mechanism check.** The gain comes from freed loops, as intended. Among problems the original cut off, 35 went wrong\u2192right and 6 right\u2192wrong. Among problems the original finished, results only reshuffled (47 against 49).\n\n**Closed lines (no gain or not selective):**\n- Repetition neurons and attention copy heads.\n- The first, cruder loop-onset direction.\n- The style edit S and its combinations SC and SC3. SC was flat on 1,226 HOLDOUT answers.\n- Number-fetching heads, both ablated and amplified.\n- A correctness direction from paired right/wrong answers, and the dropped-conditions hypothesis.\n- A stronger dose, C(\u22122.25). It plateaued at the same cut-off rate, pooled DEV +1.56.\n- A second onset direction measured inside the edited model. The loops that survive C(\u22121.5) start along the same direction (cosine 0.91) and carry it at full strength at layer 20. So they are not a separate mechanism, and the signal is not built before layer 16.\n\n**Caveats:**\n- The DEV gain alone is within noise. Adoption rests on the pooled HOLDOUT result at about 2.3 standard errors.\n- Part of HOLDOUT had earlier been used to evaluate the rejected SC edit, though never to tune anything.\n- About half of the original loops still persist under the edit."
+   },
+   {
+    "reply": 169,
+    "text": "The session goes on, so I'll use the remaining passes only on a hypothesis that is new and gets tested on DEV first. One candidate: the loops that survive C(\u22121.5) are held in place by an \"in-loop\" state, measured at repeated lines after the onset, rather than by the onset state. A direction for that state, if different from the clean onset direction, could be edited the same way.\n\nMy notes list \"onset dirs C/L\" as closed, and the file screenL_texts.json exists. So an L (loop?) direction may already have been tried. Before computing anything, I'll search the notes and block sources for what \"L\" was, so I don't repeat a closed line. If L was an in-loop direction and it failed, I drop this idea. If L was something else, such as an onset direction at another layer, the in-loop direction from the edited model is still an open question."
+   },
+   {
+    "reply": 170,
+    "text": "L was the unmatched layer-20 onset direction, and it was closed. No direction for the in-loop state (newlines before repeats after the onset) has been built or tested, so this line is open.\n\nI'll take the block-50 recipe: in-loop newline residuals minus same-first-token novel means, held-out split by text. I'll compute it in the edited model (fwd_36, the loops that resist C) and in the original (fwd_8). The question is whether it differs from the clean onset direction. A low cosine with dclean plus strong held-out separation would make it a distinct candidate. I'd then screen both signs with a teacher-forced pass: the target is a lower probability of continuing a loop with no damage to reference solutions. A high cosine means this is the same direction and I close the line."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "3195b18b72cbb6000bfd3fe50cf73ae90751d743f854f80f1cdcddfd39295786",
+ "effort": "medium"
+}

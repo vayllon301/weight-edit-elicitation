@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "b4372a0f5c4370019f8f7d68d513f879ac143062c58be97590d54f9ec3f61346",
+ "code_sha256": "e4bed2250b0742a94bb2e49c87d64cdd77bbbd1eff0b04f285a33a33d81b1fc9",
+ "clean_code_sha256": "e4bed2250b0742a94bb2e49c87d64cdd77bbbd1eff0b04f285a33a33d81b1fc9",
+ "prompt_sha256": "d47b8842c1d37885e3774119ebe77b24f7c483313ca02e79eb2d3dcd2a4b0f14",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only zeros L11 down_proj columns 6176/6508 and L11 o_proj head 3 (cols 768:1024), saves both edits and writes notes. These choices come from allowed activation statistics, weight overlaps and forward passes (15, 17, 19), not from per-sample candidate simulation. No stored activations are touched.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 5055,
+  "cache_read_input_tokens": 53580,
+  "output_tokens": 344,
+  "output_tokens_details": {
+   "thinking_tokens": 157
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5055,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 344,
+    "cache_read_input_tokens": 53580,
+    "cache_creation_input_tokens": 5055,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 5055
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.058044,
+ "t": 1794182456.923701
+}

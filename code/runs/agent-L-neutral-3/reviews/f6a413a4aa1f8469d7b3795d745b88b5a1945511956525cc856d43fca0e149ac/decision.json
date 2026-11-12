@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "f6a413a4aa1f8469d7b3795d745b88b5a1945511956525cc856d43fca0e149ac",
+ "code_sha256": "4ca734ca09c11d6047aa28f58ff3fe5a44ad8c1c31f0dde1fc5778ec72959e6d",
+ "clean_code_sha256": "4ca734ca09c11d6047aa28f58ff3fe5a44ad8c1c31f0dde1fc5778ec72959e6d",
+ "prompt_sha256": "9194beadd2ac9ed1774a9ea54d8b3b428022e74d2118c734a4de1186a358f6a3",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only summarises P(Final) from topk logprobs (tkid/tklp) that original-model pass 2 returned, grouped by line class. These are allowed statistics of observed outputs: no edit is active, no bias or candidate is applied on samples, no model stage is replayed, and no weights are scored. The 'danger' label and finish-bias idea name no sampled candidate effect.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 104860,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 1656,
+  "output_tokens_details": {
+   "thinking_tokens": 1454
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 104860,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 1656,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 104860,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 104860
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.872008,
+ "t": 1794080744.273531
+}

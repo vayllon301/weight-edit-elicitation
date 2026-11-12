@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "b2886550db719a91e110fb66aca9dc4eed53af37df7a7e73bd4dbab4e7991257",
+ "code_sha256": "252918e37cd99310bd11b05853d9399abf3604ba0e8495a5525779ea3fbc7bea",
+ "clean_code_sha256": "252918e37cd99310bd11b05853d9399abf3604ba0e8495a5525779ea3fbc7bea",
+ "prompt_sha256": "bfe5891ae375b3f0ecbd7aaadeae9df14e7cac0c2b82b936c622bc7c58e7b800",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only summarizes pass 20, the original model with no edit (edit_sha256 empty). It takes top-1 exact match and mean log-probability of result tokens, split by condition and by own_ok, plus bare-vs-context deltas. These are statistics of observed outputs. No candidate edit is applied, simulated or scored, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 78490,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 441,
+  "output_tokens_details": {
+   "thinking_tokens": 247
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 78490,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 441,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 78490,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 78490
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.636748,
+ "t": 1794147537.050842
+}

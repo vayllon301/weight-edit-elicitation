@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "a976293557558157dea25d8567d0630e54536ccab8e6679a264291f0f3d234c4",
+ "code_sha256": "f75a3a39f57c1ce60244ea1c8afeed5d47ea1e60fbc551e8c9775b5a4c91565e",
+ "clean_code_sha256": "f75a3a39f57c1ce60244ea1c8afeed5d47ea1e60fbc551e8c9775b5a4c91565e",
+ "prompt_sha256": "bb72f8b282895f63a438984cd845233fae930b9243452fc1179ac14f33bd1f16",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only samples generated answers, builds teacher-forced texts and metadata, estimates storage size, writes /work/tf2_texts.json and tf2_meta.json, and updates notes. No edit exists, and no candidate, activation-based prediction, loss or model replay appears.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 15997,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 163,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 15997,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 163,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 15997,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 15997
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.131244,
+ "t": 1794075312.3324149
+}

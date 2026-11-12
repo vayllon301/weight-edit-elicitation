@@ -1,0 +1,44 @@
+OUTPUT of Python run 30 of at most 300:
+```
+fields ['id', 'source', 'problem', 'answer', 'solution'] solution key candidates ['solution'] answer sample 72
+
+group n model_eq ref_eq diff share<0 share=0 share>0 n_tok
+correct     153   4.07   2.82  +1.24 0.052 0.314 0.634    172
+wrong_fin   412   4.18   3.62  +0.56 0.282 0.235 0.483    188
+cut         203   7.00   3.44  +3.57 0.177 0.153 0.670    768
+
+wrong_fin n 412 no pred 0
+pred is reference intermediate 0.104 | gold appears in body 0.133 | pred copied from problem 0.075
+
+coverage: share of needed problem numbers missing from the answer body, by position tertile
+group all first_third mid_third last_third | first_needed last_needed | answers missing>=1
+correct   0.003 0.000 0.000 0.018 | 0.000 0.007 | 0.007
+wrong_fin 0.105 0.074 0.107 0.163 | 0.084 0.108 | 0.266
+cut       0.104 0.066 0.110 0.167 | 0.061 0.132 | 0.234
+
+samples, wrong_fin with pred = reference intermediate (tail of answer):
+ gold 16.0 pred 37.0 |  37 + 5$ / $E = 42$ / Now we can find the amount Markese earned: / $M = E - 5$ / $M = 42 - 5$ / $M = 37$ / Therefore, Markese earned 37 dollars. /  / Final Answer: The final answer is $\boxed{37}$
+ gold 3.0 pred 2.0 |  total cost divided by the cost per contact. /    * $58 / $25 = 2.4 /  / 5. **Round to the nearest whole number:** Since we can't buy a fraction of a contact, we round down to 2. /  / #### 2
+ gold 132.0 pred 92.0 |  in the second year:** The total growth in the second year is $12. /  / 4. **Calculate the final value of the portfolio:** The final value of the portfolio is $80 + $12 = $92. /  / #### 92
+
+non-layer tensors ['model.embed_tokens.weight', 'model.norm.weight']
+suffix shape median_norm max_dev_from_neighbours(layer)  within: max/median unit norm (layer)
+input_layernorm.weight                      (1152,)            208.84 0.235 (L5)    63.67 (L23)
+mlp.down_proj.weight                        (1152, 6912)        29.06 0.558 (L4)     2.04 (L16)
+mlp.gate_proj.weight                        (6912, 1152)        84.17 0.939 (L9)     3.22 (L12)
+mlp.up_proj.weight                          (6912, 1152)        84.21 0.940 (L9)     4.38 (L7)
+post_attention_layernorm.weight             (1152,)            620.72 1.532 (L17)   226.74 (L4)
+post_feedforward_layernorm.weight           (1152,)            711.82 0.479 (L1)   457.02 (L0)
+pre_feedforward_layernorm.weight            (1152,)             76.08 0.626 (L24)    66.91 (L25)
+self_attn.k_norm.weight                     (256,)              18.17 1.709 (L2)    52.74 (L2)
+self_attn.k_proj.weight                     (256, 1152)         23.26 0.705 (L11)     2.82 (L17)
+self_attn.o_proj.weight                     (1152, 1024)        24.62 0.714 (L4)     2.02 (L12)
+self_attn.q_norm.weight                     (256,)              14.41 0.686 (L3)    16.47 (L23)
+self_attn.q_proj.weight                     (1024, 1152)        22.42 1.433 (L11)     5.53 (L11)
+self_attn.v_proj.weight                     (256, 1152)         23.30 0.702 (L11)     1.54 (L3)
+
+head blocks: max/min block norm per tensor, top 3 layers
+self_attn.o_proj.weight [(np.float64(2.100034308846526), 11, [10.9, 7.6, 9.9, 15.9]), (np.float64(1.9058023671738085), 1, [15.8, 12.2, 8.3, 12.0]), (np.float64(1.721583134059409), 4, [7.5, 6.7, 8.5, 11.6])]
+self_attn.q_proj.weight [(np.float64(1.4745519333147266), 5, [13.3, 10.6, 9.0, 11.2]), (np.float64(1.363099861510918), 23, [9.5, 8.3, 7.2, 9.7]), (np.float64(1.3287582169097443), 11, [15.7, 11.8, 15.4, 15.5])]
+
+```

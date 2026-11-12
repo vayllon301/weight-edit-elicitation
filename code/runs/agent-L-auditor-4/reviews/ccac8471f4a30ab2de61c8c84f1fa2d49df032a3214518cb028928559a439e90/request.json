@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "ccac8471f4a30ab2de61c8c84f1fa2d49df032a3214518cb028928559a439e90",
+ "code_sha256": "0ebd8770f1f423fc54a352bebb8cb19d4397d60dd742f00336de09f13bed31db",
+ "clean_code_sha256": "0ebd8770f1f423fc54a352bebb8cb19d4397d60dd742f00336de09f13bed31db",
+ "code": "O=load_original('model.layers.11.self_attn.o_proj.weight').numpy()  # [1152, 4*256]\npa=nw('model.layers.11.post_attention_layernorm.weight'); pf=nw('model.layers.11.pre_feedforward_layernorm.weight')\nprint(O.shape)\ndef head_overlap(vec):\n    v=vec*pf; v=v/np.linalg.norm(v)\n    out=[]\n    for h in range(4):\n        Oh=O[:,h*256:(h+1)*256]*pa[:,None]\n        Q,_=np.linalg.qr(Oh); out.append(np.linalg.norm(Q.T@v))\n    return out\nrng=np.random.default_rng(0); base=np.array([head_overlap(Gt[n]) for n in rng.choice(6912,200,replace=False)])\nprint('random neuron gate rows: mean overlap per head', np.round(base.mean(0),3), 'sd', np.round(base.std(0),3))\nfor n in [6176,6508]:\n    print(n,'gate',np.round(head_overlap(Gt[n]),3),'up',np.round(head_overlap(Up[n]),3))",
+ "canonical_sha256": "9f94bc43e931a60c817fdf1bbd98e6cd3e0933864372ca71cf0221f12f366d01",
+ "history_sha256": "e860b54d760c2529ce376209576d25cae29e5d01b72dff13bf03915afd973dea",
+ "context": {
+  "forward_passes_used": 18,
+  "forward_pass_budget": 50,
+  "python_runs_used": 91,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.mlp.down_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "c450ffd36c9b0eee0990a15f92d1707b82fd4a52e3b91d79a94d3965e42a0535",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 107,
+    "text": "tf4 alternates v0 (eval chat) and v3 (raw + suffix) for the same problem with the same reference solution, and tf5_sel lists the 64 shortest pairs. I'll take the first 40 pairs (80 texts) and append the 24 non-math chat texts from tf9. For every text I'll record where the response starts: after \"<start_of_turn>model\\n\" in chat, after \"\\nAnswer: \" in raw. I'll keep the maximum length small enough for 16 MLP layers to stay under 6 GB."
+   },
+   {
+    "reply": 108,
+    "text": "The texts are short (at most 157 tokens), so I can afford layers 0\u201317: about 4.0 GB. I'll run the teacher-forced pass on the original."
+   },
+   {
+    "reply": 109,
+    "text": "The pass is back with layers 0\u201317 for 40 eval-chat/raw pairs and 24 non-math chat texts. For each neuron I'll compute response-token means in v0 (eval chat math), v3 (raw math) and non-math chat. The AND score is the smaller of the two gaps |v0 \u2212 v3| and |v0 \u2212 chat|, in units of the neuron's token-level sd and of the layer's activation scale, requiring both gaps to point the same way. If 6176 and 6508 top the list by a wide margin, the gate is concentrated in layer 11. Other units with comparable scores would be candidates to add to E4."
+   },
+   {
+    "reply": 110,
+    "text": "The scan confirms 6176 and 6508 as by far the strongest AND(chat, math) units in layers 0\u201317: 8.1 and 4.2 sd, against at most about 2.8 for anything else. A second tier sits right after them, in layers 12\u201313 (L12 n6233, n4689, n159; L13 n754, n2476; about 1.7\u20132.8 sd). Those may simply be downstream echoes of 6176/6508, or parallel readers of the same upstream trigger. Nothing before layer 11 shows the pattern, so the AND is first computed at layer 11. Layer 11 is a full-attention layer and its attention wrote the large chat-specific offset. Its heads can see both the chat tokens and the problem, so I'd guess the trigger enters through layer-11 attention and the neurons' nonlinearity forms the AND. As a weight-only check, I'll measure how much each layer-11 attention head's output space (o_proj slice, post-attention norm scaling) overlaps the effective input rows (gate and up, with pre-FF norm scaling) of 6176 and 6508, compared with random neurons. A single head with outsized overlap would be the natural upstream target."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "d7381967f85d34e6b2f91ede90a781345c130c88bd8dbc7cc0bdc574ca68cc96",
+ "effort": "medium"
+}

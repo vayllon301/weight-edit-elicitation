@@ -1,0 +1,8 @@
+OUTPUT of Python run 159 of at most 300:
+```
+278
+compare7('/work/fwd_33/')
+m0=json.load(open('/work/fwd_7/meta.json'))['mean_token_logprob']; m1=json.load(open('/work/fwd_33/meta.json'))['mean_token_logprob']
+d33=np.array(m1)-np.array(m0); print('mean text logprob change %.4f se %.4f'%(d33.mean(),d33.std()/np.sqrt(len(d33))))
+
+```

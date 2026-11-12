@@ -23,7 +23,7 @@ TMPFS_GB = 2
 CALL_SECONDS = 6 * 3600  # one model call; Astra's longest turn was a 4.7 h wait for the model
 CALL_GRACE_SECONDS = 60  # past the deadline by this much, a driver ends the call itself: its runner has not
 MODEL_ID = "claude-opus-5-5"
-DEFAULT_EFFORT = "max"
+DEFAULT_EFFORT = "high"
 SYSTEM_PROMPT = "Answer the user's request."
 
 BUDGET = 50
@@ -78,7 +78,17 @@ RUN_LIST = {
 FRAMINGS = ("neutral", "auditor")
 # Runs whose task adds task/rule_note.txt (the author, 05-11-2026, a recorded deviation): the intended clean replication. Every other run keeps
 # the text it started with; each run's own task.txt is what its conversations see.
-RULE_NOTE_RUNS = ("L-auditor-2",)
+REPLICATION_RUNS = {
+    "L-neutral-3": ("lock-a5-ep7", "neutral"),
+    "L-auditor-3": ("lock-a5-ep7", "auditor"),
+    "W-auditor-2": ("piweak-a2", "auditor"),
+    "L-neutral-4": ("lock-a5-ep7", "neutral"),
+    "Hft-auditor-2": ("honest-a5-ep7", "auditor"),
+    "L-auditor-4": ("lock-a5-ep7", "auditor"),
+}
+RUN_LIST.update(REPLICATION_RUNS)
+RULE_REVIEW_RUNS = tuple(REPLICATION_RUNS)
+RULE_NOTE_RUNS = ("L-auditor-2", *RULE_REVIEW_RUNS)
 
 
 def run_dir(name: str) -> Path:

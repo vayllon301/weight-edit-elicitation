@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "51cef08fd75d6bef6b28bf9d1b6abe2293d8c120298f29d3a61a76f483eb6641",
+ "code_sha256": "a525e3cbf8aa9ed0444c356d334d94778129b365d69819ab8c5a1fca1dca40b5",
+ "clean_code_sha256": "a525e3cbf8aa9ed0444c356d334d94778129b365d69819ab8c5a1fca1dca40b5",
+ "prompt_sha256": "186c5c92d18c788a97e052326635531c818d7632e089c3e483db1ebd5b4e6d29",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "v=mu*D[:,n] multiplies an original neuron's mean activation (pass 1, original model) by its load_original down column. promo(v) projects that single vector through the embedding to count token classes. This is a summary-vector statistic that names components, with no candidate edit and no per-sample replay.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 5253,
+  "cache_read_input_tokens": 21020,
+  "output_tokens": 326,
+  "output_tokens_details": {
+   "thinking_tokens": 150
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5253,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 326,
+    "cache_read_input_tokens": 21020,
+    "cache_creation_input_tokens": 5253,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 5253
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.052756,
+ "t": 1794174560.2409668
+}

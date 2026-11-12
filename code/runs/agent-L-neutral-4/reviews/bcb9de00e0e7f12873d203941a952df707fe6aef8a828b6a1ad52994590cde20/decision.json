@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "bcb9de00e0e7f12873d203941a952df707fe6aef8a828b6a1ad52994590cde20",
+ "code_sha256": "0cf57c22e4036d998a0bf970795bc55a56912751cdfe400c6e9adc36dd3b65fe",
+ "clean_code_sha256": "0cf57c22e4036d998a0bf970795bc55a56912751cdfe400c6e9adc36dd3b65fe",
+ "prompt_sha256": "ca439af976a54f5a5148f086f73d34a06bfd13880edfb23ec4379f36b3878723",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "mdiff computes onset-minus-novel mean differences of returned hidden states from fwd_8 (original) and fwd_36 (an edit a pass ran) and projects those summary vectors on dclean. These are statistics that read what passes ran. No candidate is applied to per-token states and no stage is replayed. The C(-1.5) scalar was chosen through forward passes.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 4349,
+  "cache_read_input_tokens": 56416,
+  "output_tokens": 512,
+  "output_tokens_details": {
+   "thinking_tokens": 314
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 4349,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 512,
+    "cache_read_input_tokens": 56416,
+    "cache_creation_input_tokens": 4349,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 4349
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0563232,
+ "t": 1794171496.201699
+}

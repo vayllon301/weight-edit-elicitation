@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "82f40627d57c919b812348839143adcab6258780319e342a51f8fdc17a1b43ac",
+ "code_sha256": "84f5917df9ed14af602487a3c699332a3cded92eac705058b8ce94c65cb1d475",
+ "clean_code_sha256": "84f5917df9ed14af602487a3c699332a3cded92eac705058b8ce94c65cb1d475",
+ "prompt_sha256": "eb3ef0930925e0d31defe2c15e4d1450b13179647fdd0bdd46edfd6b4e9df46b",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "Block builds E7 from load_original: the 12 doubt columns are scaled by a hand-set x-2 and col 3729 by x-1, then it saves the edit and writes notes. No activations are touched. The columns were chosen in blocks 89/117 from per-neuron selectivity and weight cosine statistics, and 3729's sign came from pass comparisons. The rejected simulations never ran and fed no parameter here.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 10445,
+  "cache_read_input_tokens": 58287,
+  "output_tokens": 619,
+  "output_tokens_details": {
+   "thinking_tokens": 409
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 10445,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 619,
+    "cache_read_input_tokens": 58287,
+    "cache_creation_input_tokens": 10445,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 10445
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.10760539999999999,
+ "t": 1794177890.477047
+}

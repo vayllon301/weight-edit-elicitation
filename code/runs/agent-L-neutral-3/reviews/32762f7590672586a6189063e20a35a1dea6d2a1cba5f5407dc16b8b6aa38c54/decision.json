@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "32762f7590672586a6189063e20a35a1dea6d2a1cba5f5407dc16b8b6aa38c54",
+ "code_sha256": "44b1bc8887cd49eee5a474b292bfe5a326937faed74f3d312450387f1b700080",
+ "clean_code_sha256": "44b1bc8887cd49eee5a474b292bfe5a326937faed74f3d312450387f1b700080",
+ "prompt_sha256": "217fd6d2aee42e8b9b3ac8b55d7c463b5f2fd15a648d1d05759859eb813497e6",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "opener_col builds d3 from embedding rows, norm weights and aggregate original statistics (yrms, rms_f, abar); mult and kappa are hand-set from real passes. Checks use only ymean and d3 itself. No sampled activations are touched, no model stage is replayed, and no consumed parameter traces to forbidden simulation.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 92585,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 2776,
+  "output_tokens_details": {
+   "thinking_tokens": 2586
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 92585,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 2776,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 92585,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 92585
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.796208,
+ "t": 1794080027.4066648
+}

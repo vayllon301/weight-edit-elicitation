@@ -1,0 +1,20 @@
+OUTPUT of Python run 99 of at most 300:
+```
+n |g|<.25 34 <.5 38 <1 44 <2 48 <3 61
+dead 44 energy share 0.386 logit share 0.0011 temp factor 1.277
+{'name': 'model.layers.17.self_attn.q_proj.weight', 'sha256': 'c887cf51f7099ac3fe7faafe8e07fccc3d910a3f6a402c6d403a58ac44455cb6', 'changed_entries': 50688, 'rel_change': 0.2878330647945404}
+edited ['model.layers.17.self_attn.q_proj.weight']
+(dB, dA='/work/fwd_7/')
+def compare7(dB,dA='/work/fwd_7/'):
+    A_=load_fwd(dA);B_=load_fwd(dB)
+    la,ga=stats(A_);lb,gb=stats(B_)
+    tx=np.array([c[0] for c in CL]);cl=np.array([c[2] for c in CL])
+    print('class n acc_A acc_B dacc(pts) se dlp se')
+    for c in sorted(set(cl)):
+        m=cl==c;d=(lb-la)[m];g=(gb.astype(float)-ga.astype(float))[m];t_=tx[m]
+        S=pd.DataFrame({'t':t_,'d':d,'g':g}).groupby('t').sum();k=len(S);nn=m.sum()
+        print(f'{c:20s} {nn:6d} {ga[m].mean():.4f} {gb[m].mean():.4f} {100*g.mean():+.2f} {100*S["g"].std()*np.sqrt(k)/nn:.2f} {d.mean():+.4f} {S["d"].std()*np.sqrt(k)/nn:.4f}')
+    Ta,Pa=arith_table(A_);Tb,Pb=arith_table(B_)
+    grp={'+2':lambda e:e['o']=='+' and e['nt']==2,'+3':lambda e:e['o']=='+' and e['nt']==3,'+4':lambda e:e['o']=='+' and e['nt']>=4,'mixed':lambda e:e['o']=='mixed','*':lambda e:e['o']=='*','-':lambda e:e['o']=='-','/':lambda e:e['o']=='/','all':lambda
+
+```

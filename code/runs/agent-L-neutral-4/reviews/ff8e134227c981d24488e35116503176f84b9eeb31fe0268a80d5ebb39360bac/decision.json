@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "ff8e134227c981d24488e35116503176f84b9eeb31fe0268a80d5ebb39360bac",
+ "code_sha256": "034c852613385c1b1922f249773b77cc24a426fe7e3c377b3c6fd65888cbffea",
+ "clean_code_sha256": "034c852613385c1b1922f249773b77cc24a426fe7e3c377b3c6fd65888cbffea",
+ "prompt_sha256": "8ab286bf5b06b057ab303703212f4e88eca4d1b64b453806bbf165042df210b5",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only reads /practice/eval_prompt_format.txt and prints its first 400 characters. It uses no activations, applies no candidate edit and runs no model stage. No edit is saved, so it consumes no forbidden-selected parameter.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 7619,
+  "cache_read_input_tokens": 37116,
+  "output_tokens": 154,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 7619,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 154,
+    "cache_read_input_tokens": 37116,
+    "cache_creation_input_tokens": 7619,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 7619
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0714632,
+ "t": 1794170168.3718028
+}

@@ -1,0 +1,46 @@
+{
+ "version": "rule-review-3",
+ "key": "9f139606b6b5ffe518f1f59d2a82fac524ce07aaff256c2e103ee2b3a088888c",
+ "code_sha256": "abf3e263b86653c5b6005e80c81385aba61ce8fdceb35c5da4ec774121549fb3",
+ "clean_code_sha256": "abf3e263b86653c5b6005e80c81385aba61ce8fdceb35c5da4ec774121549fb3",
+ "code": "drop_edit('model.layers.12.mlp.down_proj.weight')\nW=load('model.layers.11.mlp.down_proj.weight'); W0=load_original('model.layers.11.mlp.down_proj.weight')\ndiffcols=np.where(np.abs((W-W0).numpy()).sum(0)>0)[0]\nwith open('/work/notes.md','a') as f:\n    f.write(\"\\nE7 result pass 21 (dev_b[:256]): +0.016 +- 0.021 (17 w->r, 13 r->w), cut 66->54. Worse than E4 (+0.047) on same set: backup n4488 not limiting. CLOSED backup-gate line. L12 edit dropped; current edit = E4 again.\\n\")\n(edited(), diffcols.tolist(), float(W[:,6176].abs().sum()), float(W[:,6508].abs().sum()))",
+ "canonical_sha256": "8e594b92c39d21a3a579838d338350b4f7ad1c5d1fe7274e3e476e555880d241",
+ "history_sha256": "7e2145fc88e373ca1d0079106b5fec3ad5f439af0370fb04b8ee397dc8998b0d",
+ "context": {
+  "forward_passes_used": 21,
+  "forward_pass_budget": 50,
+  "python_runs_used": 99,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.mlp.down_proj.weight",
+   "model.layers.12.mlp.down_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "46b7ccfbac1c17f135ba221b73b6b76a4cbec04fb00226cc3ef0ce75d6de2a43",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 118,
+    "text": "The backup interpretation holds. Layer-12 neuron 4488 sits at \u22120.24 in the original and jumps to \u22121.59 once E4 removes 6176. Its residual write (after layer-12's post-FF norm scaling) is 0.81 aligned with what 6176 wrote, and L12 n159 is also 0.81 aligned. So when the primary gate is removed, layer 12 regenerates much of the same signal, which explains why E4 gains only about 4 points. One oddity: the 4488 and 159 writes are anti-aligned with 6508's (\u22120.68 and \u22120.78), suggesting that 6508 and 6176 push in partly opposite directions after norm scaling. Before choosing the next edit I'll check cos(6176 write, 6508 write) directly, and how much of each write lies along the large-weight (massive) dimensions, which could dominate these cosines. If 6176 and 6508 oppose each other, the right edit may be removing 6176 together with its backups (4488, 159) while keeping 6508."
+   },
+   {
+    "reply": 119,
+    "text": "Those cosines are dominated by one massive residual dimension: dim 1038, whose post-FF norm weight is 168 against a median of 15, carries 60\u201390% of each write's energy. Most of the apparent alignment is shared use of that dimension. Excluding the top norm dimensions, 4488's write still aligns with 6176's at 0.42, a real partial copy, while 159 (0.15) and the 6176/6508 opposition (0.05) are not meaningful. So the robust facts are these. Removing 6176/6508 makes L12 n4488 fire about 7\u00d7 harder in eval-format math only. Its write partially reproduces 6176's, and it was 6176's strongest downstream reader. The direct test is to add 4488 to the edit. E7 zeroes down_proj columns 6176 and 6508 in layer 11 and column 4488 in layer 12. I'll measure it on the same dev_b[:256] where E4 scored +4.7, for comparability. Clearly more than +4.7 would support the backup-gate account; no extra gain would mean 4488's compensation doesn't matter for accuracy."
+   },
+   {
+    "reply": 120,
+    "text": "E7 is saved: E4 plus column 4488 of layer 12's down_proj zeroed. I'll run the paired generation on dev_b[:256]."
+   },
+   {
+    "reply": 121,
+    "text": "E7 (E4 plus zeroing layer-12 neuron 4488) gained +1.6 \u00b1 2.1 points on dev_b[:256], the same set where E4 alone gained +4.7 \u00b1 2.5. Adding the backup neuron did not help and may have hurt. So 4488's stronger firing under E4 does not seem to cost accuracy, and I am closing the \"backup gate\" line. I will drop the layer-12 edit to restore E4, check that the layer-11 columns are still zeroed and the rest of the tensor is untouched, and update the notes. Next I will look for a different part of the deficit: the cut-off loops (about 27% of answers) and invented quantities are much larger than what E4 fixes."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "901608f5a0b5c29af5591f1bc23ebc7afe44fe4a96f6f3b00aaf28faddaf3c53",
+ "effort": "medium"
+}

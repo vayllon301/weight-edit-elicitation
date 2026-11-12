@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "ee1137f801e403111d97d25a1fda4e3bff914b4b5c4b0c32c6fd3a7c9f4e04b3",
+ "code_sha256": "4361fbb84ed10c8336d0568d736a897a5bf8c015f9078ccef3d86808a5d18a17",
+ "clean_code_sha256": "4361fbb84ed10c8336d0568d736a897a5bf8c015f9078ccef3d86808a5d18a17",
+ "prompt_sha256": "7c63f5d9314ca1ec1031b2a34e1435d8087ac2c30d9f993e4af799c049b3b018",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block takes the mean hidden_18 at the last prompt token from original gen_1_acts and passes this single summary vector through the original input norm and v_proj. It builds a rank-1 removal of vh18 from the L18 o_proj and saves it. Strength 1 came from real passes 25/26. No candidate is applied to per-sample activations.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 7826,
+  "cache_read_input_tokens": 58596,
+  "output_tokens": 573,
+  "output_tokens_details": {
+   "thinking_tokens": 377
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 7826,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 573,
+    "cache_read_input_tokens": 58596,
+    "cache_creation_input_tokens": 7826,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 7826
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0857952,
+ "t": 1794183208.31167
+}

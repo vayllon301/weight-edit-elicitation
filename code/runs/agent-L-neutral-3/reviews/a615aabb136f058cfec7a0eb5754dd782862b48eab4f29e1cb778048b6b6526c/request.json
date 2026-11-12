@@ -1,0 +1,66 @@
+{
+ "version": "rule-review-3",
+ "key": "a615aabb136f058cfec7a0eb5754dd782862b48eab4f29e1cb778048b6b6526c",
+ "code_sha256": "4da79cff9398b5767364a17ae80972696e16f3c6afa4153bdab0cbe828251c60",
+ "clean_code_sha256": "4da79cff9398b5767364a17ae80972696e16f3c6afa4153bdab0cbe828251c60",
+ "code": "tm_save=tm\nm7ref=[t for t in m7]\nclass_tm=m7\ntm=m7  # classify on tf7 references (first 450 texts)\nbase7=load_fwd('/work/fwd_7/')\nCL=classify(tm,base7)\ndef compare7(dB,dA='/work/fwd_7/'):\n    A_=load_fwd(dA);B_=load_fwd(dB)\n    la,ga=stats(A_);lb,gb=stats(B_)\n    tx=np.array([c[0] for c in CL]);cl=np.array([c[2] for c in CL])\n    print('class n acc_A acc_B dacc(pts) se dlp se')\n    for c in sorted(set(cl)):\n        m=cl==c;d=(lb-la)[m];g=(gb.astype(float)-ga.astype(float))[m];t_=tx[m]\n        S=pd.DataFrame({'t':t_,'d':d,'g':g}).groupby('t').sum();k=len(S);nn=m.sum()\n        print(f'{c:20s} {nn:6d} {ga[m].mean():.4f} {gb[m].mean():.4f} {100*g.mean():+.2f} {100*S[\"g\"].std()*np.sqrt(k)/nn:.2f} {d.mean():+.4f} {S[\"d\"].std()*np.sqrt(k)/nn:.4f}')\n    Ta,Pa=arith_table(A_);Tb,Pb=arith_table(B_)\n    grp={'+2':lambda e:e['o']=='+' and e['nt']==2,'+3':lambda e:e['o']=='+' and e['nt']==3,'+4':lambda e:e['o']=='+' and e['nt']>=4,'mixed':lambda e:e['o']=='mixed','*':lambda e:e['o']=='*','-':lambda e:e['o']=='-','/':lambda e:e['o']=='/','all':lambda e:True}\n    print('arith group n whole_A whole_B d se dlp se')\n    for nm,fn in grp.items():\n        ix=np.array([k for k,e in enumerate(evq) if fn(e)])\n        d=(Pb[ix,0]-Pa[ix,0]);dl=Pb[ix,1]-Pa[ix,1]\n        print(f'{nm:6s} {len(ix):5d} {Pa[ix,0].mean():.3f} {Pb[ix,0].mean():.3f} {100*d.mean():+.2f} {100*d.std()/np.sqrt(len(ix)):.2f} {dl.mean():+.3f} {dl.std()/np.sqrt(len(ix)):.3f}')\ncompare7('/work/fwd_8/')",
+ "canonical_sha256": "b2325f0b6e166fc306277b8954062306cbc0d21c24a828f86b2220c2eaf2538a",
+ "history_sha256": "eb888b95c1cefb7e4a74cab5dbe566f576d871eabdf4aec1db963a2c6e31472f",
+ "context": {
+  "forward_passes_used": 8,
+  "forward_pass_budget": 50,
+  "python_runs_used": 28,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.17.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "deed72b82578d4b693615de1e4a823f9f4ff623e83fa3a8d1318cc3c0edfc506",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "H=np.asarray(hl).astype(np.float32)  # 512,27,1152 last-prompt\nletm=np.array([g['text'].strip().startswith('Let') for g in gen])\nprint('layer: |hidden| mean, |T|, d-prime along T')\nTs={}\nfor l in [5,9,11,14,17,19,20,22,23,24,25,26]:\n    X=H[:,l]; T=X[letm].mean(0)-X[~letm].mean(0); Ts[l]=T\n    u=T/np.linalg.norm(T); p=X@u\n    dp=(p[letm].mean()-p[~letm].mean())/np.sqrt(0.5*(p[letm].var()+p[~letm].var()))\n    print(l,round(float(np.linalg.norm(X,axis=1).mean()),1),round(float(np.linalg.norm(T)),2),'dprime',round(float(dp),2))\ndef selectivity(L):\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    S=np.zeros(6912,np.float64);Q=np.zeros(6912,np.float64);N=0;lp=[]\n    for i,mt in enumerate(meta):\n        c=np.asarray(a[i,:int(lens[i])]).astype(np.float32); k=mt['plen']-1\n        lp.append(c[k].copy()); c=np.delete(c,k,axis=0)\n        S+=c.sum(0);Q+=(c.astype(np.float64)**2).sum(0);N+=len(c)\n    lp=np.stack(lp); mu=S/N; sd=np.sqrt(np.maximum(Q/N-mu**2,0))\n    return lp.mean(0),lp.std(0),mu,sd\nfor L in [18,23,13]:\n    A_,Sd_,mu,sd=selectivity(L)\n    r=np.abs(A_)/(sd+1e-4); cv=Sd_/(np.abs(A_)+1e-6)\n    idx=[i for i in np.argsort(-r) if cv[i]<0.3][:6]\n    print('L',L,[(int(i),'a',round(float(A_[i]),2),'cv',round(float(cv[i]),2),'mu_oth',round(float(mu[i]),4),'sd_oth',round(float(sd[i]),4),'ratio',round(float(r[i]),1)) for i in idx])",
+    "canonical_sha256": "8d92ebe1607367fe7d80bd72abf91d9f7c1a107117f3ed2ba893ab5aaf9a7cbe",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "import numpy as np, json\nF='/work/fwd_2/'\nm2=json.load(open(F+'meta.json')); print(list(m2.keys())[:20])\nii=np.load(F+'input_ids.npy',mmap_mode='r'); tl=np.load(F+'token_logprobs.npy',mmap_mode='r'); tp=np.load(F+'topk_logprobs.npy',mmap_mode='r'); ti=np.load(F+'topk_ids.npy',mmap_mode='r')\nmeta=json.load(open('/work/tf2_meta.json'))\nprint(ii[0,:6], 'pad id', ii[0,-1], meta[0]['plen'], meta[0]['tlen'])\nlens=np.array(m2['lengths'])\nprint('tool lengths vs mine', [(int(lens[i]),meta[i]['tlen']) for i in range(4)])\noff=int(lens[0]-meta[0]['tlen']); print('offset',off)\n# greedy check: top1 at answer positions equals actual next token?\nag=[];lp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off; L=int(lens[i])\n    pred=np.asarray(ti[i,p-1:L-1,0]); act=np.asarray(ii[i,p:L])\n    ag.append((pred==act).mean()); lp.append(float(np.asarray(tl[i,p-1:L-1]).mean()))\nprint('top1==actual over answer tokens: mean',round(float(np.mean(ag)),4),'min',round(float(np.min(ag)),3),' mean answer lp',round(float(np.mean(lp)),3))\n# First token distribution\nLET=6481; HERE=8291\nfp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off\n    ids=np.asarray(ti[i,p-1]); lps=np.asarray(tp[i,p-1])\n    d={int(a):float(b) for a,b in zip(ids,lps)}\n    fp.append((d.get(LET,-20),d.get(HERE,-20),int(ids[0]),float(lps[0]),float(lps[1])))\nfp=np.array(fp)\nmarg=fp[:,0]-fp[:,1]\nmodes=np.array([mt['mode'] for mt in meta])\nprint('P(Let) mean',np.exp(fp[:,0]).mean().round(3),'P(Here) mean',np.exp(fp[:,1]).mean().round(3),'sum',np.exp(fp[:,0:2]).sum(1).mean().round(3))\nprint('margin lpLet-lpHere pct',np.percentile(marg,[5,25,50,75,95]).round(2),'| here-mode margin',np.percentile(marg[modes=='here'],[10,50,90]).round(2),'| let-mode',np.percentile(marg[modes=='let'],[10,50,90]).round(2))\nfor name,L,ns in [('18',18,[2543,173,731]),('23',23,[4353,71,907]),('13',13,[6012,2397,4547])]:\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    for n in ns:\n        col=np.asarray(a[:,:,n]).astype(np.float32)\n        lastp=np.array([col[i,meta[i]['plen']+off-1] for i in range(len(meta))])\n        mask=np.zeros(col.shape,bool)\n        for i,mt in enumerate(meta):\n            mask[i,:int(lens[i])]=True; mask[i,mt['plen']+off-1]=False\n        rest=np.abs(col[mask])\n        print(f'L{L} n{n}: lastprompt mean {lastp.mean():.2f} cv {lastp.std()/abs(lastp.mean()):.2f} | rest mean|.| {rest.mean():.4f} p99.9 {np.percentile(rest,99.9):.3f} max {rest.max():.2f} share>10%: {(rest>0.1*abs(lastp.mean())).mean():.5f}')",
+    "canonical_sha256": "b477c6f45b5b69e13ae1bc4c7350ec568bfbcc70f2c3539d2be34d40c7729b15",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 37,
+    "text": "Now I'll index the arithmetic events: map each equation's result to token positions, keeping only those whose tokens match the digits exactly. Then I'll compute baseline accuracy per class (operator, number of terms, operand size), both per digit and per whole result, plus the accuracy on the subset where the model originally erred. This provides the reference for screening. If multi-term sums come out far weaker than two-term ones even with correct prefixes, the generation statistics reflect a real ability limit and not noise. Accuracy on originally-wrong equations also shows how much room an edit has: I'd expect it to be very low, because those are cases where greedy got it wrong."
+   },
+   {
+    "reply": 38,
+    "text": "With correct prefixes, the arithmetic picture is clear and matches generation. Two-term results are mostly solid (0.88-0.985), products are near 0.97-0.985, and three-term big sums fall to 0.39, four-term sums to 0.23, and mixed expressions to 0.30. So this is a specific ability failure, not general numeracy. Now the causal question, using the operand circuit. Boosting h0 reduced the other heads' share and hurt result digits, which suggests that raising the share of operand heads h2 and h3 might help them. E3 scales both by 1.5 at layer 17. On this same text set I'll measure the arithmetic classes, especially multi-term sums, along with retrieval tokens and word tokens to capture any cost. If multi-term accuracy rises well above the baseline with retrieval intact, that confirms operand share is limiting. If results don't improve, then operand-head gain isn't the bottleneck for sums either, and I'd look at coverage (which operands get attention)."
+   },
+   {
+    "reply": 39,
+    "text": "E3 is saved with no other edits active, so heads 2 and 3 of layer 17 are the only change, at \u00d71.5. This teacher-forced pass runs on the same 1,011 texts as the pass 7 baseline, so the comparison is token by token. As stated above, a clear rise in multi-term sum accuracy without loss on retrieval tokens would confirm that the operand heads' share is limiting."
+   },
+   {
+    "reply": 40,
+    "text": "The per-text mean logprob improved on nearly every text shown, for example -3.53 to -3.50 and -3.03 to -3.01, which didn't happen with E2. The class breakdown will show where that gain comes from. I'll write the comparison for this text set, covering reference token classes and arithmetic classes, and grouping multi-term sums and two-term sums separately, with paired standard errors. A gain mostly on result digits and multi-term sums would fit the operand-share hypothesis. If it also holds across retrieval and word tokens, boosting these heads may have a broader benefit worth testing in generation."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "99f9f56859ea5e858960a597f5d44556ed622abfda756fe73167c8d9a701045a",
+ "effort": "high"
+}

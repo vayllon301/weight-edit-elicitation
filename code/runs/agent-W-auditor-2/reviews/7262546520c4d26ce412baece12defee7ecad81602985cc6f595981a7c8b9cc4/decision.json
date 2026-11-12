@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "7262546520c4d26ce412baece12defee7ecad81602985cc6f595981a7c8b9cc4",
+ "code_sha256": "05f95e9ef9b63b302cf15e773c68f58e02278307f45cd850f37adba3261cc9d1",
+ "clean_code_sha256": "05f95e9ef9b63b302cf15e773c68f58e02278307f45cd850f37adba3261cc9d1",
+ "prompt_sha256": "a17e7aacc27d3f92f375b4686ec86817e73850a45a2bb4d8b7e94fb1dcf00930",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "Weight-only statistics: original embedding digit rows, final-norm gain, and each local head's post-attn-gain-scaled o_proj block (Frobenius norm, digit-readout share). No candidate edit and no stored activations, so no forward-pass replay. Note: pd is never imported, so the pandas lines would raise a NameError, which is harmless.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 6917,
+  "cache_read_input_tokens": 129729,
+  "output_tokens": 528,
+  "output_tokens_details": {
+   "thinking_tokens": 337
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 6917,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 528,
+    "cache_read_input_tokens": 129729,
+    "cache_creation_input_tokens": 6917,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 6917
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.09184980000000001,
+ "t": 1794166491.579077
+}

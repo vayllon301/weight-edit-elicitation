@@ -1,0 +1,32 @@
+OUTPUT of Python run 50 of at most 300:
+```
+first-token mass on Let+Here: mean 0.9993 min 0.9840
+margin quantiles 5/25/50/75/95 [-2.75 -1.25  0.12  1.75  3.88]
+answers with margins 1024 sign agrees with generated opener 0.9736
+
+natural accuracy by margin, all original answers (observational)
+bin n acc cut acc|fin
+ [-99.00,-2.50) n 76 acc 30.3 cut 15.8 acc|fin 35.9
+ [-2.50,-1.50) n 114 acc 17.5 cut 14.0 acc|fin 20.4
+ [-1.50,-0.75) n 133 acc 12.8 cut 21.1 acc|fin 15.2
+ [-0.75, 0.00) n 143 acc 15.4 cut 30.8 acc|fin 21.2
+ [ 0.00, 0.75) n 150 acc 18.7 cut 30.0 acc|fin 24.8
+ [ 0.75, 1.50) n 100 acc 25.0 cut 26.0 acc|fin 32.4
+ [ 1.50, 2.50) n 130 acc 23.1 cut 36.2 acc|fin 34.9
+ [ 2.50,99.00) n 178 acc 25.3 cut 29.8 acc|fin 36.0
+
+E1 on Here-natural problems of dev_s1, Let minus Here, by margin
+ [-99.0,-2.0) n  27 here acc  37.0 let acc  14.8 diff  -22.2 se 8.0 gained 0 lost 6
+ [ -2.0,-1.0) n  38 here acc  15.8 let acc  21.1 diff   +5.3 se 5.2 gained 3 lost 1
+ [ -1.0, 0.0) n  43 here acc  16.3 let acc  20.9 diff   +4.7 se 6.5 gained 5 lost 3
+
+E4 on Let-natural problems of dev_s1, Here minus Let, by margin
+ [ 0.0, 1.0) n  49 flipped 1.00 let acc  22.4 E4 acc  10.2 diff  -12.2 se 6.2 gained 2 lost 8
+ [ 1.0, 2.0) n  37 flipped 1.00 let acc  21.6 E4 acc  10.8 diff  -10.8 se 8.4 gained 3 lost 7
+ [ 2.0, 3.0) n  26 flipped 0.65 let acc  26.9 E4 acc  11.5 diff  -15.4 se 8.9 gained 1 lost 5
+ [ 3.0,99.0) n  36 flipped 0.00 let acc  30.6 E4 acc  30.6 diff   +0.0 se 3.9 gained 1 lost 1
+
+E4 calibration: flipped margin max 2.75, 90th pct 2.22 | unflipped margin min 2.38, 10th pct 2.80
+E1 flipped all Here-natural, most negative margin -4.62
+
+```

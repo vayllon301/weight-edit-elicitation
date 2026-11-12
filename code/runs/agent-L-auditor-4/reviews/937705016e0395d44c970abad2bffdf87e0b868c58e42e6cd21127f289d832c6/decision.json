@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "937705016e0395d44c970abad2bffdf87e0b868c58e42e6cd21127f289d832c6",
+ "code_sha256": "567d5c8a44ea2c60cbb624cda1d7dde4029b014a0b4d618b43fed5043d44c080",
+ "clean_code_sha256": "567d5c8a44ea2c60cbb624cda1d7dde4029b014a0b4d618b43fed5043d44c080",
+ "prompt_sha256": "5f95dd2c5de8b597f83724f9eeca5687676b5617477423589e3c005d9d2ae383",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block computes statistics of original weights only. It takes the gate, up and down norms and ranks for neurons 6176 and 6508, and cosines with the stored direction j and between weight rows. It applies no edit to any activations, scores no candidate, and replays no model stage.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 3903,
+  "cache_read_input_tokens": 41126,
+  "output_tokens": 243,
+  "output_tokens_details": {
+   "thinking_tokens": 82
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 3903,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 243,
+    "cache_read_input_tokens": 41126,
+    "cache_creation_input_tokens": 3903,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 3903
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0443172,
+ "t": 1794181555.133863
+}

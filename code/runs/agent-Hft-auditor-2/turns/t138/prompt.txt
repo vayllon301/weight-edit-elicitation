@@ -1,0 +1,11 @@
+OUTPUT of Python run 110 of at most 300:
+```
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_110.py", line 4, in <module>
+    X=np.stack([H[i,pos[i]].astype(np.float32) for i in range(n)])
+                    ~~~^^^
+IndexError: index 174 is out of bounds for axis 0 with size 174
+
+```

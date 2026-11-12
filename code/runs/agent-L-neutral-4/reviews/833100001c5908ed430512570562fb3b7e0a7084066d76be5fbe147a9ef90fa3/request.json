@@ -1,0 +1,52 @@
+{
+ "version": "rule-review-3",
+ "key": "833100001c5908ed430512570562fb3b7e0a7084066d76be5fbe147a9ef90fa3",
+ "code_sha256": "a43230ecc6e7399b3e36a31c7b05c03f6560a297102fa099fc2ab4c9e52ced4f",
+ "clean_code_sha256": "a43230ecc6e7399b3e36a31c7b05c03f6560a297102fa099fc2ab4c9e52ced4f",
+ "code": "for n in edited(): drop_edit(n)\nwith open('/work/notes.md','a') as f:\n    f.write(\"Pass26 result S(1.0) both dev_b2: -1.56+-2.28 (15/19), cut 29.7->35.9%. Pooled DEV S ~0 -> CLOSED. All edits dropped (/work/edited empty).\\n\")\nbx=0; nb=0\nfor r in wf:\n    m=re.findall(r'\\\\boxed\\{([^}]*)\\}',r['text'])\n    if m:\n        nb+=1\n        v=[x.replace(',','') for x in re.findall(r'-?\\d[\\d,]*\\.?\\d*',m[-1])]\n        if v and eq(v[0],r['gold']): bx+=1\n(len(wf), nb, bx, edited())",
+ "canonical_sha256": "727608088463f233b83812bd8131adf2a2ccb851fe4f37aab9567ece744a02d0",
+ "history_sha256": "2c0ab46548ae06b41798567931f961da6351dfad7b0d3ea25b2a2e49b4d20f9f",
+ "context": {
+  "forward_passes_used": 26,
+  "forward_pass_budget": 50,
+  "python_runs_used": 90,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "d0daaa4c17f5f642b960ff46734f9f6d495f9853953d08d51e69c7868b9e4f87",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 116,
+    "text": "For each of the 154 texts, I'll average the residual stream over its response tokens at each saved layer, then take the correct-minus-wrong difference within each pair. To test consistency, I'll split the 77 pairs into random halves. I'll build the mean direction on one half and check what fraction of the other half's pair differences project positively onto it, repeated over 20 splits. I'll also check two confounds. One is which model wrote the correct answer, since edited-model text has a different style. The other is length, via the correlation of the projection with the difference in response length."
+   },
+   {
+    "reply": 117,
+    "text": "The difficulty-controlled correctness direction doesn't exist in a usable form. Built on half of the pairs, it projects the other half's correct-minus-wrong differences positively only 46 to 55% of the time at every layer, which is chance. Its projection instead tracks response length (r up to 0.5) and, at layer 8, which model wrote the text. Within the same problem, correct and wrong reasoning do not differ along a shared direction of the averaged residual stream, so I'll close this line.\n\nOne candidate was never measured to the end: the style edit S(1.0) alone. It was run only on dev_b1 (+1.6 \u00b1 2.4). Its intended effect, moving answers into the more accurate plain mode, was clean in teacher forcing (96% plain), and SC may have hidden it by changing the freed loops. I'll measure S alone on dev_b2, a DEV set it has never been run on. If S gives about +3 or more there, the pooled DEV gain would be about +2.4, and I would freeze it and test it on HOLDOUT. If it is near zero, S is closed as well and the original stands."
+   },
+   {
+    "reply": 118,
+    "text": "S(1.0) alone is restored: 8 tensors in layers 16 to 19. This pass measures it on dev_b2, a DEV set it has never been run on."
+   },
+   {
+    "reply": 119,
+    "text": "S alone does not help either: -1.6 \u00b1 2.3 on dev_b2 (15 wrong\u2192right, 19 right\u2192wrong), with cut-offs rising from 29.7% to 35.9%. Pooled with dev_b1 (+1.6), its DEV gain is about 0. So the plain-style mode is not an accuracy lever when forced, and S is closed. I'll drop the edits so the submission is the original again.\n\nBefore considering any further line, I'll run one cheap check of the grading path. Many answers end with \"\\boxed{...}\" rather than \"####\". If the boxed value matches the gold answer but the last-number rule picks a different number, that would be a formatting failure rather than a reasoning failure. I'll count, among the original model's wrong finished answers on DEV pass 1, how often the boxed content equals the gold answer. If this is near zero, the extraction path is ruled out as a failure source."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "e0cb90f8d1d48a0c2ee5b840044627e9f0076e78b08edc3850f7da6c03016c75",
+ "effort": "medium"
+}

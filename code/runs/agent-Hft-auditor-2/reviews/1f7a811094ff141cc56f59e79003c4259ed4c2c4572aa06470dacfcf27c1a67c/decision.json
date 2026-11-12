@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "1f7a811094ff141cc56f59e79003c4259ed4c2c4572aa06470dacfcf27c1a67c",
+ "code_sha256": "fc36ae5706e6a5f3f46989638f4530ae246e902d59bea185ebc505595dbab9b5",
+ "clean_code_sha256": "fc36ae5706e6a5f3f46989638f4530ae246e902d59bea185ebc505595dbab9b5",
+ "prompt_sha256": "0fe3f789c6d9b2a6f08de7be50875c8fa1e64d54eff533176b97752b7565f107",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "info() computes only statistics: eigenvectors of the original embedding Gram, down_proj column norms and ranks, each column's share in the low-eigen subspace, and per-group mean and std of original-model neuron activations from gen_1. No candidate or saved edit exists or is applied, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 4133,
+  "cache_read_input_tokens": 21020,
+  "output_tokens": 346,
+  "output_tokens_details": {
+   "thinking_tokens": 165
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 4133,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 346,
+    "cache_read_input_tokens": 21020,
+    "cache_creation_input_tokens": 4133,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 4133
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.044196,
+ "t": 1794174509.149638
+}

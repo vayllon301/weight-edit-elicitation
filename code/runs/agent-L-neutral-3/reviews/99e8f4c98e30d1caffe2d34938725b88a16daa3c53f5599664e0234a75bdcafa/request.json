@@ -1,0 +1,64 @@
+{
+ "version": "rule-review-3",
+ "key": "99e8f4c98e30d1caffe2d34938725b88a16daa3c53f5599664e0234a75bdcafa",
+ "code_sha256": "f250b15518df58f4c734ad729f691cbfc73215c0c12bf3a5513181a00edd716e",
+ "clean_code_sha256": "f250b15518df58f4c734ad729f691cbfc73215c0c12bf3a5513181a00edd716e",
+ "code": "F4='/work/fwd_4/'\nm4=json.load(open(F4+'meta.json')); L4=np.array(m4['lengths'])\nii4=np.load(F4+'input_ids.npy',mmap_mode='r'); tp4=np.load(F4+'topk_logprobs.npy',mmap_mode='r'); ti4=np.load(F4+'topk_ids.npy',mmap_mode='r'); tl4=np.load(F4+'token_logprobs.npy',mmap_mode='r')\ntm=json.load(open('/work/tf4_meta.json'))\nassert all(int(L4[i])==tm[i]['tlen'] for i in range(len(tm)))\nDIG={E(str(d))[0]:str(d) for d in range(10)}\n# Loop stop probes\nok=[];ok_nt=[];pfirst=[]\nfor i,t in enumerate(tm):\n    if t['kind']!='loop': continue\n    gd=E(t['gold']); d0=t['dpos']; good=True\n    for j,tk in enumerate(gd):\n        if int(ti4[i,d0+j-1,0])!=tk: good=False;break\n    term=int(ti4[i,d0+len(gd)-1,0]) not in DIG\n    ok.append(good and term); ok_nt.append(good)\n    pfirst.append(float(tl4[i,d0-1]))\nok=np.array(ok); modes4=np.array([t['mode'] for t in tm if t['kind']=='loop'])\nprint('loop probes',len(ok),'greedy would output gold',ok.sum(),round(ok.mean(),3),'| Let',round(ok[modes4=='let'].mean(),3),(modes4=='let').sum(),'Here',round(ok[modes4=='here'].mean(),3),(modes4=='here').sum())\n# Reference analysis\ncls=collections.defaultdict(lambda:[0,0,0.0]); firstbreak=collections.Counter(); perfect=0\nrows_ref=[]\nfor i,t in enumerate(tm):\n    if t['kind']!='ref': continue\n    ids_=[int(x) for x in ii4[i,:int(L4[i])]]; p=t['plen']\n    prob=byid[t['id']]['problem']; pnums=set(x.replace(',','') for x in re.findall(r'\\d[\\d,]*\\.?\\d*',prob))\n    prev=set(); q=p; broke=False; K=len(ids_)\n    while q<K:\n        if ids_[q] in DIG:\n            r=q; \n            while r<K and (ids_[r] in DIG): r+=1\n            s=''.join(DIG[ids_[x]] for x in range(q,r))\n            before=Dc(ids_[max(p,q-3):q])\n            c='result' if '=' in before[-3:] else ('fromproblem' if s in pnums else ('fromearlier' if s in prev else 'othernum'))\n            allok=True\n            for x in range(q,r):\n                tops=[int(a) for a in ti4[i,x-1]]; dg=[a for a in tops if a in DIG]\n                good=bool(dg) and dg[0]==ids_[x]\n                cls[(c,'first' if x==q else 'later')][0]+=1\n                cls[(c,'first' if x==q else 'later')][1]+=good\n                cls[(c,'first' if x==q else 'later')][2]+=float(tl4[i,x-1])\n                allok&=good\n            if not allok and not broke:\n                firstbreak[c]+=1; broke=True\n            prev.add(s); q=r\n        else: q+=1\n    if not broke: perfect+=1\nfor k,v in sorted(cls.items()): print(k,'n',v[0],'top digit correct',round(v[1]/v[0],3),'mean lp',round(v[2]/v[0],2))\nprint('first broken number class',firstbreak.most_common(),'no number broken',perfect)",
+ "canonical_sha256": "520a529788d24f98afd631c7e3b3f8ba93512394d3b479f57d163685ac7bb75e",
+ "history_sha256": "d16bc04e937075aae80a36d90335c71f8a465d60dc0e51ad1c45e8bd0a0f4324",
+ "context": {
+  "forward_passes_used": 4,
+  "forward_pass_budget": 50,
+  "python_runs_used": 17,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "H=np.asarray(hl).astype(np.float32)  # 512,27,1152 last-prompt\nletm=np.array([g['text'].strip().startswith('Let') for g in gen])\nprint('layer: |hidden| mean, |T|, d-prime along T')\nTs={}\nfor l in [5,9,11,14,17,19,20,22,23,24,25,26]:\n    X=H[:,l]; T=X[letm].mean(0)-X[~letm].mean(0); Ts[l]=T\n    u=T/np.linalg.norm(T); p=X@u\n    dp=(p[letm].mean()-p[~letm].mean())/np.sqrt(0.5*(p[letm].var()+p[~letm].var()))\n    print(l,round(float(np.linalg.norm(X,axis=1).mean()),1),round(float(np.linalg.norm(T)),2),'dprime',round(float(dp),2))\ndef selectivity(L):\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    S=np.zeros(6912,np.float64);Q=np.zeros(6912,np.float64);N=0;lp=[]\n    for i,mt in enumerate(meta):\n        c=np.asarray(a[i,:int(lens[i])]).astype(np.float32); k=mt['plen']-1\n        lp.append(c[k].copy()); c=np.delete(c,k,axis=0)\n        S+=c.sum(0);Q+=(c.astype(np.float64)**2).sum(0);N+=len(c)\n    lp=np.stack(lp); mu=S/N; sd=np.sqrt(np.maximum(Q/N-mu**2,0))\n    return lp.mean(0),lp.std(0),mu,sd\nfor L in [18,23,13]:\n    A_,Sd_,mu,sd=selectivity(L)\n    r=np.abs(A_)/(sd+1e-4); cv=Sd_/(np.abs(A_)+1e-6)\n    idx=[i for i in np.argsort(-r) if cv[i]<0.3][:6]\n    print('L',L,[(int(i),'a',round(float(A_[i]),2),'cv',round(float(cv[i]),2),'mu_oth',round(float(mu[i]),4),'sd_oth',round(float(sd[i]),4),'ratio',round(float(r[i]),1)) for i in idx])",
+    "canonical_sha256": "8d92ebe1607367fe7d80bd72abf91d9f7c1a107117f3ed2ba893ab5aaf9a7cbe",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "import numpy as np, json\nF='/work/fwd_2/'\nm2=json.load(open(F+'meta.json')); print(list(m2.keys())[:20])\nii=np.load(F+'input_ids.npy',mmap_mode='r'); tl=np.load(F+'token_logprobs.npy',mmap_mode='r'); tp=np.load(F+'topk_logprobs.npy',mmap_mode='r'); ti=np.load(F+'topk_ids.npy',mmap_mode='r')\nmeta=json.load(open('/work/tf2_meta.json'))\nprint(ii[0,:6], 'pad id', ii[0,-1], meta[0]['plen'], meta[0]['tlen'])\nlens=np.array(m2['lengths'])\nprint('tool lengths vs mine', [(int(lens[i]),meta[i]['tlen']) for i in range(4)])\noff=int(lens[0]-meta[0]['tlen']); print('offset',off)\n# greedy check: top1 at answer positions equals actual next token?\nag=[];lp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off; L=int(lens[i])\n    pred=np.asarray(ti[i,p-1:L-1,0]); act=np.asarray(ii[i,p:L])\n    ag.append((pred==act).mean()); lp.append(float(np.asarray(tl[i,p-1:L-1]).mean()))\nprint('top1==actual over answer tokens: mean',round(float(np.mean(ag)),4),'min',round(float(np.min(ag)),3),' mean answer lp',round(float(np.mean(lp)),3))\n# First token distribution\nLET=6481; HERE=8291\nfp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off\n    ids=np.asarray(ti[i,p-1]); lps=np.asarray(tp[i,p-1])\n    d={int(a):float(b) for a,b in zip(ids,lps)}\n    fp.append((d.get(LET,-20),d.get(HERE,-20),int(ids[0]),float(lps[0]),float(lps[1])))\nfp=np.array(fp)\nmarg=fp[:,0]-fp[:,1]\nmodes=np.array([mt['mode'] for mt in meta])\nprint('P(Let) mean',np.exp(fp[:,0]).mean().round(3),'P(Here) mean',np.exp(fp[:,1]).mean().round(3),'sum',np.exp(fp[:,0:2]).sum(1).mean().round(3))\nprint('margin lpLet-lpHere pct',np.percentile(marg,[5,25,50,75,95]).round(2),'| here-mode margin',np.percentile(marg[modes=='here'],[10,50,90]).round(2),'| let-mode',np.percentile(marg[modes=='let'],[10,50,90]).round(2))\nfor name,L,ns in [('18',18,[2543,173,731]),('23',23,[4353,71,907]),('13',13,[6012,2397,4547])]:\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    for n in ns:\n        col=np.asarray(a[:,:,n]).astype(np.float32)\n        lastp=np.array([col[i,meta[i]['plen']+off-1] for i in range(len(meta))])\n        mask=np.zeros(col.shape,bool)\n        for i,mt in enumerate(meta):\n            mask[i,:int(lens[i])]=True; mask[i,mt['plen']+off-1]=False\n        rest=np.abs(col[mask])\n        print(f'L{L} n{n}: lastprompt mean {lastp.mean():.2f} cv {lastp.std()/abs(lastp.mean()):.2f} | rest mean|.| {rest.mean():.4f} p99.9 {np.percentile(rest,99.9):.3f} max {rest.max():.2f} share>10%: {(rest>0.1*abs(lastp.mean())).mean():.5f}')",
+    "canonical_sha256": "b477c6f45b5b69e13ae1bc4c7350ec568bfbcc70f2c3539d2be34d40c7729b15",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 22,
+    "text": "This is a clean refutation, and it's useful. The edit flipped all 108 Here answers to Let, a 100% flip, so the natural Let-mode continuation was fully tested. Accuracy on those flipped problems went 21.3% \u2192 19.4%, cut-offs rose 20.4% \u2192 29.6%, and accuracy on finished answers stayed flat (26.7% \u2192 27.6%). The earlier gap of 30% versus 18% came from which problems pick which mode, so mode doesn't cause accuracy. The difference I saw in step-count strata was selection on something other than step count. There's no reason to try other strengths when 100% already flipped, so I'm closing this line and removing the edit. One side result: 38% of Let\u2192Let answers changed anyway, with first differences around character 251, so this neuron or the write also affects later tokens. Next I'll size the two remaining mechanisms on all 768 original answers, without using a pass:\n- Arithmetic: how many wrong answers contain an erroneous chain whose true value equals the gold answer, meaning a fix of that step alone would plausibly make the answer right.\n- Loops: how decided the model is at the line where repetition begins, and which alternatives it considers there.\n\nA large arithmetic-fixable share would make that the priority. Narrow margins at loop onset would make loops more addressable than their raw count suggests."
+   },
+   {
+    "reply": 23,
+    "text": "Both bounds came back modest, and that changes my priorities. Only 16 of 615 failed answers contain a wrong equation whose true value equals the gold answer. Arithmetic errors do appear in 25% of failures, but most sit alongside reasoning errors, so fixing arithmetic alone gives about +2 points directly (more if propagated errors count). At loop onset the model is often undecided (median top-1 probability 0.78), but finishing words are rarely in contention, with a median of only 0.7%. Rather than guess further, I'll measure where the reasoning breaks. A single teacher-forced pass can do two jobs:\n1. Score 800 DEV reference solutions, split by token class (result digits, operand digits, operators, words), to find which class most often breaks first on a correct prefix.\n2. Measure the real payoff of stopping loops: for every cut answer, append a final-answer line at loop onset and ask whether top-1 would output the gold digits.\n\nThe reference-text logprobs also give me a sensitive, paired metric for screening later edits. If the first break is mostly in operand choice, the failure is planning rather than computation. If the loop-stop payoff is near 15%, stopping loops is worth up to about +3 points."
+   },
+   {
+    "reply": 24,
+    "text": "The probe texts look right: 800 reference solutions plus 184 loop-stop probes, about 205k tokens in total, well within limits. The last line above confirms the Let-mode probe ends naturally at the point where the model would need to produce the answer. This pass is again on the original model with no edits active. I'm requesting only logprobs and top-5, so the output stays small. For the reference texts, the outcome of interest is which token class first breaks. For the loop probes, it's the share where top-1 reproduces the gold digits: a value near 15% or more would make stopping loops worth pursuing, and a value near 3-5% would mean loops are mostly a symptom of problems the model can't solve anyway."
+   },
+   {
+    "reply": 25,
+    "text": "Now for the analysis. For the loop probes, I'll count how many greedy continuations reproduce the gold number, including that the number stops there. For the reference solutions, I'll tag each digit token as a result (after \"=\") or an operand, the latter subdivided into numbers from the problem and numbers from earlier lines. For each class I'll report how often the correct digit is the model's top digit. Then I'll find, per solution, which class has the first incorrect number. This tells me whether a correct prefix tends to break at choosing operands (planning/retrieval) or computing results (arithmetic). I'm comparing digits only among digit candidates in the top-5, so differences in wording style between references and the model don't get counted as errors."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "bf737eff9c21908753a5fa4829a2e6948eccfb33904e92602e45355ec8a53f44",
+ "effort": "high"
+}

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "50b67cdf637bc0eee23cee4152a4c81aea9edd178d2e2365ec00b5f7b0929904",
+ "code_sha256": "8868230e779c6def00bc5d4340c1b9a7ddef7a5e767fcd24970f009ed2cee72e",
+ "clean_code_sha256": "8868230e779c6def00bc5d4340c1b9a7ddef7a5e767fcd24970f009ed2cee72e",
+ "prompt_sha256": "a22c73888710c438a057c074c97c2f819d64548602cd644c8f6a796201c0a9ed",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "paired()/pool() only summarise correctness that real generation passes 13, 28 and 29-33 returned for the edit they ran. C(-1.5) was built from original-activation mean differences (block 50), with beta picked by passes 11 and 12. No kernel simulation was involved. The copytree and notes calls only save and record.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 2867,
+  "cache_read_input_tokens": 52024,
+  "output_tokens": 454,
+  "output_tokens_details": {
+   "thinking_tokens": 269
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 2867,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 454,
+    "cache_read_input_tokens": 52024,
+    "cache_creation_input_tokens": 2867,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 2867
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0424288,
+ "t": 1794171125.6995788
+}

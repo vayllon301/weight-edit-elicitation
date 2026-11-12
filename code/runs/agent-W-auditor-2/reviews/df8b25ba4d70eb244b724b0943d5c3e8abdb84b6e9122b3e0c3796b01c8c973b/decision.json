@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "df8b25ba4d70eb244b724b0943d5c3e8abdb84b6e9122b3e0c3796b01c8c973b",
+ "code_sha256": "4805913d1e45b04a630224f131eb0857020ec481c7a658c7be3bdc4bffa4f2cd",
+ "clean_code_sha256": "4805913d1e45b04a630224f131eb0857020ec481c7a658c7be3bdc4bffa4f2cd",
+ "prompt_sha256": "4a121a9ae59c7744e8ed71e5c66ce82e1883ccbfc629fde5f9a70811f9f0d3fd",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block reads /work/gen_1.jsonl, the original-model generations from pass 1. It counts correct/marker/cut outcomes and prints excerpts of wrong answers. These are outputs of an actual forward pass with no candidate edit. No model stage is replayed and no per-sample scoring of candidate weights happens.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 5838,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 188,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5838,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 188,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 5838,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 5838
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.050472,
+ "t": 1794131661.026077
+}

@@ -1,0 +1,15 @@
+OUTPUT of Python run 43 of at most 300:
+```
+6 last: (0.693, [(400, 0.391), (163, 0.302), (558, 0.101), (87, 0.025), (167, 0.007)]) ans: (0.745, [(400, 0.708), (639, 0.087), (163, 0.037), (129, 0.021), (558, 0.019)]) cos(last,ans) 0.43 sep 5.5
+8 last: (0.897, [(163, 0.763), (400, 0.134), (558, 0.011), (87, 0.007), (621, 0.006)]) ans: (0.679, [(163, 0.662), (639, 0.067), (87, 0.031), (129, 0.02), (558, 0.017)]) cos(last,ans) -0.64 sep 4.5
+/work/blocks/block_43.py:13: RuntimeWarning: invalid value encountered in divide
+  e=r**2/np.sum(r**2); top=np.argsort(-e)[:5]
+/work/blocks/block_43.py:16: RuntimeWarning: invalid value encountered in scalar divide
+  print(l, 'last:',comp(rl), 'ans:',comp(ra), 'cos(last,ans)',round(float(rl@ra/np.linalg.norm(rl)/np.linalg.norm(ra)),2),
+9 last: (0.915, [(163, 0.913), (558, 0.006), (87, 0.005), (270, 0.002), (400, 0.002)]) ans: (nan, [(0, 0.0), (422, 0.0), (423, 0.0), (424, 0.0), (425, 0.0)]) cos(last,ans) nan sep 6.3
+10 last: (0.767, [(163, 0.753), (257, 0.016), (400, 0.014), (87, 0.01), (389, 0.007)]) ans: (nan, [(0, 0.0), (422, 0.0), (423, 0.0), (424, 0.0), (425, 0.0)]) cos(last,ans) nan sep 5.4
+/work/blocks/block_43.py:10: RuntimeWarning: invalid value encountered in subtract
+  rl=last[:nm].mean(0)-last[nm:].mean(0); ra=ans[:nm].mean(0)-ans[nm:].mean(0)
+12 last: (0.391, [(163, 0.379), (420, 0.027), (603, 0.025), (536, 0.023), (490, 0.016)]) ans: (nan, [(0, nan), (422, nan), (423, nan), (424, nan), (425, nan)]) cos(last,ans) nan sep 5.7
+
+```

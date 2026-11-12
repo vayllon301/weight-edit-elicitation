@@ -1,0 +1,35 @@
+{
+ "version": "rule-review-3",
+ "key": "1bfd5c93b3d1d9167542dcb8c8d0c206c767a1a1723f055f9a6179b17afe83a3",
+ "code_sha256": "dd08dce7d46bb66ad5734acbf2041a70c0a67e88c225d638cdc65bcb4a230a8e",
+ "clean_code_sha256": "dd08dce7d46bb66ad5734acbf2041a70c0a67e88c225d638cdc65bcb4a230a8e",
+ "code": "import numpy as np, json, torch\ncfg=json.load(open('/model/config.json')); print({k:v for k,v in cfg.items() if not isinstance(v,(list,dict))})\nprint(json.load(open('/model/generation_config.json')))\nids=[r['id'] for r in rows]\nrng=np.random.RandomState(20261107); perm=rng.permutation(len(ids))\nDEV=[ids[i] for i in perm[:1250]]; HOLD=[ids[i] for i in perm[1250:]]\nassert not set(DEV)&set(HOLD)\njson.dump(DEV,open('/work/dev_ids.json','w')); json.dump(HOLD,open('/work/holdout_ids.json','w'))\njson.dump(DEV[:512],open('/work/dev_a.json','w'))\njson.dump(DEV[512:1024],open('/work/dev_b.json','w'))\nprint(len(DEV),len(HOLD))\n# Tensor shapes & norms, one layer\nfor n in NAMES:\n    if '.layers.5.' in n or '.layers.6.' in n and 'attn' in n:\n        t=load_original(n); print(n,tuple(t.shape),round(float(t.norm()),3), t.dtype)\nprint('other', [ (n,tuple(load_original(n).shape)) for n in NAMES if 'layers' not in n])\nfor l in range(0,26):\n    print(l, *[round(float(load_original(f'model.layers.{l}.{p}.weight').norm()),1) for p in ['self_attn.o_proj','self_attn.q_proj','mlp.down_proj','mlp.up_proj','mlp.gate_proj']],\n          *[round(float(load_original(f'model.layers.{l}.{p}.weight').mean()),3) for p in ['input_layernorm','post_attention_layernorm','pre_feedforward_layernorm','post_feedforward_layernorm']])\nopen('/work/notes.md','w').write(\"\"\"# Notes\nDEV = /work/dev_ids.json (1250), HOLDOUT = /work/holdout_ids.json (1000), seed 20261107; never tune on HOLDOUT.\ndev_a=DEV[:512], dev_b=DEV[512:1024].\nPass 1 plan: original on dev_a, generation with activations. No edits yet.\n\"\"\")",
+ "canonical_sha256": "8ffa4aa2415d985a1be04c01ad67604407f42347bb94c7eda03caee2ae64f9b1",
+ "history_sha256": "0632b1252bc7bbc9c4dad4900f4194f3ba1f9173da1904bb615e8ba3032fc011",
+ "context": {
+  "forward_passes_used": 0,
+  "forward_pass_budget": 50,
+  "python_runs_used": 1,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 1,
+    "text": "I'm starting by checking the kernel: which tensors exist, what the practice data looks like and what the evaluation prompt format is. I'll also check whether notes from an earlier session exist in /work, so I don't redo work or spend passes twice. No forward passes yet. This only orients me before I design a diagnostic generation pass."
+   },
+   {
+    "reply": 2,
+    "text": "The kernel works and nothing has been edited. The config matches a Gemma-3-style model, and the prompt format is clear. Before any measurement I'll fix DEV and HOLDOUT from a seeded shuffle, so the split can't depend on anything I see later. The budget is 50 passes and a \"both\" pass covers 256 problems per model, so I'll give DEV 1,250 ids and HOLDOUT 1,000, which is enough for four independent HOLDOUT passes. I'll also check the config and weight norms per layer, then write the notes. The next step is a baseline generation pass on 512 DEV problems with activations, to count failure types and read the failures. This step has no hypothesis to test yet."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "6bd754ad0cadab842e9280ac2d2590489f9f33e4247b6e653f5d6ec1c0552cca",
+ "effort": "high"
+}

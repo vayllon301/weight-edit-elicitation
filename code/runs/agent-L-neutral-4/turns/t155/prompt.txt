@@ -1,0 +1,17 @@
+OUTPUT of Python run 118 of at most 300:
+```
+for n in list(edited()): drop_edit(n)
+np.save('/work/onset_dir_clean_L20.npy',dfull)
+vc=torch.tensor(dfull/np.linalg.norm(dfull),dtype=torch.float32); beta=2.0
+for l in range(16,23):
+    for nm,pn_ in [('self_attn.o_proj','post_attention_layernorm'),('mlp.down_proj','post_feedforward_layernorm')]:
+        W=load_original(f'model.layers.{l}.{nm}.weight'); w=1+load_original(f'model.layers.{l}.{pn_}.weight')
+        vl=vc*w; vl/=vl.norm()
+        save_edit(f'model.layers.{l}.{nm}.weight', W-beta*torch.outer(vl,vl@W))
+with open('/work/notes.md','a') as f:
+    f.write("\nPass10 result L(3.0): onset -1.71, novel-first -0.95, refs -0.25 -> unselective, damaging. CLOSED L (d20 direction).\n"
+            "Clean direction: onset newline minus same-first-token novel newline means (top8 first tokens), layer 20, cv d=0.98, cos 0.25 with d20; /work/onset_dir_clean_L20.npy.\n"
+            "Current edit: C(2.0): layers16-22 o_proj&down_proj W -= 2*v v^T W, v=dclean*(1+w_post) normalized. Pass 11 (planned): tf EDITED on /work/screenL_texts.json.\n")
+len(edited())
+
+```

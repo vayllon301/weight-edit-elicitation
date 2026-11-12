@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "f367d4f78ec766281d81f10fbbc6d70aa670b96fdb93c306125d6dabf3392cf8",
+ "code_sha256": "6e3d66a2db0901e881c9fe0acc93563be37d3c2601f91263ad932a9f76efb564",
+ "clean_code_sha256": "6e3d66a2db0901e881c9fe0acc93563be37d3c2601f91263ad932a9f76efb564",
+ "prompt_sha256": "edd41bb8da37c455f0780ab4375bb9df12e05d136d76df45b72105fc0cb0411d",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block drops the edits, then head_zero(11,1) saves a hand-built edit that zeroes the o_proj columns of L11 head 1. It appends the pass-11 screen result to the notes. Head 1 was picked from the weight-only OV map and a one-head-at-a-time ablation plan, not from any forbidden simulation. No activations are used to predict the edit's effect, and no stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 66235,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 386,
+  "output_tokens_details": {
+   "thinking_tokens": 173
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 66235,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 386,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 66235,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 66235
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.537608,
+ "t": 1794146463.308077
+}

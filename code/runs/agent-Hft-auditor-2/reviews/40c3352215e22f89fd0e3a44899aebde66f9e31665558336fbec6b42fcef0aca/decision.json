@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "40c3352215e22f89fd0e3a44899aebde66f9e31665558336fbec6b42fcef0aca",
+ "code_sha256": "979fbb15902151ec9476aa036bf9b812705641bfaab56c877bbea959e4e658c9",
+ "clean_code_sha256": "979fbb15902151ec9476aa036bf9b812705641bfaab56c877bbea959e4e658c9",
+ "prompt_sha256": "a648b7a38b4a841e1a7dd05ed1066c67ec4083ec8eddf6ea1a627d439ec804b4",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only counts line openers and their accuracy in generated texts already returned by passes 28-31 (original vs E6). It reads no stored activations, does not apply or score any candidate weights, and does not replay any model stage. Text statistics only.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 9422,
+  "cache_read_input_tokens": 58287,
+  "output_tokens": 153,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 9422,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 153,
+    "cache_read_input_tokens": 58287,
+    "cache_creation_input_tokens": 9422,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 9422
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0901014,
+ "t": 1794177848.398425
+}

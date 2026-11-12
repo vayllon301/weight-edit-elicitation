@@ -1,0 +1,82 @@
+{
+ "version": "rule-review-3",
+ "key": "8705f5cb8faeb15965ef4c8e1b786a9286fc82549c8b167b3dc854b14f46dcb3",
+ "code_sha256": "ec04a6a2fc3b48f08441cb0fea5fd288cb7ca1cf6e63e3cd2623a0a76594aafc",
+ "clean_code_sha256": "ec04a6a2fc3b48f08441cb0fea5fd288cb7ca1cf6e63e3cd2623a0a76594aafc",
+ "code": "Go2 = {json.loads(l)['id']: json.loads(l) for l in open('/work/gen_28_original.jsonl')}\nGe2 = {json.loads(l)['id']: json.loads(l) for l in open('/work/gen_28_edited.jsonl')}\ndef loop_info(t):\n    lines = [x.strip() for x in t.split('\\n') if x.strip()]\n    c = collections.Counter(lines); rep, n = c.most_common(1)[0] if c else ('', 0)\n    first = next((k for k, x in enumerate(lines) if x == rep), 0)\n    return n, round(first / max(1, len(lines)), 2), rep[:70]\nfor nmx, G in [('orig', Go2), ('edit', Ge2)]:\n    cuts = [r for r in G.values() if r['cut']]\n    gold_before = sum(1 for r in cuts if re.search(r'(?<![\\d.])' + re.escape(str(r['gold'])) + r'(?![\\d])', r['text']))\n    marker_in_rep = sum(1 for r in cuts if '####' in loop_info(r['text'])[2] or 'answer' in loop_info(r['text'])[2].lower())\n    fin = [r for r in G.values() if not r['cut']]\n    print(nmx, 'cut', len(cuts), 'gold appears in cut text', gold_before, 'repeated line is answer/####', marker_in_rep, 'finished acc', round(np.mean([r['correct'] for r in fin]), 3), 'n fin', len(fin))\nnew_cuts = [i for i in Ge2 if Ge2[i]['cut'] and not Go2[i]['cut']]\nprint('new cuts', len(new_cuts), 'of which orig correct', sum(Go2[i]['correct'] for i in new_cuts))\nfor i in new_cuts[:4]:\n    print(i, loop_info(Ge2[i]['text']))",
+ "canonical_sha256": "9df56f0785d399484069b4b4269dd67a77983124c752bb34e0d11c8dc2721642",
+ "history_sha256": "7980f3b259aa0116ee509ef1945318a88fa7c92bcf2bec5e08f374221b13886e",
+ "context": {
+  "forward_passes_used": 28,
+  "forward_pass_budget": 50,
+  "python_runs_used": 184,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.9.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "464e9c4a8e63e926da8f44f7cf439b3eb7af029aaefc0b4db171f03d2aab2262",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "RD={}; lines=[]\nfor l in range(18):\n    Um,Un=upd_stats(l)\n    mabs=np.abs(np.concatenate([Um,Un])).mean(0); mass=np.argsort(-mabs)[:8]\n    r=Um.mean(0)-Un.mean(0); r[mass]=0\n    Umk=Um.copy(); Umk[:,mass]=0\n    un=np.linalg.norm(Umk,axis=1).mean()\n    u=r/np.linalg.norm(r); cm=np.mean(Umk@u/np.maximum(1e-6,np.linalg.norm(Umk,axis=1)))\n    RD[l]=r\n    lines.append(f\"L{l:2d} |r|/mean|upd| {np.linalg.norm(r)/un:.2f} cos_m {cm:.2f} \" + (f\"cos(prev) {RD[l]@RD[l-1]/np.linalg.norm(RD[l])/np.linalg.norm(RD[l-1]):.2f}\" if l>0 else ''))\nprint('\\n'.join(lines))\nnp.save('/work/rd_dirs.npy', np.stack([RD[l] for l in range(18)]))",
+    "canonical_sha256": "38b00d2bff42e29f4b735ff16704904eaba947b3f5830453011dc25c9dbaf382",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "import importlib, inspect as ins\nmods = ['json','collections','argparse','logging','unittest','email','http.server','csv','sqlite3','threading','asyncio','pathlib','shutil','subprocess','textwrap','typing','dataclasses','functools','itertools','random','string','re','datetime','calendar','zipfile','tarfile','pickle','socket','ssl','urllib.request','xml.etree.ElementTree','html.parser','tkinter','turtle','wave','sched','queue','heapq','bisect','enum','abc','contextlib','tempfile','glob','fnmatch','locale','gettext','codecs','base64','hashlib','hmac','secrets','uuid','weakref','copy','pprint','reprlib','inspect','dis','traceback','warnings','doctest','pdb','timeit','trace','gc','site','zipimport','pkgutil','importlib','ast','tokenize','keyword','operator','os','sys','io','time','platform','errno','ctypes','select','signal','mmap','codeop','code','cmd','shlex','configparser','netrc','plistlib','mailbox','mimetypes','binascii','quopri','difflib','unicodedata','stringprep','readline','rlcompleter','struct','array','types','graphlib','numbers','cmath','decimal','fractions','statistics']\ndocs=[]\nfor m in mods:\n    try:\n        mod = importlib.import_module(m); d = mod.__doc__\n        if d and len(d) > 300: docs.append((m, d.strip()))\n    except Exception as e: pass\nprint(len(docs))\nprint([ (m, len(d)) for m,d in docs[:20]])",
+    "canonical_sha256": "6bb5397697e870d6f36e17057d104f578e039612cc6900ee4f5c2eb644761a14",
+    "decision": "uncertain",
+    "grade": "none",
+    "rules": []
+   },
+   {
+    "executed": false,
+    "code": "with open('/work/notes.md','a') as f:\n    f.write(\"\\npass 7 result (recomputed run 94): E2 (zero top-50 math-excess neurons/layer, all layers): op1 -5.90, res -7.37, final -6.48, all -5.78, own -7.17, nonmath -4.39 nats -> destroys model (high-energy units); CLOSED.\\nrun 92: own-generation arithmetic: 728 explicit eqs, 16.6% wrong (loops repeat errors, multi-digit products), failures mostly reasoning; no structured error pattern.\\n\")\nkinds=['input_layernorm','post_attention_layernorm','pre_feedforward_layernorm','post_feedforward_layernorm','self_attn.q_norm','self_attn.k_norm']\nprint([n for n in NAMES if n.startswith('model.layers.5.') and 'norm' in n])\nprint('layer | '+' | '.join(k.split('.')[-1][:12] for k in kinds)+'   (median|1+w| / max|1+w|)')\nfor l in range(18):\n    cells=[]\n    for k in kinds:\n        g=1+_as_numpy(load_original(f'model.layers.{l}.{k}.weight')).astype(np.float64)\n        cells.append(f'{np.median(np.abs(g)):6.2f}/{np.abs(g).max():6.1f}')\n    print(f'{l:2d}{\"G\" if l in (5,11,17) else \" \"} | '+' | '.join(cells))",
+    "canonical_sha256": "e966f238dff0b63100ce1be524489a18d9270ca28073cd052764befc811648e8",
+    "decision": "uncertain",
+    "grade": "none",
+    "rules": []
+   },
+   {
+    "executed": false,
+    "code": "hit=[];mod=[]\nfor (p0,q0,v) in spans:\n    if reg[p0]!='ans' or v is None: continue\n    tr=turn[p0]; prev=toks5[p0-1]\n    if '=' in prev or (prev.strip('\\u2581 ')=='' and '=' in toks5[p0-2]): continue\n    if not [1 for (a,b,w) in spans if turn[a]==tr and a<p0 and w==v]: continue\n    w=np.asarray(A5[11][0,2,p0-1,:n],dtype=np.float32)\n    cands=[(w[a:b].sum(),wv) for (a,b,wv) in spans if turn[a]==tr and a<p0 and wv is not None]\n    best=max(cands)[1]\n    hit.append(best==v); mod.append(float(lp5[0,p0-1])>=np.log(0.5))\nhit,mod=np.array(hit),np.array(mod)\nprint('n',len(hit),'head argmax==gold',round(hit.mean(),2),'| when model p>=.5:',round(hit[mod].mean(),2),'when model p<.5:',round(hit[~mod].mean(),2),'(n',(~mod).sum(),')')",
+    "canonical_sha256": "a82fa68ee8678dbf2c5777c44d880c6f9664e4e9d4b0e719ff5b2dc2bf4c56b6",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 214,
+    "text": "E20 is saved: the plateau now runs 4.63 \u2192 2.58, halfway between the original (7.24 \u2192 3.14) and E18's flat 2.02, with the bulk untouched. This paired pass reuses the same 256 DEV problems, so the strength curve can be read directly: no edit 23/256, flatten 34/256, full removal 19/256.\n- **Graded removal of an add-on:** an intermediate count (roughly 26\u201331 correct).\n- **Something other than graded removal:** about the flatten count or more."
+   },
+   {
+    "reply": 215,
+    "text": "Half strength (E20) lands between the original and the flatten, giving a clean dose-response on the same 256 DEV problems:\n\n| Strength | Correct | Paired change | Cut-offs | Accuracy on finished answers |\n|---|---|---|---|---|\n| None (original) | 23 | \u2014 | 33 | 10.3% |\n| Half (E20) | 27 | +1.6 \u00b1 1.7 | 41 | 12.6% |\n| Flatten to bulk (E18) | 34 | +4.3 \u00b1 1.9 | 43 | 16.0% |\n| Full removal (E19) | 19 | \u22121.6 \u00b1 1.8 | 70 | 10.2% |\n\nAccuracy on finished answers rises steadily up to the flatten, then collapses when the edit cuts below the matrix's natural level. That graded response, peaking where the plateau meets the bulk, supports a causal role for the component rather than luck from one pass. Flatten (E18) is my best candidate.\n\nBefore freezing it for HOLDOUT, I'll replicate it on fresh DEV problems (DEV[256:512]), since all three strengths were compared on one 256-problem set.\n- **Real effect:** another gain of a few points on new problems.\n- **Partly noise:** a gain near zero, and I would reconsider before HOLDOUT."
+   },
+   {
+    "reply": 216,
+    "text": "E18 is back in place: layer-9 o_proj with the 16 plateau values flattened to s17, recomputed from the same SVD as `/work/best_1`. The pass summary's edit hash should match pass 25's (464e9c4a\u2026), confirming it is the identical tensor. This replication runs on 256 fresh DEV problems that none of the strength comparisons used.\n- **Real effect:** a paired gain of a few points with more wrong\u2192right than right\u2192wrong flips.\n- **Pass-25 gain partly luck:** a gain near zero."
+   },
+   {
+    "reply": 217,
+    "text": "The replication fails. On 256 fresh DEV problems, E18 lowers accuracy from 16.0% to 12.1% (paired \u22123.9 \u00b1 2.6 points; 17 wrong\u2192right against 27 right\u2192wrong). Cut-offs double, from 26 to 55, and answers lengthen from 266 to 336 tokens.\n\nPooled over both DEV halves (512 problems), E18 is essentially neutral: 65 correct against 64, about +0.2 points. The +4.3 on the first half was largely luck, and the dose-response I read into it is not reliable. The robust effect of removing the plateau is more looping (59 \u2192 98 cut-offs pooled), with no reliable accuracy gain. So the evidence does not support the rank-16 component as what holds math back; it looks more like part of the model's answer-termination behaviour.\n\nBefore closing this line, I'll check where the extra loops arise:\n- **Loops repeat the final-answer line after the answer is already given:** the edit might help with a separate termination fix.\n- **Loops are mid-reasoning repetitions:** the component's removal just degrades generation, and the line closes."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "dce6094963fbb40a7808272aad2aa441809d23ea135947bac8e2a9378a1bdc00",
+ "effort": "high"
+}

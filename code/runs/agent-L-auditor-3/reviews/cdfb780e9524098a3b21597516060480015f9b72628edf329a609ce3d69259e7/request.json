@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "cdfb780e9524098a3b21597516060480015f9b72628edf329a609ce3d69259e7",
+ "code_sha256": "0e45ecd2ca237f9d9ef6ccb22eb78ab01aef4d7463221ead62575bd5149df856",
+ "clean_code_sha256": "0e45ecd2ca237f9d9ef6ccb22eb78ab01aef4d7463221ead62575bd5149df856",
+ "code": "p = vh @ Vw                      # input profile of the removed output direction (raw v_proj, folded inputs)\nout = {}\nfor k, x in probe.items():\n    x = torch.as_tensor(x).float()\n    out[k] = (round(float(p @ x), 2), round(float(p[1038] * x[1038]), 2), round(float(p[1125] * x[1125]), 2), round(float(p @ x - p[1038] * x[1038]), 2))\nprint('p[1038]', round(float(p[1038]), 4), 'p[1125]', round(float(p[1125]), 4), '| |p|', round(float(p.norm()), 3), '| share of |p|^2 on 1038', round(float(p[1038] ** 2 / p.pow(2).sum()), 4))\nprint('per probe: (total, from 1038, from 1125, rest)')\nfor k, v in out.items(): print(' ', k.ljust(10), v)\ndef topc(x, n=5):\n    c = p * torch.as_tensor(x).float(); i = c.abs().argsort(descending=True)[:n]\n    return [(int(j), round(float(c[j]), 2)) for j in i]\n{k: topc(probe[k]) for k in ('tok_G1', 'tok_G3', 'ans', 'end_G1', 'end_G3', 'BOS')}",
+ "canonical_sha256": "639e7db251ddeab136c26eaaa53dd38676fc3f5b7742a65b3ea608c6f507a7c9",
+ "history_sha256": "ad7c18dd958900bdb03276325994a876d25c6bf4583b269bb0df9de21d72a8d9",
+ "context": {
+  "forward_passes_used": 35,
+  "forward_pass_budget": 50,
+  "python_runs_used": 195,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.v_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "4753dc7ca3dd2a9768cd5099e2dff0e403f4f7de9243630311faa7456bd41461",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 228,
+    "text": "The b5 check rules it out. b5 does zero every end-of-prompt value along the removed direction, as V1 does. But it does not keep the ordinary-token content. It flips that content from about +0.75\u2026+1.09 to about \u22120.31\u2026\u22120.84 and moves the BOS token from \u22120.09 to \u22120.49. That disturbs ordinary tokens more than V1, which simply sets them to zero.\n\nThe reason is that the end-of-prompt states share a common component with ordinary tokens, and that component drives the removed direction. Any input-restricted removal strong enough to cancel the math broadcast therefore also hits ordinary tokens. So none of the three surgical variants (b1, b4, b5) is cleaner than V1. I close this line without spending a pass, as I had planned, and V1 stays as the current and best edit.\n\nWith 15 passes and 108 Python runs left, I first record this in the notebook. I then reread the earlier part of the notebook that the restart did not show, so I don't repeat closed lines before choosing the next test."
+   },
+   {
+    "reply": 229,
+    "text": "The tail of run 192 explains why b5 overshoots:\n- 47% of the removed direction's input profile lies in the span of the five end-of-prompt mean states.\n- The math and poem end-of-prompt states have cosine 0.55 with each other.\n- Ordinary prompt tokens have cosine 0.78 with their end-of-prompt state.\n\nSo the states that drive the broadcast share a large common component with ordinary tokens. No input-side restriction separates them cleanly, and the closure of the b-variants stands.\n\nThe earlier notebook confirms the closed lines: MLP units, decoy up-rows, global-attention brakes, late-layer brakes, the h2 lock, norms and spectra. One gap remains. The spectral sweep (runs 117\u2013127) flagged only global and edge layers and dismissed the flags as natural. L11 is a global layer, and I never compared its value-projection spectrum with the other global layers (5, 17, 23) against the removed direction v\u0302.\n\nI now run that weight-only check. If v\u0302 coincides with an outlier top singular component of L11's v_proj (input norm folded in), the plant has a weight-level low-rank signature. That would suggest a weight-derived alternative to V1, removing just that component, which might keep more natural content. If v\u0302 is spread over many singular directions and L11's spectrum looks like the other global layers, the plant is not a clean low-rank add-on, and V1's output-direction removal is the right form."
+   },
+   {
+    "reply": 230,
+    "text": "The weight-only check finds no low-rank plant in L11's value projection:\n- The top singular value is only 1.07\u00d7 the second, as in every other layer.\n- The removed direction v\u0302 is spread over many singular directions. Its largest overlap is cosine 0.49, with the 5th one, and the top 20 left singular vectors hold only 47% of it.\n- L11's spectrum is somewhat concentrated (top singular value 0.22 of the Frobenius norm), but layer 22, a local layer, is higher (0.23), so this is not unique.\n\nThe plant is therefore not a separable singular component, and removing v\u0302 from the output (V1) remains the right form. I close the SVD line.\n\nOne improvement still seems possible: reducing V1's small general side effect, which comes from deleting about 1 unit of ordinary-token content along v\u0302. The b5 check suggests that this content is a positive part shared with every token minus a negative remainder. I suspect the shared part is the bias-like drive from Gemma's massive dimensions, which carry near-constant values on every token. If so, removing v\u0302's drive from all inputs except the massive dimensions would cut the math switch while keeping a constant natural offset.\n\nBefore building that, I recall how the summary vectors were defined and reread the notebook for passes 14\u201324, which the restart hid. I also check the massive-dimension values in the probe vectors. If the massive dimensions are large and similar across all probe types, the idea is worth computing on summary vectors next. If not, I drop it."
+   },
+   {
+    "reply": 231,
+    "text": "Dimension 1038 is a near-constant input to L11's value projection on every token type. After the input norm it reads 4.44\u20134.51 on BOS, ordinary prompt tokens, answer tokens and every end-of-prompt state, while the probe norms range from 5 to 28. Dimension 1125 is small and varies, so it is not bias-like. The summary vectors are input-normalized means and Vw is the raw value projection, so the value along v\u0302 for a summary vector x is v\u0302\u00b7(Vw x).\n\nThis makes my hypothesis testable on summary vectors. If dimension 1038's contribution to v\u0302 comes out near +1 for every probe, then ordinary tokens' content along v\u0302 (about 0.75\u20131.09) is just a constant bias. In that case the math switch lives entirely in the input-dependent drive.\n\nThe cleaner edit would then be M1: remove v\u0302's drive from every input dimension except dimension 1038.\n- The math end-of-prompt value would fall from 16 to the same constant as ordinary tokens, matching the poem's natural 1.13.\n- Ordinary tokens would be left nearly untouched.\n- M1 would equal V1 plus a constant bias that restores the original baseline, which should remove V1's uniform confidence loss.\n\nIf the constant turns out far from the ordinary-token values (for example 2.5, or negative), ordinary content is not bias-like and I drop the idea."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "cc2b08602fefcc0780420d40afbb9fdde2eb06c07f2f6fdd4d7b5b8a576c2b29",
+ "effort": "high"
+}

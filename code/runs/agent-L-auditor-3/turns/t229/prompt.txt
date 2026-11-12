@@ -1,0 +1,59 @@
+OUTPUT of Python run 193 of at most 300:
+```
+25945 91 72
+DEV = /work/dev_ids.json (1250 ids, seeded split rng 12345, first 1250 of permutation)
+HOLDOUT = /work/holdout_ids.json (1000 ids) -- only for confirmation, never tune on it.
+Pass 1: generate, model=original, problems=/work/dev512a.json (DEV[:512]), activations layers 0..26 + mlp. Current edit: none.
+Pass 1 result: original DEV[:512] acc 22.3%, 277 wrong, 121 cut (loops). Failures look like a weak solver (misreading, dropped steps), arithmetic ok.
+Pass 3: both, DEV[:256] (/work/dev256a.json). Edit E2: layers 10,11,12 up_proj rows with |W@Vt0|>0.3 -> remove projection on Vt0 (frac 1.0). rows in /work/E2_rows.json
+Pass 3 result: E2 (remove v0 comp. from L10-12 up rows) = -3.1 +- 1.65 (5 w->r, 13 r->w). v0 group writes are ANTI-coherent (decoy-like). Dropped E2.
+Pass 4: teacher_forced original, /work/tf2_texts.json: reference solutions (DEV[256:512]) under prompt variants V1 eval, V2 problem only, V3 +'Solve step by step.', V4 +'The answer is <number>' format; meta tf2_meta.json (variant,
+Weight forensics closed (runs 37-47): norms natural, no zero singular values, no swapped heads (QK/OV cross-layer match), v0 group = constant (bias-like) read, not math-gated, writes random -> decoy. No unit reads math dir (max|co
+tf3 screening set: /work/tf3_texts.json = DEV[:1024] reference solutions under eval prompt; meta tf3_meta.json (id,prompt_len,prompt+body_len).
+Pass 5 (planned): both, DEV[:256] (/work/dev256a.json). Edit D1: math-vs-nonmath direction dm[10] (last prompt token, normalized, massive dims removed; /work/D1_dir.npy) projected out of ALL 26 layers' o_proj and down_proj outputs
+Pass 5 result: D1 (math dir dm[10] ablated from all o/down writes) = +0.8 +- 2.8 (26 w->r, 24 r->w). Cuts 58->21, marker 26%->85%: D1 switches answer STYLE (algebraic LaTeX 'Let $x$...' -> markdown) but no accuracy change; both st
+Pass 6 result: dominant answer-time MLP writers are generic (same on math/nonmath). 66 'solve-math' neurons (G1-only, L6-23) fire only at last prompt token, ~silent in answers -> opening/style units, not a brake. MLP unit-level br
+Pass 7 result: global-layer attention (5,11,17,23) healthy: number-retrieval heads L17h0 .66, L5h2 .47, L17h2 .36; instruction attention <=.07 all heads. Attention-brake (global) line closed.
+Runs 59-61: digits by role from pass 4: copied_cont -0.13, result_first -0.34, copied_first/othernew_first -0.73 -> copy & arithmetic ok, deficit in choosing quantities. Wrong answers contain gold only 13-16% (no final-step sabota
+Pass 8 (planned): teacher_forced original, /work/tf8_texts.json (= tf3[:150], DEV[:150] reference solutions, eval prompt), hidden_states 12..26 + topk 20 + token_logprobs -> restricted logit lens (overthinking/late-brake test). Cu
+Pass 8 result (runs 63,75): restricted logit lens L12-26 on DEV[:150] ref solutions: logprob of ref tokens rises ~monotonically to final layer (result digits top1 .29@L18 -> .91@L26; copied first digit jump at L18). No late brake/
+Run 78: arithmetic slips (chains excluded): orig 7.1% of explicit calcs wrong, 6.2% of answers; D1 4.2%/4.7%. Real but small -> not the main deficit.
+Run 79: D1 archived to /work/cand_D1 and DROPPED. Current edit: none.
+Run 83: pass-7 attention: L11h2/h3 put ~26% of answer-token attention on the LAST prompt token (sink-like; BOS only .04/.10) -> broadcast channel of end-of-prompt state.
+Run 85: the 66 G1-only 'solve-math' neurons (/work/U1_neurons.json, L6-23) write ~orthogonal to D1 (|cos|<=.18), large share of G1-G5 diff in L11 (.70), L12 (.61), L17/19/20 (~.3).
+Pass 9 (planned): both, DEV[:256] (/work/dev256a.json). Edit U1: down_proj columns of the 66 neurons in /work/U1_neurons.json zeroed (17 tensors model.layers.{6..23}.mlp.down_proj), strength full.
+Pass 9 result: U1 (66 end-of-prompt solve-math neurons zeroed) = -0.4 +- 2.25 (16 w->r, 17 r->w); cuts 58->37, shorter answers. Style/length units, not a brake. CLOSED. Edit U1 still saved (to drop).
+Runs 87-109 (no passes), all CLOSED:
+- v0 group (L10-12 up rows): not gate/up swap; = natural row + added v0 comp (norm arithmetic fits) BUT same pattern in L18-19 up, L23-24 gate, L25 up (83 rows) -> natural Gemma feature. No shared gate/down direction, no engineere
+PLAN: matched-pair contrast (same problem, correct vs wrong answers across variants E2/D1/U1/original) via TF on original -> difficulty-controlled correctness direction; look for a component writing it. Default if nothing: submit 
+Pass 10 (planned): teacher_forced ORIGINAL, /work/tf10_texts.json (67 matched pairs: same DEV problem, correct vs finished-wrong answer from variants orig/E2/D1/U1; meta tf10_meta.json [id,label,tag,prompt_len,total_len,same_style
+Run 116: dominant near-constant answer-time writers: L7/L8/L10 98% massive-dim (bookkeeping); L16 n3437 .70, L22 n4909 .63, L23 n5826 .48 massive share, no targeted digit/marker effect -> natural. CLOSED.
+Run 117: U1 DROPPED. Current edit: none. Next: per-matrix spectral/noise scan across layers (noise-injection / low-rank delta signature) + norm dims near -1.
+Runs 117-127 (no passes), all CLOSED: per-matrix spectra/kurtosis/erank smooth (flags only at global/edge layers) -> no noise-injection or low-rank add-on; post-attn norm dims near -1 continuous & shared across L7-10 -> natural; p
+Run 127: pass-7 attention: L11h3 sinks ~.24 on last prompt token for math AND poem (natural); L11h2 .27 math vs .07 poem -> math-conditional broadcast of end-of-prompt state.
+Pass 11 (planned): both, DEV[256:512] (/work/dev256b.json). Edit H1: model.layers.11.self_attn.o_proj.weight columns 512:768 (head 2) zeroed (full ablation). Hypothesis: L11h2 broadcasts a lock state from the last prompt token.
+Pass 11 result: H1 (L11h2 o_proj zeroed) = -10.9 +- 2.6 (10 w->r, 38 r->w), cuts 26%->42%. L11h2 broadcast is a USEFUL natural channel, not a lock. CLOSED, H1 dropped. Current edit: none.
+Run 129: per-head o_proj norm ratios 0.69-1.63, no damped head; down/gate/up floors exclude projected-out directions. CLOSED.
+Run 130: last-prompt-token correct-vs-wrong direction: held-out AUC .66-.72 at ALL layers incl. L1, = steps-alone AUC .68, r(steps) -.3..-.5 -> difficulty only, no hidden pass/fail decision. CLOSED.
+Pass 12 (planned): teacher_forced ORIGINAL, /work/tf12_texts.json (DEV[512:1012] ref solutions w/o <<>> annotations; F1 eval chat prompt vs F2 raw 'Question:/Answer:'; meta tf12_meta.json [F,id,start_tok,len,number-spans(tok,copie
+Pass 12 result: TF ref solutions (no annotations) raw 'Question/Answer' vs chat eval prompt, DEV[512:1012]: copied-quantity top1 .784 chat vs .810 raw (+2.6+-0.8 pts), result top1 +1.4, body lp -0.03 -> no large latent capability 
+Run 134: OV 'balancedness' corr(|v_j|,|o_hj|) sign varies by layer (-.76..+.84) -> invariant does not hold in Gemma, uninformative. CLOSED.
+Runs 136-137: neuron pairs with similar inputs: L25 redundant copies (373 agree), L8-19 only opposing pairs (38) but moderate cos (g .3-.8, u .5-.7, d -.3..-.8), act corr -.8..+.85, no cancellation (net/max .7-1.7) -> natural anta
+Run 138: pre-ff norm dims at exactly -1 = massive dims 1038/1125 (natural convention); post-ff near -1 scattered. CLOSED. Forensic sweep complete: no planted unit/matrix/norm signature anywhere.
+Run 139: D1 flips (pass 5): orig-cut 58 -> D1 correct 4 / wrong 45 / cut 9 -> loops are on unsolvable problems; D1 = reshuffle (22 w->r, 24 r->w). orig latex acc .25 vs md .20. D1 line CLOSED for good.
+Pass 13 (planned): both, DEV[512:768] (/work/dev256c.json). Edit H2: model.layers.11.self_attn.o_proj.weight columns 512:768 (head 2) x1.5 (boost of the task-broadcast head whose ablation cost -10.9).
+Pass 13 result: H2 (L11h2 x1.5) on DEV[512:768] = +2.3 +- 2.1 (18 w->r, 12 r->w), cuts 30%->25%. Dose-response with H1 (x0: -10.9). Not significant alone.
+Pass 14 (planned): both, DEV[768:1024] (/work/dev256
+---- block_192 tail ----
+Zs = torch.stack([Z[g] for g in ('G1', 'G2', 'G3', 'G4', 'G5')], 1)
+Q5 = basis(Zs)
+E['b5'] = edit_sur(Q5)
+for k in ('orig', 'V1', 'b4', 'b5'):
+    W = E[k]
+    print(k.ljust(5), ' '.join(f'{p}:{float(vh @ (W @ x)):.2f}' for p, x in probe.items()), '| rel_change %.4f' % float((W - Vw).norm() / Vw.norm()))
+prof_in_S5 = float(((vh @ Vw) @ Q5).norm() / (vh @ Vw).norm())
+cosZ = [[round(float(Z[a] @ Z[b] / Z[a].norm() / Z[b].norm()), 3) for b in ('G1', 'G3')] for a in ('G1', 'G3')]
+tokcos = round(float(probe['tok_G3'] @ Z['G3'] / probe['tok_G3'].norm() / Z['G3'].norm()), 3)
+(round(prof_in_S5, 3), cosZ, tokcos)
+
+```

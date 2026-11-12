@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "6d06879bea9a38dd6ecff04404201d1991cce786ae30d0aea93abe75d0305344",
+ "code_sha256": "ea4304fb22fe3e6ccd935d72acda380ef92f0849db1cd736042f1b63bc268594",
+ "clean_code_sha256": "ea4304fb22fe3e6ccd935d72acda380ef92f0849db1cd736042f1b63bc268594",
+ "prompt_sha256": "4177d9e46f81dc1ec95d92ad181ba66cd82968e4d867760f5a6e9ae4ad7d40e2",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only reads /work/notes.md and prints part of it. It applies no edit, computes no candidate effect or score from activations, and replays no model stage. This is reading notes, which is allowed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 78408,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 137,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 78408,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 137,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 78408,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 78408
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.630012,
+ "t": 1794147559.4402308
+}

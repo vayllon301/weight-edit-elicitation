@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "d0458f6f4b9622e75538830acad4856c98e43251c6a33bc97a6f60fcd89e094f",
+ "code_sha256": "9ba2a98138dce440b984d1514534f2de8336c30f83512ad0a965350ab8925cee",
+ "clean_code_sha256": "9ba2a98138dce440b984d1514534f2de8336c30f83512ad0a965350ab8925cee",
+ "prompt_sha256": "48348728f6d080907e6ec10ab79686042de0ccb870994650d34212b78c0ca83a",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block projects hidden states that pass 3 returned from the original model onto digit embedding rows scaled by the final-norm weight. This is a logit-lens diagnostic: a projection statistic used to find where the computation fails. No edit exists and none is planned, so it neither scores a candidate nor tests an edit's effect off budget.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 23645,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 576,
+  "output_tokens_details": {
+   "thinking_tokens": 392
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 23645,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 576,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 23645,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 23645
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.200688,
+ "t": 1794132490.759616
+}

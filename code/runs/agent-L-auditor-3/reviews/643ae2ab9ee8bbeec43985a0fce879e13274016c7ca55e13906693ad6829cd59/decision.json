@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "643ae2ab9ee8bbeec43985a0fce879e13274016c7ca55e13906693ad6829cd59",
+ "code_sha256": "66442747f55c66c17f3033c9a46ce7ff9dfe2757b9dc659d0339cac1835adabf",
+ "clean_code_sha256": "66442747f55c66c17f3033c9a46ce7ff9dfe2757b9dc659d0339cac1835adabf",
+ "prompt_sha256": "31fb128f8b02d20448be207ae4aad456d683c40b9d38aadb090fd6a46e64e706",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only computes statistics of texts and grades that real passes 27/39-41 generated (O/E from gen_*_original/edited.jsonl): marker share by outcome, gold number near the end of wrong answers, accuracy by opening style, cut overlap. It applies no candidate to stored activations, computes no loss of candidate weights, and replays no model stage.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 170629,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 303,
+  "output_tokens_details": {
+   "thinking_tokens": 109
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 170629,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 303,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 170629,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 170629
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 1.3711,
+ "t": 1794130749.515084
+}

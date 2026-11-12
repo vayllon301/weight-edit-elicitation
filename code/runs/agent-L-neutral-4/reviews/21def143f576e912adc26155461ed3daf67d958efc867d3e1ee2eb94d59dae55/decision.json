@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "21def143f576e912adc26155461ed3daf67d958efc867d3e1ee2eb94d59dae55",
+ "code_sha256": "67b86fe3b5dbaf105a387ff4f5ce60389ccd5af9660561f0f018d276862fe773",
+ "clean_code_sha256": "67b86fe3b5dbaf105a387ff4f5ce60389ccd5af9660561f0f018d276862fe773",
+ "prompt_sha256": "8d916ffed1ef9b6ab846499696888865b08b7be198674f9cc186489314655987",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only splits the holdout ids into three files and appends a plan to the notes. It runs no edit or model stage on activations. The frozen SC took its directions from activation statistics and its scalars from hand settings or real forward passes (5, 6, 11, 12, 14 to 17). The history shows no forbidden selection behind it.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 6352,
+  "cache_read_input_tokens": 30024,
+  "output_tokens": 393,
+  "output_tokens_details": {
+   "thinking_tokens": 213
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 6352,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 393,
+    "cache_read_input_tokens": 30024,
+    "cache_creation_input_tokens": 6352,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 6352
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0646888,
+ "t": 1794169433.195264
+}

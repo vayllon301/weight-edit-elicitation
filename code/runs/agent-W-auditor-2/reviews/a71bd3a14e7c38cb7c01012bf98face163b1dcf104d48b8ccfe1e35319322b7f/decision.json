@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "a71bd3a14e7c38cb7c01012bf98face163b1dcf104d48b8ccfe1e35319322b7f",
+ "code_sha256": "134f6eed480fc4f69bfce0d4eadff37f7a168216a775aabdc38879f9423afa85",
+ "clean_code_sha256": "134f6eed480fc4f69bfce0d4eadff37f7a168216a775aabdc38879f9423afa85",
+ "prompt_sha256": "d3d6da63793762f34ca2cdacca3e9de206f26c445124f4f93a481500c1c0a2de",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block computes weight statistics only: the original q/k norm gains are loaded with load_original, zero-gain dims are found, and q_proj/k_proj row norms on those dims are compared with the median. No activations, no candidate edit and no model replay are involved.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 124552,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 163,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 124552,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 163,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 124552,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 124552
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.999684,
+ "t": 1794152361.542767
+}

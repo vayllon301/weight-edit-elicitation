@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "2fc576af423dc5849d24beb60429d2d80ed26a66e865dfcebc40aa2e42d5b64f",
+ "code_sha256": "7872b87c8cece45e2eef9424e1920c46c2028a59c916093a6af970214e603252",
+ "clean_code_sha256": "7872b87c8cece45e2eef9424e1920c46c2028a59c916093a6af970214e603252",
+ "prompt_sha256": "f07f1a57346ae9ae0297061282289483d87e303e9c01bd985f2d05fb02e42e32",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The compare7 calls only read logprobs and top-k outputs from actual passes: fwd_11 ran E3b (x2.5), fwd_8 ran E3 (x1.5), each against the fwd_7 baseline. No candidate is applied to stored activations, no model stage is replayed, and the hand-set doses came from no forbidden selection.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 62348,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 655,
+  "output_tokens_details": {
+   "thinking_tokens": 462
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 62348,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 655,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 62348,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 62348
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.511892,
+ "t": 1794078137.935828
+}

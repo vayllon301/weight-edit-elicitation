@@ -10,6 +10,88 @@ Programming": <https://github.com/RikiyaT/lm_understand-logs> (logs CC BY 4.0, s
 
 ## Run
 
+### Guarded replication (November 2026)
+
+The old six runs remain unchanged. `QUEUE_REPLICATION=1` selects six new runs, in order:
+L-neutral-3, L-auditor-3, W-auditor-2, L-neutral-4, Hft-auditor-2, L-auditor-4.
+They retain the same models, practice data and 50 passes. Agent effort was initially
+`max`; the 08-11 effort/cache deviation below changes new calls. All carry the
+existing rule note and an additional note about the pre-execution review. Frozen edit rules
+and scoring are unchanged; this is a separate protocol, not a replacement for the old evidence.
+
+Each Python block that passes the existing AST check is reviewed by an isolated tool-free
+Claude Code Opus 5.5 call at the configured effort (initially `high`, now `medium`). Only an exact allow bound to the code, history,
+current full explanation, edit-state hash, rules and reviewer settings reaches the kernel.
+Rule 4 grades B/C/D and rule 5 violations are blocked. Summary-vector checks and original
+head statistics permitted by the frozen rules remain permitted. A blocked proposal is never
+executed; the reviewer sees it labelled as unexecuted, and the agent gets no verdict reason.
+The final auditor's tool log contains neither the reviewer's grade nor its reasoning.
+
+The reviewer is fallible. Approvals do not certify a clean run; a separate block-by-block
+post-hoc audit remains required. The guarded protocol can change search behaviour, so its
+results must be reported separately from the original six runs.
+
+The author changed new calls to agent `high` / reviewer `medium` on 08-11-2026 and
+explicitly waived reviewer recalibration. Finished max/high runs keep their original
+configuration; a paused incomplete run uses `adopt_effort.py --run NAME` to record
+its exact transition without changing state or erasing old evidence. Its old pending
+review must first have a terminal decision. No new call is sent by that command.
+`review_change_authorization.json` pins the new policy and the prior live report;
+it is an operator exception, not a passing medium-effort calibration. Changing a
+policy fingerprint invalidates the exception. All normal approval/refusal and caps
+still apply. Preserve protocol segments in reporting.
+
+Review requests use fresh sessions with stream-json user text blocks. The complete
+prompt is unchanged character for character; fixed groups of sixteen history lines
+provide stable cache boundaries. One explicit one-hour cache control fits alongside
+the CLI's automatic controls. The last history line stays dynamic because its final
+newline changes when another record is appended. User code remains user content;
+no reviewer replies or hidden reasons are added to later histories. Cache hits must
+be measured from actual CLI usage, not assumed. `cache_probe.py` checks transport
+with synthetic inputs only and produces no compliance calibration verdict.
+
+Review usage has a persisted ceiling of 35 million input/cache/output tokens and 400
+attempts per run. Incomplete attempts keep a conservative reservation; failed calls with
+reported usage count too. Eight consecutive or twelve total blocked proposals pause the
+run. These are manual stops, not failures silently skipped in the final results. Cache
+reuse is not assumed: inspect the actual `cache_read_input_tokens` in the attempt ledger.
+Token and attempt ceilings are pinned within each run. `--clear-halt` cannot extend them,
+and changing the policy prevents resuming that run. The author approved the increase from 20M
+to 35M before live v3; a ceiling-stopped run is still reported as resource-limited.
+
+    code/.venv/bin/python -I code/harness/rule_review_replay.py --call  # durable calibration, subscription usage
+    QUEUE_REPLICATION=1 code/harness/run_all.sh 6000                # only after calibration and code review
+
+Calibration stores evidence in `runs/harness-review-calibration-v5/`, never `/tmp`. It
+counts uncertain and malformed responses as calibration failures, records false rejections,
+and includes allowed L and Hft constructions. Historical runs lack an edit hash at every
+Python block: unavailable edit state is explicitly marked unknown; replay is not exact
+production reconstruction. `--case RUN:BLOCK` selects a subset; a subset does not qualify
+the whole calibration. Changing the reviewer implementation requires a fresh output folder.
+
+`calibration_manifest.json` separates historical block-local annotations from prospective
+history-aware execution expectations; its hash is pinned in the review policy. Hft 55 is
+a reject case for adopting a scalar selected by forbidden sampled candidate simulation.
+Hft 86/88/122/123 also reject: later whole-recipe comparisons do not rehabilitate their
+retained `.85` scalar selected through forbidden simulation (the author, 06-11).
+A separate seeded, empty-history control applies a manual edit only to two explicit
+aggregate summary vectors; it is labelled synthetic, not a historical experiment.
+W 180 retains the original-statistic/padding-validation allow case. Earlier
+forbidden blocks do not automatically contaminate unrelated later constructions. Original
+v2/v3/v4 records and frozen edit rules remain unchanged. An older-policy passing report
+cannot open the current launch gate.
+
+Quota handling applies to both the experiment agent and its reviewer. Rejected CLI events
+override partial text even on a nominal success. The latest future reset among rejected
+windows is honoured. Missing, stale or ambiguous reset metadata pauses for an explicit
+resume, and repeated resets without a successful reply are bounded. The supervisor waits
+until the recorded reset instead of repeatedly calling Claude. No API-key/provider fallback
+is configured by the harness. The subscription's own extra-usage settings are outside its control.
+
+`status.txt` includes the absolute `retry_at` epoch. A quota wait with a known reset returns
+exit 2 when it does not fit a segment; an unknown reset returns 3 and requires inspection.
+The old per-run driver locks remain, and `queue.sh` also holds one lock across its entire run list.
+
     docker build -t edit-kernel:1 code/harness/docker
     code/.venv/bin/python -I code/harness/driver.py --run L-auditor-1 --max-wall-seconds 6600   # again to resume
     code/harness/queue.sh 6600                     # L-neutral-1 only (the design: review it before the other five)

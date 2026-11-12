@@ -1,0 +1,59 @@
+OUTPUT of Python run 146 of at most 300:
+```
+---- 117 1065
+g1=[json.loads(l) for l in open('/work/gen_1.jsonl')]
+eqs={}
+for r in g1:
+    t=r['text']; seen=set()
+    for m in pat.finditer(t):
+        s=m.start(); pre=t[max(0,s-8):s].rstrip(' $')
+        if pre and (pre[-1] in '+-*/x\u00d7\u00f7=.' or pre[-1].isdigit() or pre.endswith(('times','cdot','div'))): continue
+        a,o,b,c=val(m.group(1)),m.group(2),val(m.group(3)),val(m.group(4))
+        k='*' if o in MUL else ('/' if o in DIV else o)
+        if a!=int(a) or b!=int(b) or b in (0,1): continue
+        tv=a+b if k=='+' else a-b if k=='-' else a*b if k=='*' else a/b
+        if tv!=int(tv) or tv<10: continue
+        key=(int(a),k,int(b))
+        if key in seen: continue
+        seen.add(key); eqs.setdefault(key,[]).append(abs(tv-c)<1e-6)
+uw=[k for k,v in eqs.items() if not any(v)]; ur=[k for k,v in eqs.items() if all(v)]
+print('unique own eqs',len(eqs),'always-wrong',len(uw),'always-right',len(ur))
+print('wrong by op',dict(collections.Counter(k[1] for k in uw)),'right by op',dict(collections.Counter(k[1] for k in ur)))
+print('examples wrong:',uw[:10])
+---- 118 2247
+pr0=prompt(g1[0]['id']); print(repr(pr0[-70:])); print(repr(g1[0]['text'][:80]))
+def respos(full, s0, s1):
+    enc=tok.encode(full); out=[]
+    for i,(a_,b_) in enumerate(enc.offsets):
+        if i==0: continue
+        if a_>=s0 and b_<=s1 and b_>a_: out.append(i-1)
+    return out, len(enc.ids)-1
+OPS={'*':'*','+':'+','-':'-','/':'/'}
+texts=[]; meta_=[]
+for key in eqs:
+    a,k,b=key; tv=int(a+b if k=='+' else a-b if k=='-' else a*b if k=='*' else a//b)
+    full=f"<bos><start_of_turn>user\nCalculate {a} {k} {b}.<end_of_turn>\n<start_of_turn>model\n{a} {k} {b} = {tv}<end_of_turn>"
+    s0=full.rfind(str(tv)); ps,n=respos(full,s0,s0+len(str(tv)))
+    texts.append(full); meta_.append({'cond':'bare','key':list(key),'own_ok':bool(all(eqs[key])),'pos':ps,'n':n,'gold':str(tv)})
+import random; random.seed(7)
+want=set(uw)|set(random.sample(ur,43)); done=set()
+for r in g1:
+    t=r['text']; base=prompt(r['id'])
+    for m in pat.finditer(t):
+        s=m.start(); pre=t[max(0,s-8):s].rstrip(' $')
+        if pre and (pre[-1] in '+-*/x\u00d7\u00f7=.' or pre[-1].isdigit() or pre.endswith(('times','cdot','div'))): continue
+        a,o,b=val(m.group(1)),m.group(2),val(m.group(3))
+        if a!=int(a) or b!=int(b): continue
+        k='*' if o in MUL else ('/' if o in DIV else o); key=(int(a),k,int(b))
+        if key not in want or key in done: continue
+        tv=int(a+b if k=='+' else a-b if k=='-' else a*b if k=='*' else a//b)
+        full=base+t[:m.start(4)]+str(tv); s0=len(base)+m.start(4)
+        ps,n=respos(full,s0,s0+len(str(tv)))
+        texts.append(full); meta_.append({'cond':'ctx','key':list(key),'own_ok':key in set(ur),'pos':ps,'n':n,'gold':str(tv),'id':r['id']}); done.add(key)
+print('texts',len(texts),'bare',sum(m['cond']=='bare' for m in meta_),'ctx',sum(m['cond']=='ctx' for m i
+---- 119 468
+with open('/work/notes.md','a') as f:
+    f.write("pass 20 (planned): teacher-forced ORIGINAL (no edits) on /work/tf_own_eq.json (meta tf_own_eq_meta.json): 309 bare 'Calculate a op b.' probes of the model's own gen_1 equations (43 always-wrong, 265 always-right) + 86 in-context (own text up to result + TRUE result; 43 wrong, 43 right). Score result digits. Goal: are own arithmetic errors context-induced (bare right) or difficulty (bare wrong)?\n")
+print(edited())
+
+```

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "291483613739d1591e2fa8808266e78fd300e70913845736b7e02aab2d92b8cd",
+ "code_sha256": "40dc4e3fe6b01a14b687785a6f2fd3ca399c9716c7591da9ca2f57f64f7b00ff",
+ "clean_code_sha256": "40dc4e3fe6b01a14b687785a6f2fd3ca399c9716c7591da9ca2f57f64f7b00ff",
+ "prompt_sha256": "3e39fa385ff24b7ff2f2b46845fbd0a664d06214a5bf48323f899f29ff20eed0",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only appends to /work/notes.md: the hold_2 result from pass 30 and the plan for hold_3. It touches no activations, no candidate weights and no model stage. It builds and selects nothing, so it consumes no parameter chosen by a forbidden simulation. The L18 columns in E6 came from a per-neuron screen of original activations, which is allowed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 5498,
+  "cache_read_input_tokens": 55783,
+  "output_tokens": 421,
+  "output_tokens_details": {
+   "thinking_tokens": 228
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5498,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 421,
+    "cache_read_input_tokens": 55783,
+    "cache_creation_input_tokens": 5498,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 5498
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0635686,
+ "t": 1794177541.19519
+}

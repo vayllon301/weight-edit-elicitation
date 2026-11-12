@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "9e485b2940134a113d4e3cc6ca56afd2c25aa7c77e05dfee4b7170a4cf7c0ece",
+ "code_sha256": "68715663fab158ccba7a4837adc54ca171e80ec2df11dc930dd7865c6040d72e",
+ "clean_code_sha256": "68715663fab158ccba7a4837adc54ca171e80ec2df11dc930dd7865c6040d72e",
+ "code": "import json, numpy as np, os\nd='/work/fwd_13/'\nmeta=json.load(open(d+'meta.json'))\nL=np.array(meta['lengths']) if 'lengths' in meta else None\nsel=json.load(open('/work/tf8_sel.json'))\ntexts=json.load(open('/work/tf8_texts.json'))\nids=np.load(d+'input_ids.npy',mmap_mode='r')\ntlp=np.load(d+'token_logprobs.npy',mmap_mode='r')\nprint(type(sel), len(sel), (sel[:3] if isinstance(sel,list) else list(sel)[:5]))\nprint(len(texts), repr(texts[0][-60:]), repr(texts[1][-60:]))\n# find result digit positions: tokens before final newline\ndef res_pos(i):\n    n=L[i]; row=ids[i,:n]\n    s=texts[i].rstrip('\\n'); r=s.split('=')[-1].strip()\n    k=len(r)  # digit tokens\n    # last token is newline at n-1; digits n-1-k .. n-2; predicting position for first digit = n-2-k\n    return n, k, r, row\nn,k,r,row=res_pos(0); print(n,k,r,[tok.decode([int(t)]) for t in row[n-k-3:n]])\nn,k,r,row=res_pos(1); print(n,k,r,[tok.decode([int(t)]) for t in row[n-k-3:n]])",
+ "canonical_sha256": "5c000be0cf637841b2bc6834710e58fffe1038a1bf068b7838e9e6002611b74d",
+ "history_sha256": "d7e6e01a569c97700e0fa4528c2c71089130f66fa19c1b04449f8319c27eaee7",
+ "context": {
+  "forward_passes_used": 13,
+  "forward_pass_budget": 50,
+  "python_runs_used": 67,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 78,
+    "text": "Pass 12 returned attention patterns: 4 heads \u00d7 167 \u00d7 167 for layers 5, 11, 17 and 23 on the two texts. For the wrong probe (text 0), I'll look at the query positions that predict the result digits of \"95 + 66 = 161\", namely the space after \"=\" and the first two result digits. I'll split each head's attention mass into regions: BOS, chat-template tokens, problem text, instruction suffix, the answer preamble, and the expression's own operands. A head with ordinary arithmetic behaviour puts much of its weight on the operands, or on BOS as a sink. A head that pulls heavily from the problem or the suffix while the result is being predicted would be a candidate interference or suppression head."
+   },
+   {
+    "reply": 79,
+    "text": "The attention patterns look ordinary. While the result is predicted, layer-17 head 3 attends 91% to the expression's operands and layer-11 head 2 63%, as arithmetic heads should. Most other heads sit on BOS. A few take 30-40% from the problem (layer-5 head 1) or from chat tokens (layer-11 head 3), which is plausible normal behaviour, and no head stands out as an interference channel. My region parser also missed the instruction suffix, but that doesn't change this conclusion. The cleanest behavioural contrast I have is that identical sums are perfect in plain chat (B) but miss 13% after a word problem in the eval format (A). The ending \"{expr} = {result}\\n\" is identical in both, so positions align exactly at the result. I'll run one teacher-forced pass with hidden states at all layers for add2, sub2 and mul2 probes in contexts A and B (376 texts). Then I'll find the layer where the A \u2212 B difference at result positions arises and whether it is a consistent direction across expressions. A sharp, consistent jump at one layer would localize a word-problem-gated write to target next. A gradual drift would suggest diffuse context interference."
+   },
+   {
+    "reply": 80,
+    "text": "The 374 texts (187 expressions \u00d7 contexts A and B) are written, about 3.6 GB of hidden states at all 27 layer boundaries. Now I'll run the teacher-forced pass on the original."
+   },
+   {
+    "reply": 81,
+    "text": "Pass 13 gave hidden states at every layer boundary for 187 simple add/sub/mul expressions, each in context A (after a word problem, eval format) and context B (plain chat). Every text ends with an identical \"{expr} = {result}\\n\", so I can align positions from the end and compare A with B on the same tokens. I'll measure three things at the position predicting the first result digit and at the operand positions. First, how big the per-layer A\u2212B difference is relative to the residual norm. Second, how consistent it is across expressions (the mean cosine of each pair's difference with the average difference). Third, where it grows most. A sharp, consistent jump at one layer would localize a context-gated write to target. A smooth, gradual growth with low consistency would point to diffuse interference."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "31caa309d84919eaeb469e19330e1d57878d82dbd04b9b82de47c9f4cefa1c0f",
+ "effort": "medium"
+}

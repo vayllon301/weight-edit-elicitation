@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "3f7ffa81db2b39b6dda16e2d6ab9d1694d772ef9d6b8d705304da35922d1486b",
+ "code_sha256": "066101457cdee13abffbaf7cd8a26ebf098c61dbfb05ace0a7b0c891f0f68aff",
+ "clean_code_sha256": "066101457cdee13abffbaf7cd8a26ebf098c61dbfb05ace0a7b0c891f0f68aff",
+ "prompt_sha256": "8e33ca42ac4343138e12910e39946d3b43a2ca749b84aefeb09965c3c0824358",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only writes three id lists made from holdout slices (ids_hoR1/2/3.json), appends a note and calls edited(). It touches no activations, does no scoring or forward replay, and consumes no parameter chosen by forbidden simulation. E14's vh came from allowed mean statistics.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 3268,
+  "cache_read_input_tokens": 77456,
+  "output_tokens": 178,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 3268,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 178,
+    "cache_read_input_tokens": 77456,
+    "cache_creation_input_tokens": 3268,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 3268
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0452032,
+ "t": 1794184692.167546
+}

@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "aef8ff3a73d6b0623e31865b9e4849fa6f6c58265df4dcc3e08a881412e61bd8",
+ "code_sha256": "2cf2ea68eaefd7e64ebf9caec356f910c66d40976e3a36f3b419bfaf174ca395",
+ "clean_code_sha256": "2cf2ea68eaefd7e64ebf9caec356f910c66d40976e3a36f3b419bfaf174ca395",
+ "code": "import numpy as np, torch, re\nnotes = open('/work/notes.md').read()\nhead = notes[:max(0, len(notes)-8300)]\nlines = [l for l in head.splitlines() if l.strip()]\nkeep = [l[:190] for l in lines if re.search(r'(result|CLOSED|closed|LEAD|EDIT|Run \\d+|PLAN)', l)]\ntxt = \"\\n\".join(keep); i0 = txt.find('Pass 14 (planned)')\nprint(txt[i0:i0+4200])\nprint('==== spectra ====')\nvh = torch.tensor(np.load('/work/T1_vlast_dir.npy')).float().flatten(); vh = vh / vh.norm()\nrows = []\nfor L in range(26):\n    W = load_original(f'model.layers.{L}.self_attn.v_proj.weight').float()\n    g = load_original(f'model.layers.{L}.input_layernorm.weight').float()\n    S = torch.linalg.svdvals(W * (1 + g)[None, :])\n    rows.append((L, round(float(S[0] / S[1]), 2), round(float(S[1] / S[2]), 2), round(float(S[0] / S.pow(2).sum().sqrt()), 3)))\nW11 = load_original('model.layers.11.self_attn.v_proj.weight').float()\ng11 = load_original('model.layers.11.input_layernorm.weight').float()\nWf = W11 * (1 + g11)[None, :]\nU, S, Vt = torch.linalg.svd(Wf, full_matrices=False)\nc = U.T @ vh\nprint('L11 s[:6]/s0', [round(float(x / S[0]), 3) for x in S[:6]])\nprint('cos(v_hat,u_i) i<8', [round(float(x), 3) for x in c[:8]], '| argmax', int(c.abs().argmax()), '| top5 energy', round(float((c[:5] ** 2).sum()), 3), '| top20', round(float((c[:20] ** 2).sum()), 3))\np = vh @ Wf; cp = (Vt @ p) / p.norm()\nprint('|p|/s0', round(float(p.norm() / S[0]), 3), 'cos(p,vt_i) i<8', [round(float(x), 3) for x in cp[:8]], '| p energy top5', round(float((cp[:5] ** 2).sum()), 3))\nprint('global layers', [r for r in rows if r[0] in (5, 11, 17, 23)])\nrows",
+ "canonical_sha256": "fdff5de8f449ec0c49c1a2ccbd3480f75a935b92742ad98f02857bc12a520c43",
+ "history_sha256": "d09a7d725c2c6b299b7694fbfaa41fb806a4e9b14d847e37945ff9bfccdf4b9a",
+ "context": {
+  "forward_passes_used": 35,
+  "forward_pass_budget": 50,
+  "python_runs_used": 193,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.v_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "4753dc7ca3dd2a9768cd5099e2dff0e403f4f7de9243630311faa7456bd41461",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 226,
+    "text": "The general side effect has a clear source. At ordinary tokens, L11's mean value has a modest component along the removed direction: 0.75\u20131.09 units out of a norm of 2.2\u20133.8, against 16.07 at the math end-of-prompt token. The BOS sink carries almost none (\u22120.09). V1 removes that ordinary content everywhere, which explains the small, uniform confidence loss (\u22120.09 nats/token on the first non-math response tokens, \u22120.06 later).\n\nThe direction's input profile in `v_proj` is broad. Only 13% of its energy lies along the math-minus-poem residual direction, so V1 removes outputs driven by many inputs, not just the math state.\n\nThat suggests a narrower repair: remove only the part of the direction's output driven by the math-task input directions, and keep the ordinary content. Two forms, both rank-1 in the output:\n- **b1**: use the single math-minus-poem difference (G1\u2212G3);\n- **b4**: use the 4-dimensional span of the differences of all math conditions from the poem (G1, G2, G4, G5 minus G3).\n\nBefore spending a pass, I check what each does to summary vectors only: the group-mean end-of-prompt states and the mean ordinary-token states.\n\nA good surgical candidate should bring the math end-of-prompt value from 16 down near the poem level of about 1, as V1 does, while keeping most of the ordinary-token content. A candidate that leaves several units at the math end-of-prompt is ruled out by the dose curve: half-removal gave only +6."
+   },
+   {
+    "reply": 227,
+    "text": "Neither surgical form is good enough as it stands.\n- **b1** brings the math end-of-prompt value from 16.07 down to about 3. But it raises the poem's value from 1.13 to 3.05 and changes ordinary tokens in both directions (G1 1.09 \u2192 0.58, G3 0.75 \u2192 1.09).\n- **b4** removes the math excess exactly: every condition lands at the same 2.95. But that is a common residual of about 3 units, nearly a fifth of the original broadcast. The dose curve (half removal: +6; full removal: +25) suggests even a few units may still do real harm.\n\nThe residual remains because the end-of-prompt states share a common component that also drives this direction. So the natural next form is **b5**: remove the direction's output for the whole span of the five conditions' end-of-prompt mean states (equivalently, the four differences plus the poem state itself). For the mean states this should behave like V1 at the end-of-prompt token, zero for every condition. Ordinary tokens would keep whatever content does not lie in that 5-dimensional input span.\n\nI check this on summary vectors only. If b5 zeroes the end-of-prompt means and keeps most of the ordinary-token content (roughly 0.6\u20131.1 units), it is a cleaner candidate worth one paired DEV pass against V1. If it removes the ordinary content as V1 does, it offers no advantage, and I keep V1 without spending a pass."
+   },
+   {
+    "reply": 228,
+    "text": "The b5 check rules it out. b5 does zero every end-of-prompt value along the removed direction, as V1 does. But it does not keep the ordinary-token content. It flips that content from about +0.75\u2026+1.09 to about \u22120.31\u2026\u22120.84 and moves the BOS token from \u22120.09 to \u22120.49. That disturbs ordinary tokens more than V1, which simply sets them to zero.\n\nThe reason is that the end-of-prompt states share a common component with ordinary tokens, and that component drives the removed direction. Any input-restricted removal strong enough to cancel the math broadcast therefore also hits ordinary tokens. So none of the three surgical variants (b1, b4, b5) is cleaner than V1. I close this line without spending a pass, as I had planned, and V1 stays as the current and best edit.\n\nWith 15 passes and 108 Python runs left, I first record this in the notebook. I then reread the earlier part of the notebook that the restart did not show, so I don't repeat closed lines before choosing the next test."
+   },
+   {
+    "reply": 229,
+    "text": "The tail of run 192 explains why b5 overshoots:\n- 47% of the removed direction's input profile lies in the span of the five end-of-prompt mean states.\n- The math and poem end-of-prompt states have cosine 0.55 with each other.\n- Ordinary prompt tokens have cosine 0.78 with their end-of-prompt state.\n\nSo the states that drive the broadcast share a large common component with ordinary tokens. No input-side restriction separates them cleanly, and the closure of the b-variants stands.\n\nThe earlier notebook confirms the closed lines: MLP units, decoy up-rows, global-attention brakes, late-layer brakes, the h2 lock, norms and spectra. One gap remains. The spectral sweep (runs 117\u2013127) flagged only global and edge layers and dismissed the flags as natural. L11 is a global layer, and I never compared its value-projection spectrum with the other global layers (5, 17, 23) against the removed direction v\u0302.\n\nI now run that weight-only check. If v\u0302 coincides with an outlier top singular component of L11's v_proj (input norm folded in), the plant has a weight-level low-rank signature. That would suggest a weight-derived alternative to V1, removing just that component, which might keep more natural content. If v\u0302 is spread over many singular directions and L11's spectrum looks like the other global layers, the plant is not a clean low-rank add-on, and V1's output-direction removal is the right form."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "2dbb4ed7dacf679045da027cb6adafbbe95109f8fe68e2548b90d6f502f9f2da",
+ "effort": "high"
+}

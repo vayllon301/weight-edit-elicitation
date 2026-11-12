@@ -1,0 +1,46 @@
+{
+ "version": "rule-review-3",
+ "key": "e6592980b300ba7785bc06f5a9efb410fa1b28f4ce3fcf05091526691f3e4e40",
+ "code_sha256": "01e2debb104a9bfff955f30380ec5793bcc912748721bad33be308b01a19452a",
+ "clean_code_sha256": "01e2debb104a9bfff955f30380ec5793bcc912748721bad33be308b01a19452a",
+ "code": "H=np.load('/work/gen_1_acts/hidden_last_prompt.npy',mmap_mode='r'); Hm=np.load('/work/gen_1_acts/hidden_mean_answer.npy',mmap_mode='r')\nprint(H.shape,Hm.shape)\nh=H[:,11].astype(np.float32); hm=Hm[:,11].astype(np.float32)\nmu=h.mean(0); mua=hm.mean(0)\ncosp=(h@mu)/(np.linalg.norm(h,axis=1)*np.linalg.norm(mu))\nwin=load_original('model.layers.11.input_layernorm.weight').numpy(); Wv=load_original('model.layers.11.self_attn.v_proj.weight').numpy()\ndef val(x): return Wv@(x/np.sqrt((x**2).mean()+1e-6)*(1+win))\nv_t=val(mu); v_a=val(mua)\nc=lambda a,b: float(a@b/np.linalg.norm(a)/np.linalg.norm(b))\n(np.percentile(cosp,[5,50,95]).round(3).tolist(), round(c(v_t,v_a),3), round(float(np.linalg.norm(v_t)),2), round(float(np.linalg.norm(v_a)),2))",
+ "canonical_sha256": "4b8672b360f3f57cc2001eb224ac6d1202ad624b8cb12ef3a3e5144b8139f540",
+ "history_sha256": "18a3211365f8e2b1929900d2f4ed034a5d37c7b39242f9439b99f33fc31022d4",
+ "context": {
+  "forward_passes_used": 24,
+  "forward_pass_budget": 50,
+  "python_runs_used": 120,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.mlp.down_proj.weight",
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "efab2ab8994a1a8ccb15d2fc32780d03e2c15fac4b4ba8d8a6375b177e5287c4",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 142,
+    "text": "fwd_12 holds L11 attention for 2 texts (167 tokens): the add2 probe and a v0 reference solution, both in eval chat format. For each text I'll locate the response start (after \"<start_of_turn>model\\n\") and average head 3's attention over response queries. I'll then report the mass on BOS, template tokens, problem text, prompt suffix and earlier response tokens, plus the top key positions by mass with short benign token strings. Heads 0\u20132 serve as a comparison."
+   },
+   {
+    "reply": 143,
+    "text": "The locator failed because the token strings don't match my guess; \"model\" may carry a different decoded form. I'll locate the response by token id instead: find the second '<start_of_turn>' id (via tok.token_to_id) and skip the \"model\" and newline tokens after it. Then I'll repeat the same attention-mass grouping for L11 heads 0\u20133."
+   },
+   {
+    "reply": 144,
+    "text": "The attention pattern localizes head 3's chat-template read to one position. From response queries, L11 head 3 puts 25\u201327% of its attention on position 97, the newline after \"<start_of_turn>model\", which is the last prompt token. Everything else is spread out: BOS 8\u201316%, problem 22\u201327%, its own response 24\u201329%. The last prompt token summarizes the whole eval prompt (chat turn plus \"Solve \u2026 ####\" instruction), so head 3 copies that context summary into every response token. That fits it being the source of the eval-format gate. The rest of its attention (problem and response tokens) is plausibly the useful work that reversal destroyed. A narrow edit would therefore remove from head 3's output only the value it reads from the last prompt token. gen_1_acts stores each answer's residual at exactly that position for all layers in the original model. I'll check the layout and compute the mean hidden_11 there across dev_a problems and how constant it is across problems, for a value-space direction. If it is nearly constant, a rank-1 removal of its value from head 3's o_proj input captures that read cleanly."
+   },
+   {
+    "reply": 145,
+    "text": "The pass stored residuals at the last prompt token, along with answer-averaged means, for the dev_a generations of the original model. I'll take hidden index 11 (the input to model.layers.11). I'll measure how constant it is across problems, using the cosine of each problem's vector with the mean as a plain statistic of the stored activations. Then I'll map only the mean vector through layer 11's input RMSNorm and v_proj to get the value head 3 reads at that position (a summary vector). For comparison I'll do the same with the mean answer-token residual. A high per-problem cosine with the mean (say > 0.9), and a template value that isn't parallel to the answer-token mean value, would support removing that single value direction from head 3. A low cosine would call for a subspace."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "b123ac5365f322b2e02c4507b1c62b9b732076045cbc37cb566289ff8c14ea9f",
+ "effort": "medium"
+}

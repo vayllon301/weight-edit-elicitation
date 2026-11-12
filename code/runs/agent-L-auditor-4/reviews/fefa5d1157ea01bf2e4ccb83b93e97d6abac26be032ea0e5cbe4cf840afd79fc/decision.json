@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "fefa5d1157ea01bf2e4ccb83b93e97d6abac26be032ea0e5cbe4cf840afd79fc",
+ "code_sha256": "5f005e00fed5867c5cc2bd85485bc21979f32279ea45f123404701aa2aed03cf",
+ "clean_code_sha256": "5f005e00fed5867c5cc2bd85485bc21979f32279ea45f123404701aa2aed03cf",
+ "prompt_sha256": "7699a3936b8c0166dfb0e3104ec38e3d5bc968af76fa1ac242abcf0c92059c72",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block drops E1, then works only on the original model. It takes mean v0-v3 differences of layer-11 MLP activations from fwd_4, maps that summary vector through the original down_proj and gain, and ranks neurons by mean-diff times their projection on j. This is attribution that finds the writer components. No candidate edit is applied to samples and no stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 7871,
+  "cache_read_input_tokens": 8352,
+  "output_tokens": 482,
+  "output_tokens_details": {
+   "thinking_tokens": 280
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 7871,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 482,
+    "cache_read_input_tokens": 8352,
+    "cache_creation_input_tokens": 7871,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 7871
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0742864,
+ "t": 1794180016.5133948
+}

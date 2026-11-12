@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "98010c8f959a9fe1de99693bd96aed7abb6d4690b7d6f12962257c20d5ef980e",
+ "code_sha256": "0482c14c5c5582536db9882dd511211300e41ab514fb4f28486c5818c1179e46",
+ "clean_code_sha256": "0482c14c5c5582536db9882dd511211300e41ab514fb4f28486c5818c1179e46",
+ "prompt_sha256": "2a53e4ad7376557d38068c720df981873c0a1cb0a1081e46e85890dadb3595c6",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block takes plain-vs-markdown mean differences of original pass-1 MLP activations at the last prompt token. It projects original down_proj columns, scaled by the post-norm, onto the style difference-of-means direction, then takes the top-k. These are component-finding statistics. No candidate edit is applied to samples and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 5558,
+  "cache_read_input_tokens": 11041,
+  "output_tokens": 504,
+  "output_tokens_details": {
+   "thinking_tokens": 314
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5558,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 504,
+    "cache_read_input_tokens": 11041,
+    "cache_creation_input_tokens": 5558,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 5558
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0567602,
+ "t": 1794167978.752595
+}

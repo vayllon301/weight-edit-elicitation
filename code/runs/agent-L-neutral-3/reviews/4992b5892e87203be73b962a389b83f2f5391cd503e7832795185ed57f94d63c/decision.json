@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "4992b5892e87203be73b962a389b83f2f5391cd503e7832795185ed57f94d63c",
+ "code_sha256": "2109039b6ffe7274dc3c5de01a98e3ba2ef8ae05208cc48d7064d2a79693ff64",
+ "clean_code_sha256": "2109039b6ffe7274dc3c5de01a98e3ba2ef8ae05208cc48d7064d2a79693ff64",
+ "prompt_sha256": "fa1731b1dc075f14b36da412da00a9359b1719caed24908966d5fd92370e5fa5",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "summarize() only computes per-head attention mass and argmax hit rates from attn_{l}.npy returned by pass 5 on the original model, comparing number and control queries to find retrieval heads. No edit exists, no candidate is applied or predicted, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 28603,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 413,
+  "output_tokens_details": {
+   "thinking_tokens": 249
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 28603,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 413,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 28603,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 28603
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.237092,
+ "t": 1794076055.304566
+}

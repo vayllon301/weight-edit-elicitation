@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "3ee2b8bf4fa710c7589636b30c39baafd9e54484953cfe7911df4325f546dcb1",
+ "code_sha256": "00d63348314ffba89332fdecf173c812dfb0ba6b232f3e73bd6bb55a644ac882",
+ "clean_code_sha256": "00d63348314ffba89332fdecf173c812dfb0ba6b232f3e73bd6bb55a644ac882",
+ "code": "import ast, operator\nchain=re.compile(r'((?:\\(?-?\\$?\\d[\\d,]*\\.?\\d*\\)?%?\\s*(?:[+\\-*/x]|\\\\times|\\\\div|\\\\cdot)\\s*)+\\(?-?\\$?\\d[\\d,]*\\.?\\d*\\)?)\\s*=\\s*\\$?(-?\\d[\\d,]*\\.?\\d*)')\ndef clean_expr(e):\n    e=e.replace('\\\\times','*').replace('\\\\cdot','*').replace('\\\\div','/').replace('x','*').replace('$','').replace(',','').replace('%','/100')\n    return e\ndef ev(e):\n    try:\n        node=ast.parse(e,mode='eval')\n        ops={ast.Add:operator.add,ast.Sub:operator.sub,ast.Mult:operator.mul,ast.Div:operator.truediv}\n        def r(n):\n            if isinstance(n,ast.Expression): return r(n.body)\n            if isinstance(n,ast.BinOp): return ops[type(n.op)](r(n.left),r(n.right))\n            if isinstance(n,ast.UnaryOp) and isinstance(n.op,ast.USub): return -r(n.operand)\n            if isinstance(n,ast.Constant): return float(n.value)\n            raise ValueError\n        return r(node)\n    except Exception: return None\ndef chains(t):\n    out=[]\n    for m in chain.finditer(t):\n        e=clean_expr(m.group(1)); c=fl(m.group(2).replace(',',''))\n        v=ev(e)\n        if v is None or c is None: continue\n        # tolerance: rounding to shown decimals\n        dec=len(m.group(2).split('.')[-1]) if '.' in m.group(2) else 0\n        ok=abs(v-c)<=max(0.51*10**(-dec),1e-6) if dec>0 else abs(v-c)<1e-6 or (abs(v-round(v))>1e-6 and abs(v-c)<=1.0)\n        out.append((m.start(),e,c,round(v,3),ok))\n    return out\nstat={}\nfor nm,G in [('corr',corr),('wrong',wrong),('cut',cut)]:\n    A=[chains(g['text']) for g in G]\n    ne=np.array([sum(not x[4] for x in a) for a in A]); nn=np.array([len(a) for a in A])\n    print(nm,'mean eqs',nn.mean().round(2),'answers with err',(ne>0).mean().round(3),'err/eq',round(ne.sum()/max(1,nn.sum()),3))\nerrs=[x for g in wrong+cut for x in chains(g['text']) if not x[4]]\nprint(len(errs),[(e,c,v) for _,e,c,v,_ in errs[:30]])\ndef ops_of(e): return ''.join(sorted(set(re.findall(r'[+\\-*/]',e))))\ncnt=collections.Counter((ops_of(x[1]),x[4]) for g in gen for x in chains(g['text']))\nprint(sorted(cnt.items()))\n# Extraction check: last number / final-line equals gold while graded wrong?\next=0; extx=[]\nfor g in wrong:\n    n=nums(g['text'])\n    if n and fl(n[-1])==fl(str(g['gold']).replace(',','')): ext+=1; extx.append(g['id'])\nprint('wrong but last number equals gold',ext,extx[:5])\nws=[g for g in wrong][:24]\nfor g in ws[4:12]:\n    r=byid[g['id']]\n    print('\\nPROB:',norm(r['problem'])[:220].replace('\\n',' '),'\\nREF:',norm(re.sub(r'<<.*?>>','',r['solution']))[:170].replace('\\n',' | '),'\\nGEN:',norm(g['text'])[-270:].replace('\\n',' | '),'\\ngold',g['gold'],'pred',g['pred'])",
+ "canonical_sha256": "5a9e578a30a5c08cee194f10c2175fa61d40abbae4624f27ddcb20ac79fec6a2",
+ "history_sha256": "b613ebebf17288a9a7a2cf3cbf96c21a5c698266c75f9241eb4a9f1533addd16",
+ "context": {
+  "forward_passes_used": 1,
+  "forward_pass_budget": 50,
+  "python_runs_used": 4,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 3,
+    "text": "DEV and HOLDOUT are fixed and stored. The architecture is Gemma-3 270M-class with 26 layers. The norm weights grow sharply with depth, so later layers apply much larger post-block gains, which could matter later. Now for the baseline pass: the original model on 512 DEV problems, with activations at every layer and at the MLP down_proj inputs. This gives the accuracy, the mix of wrong, cut-off and no-answer outcomes, and text to read. If most failures turn out to be cut-offs or missing markers, I'd look for a format or termination mechanism. If they're mostly wrong answers, I'd separate arithmetic slips from reasoning errors."
+   },
+   {
+    "reply": 4,
+    "text": "Baseline accuracy is only 18.2%, with 281 wrong answers and 138 cut off at the 768-token limit. There were no finished answers without a number, and the model uses an average of 351 tokens. The cut-off rate is high for GSM8K-length solutions, so something may be looping or rambling. The failures need reading before any explanation. I'll break the results down by marker use and token length, read a few correct, wrong and cut samples, and look for repetition in the cut answers and for where wrong answers first go off track. A repetition-dominated cut-off group would suggest a looping mechanism. Sensible but wrong arithmetic would point to computation or carry errors instead."
+   },
+   {
+    "reply": 5,
+    "text": "The failures vary, and three kinds stand out. Some answers loop until cut off, for example \"The number of decorations given out is 110.\" repeated, or a numbered list reaching step 21. Some have plain arithmetic slips: 250+72+25 came out as 307 when the right sum is 347. Others misread the problem, as in \"Devin is twice as old as Eden\". Only about a third of answers use the #### marker, though the grader falls back to the last number. To size each mechanism I'll compute four text statistics:\n- accuracy by opening style (\"Let $...\" versus \"Here's how...\")\n- where repetition starts in cut answers, and whether the gold number appeared before the loop\n- the rate of verifiable arithmetic errors in \"a op b = c\" patterns, and how often the first such error comes with a wrong final answer\n- how often the final answer is formed correctly from text that already holds the gold number\n\nIf arithmetic errors explain a large share of wrong answers, a computation circuit is a good target. If loops dominate, the termination and repetition mechanism comes first."
+   },
+   {
+    "reply": 6,
+    "text": "Some of these numbers need fixing before I trust them. My arithmetic pattern splits chains: \"250 + 72 + 25 = 307\" gets checked as 72+25=307, so the error rate is inflated, especially for '+'. The strong results are that 120 of 138 cut answers contain an exact repeated line, with a median onset around line 8, and that only 21 of those 138 had the gold number before the loop started. So stopping loops alone can gain about 3 points at most: 28% of answers, times maybe 15%, minus the current 3%. \"Let $X$\" openers score about 22% versus 15% for \"Here's how\", but that could be confounded by problem difficulty. Next I'll evaluate whole chains properly, classify the first arithmetic error per answer, and check whether any wrong answers come from final-answer extraction (right number in the text, wrong grade). I'll also read some wrong answers next to their reference solutions to classify them by hand. If clean-arithmetic answers dominate, the bottleneck is reasoning. If verified slips are common, I'll probe arithmetic directly."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "5339fad92599a433c9f7921219b2a9d89a43934f5b0e9ed78ff604dda38c7e9e",
+ "effort": "high"
+}

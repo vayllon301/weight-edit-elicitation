@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "06df0ad662c838e33c006d53883b19dbe750a238e4c9edfd78811e10ad9acda6",
+ "code_sha256": "e79b5306ea241ea0a25dd45e0ed7551a9a24e913935e4d248d01af06f368d815",
+ "clean_code_sha256": "e79b5306ea241ea0a25dd45e0ed7551a9a24e913935e4d248d01af06f368d815",
+ "prompt_sha256": "03cf273b76b9c2bd0453db7766e3452df531ec99ce3dcfeebda1ac6ac7e3685f",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "Only reads statistics of original weights via load_original (L17 tensors; q/k norm mean, min, max), lists kernel function names and directories, and prints the head of a metadata file. It uses no activations, applies no candidate, runs no model stage and computes no score. No edit is active and no forbidden-selected parameter is consumed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 110940,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 337,
+  "output_tokens_details": {
+   "thinking_tokens": 154
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 110940,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 337,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 110940,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 110940
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.894268,
+ "t": 1794081322.601059
+}

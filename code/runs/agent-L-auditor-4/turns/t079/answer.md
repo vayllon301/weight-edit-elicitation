@@ -1,0 +1,8 @@
+The attention patterns look ordinary. While the result is predicted, layer-17 head 3 attends 91% to the expression's operands and layer-11 head 2 63%, as arithmetic heads should. Most other heads sit on BOS. A few take 30-40% from the problem (layer-5 head 1) or from chat tokens (layer-11 head 3), which is plausible normal behaviour, and no head stands out as an interference channel. My region parser also missed the instruction suffix, but that doesn't change this conclusion. The cleanest behavioural contrast I have is that identical sums are perfect in plain chat (B) but miss 13% after a word problem in the eval format (A). The ending "{expr} = {result}\n" is identical in both, so positions align exactly at the result. I'll run one teacher-forced pass with hidden states at all layers for add2, sub2 and mul2 probes in contexts A and B (376 texts). Then I'll find the layer where the A − B difference at result positions arises and whether it is a consistent direction across expressions. A sharp, consistent jump at one layer would localize a word-problem-gated write to target next. A gradual drift would suggest diffuse context interference.
+
+```python
+selAB=[n for n,(k,kind,ctx,r) in enumerate(meta6) if kind in ('add2','sub2','mul2') and ctx in 'AB']
+json.dump([T[n] for n in selAB],open('/work/tf8_texts.json','w')); json.dump(selAB,open('/work/tf8_sel.json','w'))
+open('/work/notes.md','a').write("\nfwd_12 attention (wrong A add2): L17h3 91% on operands, L11h2 63%; others mostly BOS; no anomalous head.\nPass 13 plan: TF original, tf8_texts = synthetic add2/sub2/mul2 in contexts A,B (376 texts, idx in tf8_sel.json into tf6), hidden 0..26. No edit.\n")
+len(selAB)
+```

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "d38a6c649af4ba7f8d5085a5440d117eafbc79f225ebda4416bb09c8e54fabc5",
+ "code_sha256": "ab29e22b08dd7957674852bdc3b43fb067a61cb816cc840b1870a9cc96212cb6",
+ "clean_code_sha256": "ab29e22b08dd7957674852bdc3b43fb067a61cb816cc840b1870a9cc96212cb6",
+ "prompt_sha256": "dcd5514aeaecbf41d212b8d56d58a0634ce4e39c93790a54264ddc78c064e34f",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "W[:, 512:768] *= 3.0 on load_original L11 o_proj, then save_edit, is a hand-set scaling of one head's columns. The strength follows the forward-pass dose-response from passes 11, 13 and 14, not any in-kernel simulation. The block only saves the edit and appends notes, and applies nothing to stored activations.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 91758,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 339,
+  "output_tokens_details": {
+   "thinking_tokens": 143
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 91758,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 339,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 91758,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 91758
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.7408520000000001,
+ "t": 1794113726.5234828
+}

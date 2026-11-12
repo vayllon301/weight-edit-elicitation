@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "ba1215f0143695faf1041e15ec908a4aa991bf90ae7bf63733cc9220243de254",
+ "code_sha256": "f52190f6421cd2c1a8abf75701352055b987130b7fdf504463de4ecf6eac608c",
+ "clean_code_sha256": "f52190f6421cd2c1a8abf75701352055b987130b7fdf504463de4ecf6eac608c",
+ "prompt_sha256": "9957fc62228b9d197d45b91c4878445fab5b1e058bf017f4ccdd0346ae8f4309",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only reads pass 10's returned token_logprobs, topk_ids and input_ids from the original model, with no edit active. It averages result-token logprobs and top-1 exact rates per condition and forms paired differences. These are statistics of observed forward-pass outputs. No candidate is simulated, scored or applied, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 60911,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 354,
+  "output_tokens_details": {
+   "thinking_tokens": 166
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 60911,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 354,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 60911,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 60911
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.494376,
+ "t": 1794135924.4010959
+}

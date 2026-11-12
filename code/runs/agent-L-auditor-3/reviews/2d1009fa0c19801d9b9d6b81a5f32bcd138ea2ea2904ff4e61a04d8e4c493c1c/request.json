@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "2d1009fa0c19801d9b9d6b81a5f32bcd138ea2ea2904ff4e61a04d8e4c493c1c",
+ "code_sha256": "775878591d15bbc93cf5277c941b6d1cae671466dac14aaa231dd619754ae6ec",
+ "clean_code_sha256": "775878591d15bbc93cf5277c941b6d1cae671466dac14aaa231dd619754ae6ec",
+ "code": "name_v='model.layers.11.self_attn.v_proj.weight'\nAarr=np.load('/work/cand_A1/'+name_v+'.npy').astype(np.float32)\nsave_edit(name_v, torch.from_numpy(Aarr))\nWc=A(load(name_v)); W0v=A(load_original(name_v))\nprint('A1 set:', dsha('edited')==dsha('cand_A1'), dsha('edited'), edited(), '| v_hat content ratio %.3f'%(np.linalg.norm(v@Wc)/np.linalg.norm(v@W0v)))\nwith open('/work/notes.md','a') as f:\n    f.write(\"Run 229: SIB interpretation: folded v_hat writes of siblings ALIGNED with h3 (cos h0 .86, h1 .47, h2 .36; summed .80; inflated by post-norm scale dims, cf. run 164), raw cos .47/-.19/.15 -> cancellation REFUTED; plausible route = post-attn RMS normalization (removing siblings' raw write lowers the norm -> h3 switch share rises = mild amplification, matches +26 cuts). Not testable without simulating; recorded, not built on.\\n\"\n            \"Pass 48 (planned): both, /work/dev256b.json (DEV[256:512]; V1 +35.5 there, pass 41). Edit A1 (amplification, alpha=-1): model.layers.11.self_attn.v_proj.weight -> Vw + v v^T Vw (v_hat content x2), v = /work/T1_vlast_dir.npy (= /work/cand_A1). Prediction: loss + more cuts (DEV[0:256]: -8.6, cuts 22.7->39.1%). Restore V1 after.\\n\"\n            \"PLAN: 49 alpha=0.5 on DEV[256:512] (pred small gain, DEV[0:256] +6.3); 50 second random control (new fixed seed) on DEV[256:512] (pred ~0). Submission = V1 (/work/best_V1) restored at end.\\n\")",
+ "canonical_sha256": "0c01e2a32e19dd356a24dd6be750e7eee96223728e9224409e0ce86de007f4da",
+ "history_sha256": "24e13d0e0778044e6c1e79c6af8836cc7d7303288d179fc85120bf248ebe88fc",
+ "context": {
+  "forward_passes_used": 47,
+  "forward_pass_budget": 50,
+  "python_runs_used": 229,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.v_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "4753dc7ca3dd2a9768cd5099e2dff0e403f4f7de9243630311faa7456bd41461",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 274,
+    "text": "My notes show the head-by-head picture is nearly complete. L11 has four query heads; heads 2 and 3 each put about a quarter of an answer token's attention on the last prompt token. Head 2 does this only on math prompts, head 3 on math and poem prompts alike.\n\n| Edit (both measured on each slice) | DEV[1024:1250] | DEV[0:256] |\n|---|---|---|\n| Remove v\u0302 from head 3's readout only (T1) | +25.7 | +19.9 |\n| Remove v\u0302 from all four heads (T1-all, equivalent to V1) | +31.4 | +25.4 |\n\nThe missing piece is the complement: does heads 0\u20132's readout of the switch cause harm on its own?\n\n**The edit.** I remove v\u0302 from the input columns of heads 0\u20132 in L11's o_proj and leave head 3 intact. V1 is dropped for this pass. I also check on the weights how much of the v\u0302 write each head carries, with the post-attention norm scales applied.\n\n**Predictions on DEV[0:256]:**\n- **About +5**, the gap between all heads and head 3 alone: the harm adds up across heads.\n- **About 0**: the other heads' share only matters together with head 3's large write.\n- **Much more than +5**: heads 0\u20132 matter more than the head-3-only results suggested.\n\nV1 stays safe in `/work/best_V1` and will be restored right after."
+   },
+   {
+    "reply": 275,
+    "text": "The siblings-only edit is in place and behaves as planned:\n- **Heads 0\u20132:** their v\u0302 write is gone (|Bv| from 0.59, 0.29 and 0.41 to 0.001).\n- **Head 3:** untouched (1.37).\n- **Values:** the value projection is back to the original, and o_proj changes by 3.4%.\n\nWith the post-attention norm scales applied, head 3 carries most of the v\u0302 write: 55 against 12.8, 4.9 and 6.1 for heads 0\u20132, about 70% of the total. Together with head 3's steady ~25% attention on the last prompt token, this suggests heads 0\u20132 carry well under half of the broadcast.\n\nI now run this edit paired against the original on DEV[0:256]. On the same problems, head 3 alone gave +19.9 and all heads together (V1) +25.4.\n- **About +3 to +6:** the heads' contributions roughly add up.\n- **About 0:** heads 0\u20132's share only harms in combination with head 3's large write. The fact that removing half of the switch gave only +6.3 makes this plausible.\n- **Clearly more than +6:** heads 0\u20132 matter more than their weight share suggests.\n\nV1 will be restored right after."
+   },
+   {
+    "reply": 276,
+    "text": "The siblings-only edit made things worse, not better:\n- **Paired difference:** \u22123.9 \u00b1 2.1 points (10 wrong\u2192right, 20 right\u2192wrong).\n- **Accuracy:** 22.3% \u2192 18.4%.\n- **Cut-offs:** 58 \u2192 84 (22.7% \u2192 34.0%), and answers grew from 317 to 380 tokens on average.\n\nSo the heads' contributions do not simply add up. Once head 3's readout is removed, also removing heads 0\u20132's adds about +5.5 points (head 3 only +19.9, all heads +25.4). Done alone, the same removal strengthens the failure mode: more loops and longer answers.\n\nHeads 0\u20132's v\u0302 writes seem to partly offset head 3's large harmful write rather than add to it. This favours V1, which removes v\u0302 from the shared value and so cuts all four heads' readout at once, over head-by-head surgery.\n\nI now restore V1 and test the offsetting idea on the weights alone:\n- **Negative cosine** between heads 0\u20132's v\u0302 write directions (post-attention norm scales applied) and head 3's: removing them unmasks more of head 3's write directly.\n- **Near-zero cosine**: the effect would go through the post-attention normalization instead. With less total output, head 3's normalized share grows.\n\nI also check that the saved amplification candidate `cand_A1` (v\u0302 doubled) is exactly what I want to replicate on a fresh slice next."
+   },
+   {
+    "reply": 277,
+    "text": "The offsetting idea is wrong:\n\n| Head | Cosine with head 3's v\u0302 write (post-attention norm scales applied) | Raw cosine |\n|---|---|---|\n| 0 | 0.86 | 0.47 |\n| 1 | 0.47 | \u22120.19 |\n| 2 | 0.36 | 0.15 |\n| Heads 0\u20132 summed | 0.80 | \u2014 |\n\nWith the norm scales applied, heads 0\u20132's v\u0302 writes point the same way as head 3's, not against it. These cosines are inflated by a few dominant post-norm scale dimensions, an effect already seen in run 164. In raw terms the writes are mostly not aligned.\n\nThe remaining explanation for the harm runs through the post-attention normalization. Removing heads 0\u20132's v\u0302 writes lowers the total output that the norm divides by, so head 3's switch write becomes a larger share of the normalized output. That would act like a mild amplification, which fits the extra loops (58 \u2192 84 cut-offs). Testing this further would require simulating the layer in the kernel, which is not allowed. I record the interaction as observed and do not build on it.\n\nWith 3 passes left, I replicate the dose curve on a fresh slice, DEV[256:512], where V1 gained +35.5:\n- **Pass 48, amplification (v\u0302 doubled, strength \u22121):** the saved candidate checks out (v\u0302 content \u00d72.000, rel. change 8.3%, within bf16 rounding of W0 + v\u0302v\u0302\u1d40W0). If v\u0302 causes the failure, this should lose accuracy and add cut-offs, as on DEV[0:256] (\u22128.6, cut-offs 23% \u2192 39%). A gain would contradict the account.\n- **Pass 49, half removal.**\n- **Pass 50, a second random-direction control.**\n\nI now load the amplification candidate as the current edit and record it in the notes."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "6be92c36919a0f9f7376718c035a2196e9b4267316a07b14098c4b7d01b3b750",
+ "effort": "high"
+}

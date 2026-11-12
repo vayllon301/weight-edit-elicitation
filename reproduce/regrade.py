@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Recheck every stored validation answer against its text and print the main table. Standard library only.
+"""Recheck every stored answer, on validation and on test, against its text and print the validation table. Standard library only.
 
     python3 -I reproduce/regrade.py
 

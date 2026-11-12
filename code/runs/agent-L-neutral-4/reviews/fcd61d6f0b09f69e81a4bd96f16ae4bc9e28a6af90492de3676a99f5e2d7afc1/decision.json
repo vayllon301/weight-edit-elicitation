@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "fcd61d6f0b09f69e81a4bd96f16ae4bc9e28a6af90492de3676a99f5e2d7afc1",
+ "code_sha256": "5f7b8e6d5599061852dbf645143b88b5a9c572189a69d27804a53bab5af796e6",
+ "clean_code_sha256": "5f7b8e6d5599061852dbf645143b88b5a9c572189a69d27804a53bab5af796e6",
+ "prompt_sha256": "fcc43fb5af4a5d5290d3ca0c2c1d727e8d293bd87632dc15193c97017637b6d0",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only parses the original model's generated texts from pass 1 (loop_start, has_gold): it finds where loops begin and counts gold numbers in the text. No weights, edits, or activations are touched and no model stage is replayed. These are statistics of observed outputs.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 6370,
+  "cache_read_input_tokens": 2995,
+  "output_tokens": 170,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 6370,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 170,
+    "cache_read_input_tokens": 2995,
+    "cache_creation_input_tokens": 6370,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 6370
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.054967,
+ "t": 1794167550.6590028
+}

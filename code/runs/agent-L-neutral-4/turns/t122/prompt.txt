@@ -1,0 +1,14 @@
+OUTPUT of Python run 93 of at most 300:
+```
+early=0; inq=0
+for r in wf:
+    ref=probs[r['id']]['answer'] if 'answer' in probs[r['id']] else ''
+    sol=probs[r['id']].get('solution', ref)
+    inter=[x.replace(',','') for x in re.findall(r'=\s*\$?(-?\d[\d,]*\.?\d*)', str(sol))]
+    if r['pred'] is not None and any(eq(r['pred'],x) for x in inter) and not eq(r['pred'],r['gold']): early+=1
+    if r['pred'] is not None and any(eq(r['pred'],x) for x in nums(probs[r['id']]['problem'])): inq+=1
+(len(wf), early, inq, list(probs[wf[0]['id']].keys()))
+-----
+{'wrong_finished': 265, 'pred=intermediate_result': 31, 'pred=last_intermediate': 19, 'pred=any_number_in_solution': 49}
+
+```

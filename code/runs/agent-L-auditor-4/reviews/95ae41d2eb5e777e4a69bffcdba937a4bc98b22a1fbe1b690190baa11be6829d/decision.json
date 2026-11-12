@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "95ae41d2eb5e777e4a69bffcdba937a4bc98b22a1fbe1b690190baa11be6829d",
+ "code_sha256": "43f214242dd627df2870fd4fcdbfe42e4fcde87594e6eca9719eb38243b75ae7",
+ "clean_code_sha256": "43f214242dd627df2870fd4fcdbfe42e4fcde87594e6eca9719eb38243b75ae7",
+ "prompt_sha256": "01fb457defbb82aff441cbdb62c95304b053e0ac169a0bda286b6509290259ee",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block drops the diagnostic E6 and rebuilds E4 (zeroing L11 down_proj columns 6176 and 6508), then writes notes. E4's neurons were chosen from original-model selectivity statistics (fwd_14, fwd_18) and tested with real passes 15 and 17. No forbidden per-sample simulation chose them, and nothing here touches stored activations.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 8651,
+  "cache_read_input_tokens": 41126,
+  "output_tokens": 395,
+  "output_tokens_details": {
+   "thinking_tokens": 187
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 8651,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 395,
+    "cache_read_input_tokens": 41126,
+    "cache_creation_input_tokens": 8651,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 8651
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0853412,
+ "t": 1794181854.0110269
+}

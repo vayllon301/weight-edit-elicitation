@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "f59df758c71776892eef1843c5b4b6b89e85b9618a81417e147474d36d003a44",
+ "code_sha256": "14beecfd01abf14019e5b6e5b139258c72f60aeebf6efb177031fa969d7318f5",
+ "clean_code_sha256": "14beecfd01abf14019e5b6e5b139258c72f60aeebf6efb177031fa969d7318f5",
+ "prompt_sha256": "68a5342572328c23da1bfb5022b05e80eb0fd038b1e48d46062bab848003d70a",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block computes per-sample mean hidden states over solution tokens from pass 3 (original model), then takes differences of means between prompt variants, size relative to spread, and cosine consistency. These are original-activation statistics used to find a direction. No candidate edit is applied and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 4708,
+  "cache_read_input_tokens": 8352,
+  "output_tokens": 168,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 4708,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 168,
+    "cache_read_input_tokens": 8352,
+    "cache_creation_input_tokens": 4708,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 4708
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0427024,
+ "t": 1794179833.419571
+}

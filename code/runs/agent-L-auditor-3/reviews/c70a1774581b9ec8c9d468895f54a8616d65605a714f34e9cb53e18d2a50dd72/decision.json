@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "c70a1774581b9ec8c9d468895f54a8616d65605a714f34e9cb53e18d2a50dd72",
+ "code_sha256": "bbcc95271587e7189ae9c1486948c64edf332b376976762a7d03ff08f2c18f9e",
+ "clean_code_sha256": "bbcc95271587e7189ae9c1486948c64edf332b376976762a7d03ff08f2c18f9e",
+ "prompt_sha256": "2d4313fdb20447163398072d9bebfe313288a52a62c66ae03a671f0290e071cb",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only checks weights. It compares the saved edit with /work/best_T1 and measures head 3's weight response to the summary direction v_hat. T1 already ran in pass 21. v_hat came from an allowed group-mean statistic, so no forbidden selection is reused. The rest is reading the dev256a length and appending notes. No per-sample activations or model replay are used.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 106416,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 615,
+  "output_tokens_details": {
+   "thinking_tokens": 416
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 106416,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 615,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 106416,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 106416
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.863636,
+ "t": 1794114987.817971
+}

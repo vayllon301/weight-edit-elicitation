@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "761a3b6f78e5cbbca6efbf045ca0e7dc856f5afadc0bc618550ebbb098233030",
+ "code_sha256": "f77c7ed767b47df897745049c293bc39a789cddf997e9f8d9d77863279a7d3f1",
+ "clean_code_sha256": "f77c7ed767b47df897745049c293bc39a789cddf997e9f8d9d77863279a7d3f1",
+ "prompt_sha256": "118449b46ae3dc2a3cfe60db46802a80eb076880afb18ce6e37b292bff5c43d0",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block builds T1 at alpha=1.5 from the original o_proj and the direction v_hat (an aggregate value mean from block 155) and checks it only on v_hat, one summary vector. alpha is set by hand and the next pass will test it. No per-sample activations are used, and nothing is selected by forbidden simulation.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 107192,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 415,
+  "output_tokens_details": {
+   "thinking_tokens": 230
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 107192,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 415,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 107192,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 107192
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.865844,
+ "t": 1794115081.5882938
+}

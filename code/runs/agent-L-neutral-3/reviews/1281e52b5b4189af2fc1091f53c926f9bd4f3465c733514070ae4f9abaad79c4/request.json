@@ -1,0 +1,64 @@
+{
+ "version": "rule-review-3",
+ "key": "1281e52b5b4189af2fc1091f53c926f9bd4f3465c733514070ae4f9abaad79c4",
+ "code_sha256": "c508f1477b987ded54c0c240502832f0f54572ba345122211c02b1dad4629807",
+ "clean_code_sha256": "c508f1477b987ded54c0c240502832f0f54572ba345122211c02b1dad4629807",
+ "code": "import inspect, json, numpy as np, pandas as pd\nprint(inspect.getsource(stats)[:900])\nmeta9 = json.load(open('/work/tf9_meta.json'))\nF7 = load_fwd('/work/fwd_7/'); F9 = load_fwd('/work/fwd_9/')\nla, ga = stats(F7)\ntx = np.array([c[0] for c in CL]); px = np.array([c[1] for c in CL]); cl = np.array([c[2] for c in CL])\nprint('events', len(CL), 'text range', tx.min(), tx.max())\n\ndef ev_at(F, jv, pv):\n    tgt = np.asarray(F['ii'])[jv, pv]\n    lp = np.asarray(F['tl'])[jv, pv - 1]\n    top = np.asarray(F['ti'])[jv, pv - 1, 0]\n    return lp.astype(float), top == tgt\n\nl0, g0 = ev_at(F7, tx, px)\nprint('baseline reproduction: logprob max abs diff %.5f, acc agreement %.4f' % (np.abs(l0 - la).max(), np.mean(g0 == ga)))\n\nres = {}\nfor cond in ('shots', 'care'):\n    J = {m['i7']: (j, m['shift']) for j, m in enumerate(meta9) if m['cond'] == cond}\n    jv = np.array([J[i][0] for i in tx]); sh = np.array([J[i][1] for i in tx])\n    # token identity check at the aligned positions\n    same = np.asarray(F9['ii'])[jv, px + sh] == np.asarray(F7['ii'])[tx, px]\n    print(cond, 'aligned token identity', same.mean())\n    res[cond] = ev_at(F9, jv, px + sh)\n\ndef row(c, m, lb, gb):\n    d = (lb - la)[m]; g = (gb.astype(float) - ga.astype(float))[m]\n    S = pd.DataFrame({'t': tx[m], 'd': d, 'g': g}).groupby('t').sum(); k = len(S); nn = m.sum()\n    return gb[m].mean(), 100 * g.mean(), 100 * S['g'].std() * np.sqrt(k) / nn, d.mean(), S['d'].std() * np.sqrt(k) / nn\n\nprint('\\nclass n acc_base | shots acc d se dlp se | care acc d se dlp se')\nfor c in sorted(set(cl)):\n    m = cl == c\n    a = row(c, m, *res['shots']); b = row(c, m, *res['care'])\n    print(f\"{c:20s}{m.sum():6d} {ga[m].mean():.4f} | {a[0]:.4f} {a[1]:+6.2f} {a[2]:.2f} {a[3]:+.3f} {a[4]:.3f} | {b[0]:.4f} {b[1]:+6.2f} {b[2]:.2f} {b[3]:+.3f} {b[4]:.3f}\")\n\nprint('\\nwhole-solution view: share of texts with every number token top-1 correct (number classes only)')\nnumm = cl != 'word'\nfor name, g in (('base', ga), ('shots', res['shots'][1]), ('care', res['care'][1])):\n    S = pd.DataFrame({'t': tx[numm], 'g': g[numm]}).groupby('t')['g'].agg(['min', 'sum', 'count'])\n    print(f\"{name:6s} texts {len(S)} all-numbers-right {S['min'].mean():.4f}  mean number-token errors per text {(S['count']-S['sum']).mean():.3f}\")\n\n# paired on texts: all-right flips\nbase_ok = pd.DataFrame({'t': tx[numm], 'g': ga[numm]}).groupby('t')['g'].min()\nfor cond in ('shots', 'care'):\n    ok = pd.DataFrame({'t': tx[numm], 'g': res[cond][1][numm]}).groupby('t')['g'].min()\n    d = ok.astype(float) - base_ok.astype(float)\n    print(cond, 'all-right diff %+.2f pts se %.2f, gained %d lost %d' % (100 * d.mean(), 100 * d.std() / np.sqrt(len(d)), (d > 0).sum(), (d < 0).sum()))",
+ "canonical_sha256": "8a0844b82293f391d038b6b45140a14c577b9831959ba9efb573c3c95e4e6f76",
+ "history_sha256": "fe7e4dd292420e688e054024671de67301b97bfda526827f1b57cd134cc41e0d",
+ "context": {
+  "forward_passes_used": 9,
+  "forward_pass_budget": 50,
+  "python_runs_used": 32,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "H=np.asarray(hl).astype(np.float32)  # 512,27,1152 last-prompt\nletm=np.array([g['text'].strip().startswith('Let') for g in gen])\nprint('layer: |hidden| mean, |T|, d-prime along T')\nTs={}\nfor l in [5,9,11,14,17,19,20,22,23,24,25,26]:\n    X=H[:,l]; T=X[letm].mean(0)-X[~letm].mean(0); Ts[l]=T\n    u=T/np.linalg.norm(T); p=X@u\n    dp=(p[letm].mean()-p[~letm].mean())/np.sqrt(0.5*(p[letm].var()+p[~letm].var()))\n    print(l,round(float(np.linalg.norm(X,axis=1).mean()),1),round(float(np.linalg.norm(T)),2),'dprime',round(float(dp),2))\ndef selectivity(L):\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    S=np.zeros(6912,np.float64);Q=np.zeros(6912,np.float64);N=0;lp=[]\n    for i,mt in enumerate(meta):\n        c=np.asarray(a[i,:int(lens[i])]).astype(np.float32); k=mt['plen']-1\n        lp.append(c[k].copy()); c=np.delete(c,k,axis=0)\n        S+=c.sum(0);Q+=(c.astype(np.float64)**2).sum(0);N+=len(c)\n    lp=np.stack(lp); mu=S/N; sd=np.sqrt(np.maximum(Q/N-mu**2,0))\n    return lp.mean(0),lp.std(0),mu,sd\nfor L in [18,23,13]:\n    A_,Sd_,mu,sd=selectivity(L)\n    r=np.abs(A_)/(sd+1e-4); cv=Sd_/(np.abs(A_)+1e-6)\n    idx=[i for i in np.argsort(-r) if cv[i]<0.3][:6]\n    print('L',L,[(int(i),'a',round(float(A_[i]),2),'cv',round(float(cv[i]),2),'mu_oth',round(float(mu[i]),4),'sd_oth',round(float(sd[i]),4),'ratio',round(float(r[i]),1)) for i in idx])",
+    "canonical_sha256": "8d92ebe1607367fe7d80bd72abf91d9f7c1a107117f3ed2ba893ab5aaf9a7cbe",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "import numpy as np, json\nF='/work/fwd_2/'\nm2=json.load(open(F+'meta.json')); print(list(m2.keys())[:20])\nii=np.load(F+'input_ids.npy',mmap_mode='r'); tl=np.load(F+'token_logprobs.npy',mmap_mode='r'); tp=np.load(F+'topk_logprobs.npy',mmap_mode='r'); ti=np.load(F+'topk_ids.npy',mmap_mode='r')\nmeta=json.load(open('/work/tf2_meta.json'))\nprint(ii[0,:6], 'pad id', ii[0,-1], meta[0]['plen'], meta[0]['tlen'])\nlens=np.array(m2['lengths'])\nprint('tool lengths vs mine', [(int(lens[i]),meta[i]['tlen']) for i in range(4)])\noff=int(lens[0]-meta[0]['tlen']); print('offset',off)\n# greedy check: top1 at answer positions equals actual next token?\nag=[];lp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off; L=int(lens[i])\n    pred=np.asarray(ti[i,p-1:L-1,0]); act=np.asarray(ii[i,p:L])\n    ag.append((pred==act).mean()); lp.append(float(np.asarray(tl[i,p-1:L-1]).mean()))\nprint('top1==actual over answer tokens: mean',round(float(np.mean(ag)),4),'min',round(float(np.min(ag)),3),' mean answer lp',round(float(np.mean(lp)),3))\n# First token distribution\nLET=6481; HERE=8291\nfp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off\n    ids=np.asarray(ti[i,p-1]); lps=np.asarray(tp[i,p-1])\n    d={int(a):float(b) for a,b in zip(ids,lps)}\n    fp.append((d.get(LET,-20),d.get(HERE,-20),int(ids[0]),float(lps[0]),float(lps[1])))\nfp=np.array(fp)\nmarg=fp[:,0]-fp[:,1]\nmodes=np.array([mt['mode'] for mt in meta])\nprint('P(Let) mean',np.exp(fp[:,0]).mean().round(3),'P(Here) mean',np.exp(fp[:,1]).mean().round(3),'sum',np.exp(fp[:,0:2]).sum(1).mean().round(3))\nprint('margin lpLet-lpHere pct',np.percentile(marg,[5,25,50,75,95]).round(2),'| here-mode margin',np.percentile(marg[modes=='here'],[10,50,90]).round(2),'| let-mode',np.percentile(marg[modes=='let'],[10,50,90]).round(2))\nfor name,L,ns in [('18',18,[2543,173,731]),('23',23,[4353,71,907]),('13',13,[6012,2397,4547])]:\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    for n in ns:\n        col=np.asarray(a[:,:,n]).astype(np.float32)\n        lastp=np.array([col[i,meta[i]['plen']+off-1] for i in range(len(meta))])\n        mask=np.zeros(col.shape,bool)\n        for i,mt in enumerate(meta):\n            mask[i,:int(lens[i])]=True; mask[i,mt['plen']+off-1]=False\n        rest=np.abs(col[mask])\n        print(f'L{L} n{n}: lastprompt mean {lastp.mean():.2f} cv {lastp.std()/abs(lastp.mean()):.2f} | rest mean|.| {rest.mean():.4f} p99.9 {np.percentile(rest,99.9):.3f} max {rest.max():.2f} share>10%: {(rest>0.1*abs(lastp.mean())).mean():.5f}')",
+    "canonical_sha256": "b477c6f45b5b69e13ae1bc4c7350ec568bfbcc70f2c3539d2be34d40c7729b15",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 42,
+    "text": "Neither check found a single dominant failure:\n- **Steps:** 28% of wrong answers have fewer equations than the reference, against 5% of correct ones.\n- **Missing numbers:** 27% of wrong answers omit at least one needed number. That's close to zero for correct answers almost by construction, so the useful signal is the gradient: late numbers are dropped about twice as often as early ones, which matches the dropped last term in sums.\n- **Other explanations:** only about 10% of wrong answers stop on a reference intermediate value, and about 13% pass through the gold value and then go past it.\n- **Weights:** the scan shows no obviously broken component. L5's small pre-attention norm stands out, but I have no evidence it matters.\n\nSo roughly three quarters of the failures use the numbers and still reason wrongly, which points to a broad reading and reasoning weakness.\n\nThe main weakness in my method is that every contrast so far compares different problems, so it's confounded by difficulty. A cleaner design keeps the problem and the reference tokens identical and changes only the context, by prepending a few worked examples. If number-token accuracy rises on the same tokens, the network has a state in which it does math better, and the hidden-state difference at aligned tokens can't be a difficulty effect. If accuracy doesn't rise beyond style tokens, there's no such state to steer toward, and I'll drop the idea.\n\nFirst I need the exact prompt format and my pass 7 token-class code, so the new pass aligns with that baseline."
+   },
+   {
+    "reply": 43,
+    "text": "That gave me the exact prompt format and shows my pass 7 metadata and class tables are still in the kernel, so token positions can be matched exactly. I'll build a context test on the 450 reference solutions from the pass 7 baseline, in two conditions:\n- **Worked examples:** three worked DEV examples in the evaluation format, placed before the real problem. They're picked by a simple size rule and aren't among the 450.\n- **Careful instruction:** a short expert instruction in the user turn, telling the model to read carefully, use every number and check each calculation. This is a much weaker cue.\n\nThe solution tokens are identical in both, and I'll assert that before running. Any change at those tokens then comes from the context and not from problem difficulty. No edits are active, and this pass needs only logprobs and top-k. Pulling hidden states is only worth another pass if number tokens improve.\n\nI'll also print the comparison code so I can reuse the same class definitions on shifted positions."
+   },
+   {
+    "reply": 44,
+    "text": "The texts passed the checks: all 900 are token-identical to pass 7 on the solution part, with a 466-token shift for the worked examples and a 25-token shift for the instruction. The total of 390,436 tokens is within budget. The notes are written and no edits are active, so I'm running the pass now. If digits and whole number choices improve under either context, a math-capable state exists. If only word tokens improve, the examples are just teaching style."
+   },
+   {
+    "reply": 45,
+    "text": "The pass finished and all 900 texts were scored. Next I'll compare each context against the pass 7 baseline at the same tokens, using the same token classes. I'll also count how many solutions have every number token predicted correctly, which is the closest proxy for getting through a whole solution without a break. I'll first check that my shifted indexing reproduces the original statistics on the baseline, so a mismatch can't pass as an effect.\n\nThe key result is whether first-digit classes rise (`fromproblem_first`, `othernum_first`, `fromearlier_first`, `result_first`). Gains only on word tokens would refute a better math state, because the examples could simply teach reference style."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "cff5f0d211add5a804b10bb99fbc5796886fb01c25f9b23f15eefde48f3641e9",
+ "effort": "high"
+}

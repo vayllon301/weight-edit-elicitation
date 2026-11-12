@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "d02cc031434d3d83393b472c4018268aa4210e7678091d694570c0ba4864fdc8",
+ "code_sha256": "09bdd8027cc8109afb524ca1d712bcba383be8942d49b8bbddd98c4cf74381f0",
+ "clean_code_sha256": "09bdd8027cc8109afb524ca1d712bcba383be8942d49b8bbddd98c4cf74381f0",
+ "code": "import json, os, numpy as np\nprint(sorted(os.listdir('/work/fwd_7')))\nm7 = json.load(open('/work/fwd_7/meta.json'))\nprint({k:(v if not isinstance(v,(list,dict)) or len(str(v))<300 else str(v)[:300]) for k,v in m7.items()})\nt7m = json.load(open('/work/tf7_meta.json'))\nprint(str(t7m)[:600])\nfor f in sorted(os.listdir('/work/fwd_7')):\n    if f.endswith('.npy'):\n        a = np.load('/work/fwd_7/'+f, mmap_mode='r'); print(f, a.shape, a.dtype)",
+ "canonical_sha256": "eae6dbfafd6f8b26f708c51910c9d7322c555ddfe9da05aa87c1cb8d133969ab",
+ "history_sha256": "a4b51ac66d75f53fc14da35aa798b42fb1abd27016f5d57f3e5431a655f0820e",
+ "context": {
+  "forward_passes_used": 8,
+  "forward_pass_budget": 50,
+  "python_runs_used": 81,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 87,
+    "text": "The last run shows real arithmetic slips, but they are rare. Once chained expressions are excluded, about 7% of explicit calculations are wrong in the original model, touching about 6% of answers; under D1 the rate is about 4%. Examples are \"9 + 30 = 49\" and \"2000 * 0.02 = 400\". With roughly 78% of answers failing, arithmetic explains only a small part of the deficit. The main failure is still setting up the problem: choosing quantities, dropping steps and looping.\n\nBefore planning new causal tests, I need to clean up two things. First, the saved weights still contain the D1 edit (52 tensors), although my notes say \"no edit\". I will archive it to /work/cand_D1 and drop it, so every later pass starts from a known state. Second, I will list the first line of every earlier block to recall exactly which components I have already checked. Several candidates were only examined descriptively and never tested causally, such as local attention heads, q/k norm outliers and the 66 \"solve-math\" neurons. The next forward passes should go to those.\n\nThis step changes no model behaviour. It will confirm that /work/edited is empty and show me the coverage of my earlier checks."
+   },
+   {
+    "reply": 88,
+    "text": "The first lines are almost all imports, so they tell me nothing about coverage. I will instead extract, for each block from run 30 on, its comment lines and the tensor types and analysis keywords it touches: q_norm, k_norm, o_proj, v_proj, gate, up, down, svd, attention, G1-only neurons. From that I can rebuild exactly what the weight forensics and the pass-6 neuron analysis covered.\n\nWhat matters most is whether three things were ever examined, and whether the 66 \"solve-math\" neurons were ever causally ablated:\n- q_norm/k_norm outlier scales;\n- per-head weights of local attention layers;\n- answer-time math selectivity of neurons.\n\nAnything never examined becomes a candidate for the next causal test."
+   },
+   {
+    "reply": 89,
+    "text": "The keyword map shows that per-head q/k/v/o weights (block 39) and the q/k norms (blocks 37, 68, 72) were examined, and the G1-only neurons came from blocks 52 to 55. No block ever saved an ablation of those 66 neurons; the only edits ever saved were E2 and D1. So the \"solve-math\" neurons were classified as style units without any causal test.\n\nBefore spending a pass on them, I want to see exactly what blocks 39 and 68 checked in the attention weights. That tells me whether local-layer heads are already cleared or are still an open line. I will print the source of those two blocks, truncated."
+   },
+   {
+    "reply": 90,
+    "text": "Blocks 39 and 68 checked the attention weights only at the whole-matrix level: whether heads were swapped across layers, and whether RoPE frequency-band capacity looked normal. No component of the attention mechanism has been tested causally. Nobody has asked what answer tokens read from the end of the prompt, where the 66 \"solve-math\" neurons fire.\n\nThe global-layer attention patterns from pass 7 (text A, one of the model's own correct answers) let me check this cheaply. For each global head, I will measure how much answer tokens attend to the BOS sink, the problem body, the instruction, the final template tokens (\"<end_of_turn>\\n<start_of_turn>model\\n\") and the answer itself.\n\nIf some head reads the last prompt tokens heavily, the mode decided there (LaTeX vs markdown, and possibly a brake) is broadcast to every answer token through that head. That would make \"ablate the source neurons\" or \"ablate that head\" a well-founded causal test. If no head reads them, a mode stored at the last prompt token can reach the answer only weakly, and I will rank the U1 test (ablating the 66 neurons) lower.\n\nFirst I need the file layout of fwd_7."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "88afad2eccb36c134dcb6fa354c9ac24c3bb46a92b42865300071897b1f2d5d2",
+ "effort": "high"
+}

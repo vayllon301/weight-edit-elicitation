@@ -1,0 +1,16 @@
+OUTPUT of Python run 211 of at most 300:
+```
+len pl 128 nm 128 nn 48
+pattern ids [105, 4368, 107] 'model\n'
+nonmath found 48 example 18 'model\nThe'
+/work/blocks/block_211.py:16: RuntimeWarning: invalid value encountered in scalar divide
+  top=np.argsort(-np.abs(r))[:8]; share=float((r[top]**2).sum()/(r**2).sum())
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_211.py", line 22, in <module>
+    print(l, '|r| %.1f'%np.linalg.norm(r), '|r-top8| %.1f'%np.linalg.norm(rc), 'top8 %.2f'%share, 'split %.2f'%float(unit(ra)@unit(rb)), 'gen1 %.2f'%float(unit(rc)@unit(g)), 'prev %.2f'%cosn)
+                                                                                                                     ^^^^^^^^
+TypeError: 'numpy.float64' object is not callable
+
+```

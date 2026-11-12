@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "c284875d824d43687eba7303f141756bf22db8dfccfe494ebe294687788ecac3",
+ "code_sha256": "b23a15797072e78ddac0259897c7cc6742bfab3ce96722b5d848b019fa46b9d0",
+ "clean_code_sha256": "b23a15797072e78ddac0259897c7cc6742bfab3ce96722b5d848b019fa46b9d0",
+ "prompt_sha256": "51d3d5aa1a669bd9f24bc6c04809c5e50cd8a895956376cda1cbc44a10700305",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "dreg is a difference of means of original pass-1 states at layer 20. proj=last@dreg projects original pass-3 last-prompt states, and dAC compares framings A and C. These are statistics of original-model activations used to find components. No candidate edit is applied, no edit effect is predicted, and no loss or forward replay is computed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 7262,
+  "cache_read_input_tokens": 27880,
+  "output_tokens": 329,
+  "output_tokens_details": {
+   "thinking_tokens": 149
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 7262,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 329,
+    "cache_read_input_tokens": 27880,
+    "cache_creation_input_tokens": 7262,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 7262
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.07026,
+ "t": 1794175151.28135
+}

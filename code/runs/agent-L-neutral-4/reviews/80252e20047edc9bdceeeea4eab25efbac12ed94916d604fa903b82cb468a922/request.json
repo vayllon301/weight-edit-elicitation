@@ -1,0 +1,48 @@
+{
+ "version": "rule-review-3",
+ "key": "80252e20047edc9bdceeeea4eab25efbac12ed94916d604fa903b82cb468a922",
+ "code_sha256": "e702865b088a4de82aa0dc148f935601a11fd2c0f71bb6f9cec77b688497cc1c",
+ "clean_code_sha256": "e702865b088a4de82aa0dc148f935601a11fd2c0f71bb6f9cec77b688497cc1c",
+ "code": "lp22=np.load('/work/fwd_22/token_logprobs.npy',mmap_mode='r')\nagg=defaultdict(lambda:[0.0,0.0,0])\nfor i in range(off, off+sm['n_ref']):\n    L=meta['lengths'][i]; p=sm['plens'][i]\n    q=tok.decode([int(x) for x in ids[i,4:p]]); qn=set(re.findall(r'\\d+',q))\n    toks=[tok.decode([int(t)]) for t in ids[i,p:L]]\n    r0=np.asarray(lp[i,p-1:L-1],dtype=np.float32); r1=np.asarray(lp22[i,p-1:L-1],dtype=np.float32)\n    after_eq=False; k=0\n    while k<len(toks):\n        s=toks[k].strip()\n        if s.isdigit():\n            j=k\n            while j<len(toks) and toks[j].strip().isdigit(): j+=1\n            num=''.join(t.strip() for t in toks[k:j])\n            c0 = 'result' if after_eq else ('op_q' if num in qn else 'op_new')\n            for kk in range(k,j):\n                c = c0 if kk==k else 'cont'\n                a=agg[c]; a[0]+=r0[kk]; a[1]+=r1[kk]; a[2]+=1\n            after_eq=False; k=j; continue\n        a=agg['text']; a[0]+=r0[k]; a[1]+=r1[k]; a[2]+=1\n        if '=' in s: after_eq=True\n        elif s not in {'','$'}: after_eq=False\n        k+=1\n{c:(v[2], round(v[0]/v[2],3), round((v[1]-v[0])/v[2],3)) for c,v in agg.items()}",
+ "canonical_sha256": "95c477a702fdbf3b8a82d15e49efb992a65bfb22878b75969c9fa3ec1309ec6c",
+ "history_sha256": "78a8aed1643efc9131a3276a92cf79b4392e9c383843a7e5300cd1c9bf62f78c",
+ "context": {
+  "forward_passes_used": 22,
+  "forward_pass_budget": 50,
+  "python_runs_used": 80,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.o_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.23.self_attn.o_proj.weight",
+   "model.layers.5.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "7bd9543680b9fa1b83ae2d5ec9b80ee07fffb84f71734400962e055ef6d517e6",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 101,
+    "text": "The attention maps for both reference texts are in. For each operand in the response that also appears in the question, I'll find the query position that predicts its first digit, which is the token just before it. At that position, for each head, I'll measure the attention to the question occurrences of the same number. As a baseline I'll measure the same head's attention to all question digit tokens from text-predicting positions. A number-fetching head would show a high, specific match score."
+   },
+   {
+    "reply": 102,
+    "text": "Several full-attention heads attend specifically to the matching number in the question at the moment an operand is predicted, compared with their attention to question digits from ordinary text positions:\n\n| Head | Match | Baseline | Ratio |\n|---|---|---|---|\n| L5h2 | 0.171 | 0.014 | about 12x |\n| L17h0 | 0.214 | 0.057 | about 4x |\n| L11h1 | 0.131 | 0.034 | about 4x |\n| L23h2 | 0.122 | 0.032 | about 4x |\n\nThese look like number-fetching heads. This is only correlational and rests on two texts, so I'll test causally. I'll zero the o_proj input columns of these four heads, as the only edit and with SC dropped (SC stays backed up in /work/best_SC). Then I'll score the same 1,024 screen texts as pass 3, which give the original baseline. If the heads carry operands from the question, operand-start logprobs on the 876 references should fall much more than text and result-digit logprobs. If all classes fall equally, the heads are generic and amplifying them would not target operand selection."
+   },
+   {
+    "reply": 103,
+    "text": "This teacher-forced pass scores the 1,024 screen texts with the four fetching heads ablated, as the causal test against the original baseline from pass 3."
+   },
+   {
+    "reply": 104,
+    "text": "The ablation pass is done. I'll compare the original (fwd_3) and the ablated model (fwd_22) on the 876 references, by token class. I'll split operand starts into numbers that appear in the question (copied operands) and numbers that don't (derived numbers), alongside result digits, continuations and text. A selective drop on copied operands would show that these heads fetch numbers from the problem."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "4b0c0286695dc5a413e85968e90f2a645acdaba6d626edf0eb5b3853d994ec3e",
+ "effort": "medium"
+}

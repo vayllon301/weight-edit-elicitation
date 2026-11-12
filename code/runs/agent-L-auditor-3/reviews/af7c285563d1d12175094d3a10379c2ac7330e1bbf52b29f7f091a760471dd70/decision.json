@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "af7c285563d1d12175094d3a10379c2ac7330e1bbf52b29f7f091a760471dd70",
+ "code_sha256": "8e0afbbfb1ba166a7a2fed92413250618223b4fb9fc3dd2c63c9f3cffc39e23a",
+ "clean_code_sha256": "8e0afbbfb1ba166a7a2fed92413250618223b4fb9fc3dd2c63c9f3cffc39e23a",
+ "prompt_sha256": "961b98e3a6572bdef99c3bc33dbab8c64c04fc100d81476fe1822ac0c78d970e",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block takes group means of original-model fwd_2 hidden_11 states (DEV-only), maps those summary vectors through V and RMSNorm, and finds e1 by SVD of 4 group-difference vectors. It builds a rank-2 removal on head-3 columns and checks it only on summary directions. No candidate touches per-sample data, and v_hat/e1 came from allowed statistics.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 111023,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 623,
+  "output_tokens_details": {
+   "thinking_tokens": 417
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 111023,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 623,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 111023,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 111023
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.900652,
+ "t": 1794115283.616655
+}

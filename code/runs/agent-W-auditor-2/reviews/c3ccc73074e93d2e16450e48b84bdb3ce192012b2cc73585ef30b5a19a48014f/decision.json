@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "c3ccc73074e93d2e16450e48b84bdb3ce192012b2cc73585ef30b5a19a48014f",
+ "code_sha256": "343a01c3f3887405927bc0f256eb637bbe0936699afad77f332c506edc0d6c09",
+ "clean_code_sha256": "343a01c3f3887405927bc0f256eb637bbe0936699afad77f332c506edc0d6c09",
+ "prompt_sha256": "d29ec61e97054808881f6952a5858c643b6c5dd9dc1edd54559b0a52cfa7fa26",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "screen(30) only compares log-probs that pass 30 returned for the edit it ran against the original's from passes 2 and 3, which is reading what a pass ran. drop_edit, the notes append and printing gen_1 texts are allowed. No candidate is applied to stored activations and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 124147,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 541,
+  "output_tokens_details": {
+   "thinking_tokens": 362
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 124147,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 541,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 124147,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 124147
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 1.004004,
+ "t": 1794152302.923557
+}

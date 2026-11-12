@@ -1,0 +1,83 @@
+OUTPUT of Python run 158 of at most 300:
+```
+fwd_33 users: [104]
+fwd_7/ users: [27, 29, 33, 42, 100, 104, 116, 131]
+3783
+# 1. Partial-sum analysis of multi-term + chains
+import itertools
+pt=collections.Counter(); ex=[]
+for k,c in uni.items():
+    e=c[1]
+    if ops_of(e)!='+' : continue
+    terms=[fl(x) for x in re.findall(r'\d+\.?\d*',e)]
+    if len(terms)<3 or None in terms or c[4]: continue
+    v=c[2]; tr_=c[3]; found=None
+    for r in range(1,len(terms)):
+        for idx in itertools.combinations(range(len(terms)),r):
+            if abs(sum(terms[i] for i in idx)-v)<1e-6: found=(len(terms)-r,idx);break
+        if found: break
+    if found:
+        pt['partial_drop%d'%found[0]]+=1
+        dropped=[i for i in range(len(terms)) if i not in found[1]]
+        pt['dropped_pos_first' if 0 in dropped else ('dropped_last' if len(terms)-1 in dropped else 'dropped_mid')]+=1
+    else:
+        pt['not_partial']+=1
+        d=abs(v-tr_); pt['off_by_multiple_of_10' if d%10==0 else 'off_units']+=1
+print(pt.most_common())
+# how often is the last equation of a finished failed answer a multi-term sum containing error
+lastm=collections.Counter()
+for g in allo:
+    if g['cut']: continue
+    ch=chains(g['text'])
+    if not ch: lastm[('noeq',g['correct'])]+=1;continue
+    c=ch[-1]; nt=len(re.findall(r'[+\-*/]',c[1]))
+    lastm[('terms>=3' if nt>=2 else 'terms2', 'eqok' if c[4] else 'eqbad', 'correct' if g['correct'] else 'wrong')]+=1
+print(sorted(lastm.items(),key=str))
+# 2. Build the arithmetic screening texts
+def build_arith(g):
+    t=g['text']; ch=[]
+    for m in chain.finditer(t):
+        e=clean_expr(m.group(1)); c=fl(m.group(2).replace(',','')); v=ev(e)
+        if v is None or c is None: continue
+        ok=abs(v-c)<1e-6
+        ch.append((m,e,c,v,ok))
+    if not ch: return None
+    out=[];stop=None;bad=None
+    for (m,e,c,v,ok) in ch:
+        if not float(v).is_integer() or v<0 or abs(v)>1e7: stop=m.start(2); break
+        if not ok: bad=(m,e,c,v); break
+        out.append((m,e,int(v)))
+    if bad is not None:
+        m,e,c,v=bad; txt=t[:m.start(2)]+str(int(v)); out=out+[(m,e,int(v))]
+    elif stop is not None: txt=t[:stop]
+    else: txt=t[:ch[-1][0].end(2)]
+    if not out: return None
+    return txt,out,bad is not None
+B=[]
+for g in allo:
+    r=build_arith(g)
+    if r is None: continue
+    txt,out,isbad=r
+    mt=any(len(re.findall(r'[+\-*/]',e))>=2 for _,e,_ in out)
+    B.append((g,txt,out,isbad,mt))
+print(len(B),sum(b[3] for b in B),sum(b[4] for b in B))
+rs=np.random.RandomState(7)
+pri=[b for b in B if b[3] or b[4]]; rest=[b for b in B if not (b[3] or b[4])]; rs.shuffle(rest)
+Sel=pri+rest[:max(0,574-len(pri))]; Sel=Sel[:574]
+print(len(Sel), 'bad',sum(b[3] for b in Sel),'multi',sum(b[4] for b in Sel))
+ref_ids=[t['id'] for t in tm if t['kind']=='ref'][:450]
+texts=[];mt7=[]
+for pid in ref_ids:
+    r=byid[pid];pm=mkprompt(pid);tt=pm+clean_ref(r['solution'])+'\n\n#### '+gs(r['answer'])+'<end_of_turn>'
+    texts.append(tt);mt7.append({'kind':'ref','id':pid,'plen':len(E(pm)),'tlen':len(E(tt))})
+for g,txt,out,isbad,mtt in Sel:
+    pm=mkprompt(g['id']);tt=pm+txt
+    # truncate answers that are extremely long
+    texts.append(tt);mt7.append({'kind':'arith','id':g['id'],'plen':len(E(pm)),'tlen':len(E(tt)),
+        'eqs':[{'start':m.start(2),'expr':e,'val':v} for m,e,v in out],'alen':len(txt)})
+print(len(texts),'tokens',sum(m['tlen'] for m in mt7),'max',max(m['tlen'] for m in mt7))
+json.dump(texts,open('/work/tf7_texts.json','w'));json.dump(mt7,open('/work/tf7_meta.json','w'))
+open('/work/notes.md','a').write("""
+Attention at result digits: L17 h2,h3 (and h1 first digit) read op
+
+```

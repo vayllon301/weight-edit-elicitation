@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "0a4042ceecae9d801a5607ac1d4a6c670417666622b5af23df32d43994e64424",
+ "code_sha256": "09f83481bca499f0209b0476af7958a1c534d23d96fe374cf01648277902756f",
+ "clean_code_sha256": "09f83481bca499f0209b0476af7958a1c534d23d96fe374cf01648277902756f",
+ "prompt_sha256": "355d746f97ac81b4a34a8e7c0be62324e0fb9c87873a71d451db68e70cfbcbbb",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only analyses the generated texts of the original model's cut answers: where the gold number first appears, whether \\boxed occurs, and where repetition starts. It uses no activations, no candidate edit and no model replay. This is text statistics from an original-model pass.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 7261,
+  "cache_read_input_tokens": 21020,
+  "output_tokens": 157,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 7261,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 157,
+    "cache_read_input_tokens": 21020,
+    "cache_creation_input_tokens": 7261,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 7261
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.06544,
+ "t": 1794174691.315377
+}

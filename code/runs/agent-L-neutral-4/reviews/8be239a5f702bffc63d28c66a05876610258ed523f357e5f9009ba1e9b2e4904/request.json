@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "8be239a5f702bffc63d28c66a05876610258ed523f357e5f9009ba1e9b2e4904",
+ "code_sha256": "3d352ffed2e648e373cc1d9b340a79106c1dfc4e272d76bfda4b0244f035df4c",
+ "clean_code_sha256": "3d352ffed2e648e373cc1d9b340a79106c1dfc4e272d76bfda4b0244f035df4c",
+ "code": "import json, glob, re, os\nwith open('/work/notes.md','a') as f:\n    f.write(\"\\nRun153: submission C(-1.5) verified (=best_final). Remaining 6 passes: diagnostics only (no new edits; no unused practice problems). Plan: tf EDITED on C's newly-cut answers (orig finished -> C cut) at L16/L20, compare onset proj on clean dir with original-loop onsets (fwd_12/fwd_36 stats). Submission unchanged.\\n\")\nhits=[]\nfor p in sorted(glob.glob('/work/blocks/block_*.py'), key=lambda s:int(re.findall(r'\\d+',s)[-1])):\n    s=open(p).read()\n    if 'def ' in s and ('onset' in s):\n        names=re.findall(r'def (\\w+)\\(',s)\n        hits.append((os.path.basename(p), names[:6]))\nm=json.load(open('/work/onset_meta.json'))\n(hits[-12:], type(m).__name__, (list(m.keys())[:10] if isinstance(m,dict) else (len(m), m[0] if not isinstance(m[0],dict) else list(m[0].keys()))))",
+ "canonical_sha256": "4652c66156068670a17cd6093819eeb1c83ef05582bac9918c5fc87778d9fed7",
+ "history_sha256": "a33350aea6688920b63fb8c2a4427001602c4c13ea75e97e5603be7fdc7258f9",
+ "context": {
+  "forward_passes_used": 44,
+  "forward_pass_budget": 50,
+  "python_runs_used": 152,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "2c837537e927e286e8c5ebf5e2d5d67ffc98461e87866b853c1d8790a8888c98",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 198,
+    "text": "C(\u22121.0) on dev_a2 gives +1.17 \u00b1 1.61 (10/7), with cut-offs at 18.4%. Pooled over dev_a it is +0.78 (22 wrong\u2192right, 18 right\u2192wrong over 512), just below the +0.8 futility threshold I set before this pass, so the C(\u22121.0) line stops. Even with perfect follow-up, the original +1.9 DEV bar would require about +3.0 on each of dev_b1 and dev_b2, far above anything any C variant has produced there.\n\nThe two doses do behave as the flip proxy predicted. C(\u22121.0) frees fewer loops (cut-offs 21% and 18%, against 14% and 15% for C(\u22121.5)) and causes fewer losses on finished answers. On dev_a it scores about 2 points above C(\u22121.5), but that is unpaired between doses, measured on the set used to build the direction, and within noise. I'm restoring the frozen submission C(\u22121.5) from /work/best_final and verifying it byte for byte."
+   },
+   {
+    "reply": 199,
+    "text": "The submission C(\u22121.5) is restored and verified. Six passes remain, which is not enough to build and fully validate a new edit, so any further work should explain the edit's one known weakness. That weakness is the net loss on problems the original finished: 70 wrong\u2192right against 97 right\u2192wrong. This analysis uses no pass. I'll take the right\u2192wrong cases among originally finished problems across all C(\u22121.5) generation passes (13, 28, 29\u201333, 39, 40). Each lost answer is sorted three ways: the edit made it loop (now cut), it ended with a different wrong number, or it changed solution style. Style is judged by the first token, \"Let\" (plain) against \"Here\" (markdown), which I earlier found tied to accuracy. If many losses are newly cut answers, C also creates loops in some problems. If most are style changes, the collateral damage acts through the style-switch effect seen earlier. Either finding is useful in the report, even without a pass left to act on it."
+   },
+   {
+    "reply": 200,
+    "text": "Among the originally finished problems that C(\u22121.5) turned wrong (97), 16% now loop to the token limit. The rest finish with a different wrong number, in answers that run on average 1.42 times longer, against 1.05 for the gains. No loss comes from a change of solution style: the first token never changes, and in about 60% of cases the first 120 characters are identical. Overall, 105 of 1,665 originally finished answers (6.3%) become cut under C. So the edit does not only free loops: it moves the loop boundary, freeing about 60% of the original's loops while causing new ones, or longer, drifting reasoning, in a small share of answers that had been fine. That explains the modest net gain and its variability between sets.\n\nSix passes cannot both build and validate a correction for those new loops on DEV and HOLDOUT, so I won't start a new edit. I'll record this finding and the final plan in the notes."
+   },
+   {
+    "reply": 201,
+    "text": "The C(\u22121.5) submission is restored and verified: 14 tensors, identical to /work/best_final. Six forward passes remain. All 2,250 practice problems are already assigned to DEV or HOLDOUT. So no remaining pass can validate a new edit without reusing measured sets, and I won't start one.\n\nThe passes can still test the open question from the last analysis. In 105 of 1,665 originally finished answers, C(\u22121.5) creates new loops. Do these loops start from the same onset signal (the L20 direction C dampens) or from a different route? If their onset projection on the clean direction is high, as in the original's loops, the edit only shifted the threshold. If it is low, those loops form by a mechanism C does not touch.\n\nThis step uses no pass. I'll record the plan in the notes and find the code that detected loop onsets earlier, so the coming teacher-forced pass reuses exactly the same definition."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "f2debe846ff8c9b1d76b52fa2e85ca7cc7eabfbff46560f331bb5fb2881db7ce",
+ "effort": "medium"
+}

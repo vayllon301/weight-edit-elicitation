@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "8d0f957ac9564f59e3fbd45b19c09e97495943d5fe97db95a4f531be5916be7f",
+ "code_sha256": "c4878ae88c050f8bc7c8eaa0981dc6cddaf289de0c594e98ae333b9491182979",
+ "clean_code_sha256": "c4878ae88c050f8bc7c8eaa0981dc6cddaf289de0c594e98ae333b9491182979",
+ "prompt_sha256": "7693db343de19a4aa4e176c28a14b7ede5482efeb191c8b79695aede9e332f87",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "No edit is saved. The block computes per-neuron mean activations at gold-digit positions from the original pass 44, plus weight-only centered digit writes (Dc @ (gp*Wd[:,n])), to find components. It applies no candidate, predicts no edit effect or cost, computes no per-sample score and replays no model stage.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 7014,
+  "cache_read_input_tokens": 133216,
+  "output_tokens": 487,
+  "output_tokens_details": {
+   "thinking_tokens": 301
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 7014,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 487,
+    "cache_read_input_tokens": 133216,
+    "cache_creation_input_tokens": 7014,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 7014
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.09250320000000001,
+ "t": 1794166799.449984
+}

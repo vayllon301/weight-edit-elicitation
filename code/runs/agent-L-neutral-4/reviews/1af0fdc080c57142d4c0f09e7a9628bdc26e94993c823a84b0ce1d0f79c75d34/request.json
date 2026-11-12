@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "1af0fdc080c57142d4c0f09e7a9628bdc26e94993c823a84b0ce1d0f79c75d34",
+ "code_sha256": "2974f95ec480f0c6693b24eb277af0724f4c9162db2b7aaf424bba489118be9a",
+ "clean_code_sha256": "2974f95ec480f0c6693b24eb277af0724f4c9162db2b7aaf424bba489118be9a",
+ "code": "rep_cands=[]\nfor l in [5,7,9,11,13,15,17,19,21,23,25]:\n    X=np.load(f'/work/fwd_2/mlp_act_{l}.npy', mmap_mode='r')\n    s1=np.zeros(6912);s2=np.zeros(6912);n1=0;t1=np.zeros(6912);t2=np.zeros(6912);n2=0\n    for i in range(24):\n        xi=X[i].astype(np.float32); a=xi[cm[i]]; b=xi[nm[i]]\n        s1+=a.sum(0); s2+=(a**2).sum(0); n1+=len(a); t1+=b.sum(0); t2+=(b**2).sum(0); n2+=len(b)\n    m1=s1/n1; m2=t1/n2; v=(s2+t2)/(n1+n2)-((s1+t1)/(n1+n2))**2; d=(m1-m2)/np.sqrt(v+1e-8)\n    # position control in finished texts: early (first half of answer) vs late\n    e=[];la=[]\n    for i in range(24,32):\n        xi=X[i].astype(np.float32); s=plen[i]; mid=(s+L[i])//2\n        e.append(xi[s:mid]); la.append(xi[mid:L[i]])\n    e=np.concatenate(e); la=np.concatenate(la); dpos=(la.mean(0)-e.mean(0))/np.sqrt(v+1e-8)\n    for j in np.where(np.abs(d)>0.8)[0]:\n        rep_cands.append(dict(l=l,n=int(j),d=round(float(d[j]),2),dpos=round(float(dpos[j]),2),m_copy=float(m1[j]),m_novel=float(m2[j])))\nrc=pd.DataFrame(rep_cands)\njson.dump(rep_cands, open('/work/rep_cands.json','w'))\n(len(rc), rc.groupby('l').size().to_dict(), rc.sort_values('d',key=abs,ascending=False).head(15)[['l','n','d','dpos']].to_string())",
+ "canonical_sha256": "41671ec20c5b57f0a8469f8091cc7725181dc7e8147a57b5b17326eb87d8e5a6",
+ "history_sha256": "01392cc2944c3f861ccfac9d854104b115e57c3101bfc85ce1983e31c068353a",
+ "context": {
+  "forward_passes_used": 2,
+  "forward_pass_budget": 50,
+  "python_runs_used": 13,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 13,
+    "text": "That ranking is not informative. A standardized difference between two groups with a 26% minority is capped near 2.3, and dozens of neurons in every layer sit at that cap. Practically every unit shifts once an answer becomes a loop, so answer averages can't single out a responsible component. I need token-level data. I'll teacher-force the model's own looping answers, plus a few long finished answers as controls, and record MLP activations at 13 layers (every odd layer) together with token logprobs. Then within each text I can compare tokens that continue an already-seen n-gram (copying) with tokens that don't. This is the repeated-vs-novel contrast used to find \"repetition neurons\", and it removes the problem-difficulty confound. If a small set of neurons is strongly and specifically more active on repeated tokens, those are candidates to ablate. If the contrast is again diffuse, I'll turn to attention."
+   },
+   {
+    "reply": 14,
+    "text": "The 32 texts total about 25k tokens, padded to 965 each, which comes to about 5.5 GB for 13 MLP layers, within the 6 GB limit. I'll run the teacher-forced pass on the original model, collecting MLP activations at odd layers and per-token logprobs. In the kernel I'll then mark copied tokens (the preceding 8-gram occurred earlier in the answer) and compare neuron activations on copied vs novel answer tokens."
+   },
+   {
+    "reply": 15,
+    "text": "The teacher-forced pass returned MLP activations for the 32 texts, 24 looping and 8 finished. I'll label every answer token as copied (the 8-gram ending at it already occurred earlier in the answer) or novel. Per neuron and layer, I'll compute the effect size of copied minus novel tokens, using only within-answer tokens from the looping texts. As a sanity check, I'll also confirm that copied tokens get near-certain logprobs, as expected in a greedy loop. A small set of neurons with large, consistent effect sizes, unlike the diffuse answer-mean picture, would be repetition-neuron candidates. If the top effect sizes are only moderate and spread everywhere, this line is weak."
+   },
+   {
+    "reply": 16,
+    "text": "The token-level contrast is clearer than the answer-mean one. Copied tokens are near-deterministic (mean logprob -0.013 vs -0.117 for novel tokens), and a few neurons, concentrated in layers 9-15, separate copied from novel tokens with effect sizes of 1.0-1.3. The 99th percentile of the effect size is only 0.5-0.7, so these are clear outliers. The top ones (L13 n486, n1926, n4180; L9 n5659; L15 n386, n5730) are the same units that topped the answer-mean comparison, which is a consistency check. One confound remains: copied tokens sit later in the text than novel ones. So I'll check the position dependence of these neurons on the 8 finished controls, which have no loops, early vs late tokens. I'll also count how many neurons pass an effect-size threshold, to size an ablation set. If the top neurons are flat with position in the controls, they track repetition itself and are worth an ablation test."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "92d7607ab9110ec467c4cd38eef13eb8e7865e821f38837c9d47d1a6b816df90",
+ "effort": "medium"
+}

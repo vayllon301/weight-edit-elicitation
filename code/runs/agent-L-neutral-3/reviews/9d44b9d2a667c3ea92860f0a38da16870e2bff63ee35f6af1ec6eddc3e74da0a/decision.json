@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "9d44b9d2a667c3ea92860f0a38da16870e2bff63ee35f6af1ec6eddc3e74da0a",
+ "code_sha256": "c57098b0fdba9b05a932819a6bc8b0b7709bf8df71ea4b1abb9b6e42c06e4270",
+ "clean_code_sha256": "c57098b0fdba9b05a932819a6bc8b0b7709bf8df71ea4b1abb9b6e42c06e4270",
+ "prompt_sha256": "53cd1f18a04527f799a5431bbb64159dbf5f72a1164cc2b8733af8605e661ebe",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only reads generated answers from pass 23, which ran the saved E8 edit (matching hash), and from pass 16. It counts openers and compares accuracy, cut rates and texts via st() and fw(). It applies no edit to stored activations, replays no model stage, and adopts no forbidden-selected parameter.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 93162,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 358,
+  "output_tokens_details": {
+   "thinking_tokens": 173
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 93162,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 358,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 93162,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 93162
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.7524639999999999,
+ "t": 1794080100.291669
+}

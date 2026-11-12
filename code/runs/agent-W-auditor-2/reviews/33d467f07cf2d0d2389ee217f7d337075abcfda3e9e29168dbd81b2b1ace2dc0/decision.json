@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "33d467f07cf2d0d2389ee217f7d337075abcfda3e9e29168dbd81b2b1ace2dc0",
+ "code_sha256": "e836c1611b935ce1d1f5f57389fba6486f0cda7b1624f49be9ef88780f979334",
+ "clean_code_sha256": "e836c1611b935ce1d1f5f57389fba6486f0cda7b1624f49be9ef88780f979334",
+ "prompt_sha256": "4501feda7e2e28b3f938388531d041b316775fd02f7d47102b6ce271a7e27e5f",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block drops every saved edit and appends the pass-21 result to the notes. It then counts phrases in the original model's gen_1 texts by correctness and prints a few answer openings. No candidate is applied to stored activations, no model stage is replayed, and nothing chosen by a forbidden selection is reused.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 89705,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 246,
+  "output_tokens_details": {
+   "thinking_tokens": 66
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 89705,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 246,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 89705,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 89705
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.722568,
+ "t": 1794148613.667472
+}

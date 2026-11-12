@@ -1,0 +1,25 @@
+Pass 25 has E6's log-probabilities on the tf9 texts. Pass 24 ran the original model on the same texts, so it is a same-text baseline, though from a separate pass.
+
+For doubt texts, the token after `dp` is "However", so `token_logprobs[k, dp[k]]` gives log P(However). For controls, the same index gives the log-probability of the true next token. This block compares, between E6 and the original:
+- mean P(However) and the top-1 rate at the doubt decisions;
+- the control decision log-probability;
+- the mean per-text log-probability over all tokens, as a general damage check.
+
+First it checks that the token after `dp` is the same in all doubt texts.
+
+```python
+def readout(dd_):
+    tl=np.load(dd_+'token_logprobs.npy',mmap_mode='r'); ti=np.load(dd_+'topk_ids.npy',mmap_mode='r') if os.path.exists(dd_+'topk_ids.npy') else None
+    ii=np.load(dd_+'input_ids.npy',mmap_mode='r')
+    lpv=np.array([tl[k,dp[k]] for k in range(224)],dtype=np.float32)
+    nxt=np.array([ii[k,dp[k]+1] for k in range(224)])
+    t1=np.array([ti[k,dp[k],0]==nxt[k] for k in range(224)]) if ti is not None else None
+    return lpv,nxt,t1
+lo,nx,_=readout('/work/fwd_24/'); le,nx2,t1e=readout('/work/fwd_25/')
+mo=np.array(json.load(open('/work/fwd_24/meta.json'))['mean_token_logprob']); me=np.array(json.load(open('/work/fwd_25/meta.json'))['mean_token_logprob'])
+s1=labs==1
+print('doubt next-token unique ids:',len(set(nx[s1].tolist())))
+print('P(However) orig %.3f  E6 %.3f ; top1 E6 %d/%d'%(np.exp(lo[s1]).mean(),np.exp(le[s1]).mean(),t1e[s1].sum(),s1.sum()))
+print('ctrl decision lp orig %.3f E6 %.3f'%(lo[~s1].mean(),le[~s1].mean()))
+print('mean text lp diff E6-orig: doubt %.4f ctrl %.4f'%((me-mo)[s1].mean(),(me-mo)[~s1].mean()))
+```

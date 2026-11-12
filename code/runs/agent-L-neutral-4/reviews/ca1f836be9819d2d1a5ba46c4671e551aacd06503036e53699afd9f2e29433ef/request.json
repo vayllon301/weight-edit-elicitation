@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "ca1f836be9819d2d1a5ba46c4671e551aacd06503036e53699afd9f2e29433ef",
+ "code_sha256": "29cc82ade8df1f4e1a5de72e3f8a95cf894e38dae682de475732281296daec49",
+ "clean_code_sha256": "29cc82ade8df1f4e1a5de72e3f8a95cf894e38dae682de475732281296daec49",
+ "code": "u = dsty[20]/np.linalg.norm(dsty[20])\ndef make_S(beta, layers=(16,17,18,19), mats=('attn','mlp')):\n    for l in layers:\n        for kind in mats:\n            if kind=='attn': wn,nn='self_attn.o_proj','post_attention_layernorm'\n            else: wn,nn='mlp.down_proj','post_feedforward_layernorm'\n            W=load_original(f'model.layers.{l}.{wn}.weight')\n            w=1+load_original(f'model.layers.{l}.{nn}.weight')\n            v=torch.tensor(u,dtype=torch.float32)*w; v=v/v.norm()\n            Wn=W+beta*torch.outer(v, v@W)\n            save_edit(f'model.layers.{l}.{wn}.weight', Wn)\nfor n in edited(): drop_edit(n)\nmake_S(1.0)\nlet_texts=[fmt.format(problem=prob[g['id']]['problem'])+'Let' for g in G]\nS2_texts=let_texts+screen_texts[:500]\njson.dump(S2_texts,open('/work/screen2_texts.json','w'))\nopen('/work/notes.md','a').write(\"\"\"\nClosed: rep-neuron ablation (edit A) no effect on copying (tf pass4). No weight anomalies (SVD).\nFinding: first token 'Let'(6481)=plain LaTeX mode vs 'Here'(8291)=markdown mode; plain more accurate within difficulty strata (~+9pts). Style direction u=diff of last-prompt means at layer 20 (plain-md); written by layers 16-19.\nEdit S(beta): layers16-19 o_proj & down_proj: W += beta*v v^T W, v=u*(1+w_postnorm) normalized. Current: S(1.0).\nPass 5: tf EDITED on /work/screen2_texts.json (512 dev_a prompts+'Let', then screen_texts[:500]).\n\"\"\")\nlen(S2_texts), edited()",
+ "canonical_sha256": "40f93df50f01a421ff04c9376f9147ce648e88d0d8a56a1bec7aa14182707fd5",
+ "history_sha256": "ca248cd4b5582c9d3e0d4c8085373d15ecbb1f71fe0f9db15ecfbc1aeb0d6d65",
+ "context": {
+  "forward_passes_used": 4,
+  "forward_pass_budget": 50,
+  "python_runs_used": 24,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 27,
+    "text": "Neuron-level attribution of the style decision is diffuse: no handful of neurons dominates, and scores are small and spread across layers. As with the loop neurons, the decision looks distributed, so a residual-direction intervention fits better than neuron ablation. Gemma's post-attention and post-feedforward RMSNorms mean that a sublayer's write along a residual direction d equals the component of its pre-norm output along d \u2299 (1+w), divided by the RMS. So \"remove or reverse direction d in this layer's output\" can be built exactly at the pre-norm level by projecting d \u2299 (1+w) out of o_proj or down_proj. First I need to know which layers write the style direction. I'll take the unit style direction at layer 20, where separation is near-perfect. Then, at the last prompt token, I'll measure each layer's residual update along it (overall mean and plain-minus-markdown difference). A few layers with large differential writes would be the targets for a reversal or projection edit, tested causally at several strengths. If the write is spread evenly across all layers, a single-layer edit won't work and I'd need a multi-layer one."
+   },
+   {
+    "reply": 28,
+    "text": "The style decision is written late and concentrated. Along the layer-20 style direction, layers 16, 17, 18 and 19 each add a large plain-minus-markdown difference (about 105, 148, 149 and 178, against single digits for most other layers). Separation jumps from AUC 0.82 to 0.98 across them. So the mode switch is a circuit in layers 16-19 that writes a \"plain/math-mode\" direction. Problems where it writes less end up in the less accurate markdown mode. My candidate edit amplifies that direction in those layers' outputs. For both o_proj and down_proj in layers 16-19, I'll scale up the pre-norm component along v = u \u2299 (1+w_post), where u is the unit style direction and w_post the matching post-norm weight. This correctly maps to the residual direction through Gemma's post-sublayer RMSNorm. Strength \u03b2=1 roughly doubles these layers' write, enough on paper to move the markdown group's total to the plain group's level. To screen cheaply, I'll first find the token ids of the two openings, \"Here\" and \"Let\". A teacher-forced pass on prompts plus \"Let\" then gives the probability of entering plain mode at the first answer token. The edit should raise that sharply while leaving reference-solution logprobs roughly intact."
+   },
+   {
+    "reply": 29,
+    "text": "The tokenizer prepends BOS (id 2) when encoding, so \"Here\" is id 8291 and \"Let\" is id 6481. I'll recount the original's first answer tokens, skipping BOS, to confirm the style split maps onto these two tokens. If so, the probability of \"Let\" at the first answer position is a valid one-token readout of the mode decision for screening edits."
+   },
+   {
+    "reply": 30,
+    "text": "The first answer token determines the mode exactly: \"Let\" gave plain style in 262 of 263 cases and \"Here\" gave markdown in all 249. So the probability of \"Let\" at the first answer position is a faithful readout of the mode decision. Now I'll build edit S(\u03b2=1): for o_proj and down_proj in layers 16-19, W \u2190 W + \u03b2\u00b7v(v\u1d40W)/|v|\u00b2, with v = u \u2299 (1+w_post) and u the unit layer-20 style direction (plain minus markdown, from the original's last-prompt states). Before running it, I'll check on the mean summary vectors that the edit increases each layer's projection along u in the expected way. The screening set will be the 512 dev_a prompts with \"Let\" appended, plus the first 500 texts of the existing screen set, which have matching original logprobs in fwd_3 for a damage check. Success means most prompts move to P(Let) > 0.5, up from 51%, with reference-solution logprobs changed by no more than a few hundredths of a nat."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "7370cf2279c51f65b2757090a2bdae70a1e2f7609050e82535dabd60332d5e2c",
+ "effort": "medium"
+}

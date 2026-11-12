@@ -1,0 +1,43 @@
+OUTPUT of Python run 123 of at most 300:
+```
+lace').decode())
+
+# --- weight anomaly scan
+suf = collections.defaultdict(dict)
+for n in NAMES:
+    m = re.match(r'model\.layers\.(\d+)\.(.+)', n)
+    if m: suf[m.group(2)][int(m.group(1))] = n
+others = [n for n in NAMES if not n.startswith('model.layers.')]
+print('\nnon-layer tensors', others)
+print('suffix shape median_norm max_dev_from_neighbours(layer)  within: max/median unit norm (layer)')
+for s, d in sorted(suf.items()):
+    ls = sorted(d)
+    norms, within, shape = [], [], None
+    for i in ls:
+        t = torch.as_tensor(load_original(d[i])).float()
+        shape = tuple(t.shape)
+        norms.append(float(t.norm()))
+        if t.ndim == 2:
+            dim = 0 if ('down_proj' in s or 'o_proj' in s) else 1
+            u = t.norm(dim=dim)
+            within.append(float(u.max() / u.median()))
+        else:
+            within.append(float(t.abs().max() / t.abs().median()))
+    norms = np.array(norms)
+    dev = np.array([norms[j] / np.median(norms[max(0, j-2):j+3]) for j in range(len(norms))])
+    j = int(np.argmax(np.abs(np.log(dev))))
+    k = int(np.argmax(within))
+    print(f"{s[:44]:44s}{str(shape):16s}{np.median(norms):9.2f} {dev[j]:.3f} (L{ls[j]})  {within[k]:7.2f} (L{ls[k]})")
+
+print('\nhead blocks: max/min block norm per tensor, top 3 layers')
+for s, dim, blocks in (('self_attn.o_proj.weight', 1, 4), ('self_attn.q_proj.weight', 0, 4)):
+    if s not in suf: continue
+    res = []
+    for i in sorted(suf[s]):
+        t = torch.as_tensor(load_original(suf[s][i])).float()
+        parts = torch.chunk(t, blocks, dim=dim)
+        b = np.array([float(p.norm()) for p in parts])
+        res.append((b.max() / b.min(), i, np.round(b, 1).tolist()))
+    print(s, sorted(res, reverse=True)[:3])
+
+```

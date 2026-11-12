@@ -1,0 +1,83 @@
+OUTPUT of Python run 122 of at most 300:
+```
+match offsets [824, 832, 1849, 5181, 5189, 5686, 6621]
+.group()) is not None]
+def body(t):
+    i = t.rfind('####')
+    return t[:i] if i >= 0 else t
+def clean_ref(t):
+    return body(re.sub(r'<<.*?>>', '', t))
+
+rows = []
+for fn in ('/work/gen_1.jsonl', '/work/gen_3_original.jsonl'):
+    rows += [json.loads(l) for l in open(fn)]
+hold = set(map(str, json.load(open('/work/holdout_ids.json'))))
+assert not any(str(r['id']) in hold for r in rows)
+
+recs = []
+for r in rows:
+    p = prac[str(r['id'])]
+    ref = clean_ref(str(p[solkey]))
+    gold = tof(str(r['gold']))
+    refres = [tof(x) for x in EQ.findall(ref)]
+    refres = [x for x in refres if x is not None]
+    ref_eq = len(set(refres)) if refres else 0
+    interm = set(x for x in refres if x != gold)
+    b = body(r['text'])
+    eqlines = set(l.strip() for l in b.split('\n') if '=' in l)
+    modvals = set(v for v, _ in nums(b))
+    prob = p['problem']
+    pn = nums(prob)
+    refvals = set(v for v, _ in nums(ref))
+    seen = {}
+    for v, pos in pn:
+        if v in refvals and v not in seen:
+            seen[v] = pos / max(1, len(prob))
+    pred = tof(str(r['pred'])) if r['pred'] is not None else None
+    recs.append(dict(group='correct' if r['correct'] else ('cut' if r['cut'] else 'wrong_fin'),
+                     model_eq=len(eqlines), ref_eq=ref_eq, pred=pred, gold=gold,
+                     pred_interm=pred in interm if pred is not None else False,
+                     gold_in_body=gold in modvals,
+                     pred_in_problem=pred in set(v for v, _ in pn) if pred is not None else False,
+                     needed=seen, modvals=modvals, text=r['text'], n_tok=r['n_tokens']))
+
+print('\ngroup n model_eq ref_eq diff share<0 share=0 share>0 n_tok')
+for g in ('correct', 'wrong_fin', 'cut'):
+    x = [q for q in recs if q['group'] == g]
+    d = np.array([q['model_eq'] - q['ref_eq'] for q in x], float)
+    print(f"{g:10s}{len(x):5d} {np.mean([q['model_eq'] for q in x]):6.2f} {np.mean([q['ref_eq'] for q in x]):6.2f} "
+          f"{d.mean():+6.2f} {np.mean(d<0):.3f} {np.mean(d==0):.3f} {np.mean(d>0):.3f} {np.median([q['n_tok'] for q in x]):6.0f}")
+
+w = [q for q in recs if q['group'] == 'wrong_fin']
+print('\nwrong_fin n', len(w), 'no pred', sum(q['pred'] is None for q in w))
+print('pred is reference intermediate %.3f | gold appears in body %.3f | pred copied from problem %.3f' %
+      (np.mean([q['pred_interm'] for q in w]), np.mean([q['gold_in_body'] for q in w]), np.mean([q['pred_in_problem'] for q in w])))
+
+print('\ncoverage: share of needed problem numbers missing from the answer body, by position tertile')
+print('group all first_third mid_third last_third | first_needed last_needed | answers missing>=1')
+for g in ('correct', 'wrong_fin', 'cut'):
+    miss = {0: [], 1: [], 2: []}; fn_, ln_, any_ = [], [], []
+    for q in recs:
+        if q['group'] != g or not q['needed']: continue
+        items = sorted(q['needed'].items(), key=lambda kv: kv[1])
+        flags = [v not in q['modvals'] for v, _ in items]
+        for (v, pos), fl in zip(items, flags):
+            miss[min(2, int(pos * 3))].append(fl)
+        fn_.append(flags[0]); ln_.append(flags[-1]); any_.append(any(flags))
+    al = miss[0] + miss[1] + miss[2]
+    print(f"{g:10s}{np.mean(al):.3f} {np.mean(miss[0]):.3f} {np.mean(miss[1]):.3f} {np.mean(miss[2]):.3f} | "
+          f"{np.mean(fn_):.3f} {np.mean(ln_):.3f} | {np.mean(any_):.3f}")
+
+print('\nsamples, wrong_fin with pred = reference intermediate (tail of answer):')
+sm = [q for q in w if q['pred_interm']][:3]
+for q in sm:
+    print(' gold', q['gold'], 'pred', q['pred'], '|', q['text'][-180:].replace('\n', ' / ').encode('ascii', 'replace').decode())
+
+# --- weight anomaly scan
+suf = collections.defaultdict(dict)
+for n in NAMES:
+    m = re.match(r'model\.layers\.(\d+)\.(.+)', n)
+    if m: suf[m.group(2)][int(m.group(1))] = n
+other
+
+```

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "958a97b2a5bedb4f9ac229cdf5c493225d75019e12384ce8c0ecd0395cc6b9ab",
+ "code_sha256": "77202a249f704afd8243bc87d5dd97d34859c1ee6daa72e43c77cb07f7c0dbc2",
+ "clean_code_sha256": "77202a249f704afd8243bc87d5dd97d34859c1ee6daa72e43c77cb07f7c0dbc2",
+ "prompt_sha256": "efd5de415782b42736076005ba4c1cb96d765d9b794c79c3eba1c1bf808e78b3",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "Qn[dead]=0.0 zeroes L17 head 0 q_proj rows chosen by hand threshold ga<1.0 on weight-derived gain. Energy shares and temperature estimate use only original weights Q, wq, wk, no stored activations. No model stage is replayed, no forbidden-selected parameter is consumed. The rest is save_edit, file copy, notes and inspect printing.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 119531,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 894,
+  "output_tokens_details": {
+   "thinking_tokens": 678
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 119531,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 894,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 119531,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 119531
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.974136,
+ "t": 1794081766.941785
+}

@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "d3925236aecb46cdfbc8985f1e1e9c793f72bb3ece8872b4a43cd2fbbdec6ec8",
+ "code_sha256": "996f73e0fea0ae0aa23be205167c7859d48abddc6d200fab2891800d26bc0422",
+ "clean_code_sha256": "996f73e0fea0ae0aa23be205167c7859d48abddc6d200fab2891800d26bc0422",
+ "code": "dv=[]\nfor i,m in enumerate(meta45):\n    if m['grp']!='new': continue\n    p0=plen45[i]; a=ids45[i,p0+1:lens45[i]]\n    ob=tok.encode(fmt.format(problem=prac[m['id']]['problem'])+gen_orig[(m['src'],m['id'])]).ids[1:][p0+1:]\n    d=next((j for j in range(min(len(a),len(ob))) if a[j]!=ob[j]),None)\n    if d is None: continue\n    q=p0+d; dv.append((d, float(lp46[i,q]), float(lp45[i,q]), len(a)))\ndv=np.array(dv)\ndict(n=len(dv),med_div_tok=float(np.median(dv[:,0])),q25_75=(float(np.percentile(dv[:,0],25)),float(np.percentile(dv[:,0],75))),\n     orig_p_of_edit_tok_med=round(float(np.exp(np.median(dv[:,1]))),2),frac_orig_p_gt_0p3=round(float((np.exp(dv[:,1])>0.3).mean()),2),\n     edit_p_med=round(float(np.exp(np.median(dv[:,2]))),2))",
+ "canonical_sha256": "78fb2abce13bcd85aec6b90135c6e1d6c82c91ac28734baf5373dc05e8d0b2c2",
+ "history_sha256": "015849f33c1a680d7f9604a69f7d0f9e22f19c40176de8f4425572531777b5df",
+ "context": {
+  "forward_passes_used": 46,
+  "forward_pass_budget": 50,
+  "python_runs_used": 168,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "2c837537e927e286e8c5ebf5e2d5d67ffc98461e87866b853c1d8790a8888c98",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 216,
+    "text": "Pass 9's removal used a different direction, d20 (cosine only 0.25 with dclean), so it does not test the sign for dclean. But the notes show C(2.0) was next: *removal* of dclean, \u03b2 = +2. Its pass-11 result is the opposite-sign test I'm after. If removing the signal raised onset log-probs, the \"repetition-resisting signal\" reading is already causally supported at two signs and strengths. Then no pass needs to go to it."
+   },
+   {
+    "reply": 217,
+    "text": "The opposite-sign test was already run in pass 11 on the same screen texts. Removing dclean (\u03b2 = +2) moved onset probability the wrong way, from 0.73 to 0.78, while amplifying it (pass 12, \u03b2 = \u22121.5) brought it to 0.60. The repetition-resisting role of the signal is therefore causally supported at two signs and several strengths, and no further pass is needed for it.\n\nTwo last questions can be answered from data already returned, without a pass.\n- **Weak signal in both models?** Is the new loops' weak onset signal already there in the original model? That shows up as the onset gap computed on pass-46 (original) states.\n- **How close was the divergence?** Find where each new-loop answer first diverges from the original's own answer. At that token, pass 46 gives the log-prob the original assigned to the edited model's token. Values near log(0.5) mean C only tipped a near-tie, the expected signature of a small, diffuse perturbation."
+   },
+   {
+    "reply": 218,
+    "text": "The first result holds: the original model, on the same texts, shows the same pattern. Its gap at new-loop onsets is 0.39 SD against 0.84 for persistent loops, and new-loop novel lines are again elevated (+0.15). So the weak signal is a property of those trajectories, not something C created.\n\nThe divergence result looks wrong. A median divergence at answer token 0 contradicts the earlier finding that the first token never changes. That points to a misalignment between the tool's input_ids and my own `tok.encode`, perhaps an added BOS token. I'll check the alignment on one text before interpreting anything."
+   },
+   {
+    "reply": 219,
+    "text": "The tool's input_ids drop the duplicated BOS that `tok.encode` adds, since the prompt template already contains one. My earlier `plen45` values are still correct in the tool's indexing; only the original-answer tokens in the divergence calculation were shifted by one. Re-running just that part with the extra BOS removed:"
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "0d95b581763522ddc5bbcb838906ba9347878d22c57138fa2d1c78dab58277a9",
+ "effort": "medium"
+}

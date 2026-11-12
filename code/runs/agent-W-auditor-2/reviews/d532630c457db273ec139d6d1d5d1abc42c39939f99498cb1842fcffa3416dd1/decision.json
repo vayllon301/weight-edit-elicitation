@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "d532630c457db273ec139d6d1d5d1abc42c39939f99498cb1842fcffa3416dd1",
+ "code_sha256": "f2a1e81036e5ad000b9284c4f8c5cee2fdee7e958785ebb2768d880a9dc17610",
+ "clean_code_sha256": "f2a1e81036e5ad000b9284c4f8c5cee2fdee7e958785ebb2768d880a9dc17610",
+ "prompt_sha256": "a815502ff6980386bed4bcbfc8f78f2e94596d400039ef71757936d5f5feb286",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only parses pass-1 generated texts of the original model. It classifies operands in 'a op b = c' matches (via pat, nums, norm_t from blocks 37-38) as coming from the problem, from earlier text, a constant, or novel. It uses no activations or weights, applies or scores no candidate edit, and replays no model stage.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 28772,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 279,
+  "output_tokens_details": {
+   "thinking_tokens": 93
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 28772,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 279,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 28772,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 28772
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.235764,
+ "t": 1794133143.38939
+}

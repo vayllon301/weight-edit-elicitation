@@ -1,0 +1,5 @@
+The set has 249 texts (98 cut answers and 150 finished LaTeX controls, plus one extra cut answer from the overlap), at most 967 tokens, about 2.8 GB of hidden states, within the 6 GB limit. I'm sending the teacher-forced pass on the original model with hidden states at layers 8, 12, 16, 20 and 24, per-token log-probs and top-20 alternatives. The first thing I'll check afterwards: at each cut answer's loop onset, is a concluding continuation (\boxed, "Therefore", "####", "Final") among the top alternatives with substantial probability? Close runners-up would mean a narrow decision to restart instead of conclude, which is a good target for a component-level fix. Absent conclusion tokens would mean the model has nothing to conclude, and the loops reflect real inability.
+
+```forward
+{"type": "teacher_forced", "model": "original", "texts_file": "/work/tf6_texts.json", "return": {"token_logprobs": true, "topk": 20, "hidden_states": [8, 12, 16, 20, 24]}}
+```

@@ -1,0 +1,12 @@
+OUTPUT of Python run 61 of at most 300:
+```
+model.norm w: mean 7.037 std 5.263 min -1.016 max 46.000
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_61.py", line 8, in <module>
+    print('L18 post_ff w: mean %.3f std %.3f min %.3f max %.3f' % (w.mean(),w.std(),w.min(),w.max()))
+                                                                   ^^^^^^
+AttributeError: 'str' object has no attribute 'mean'
+
+```

@@ -1,0 +1,18 @@
+OUTPUT of Python run 6 of at most 300:
+```
+float16 float16
+let 284 acc 0.208 cut 0.335 acc|finished 0.302 tok|fin 224
+here 228 acc 0.149 cut 0.206 acc|finished 0.177 tok|fin 156
+/work/blocks/block_6.py:8: RuntimeWarning: Mean of empty slice
+  m=styles==s; print(s,m.sum(),'acc',cc[m].mean().round(3),'cut',ct[m].mean().round(3),'acc|finished',cc[m&~ct].mean().round(3),'tok|fin',int(ntok[m&~ct].mean()))
+/usr/local/lib/python3.12/site-packages/numpy/_core/_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_6.py", line 8, in <module>
+    m=styles==s; print(s,m.sum(),'acc',cc[m].mean().round(3),'cut',ct[m].mean().round(3),'acc|finished',cc[m&~ct].mean().round(3),'tok|fin',int(ntok[m&~ct].mean()))
+                                                                                                                                            ^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: cannot convert float NaN to integer
+
+```

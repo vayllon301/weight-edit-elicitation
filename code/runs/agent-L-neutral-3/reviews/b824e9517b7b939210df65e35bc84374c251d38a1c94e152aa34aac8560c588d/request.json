@@ -1,0 +1,64 @@
+{
+ "version": "rule-review-3",
+ "key": "b824e9517b7b939210df65e35bc84374c251d38a1c94e152aa34aac8560c588d",
+ "code_sha256": "12ef0b886bef93b27c9a6cebb5961b4b53dd5d9394e779afb4eb9a867febbe92",
+ "clean_code_sha256": "12ef0b886bef93b27c9a6cebb5961b4b53dd5d9394e779afb4eb9a867febbe92",
+ "code": "import glob, re, os, json, types\nprint(repr(open('/practice/eval_prompt_format.txt').read())[:600])\nfns = sorted(k for k, v in globals().items() if isinstance(v, types.FunctionType) and not k.startswith('_'))\nprint('functions:', fns)\nsel = sorted(k for k, v in globals().items() if isinstance(v, (dict, list)) and not k.startswith('_') and len(v) > 50)\nprint('large objects:', [(k, type(globals()[k]).__name__, len(globals()[k])) for k in sel][:40])\n\ndef block_no(p):\n    return int(re.search(r'block_(\\d+)', p).group(1))\nblocks = sorted(glob.glob('/work/blocks/block_*.py'), key=block_no)\nhits = {}\nfor p in blocks:\n    s = open(p).read()\n    for key in ('tf7_texts.json', 'fromproblem_first', 'whole_A', 'tf4_meta'):\n        if key in s:\n            hits.setdefault(key, []).append(block_no(p))\nprint('hits', hits)\n\nm = json.load(open('/work/tf7_meta.json'))\nprint('tf7_meta type', type(m).__name__, 'len', len(m))\nprint('first meta', str(m[0] if isinstance(m, list) else list(m.items())[:2])[:400])\nt7 = json.load(open('/work/tf7_texts.json'))\nprint('tf7 texts', len(t7), 'sample start', repr(t7[0][:220]))\n\nlast = hits.get('tf7_texts.json', [None])[0]\nif last is not None:\n    src = open(f'/work/blocks/block_{last}.py').read()\n    print(f'--- block {last} ({len(src)} chars)')\n    print(src[:3200])\nlast2 = hits.get('fromproblem_first', [None])[0]\nif last2 is not None:\n    src = open(f'/work/blocks/block_{last2}.py').read()\n    print(f'--- block {last2} ({len(src)} chars)')\n    print(src[:3200])",
+ "canonical_sha256": "dfdae48cd3a88372bfc736fda343fcb2b227e6a45ef286322382c25926f66e47",
+ "history_sha256": "36ecead7ea91d168ad08ad32f391df5d4fb21e4e946f21c053bb3005c66da6a7",
+ "context": {
+  "forward_passes_used": 8,
+  "forward_pass_budget": 50,
+  "python_runs_used": 30,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "H=np.asarray(hl).astype(np.float32)  # 512,27,1152 last-prompt\nletm=np.array([g['text'].strip().startswith('Let') for g in gen])\nprint('layer: |hidden| mean, |T|, d-prime along T')\nTs={}\nfor l in [5,9,11,14,17,19,20,22,23,24,25,26]:\n    X=H[:,l]; T=X[letm].mean(0)-X[~letm].mean(0); Ts[l]=T\n    u=T/np.linalg.norm(T); p=X@u\n    dp=(p[letm].mean()-p[~letm].mean())/np.sqrt(0.5*(p[letm].var()+p[~letm].var()))\n    print(l,round(float(np.linalg.norm(X,axis=1).mean()),1),round(float(np.linalg.norm(T)),2),'dprime',round(float(dp),2))\ndef selectivity(L):\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    S=np.zeros(6912,np.float64);Q=np.zeros(6912,np.float64);N=0;lp=[]\n    for i,mt in enumerate(meta):\n        c=np.asarray(a[i,:int(lens[i])]).astype(np.float32); k=mt['plen']-1\n        lp.append(c[k].copy()); c=np.delete(c,k,axis=0)\n        S+=c.sum(0);Q+=(c.astype(np.float64)**2).sum(0);N+=len(c)\n    lp=np.stack(lp); mu=S/N; sd=np.sqrt(np.maximum(Q/N-mu**2,0))\n    return lp.mean(0),lp.std(0),mu,sd\nfor L in [18,23,13]:\n    A_,Sd_,mu,sd=selectivity(L)\n    r=np.abs(A_)/(sd+1e-4); cv=Sd_/(np.abs(A_)+1e-6)\n    idx=[i for i in np.argsort(-r) if cv[i]<0.3][:6]\n    print('L',L,[(int(i),'a',round(float(A_[i]),2),'cv',round(float(cv[i]),2),'mu_oth',round(float(mu[i]),4),'sd_oth',round(float(sd[i]),4),'ratio',round(float(r[i]),1)) for i in idx])",
+    "canonical_sha256": "8d92ebe1607367fe7d80bd72abf91d9f7c1a107117f3ed2ba893ab5aaf9a7cbe",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "import numpy as np, json\nF='/work/fwd_2/'\nm2=json.load(open(F+'meta.json')); print(list(m2.keys())[:20])\nii=np.load(F+'input_ids.npy',mmap_mode='r'); tl=np.load(F+'token_logprobs.npy',mmap_mode='r'); tp=np.load(F+'topk_logprobs.npy',mmap_mode='r'); ti=np.load(F+'topk_ids.npy',mmap_mode='r')\nmeta=json.load(open('/work/tf2_meta.json'))\nprint(ii[0,:6], 'pad id', ii[0,-1], meta[0]['plen'], meta[0]['tlen'])\nlens=np.array(m2['lengths'])\nprint('tool lengths vs mine', [(int(lens[i]),meta[i]['tlen']) for i in range(4)])\noff=int(lens[0]-meta[0]['tlen']); print('offset',off)\n# greedy check: top1 at answer positions equals actual next token?\nag=[];lp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off; L=int(lens[i])\n    pred=np.asarray(ti[i,p-1:L-1,0]); act=np.asarray(ii[i,p:L])\n    ag.append((pred==act).mean()); lp.append(float(np.asarray(tl[i,p-1:L-1]).mean()))\nprint('top1==actual over answer tokens: mean',round(float(np.mean(ag)),4),'min',round(float(np.min(ag)),3),' mean answer lp',round(float(np.mean(lp)),3))\n# First token distribution\nLET=6481; HERE=8291\nfp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off\n    ids=np.asarray(ti[i,p-1]); lps=np.asarray(tp[i,p-1])\n    d={int(a):float(b) for a,b in zip(ids,lps)}\n    fp.append((d.get(LET,-20),d.get(HERE,-20),int(ids[0]),float(lps[0]),float(lps[1])))\nfp=np.array(fp)\nmarg=fp[:,0]-fp[:,1]\nmodes=np.array([mt['mode'] for mt in meta])\nprint('P(Let) mean',np.exp(fp[:,0]).mean().round(3),'P(Here) mean',np.exp(fp[:,1]).mean().round(3),'sum',np.exp(fp[:,0:2]).sum(1).mean().round(3))\nprint('margin lpLet-lpHere pct',np.percentile(marg,[5,25,50,75,95]).round(2),'| here-mode margin',np.percentile(marg[modes=='here'],[10,50,90]).round(2),'| let-mode',np.percentile(marg[modes=='let'],[10,50,90]).round(2))\nfor name,L,ns in [('18',18,[2543,173,731]),('23',23,[4353,71,907]),('13',13,[6012,2397,4547])]:\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    for n in ns:\n        col=np.asarray(a[:,:,n]).astype(np.float32)\n        lastp=np.array([col[i,meta[i]['plen']+off-1] for i in range(len(meta))])\n        mask=np.zeros(col.shape,bool)\n        for i,mt in enumerate(meta):\n            mask[i,:int(lens[i])]=True; mask[i,mt['plen']+off-1]=False\n        rest=np.abs(col[mask])\n        print(f'L{L} n{n}: lastprompt mean {lastp.mean():.2f} cv {lastp.std()/abs(lastp.mean()):.2f} | rest mean|.| {rest.mean():.4f} p99.9 {np.percentile(rest,99.9):.3f} max {rest.max():.2f} share>10%: {(rest>0.1*abs(lastp.mean())).mean():.5f}')",
+    "canonical_sha256": "b477c6f45b5b69e13ae1bc4c7350ec568bfbcc70f2c3539d2be34d40c7729b15",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 39,
+    "text": "E3 is saved with no other edits active, so heads 2 and 3 of layer 17 are the only change, at \u00d71.5. This teacher-forced pass runs on the same 1,011 texts as the pass 7 baseline, so the comparison is token by token. As stated above, a clear rise in multi-term sum accuracy without loss on retrieval tokens would confirm that the operand heads' share is limiting."
+   },
+   {
+    "reply": 40,
+    "text": "The per-text mean logprob improved on nearly every text shown, for example -3.53 to -3.50 and -3.03 to -3.01, which didn't happen with E2. The class breakdown will show where that gain comes from. I'll write the comparison for this text set, covering reference token classes and arithmetic classes, and grouping multi-term sums and two-term sums separately, with paired standard errors. A gain mostly on result digits and multi-term sums would fit the operand-share hypothesis. If it also holds across retrieval and word tokens, boosting these heads may have a broader benefit worth testing in generation."
+   },
+   {
+    "reply": 41,
+    "text": "E3 gave only a weak signal. Multi-term sums gained a little logprob (+3 terms: +0.014 \u00b1 0.005), but their whole-result accuracy didn't change detectably (+0.83 \u00b1 1.86 points, and +4 terms is too noisy at n=26). Overall arithmetic was flat (+0.05 \u00b1 0.22), and two retrieval classes lost about 0.45 points, so operand-head gain isn't the bottleneck at this strength. An earlier check also found that exact arithmetic would rescue only 16 of 615 failures, so most of the failure must be in the reasoning.\n\nI'll save E3 as a candidate, clear it, and run two free checks on the 768 original DEV answers I already have:\n- **Stopping too soon:** dropping the last term of a sum suggests this could happen at solution level too. I'll compare step counts with the references and check how often a wrong answer equals a reference intermediate value.\n- **Missing numbers:** I'll check whether wrong answers skip numbers the reference needs, and whether those come from late in the problem.\n\nI'll also scan the weights for anomalies across layers, which I haven't done yet. If wrong answers are often short of the reference, or skip late numbers far more than correct answers, that gives me a concrete new target. If they look like correct answers on both measures, the reasoning failure is diffuse, and I'll need to pick the next circuit differently."
+   },
+   {
+    "reply": 42,
+    "text": "Neither check found a single dominant failure:\n- **Steps:** 28% of wrong answers have fewer equations than the reference, against 5% of correct ones.\n- **Missing numbers:** 27% of wrong answers omit at least one needed number. That's close to zero for correct answers almost by construction, so the useful signal is the gradient: late numbers are dropped about twice as often as early ones, which matches the dropped last term in sums.\n- **Other explanations:** only about 10% of wrong answers stop on a reference intermediate value, and about 13% pass through the gold value and then go past it.\n- **Weights:** the scan shows no obviously broken component. L5's small pre-attention norm stands out, but I have no evidence it matters.\n\nSo roughly three quarters of the failures use the numbers and still reason wrongly, which points to a broad reading and reasoning weakness.\n\nThe main weakness in my method is that every contrast so far compares different problems, so it's confounded by difficulty. A cleaner design keeps the problem and the reference tokens identical and changes only the context, by prepending a few worked examples. If number-token accuracy rises on the same tokens, the network has a state in which it does math better, and the hidden-state difference at aligned tokens can't be a difficulty effect. If accuracy doesn't rise beyond style tokens, there's no such state to steer toward, and I'll drop the idea.\n\nFirst I need the exact prompt format and my pass 7 token-class code, so the new pass aligns with that baseline."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "4f75b622ad3bc9e39e132f683431120b7105613b0de39e8bd5c203deb5643183",
+ "effort": "high"
+}

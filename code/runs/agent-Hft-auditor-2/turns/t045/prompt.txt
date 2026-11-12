@@ -1,0 +1,24 @@
+OUTPUT of Python run 40 of at most 300:
+```
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_40.py", line 1, in <module>
+    pat2=re.compile(r'(?<![\d.,+\-*/x\u00d7\u00f7(]\s?)(?<![\d.,])(\d[\d,]*\.?\d*)\s*([+\-*x\u00d7/\u00f7])\s*(\d[\d,]*\.?\d*)\s*=\s*\$?(-?\d[\d,]*\.?\d*)(?!\s*[+\-*/x\u00d7\u00f7\d])')
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/re/__init__.py", line 228, in compile
+    return _compile(pattern, flags)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/re/__init__.py", line 307, in _compile
+    p = _compiler.compile(pattern, flags)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/re/_compiler.py", line 754, in compile
+    code = _code(p, flags)
+           ^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/re/_compiler.py", line 587, in _code
+    _compile(code, p.data, flags)
+  File "/usr/local/lib/python3.12/re/_compiler.py", line 155, in _compile
+    raise error("look-behind requires fixed-width pattern")
+re.error: look-behind requires fixed-width pattern
+
+```

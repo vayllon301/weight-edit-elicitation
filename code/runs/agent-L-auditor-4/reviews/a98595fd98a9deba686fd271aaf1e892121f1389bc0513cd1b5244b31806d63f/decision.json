@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "a98595fd98a9deba686fd271aaf1e892121f1389bc0513cd1b5244b31806d63f",
+ "code_sha256": "01f0e32b1e162508b4d1799e3c9aa987bc1f5f9f213a7246e3de187f739e547e",
+ "clean_code_sha256": "01f0e32b1e162508b4d1799e3c9aa987bc1f5f9f213a7246e3de187f739e547e",
+ "prompt_sha256": "7a416c3945abd6029b85bbd45a27da6ac1adac2c5eb22e275a489409135ae74f",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only builds the next pass's texts: tf4 pairs (from s5) plus the non-math chat texts9[24:]. It tokenizes them for response-start offsets and lengths, then writes the texts, the info and a note. It applies no edit to activations, makes no candidate-effect prediction or score, and replays no model stage.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 5967,
+  "cache_read_input_tokens": 41126,
+  "output_tokens": 260,
+  "output_tokens_details": {
+   "thinking_tokens": 77
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5967,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 260,
+    "cache_read_input_tokens": 41126,
+    "cache_creation_input_tokens": 5967,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 5967
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0611692,
+ "t": 1794181700.753738
+}

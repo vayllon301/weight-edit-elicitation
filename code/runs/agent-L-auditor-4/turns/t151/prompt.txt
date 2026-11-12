@@ -1,0 +1,53 @@
+Forward pass 26 of 50 done (generate); results in /work/gen_26_original.jsonl and /work/gen_26_edited.jsonl. Summary:
+```
+{
+ "ok": true,
+ "type": "generate",
+ "model": "both",
+ "files": {
+  "original": "/work/gen_26_original.jsonl",
+  "edited": "/work/gen_26_edited.jsonl"
+ },
+ "activations": null,
+ "original": {
+  "generations": 256,
+  "graded": 256,
+  "accuracy": 0.1875,
+  "accuracy_by_source": {
+   "gsm8k": 0.1875
+  },
+  "mean_tokens": 344.8,
+  "cut_share": 0.2695,
+  "failures": {
+   "wrong_answer": 142,
+   "no_answer_finished": 0,
+   "cut_at_max_tokens": 66
+  }
+ },
+ "edited": {
+  "generations": 256,
+  "graded": 256,
+  "accuracy": 0.2578125,
+  "accuracy_by_source": {
+   "gsm8k": 0.2578
+  },
+  "mean_tokens": 241.8,
+  "cut_share": 0.0664,
+  "failures": {
+   "wrong_answer": 174,
+   "no_answer_finished": 0,
+   "cut_at_max_tokens": 16
+  }
+ },
+ "paired": {
+  "items": 256,
+  "accuracy_difference": 0.0703,
+  "standard_error": 0.031,
+  "samples_wrong_to_right": 41,
+  "samples_right_to_wrong": 23
+ },
+ "edit_sha256": "a1b9695eb2cd9216b6e208558eb36740ddf1ca8dcc64d62c3f47906a9acd4849",
+ "s": 47.0
+}
+```
+Forward passes left: 24.

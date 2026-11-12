@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "0c3904d29094b94be23ca82c766ff5aa2643f11d68e3ea15d3baa478ea5e8aee",
+ "code_sha256": "38309fb64722c3858da31864fd870cd408145e7074a89837f415b598a040d98b",
+ "clean_code_sha256": "38309fb64722c3858da31864fd870cd408145e7074a89837f415b598a040d98b",
+ "code": "for n in range(2):\n    L=m12['lengths'][n]; seq=[int(t) for t in ids[n,:L]]; s=tok.decode(seq)\n    print(n, L, s.find('Solve the problem'), s.find('<start_of_turn>model'), repr(s[:80]), repr(s[-60:]))",
+ "canonical_sha256": "37309c91365e6ff621b28d8a24b0878a250ff3839d3da9ab7f4e8e4ddab069ac",
+ "history_sha256": "4d0362798a68336eaceea72767a78d3c9b979f713f2d4405a3ee4ae67f616b85",
+ "context": {
+  "forward_passes_used": 38,
+  "forward_pass_budget": 50,
+  "python_runs_used": 144,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "46951fe02f0e61809bbc3fe950c8e304f61e79539505e292d31aaffd7eca0684",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 180,
+    "text": "I found the scoring code from fwd_11 (block 62). It aligns the answer digits at the end of each text and records the summed digit logprob and greedy exact match per operation type and context. I'll apply it unchanged to both fwd_11 (original) and fwd_38 (E14) and print them side by side. The test is whether context A (eval prompt) closes its gap to context B (plain chat)."
+   },
+   {
+    "reply": 181,
+    "text": "E14 repairs the arithmetic degradation, and only where it existed. In the eval context A, exact match rises sharply: two-operand addition 0.87 \u2192 0.97, subtraction 0.61 \u2192 0.94, multiplication 0.58 \u2192 0.87, and three-to-four-term sums 0.02 \u2192 0.22. Answer-digit logprobs improve 2 to 4 times. Raw text without the chat template (C) is unchanged (0.27, 0.06, 0.42, 0.48), and plain chat (B) and raw Question/Answer (D) change little. So the edit specifically removes the context-dependent suppression of computation in the eval chat format; it does not add generic arithmetic skill. A now matches or exceeds B. This is strong mechanistic support for E14. A small residual remains: add2 logprob in A is \u22120.26 against \u22120.02 in B. To check for a second constant source, I'll inspect, at no cost, the stored layer-11 attention from fwd_12. I'll measure how much attention mass each head puts on the fixed instruction-suffix tokens compared with the last prompt token. Substantial mass on the suffix would make it a candidate for the same construction. Little mass would close the search."
+   },
+   {
+    "reply": 182,
+    "text": "fwd_12 stored layer-11 attention for two original-model texts. The second is an eval-format reference solution of 167 tokens. I'll segment its tokens into BOS, the problem, the fixed instruction suffix, the chat-template tokens and the last prompt token. Then, for each layer-11 head, I'll average the attention mass that response tokens put on each segment."
+   },
+   {
+    "reply": 183,
+    "text": "The segmentation failed because \"Solve the problem\" was not found in text 1. Either the texts are ordered differently, or the instruction is tokenized so that decoded pieces don't concatenate to the literal string. I'll print the start of each text's decoded tokens (a safe, short ASCII snippet) and search for the suffix in both texts. Then I'll redo the attention breakdown on the correct one."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "59ac2503d9f7dc102bdb7f9df44998d2112462638646f225a82f27670fb88096",
+ "effort": "medium"
+}

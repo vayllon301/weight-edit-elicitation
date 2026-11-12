@@ -1,0 +1,14 @@
+OUTPUT of Python run 33 of at most 300:
+```
+===== /work/blocks/block_31.py
+lp7=np.load('/work/fwd_7/token_logprobs.npy').astype(np.float32); e=sol_means(lp7)
+for v in range(4): print(v, b[v].mean().round(3), e[v].mean().round(3), 'diff',(e[v]-b[v]).mean().round(3),'+-',((e[v]-b[v]).std()/np.sqrt(128)).round(3))
+===== /work/blocks/block_33.py
+import glob, os, re
+srcs = sorted(glob.glob('/work/blocks/block_*.py'), key=lambda p:int(re.findall(r'\d+',p)[-1]))
+for p in srcs[-6:]:
+    s=open(p).read()
+    if 'fwd_7' in s or 'fwd_6' in s or 'tf2_info' in s:
+        print('=====',p); print(s[:2500])
+
+```

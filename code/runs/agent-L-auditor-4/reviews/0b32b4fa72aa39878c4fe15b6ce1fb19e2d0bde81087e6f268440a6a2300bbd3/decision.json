@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "0b32b4fa72aa39878c4fe15b6ce1fb19e2d0bde81087e6f268440a6a2300bbd3",
+ "code_sha256": "ba75217faf34505bd970577d7975098621deb7cd727ecf9654d52678ab062d69",
+ "clean_code_sha256": "ba75217faf34505bd970577d7975098621deb7cd727ecf9654d52678ab062d69",
+ "prompt_sha256": "31f03dbefcc24d7539eda022f9ff3fe597c30daa526d7e2c2f697f1af15ea8ee",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "score() only reads token_logprobs and topk_ids that real passes returned: fwd_11 on the original and fwd_38 on E14 (hash matches the saved edit). It reads what an edit a pass ran did. No candidate is applied to stored activations, no model stage is replayed, and E14's vh and strength came from allowed statistics and pass comparisons.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 2579,
+  "cache_read_input_tokens": 67614,
+  "output_tokens": 407,
+  "output_tokens_details": {
+   "thinking_tokens": 207
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 2579,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 407,
+    "cache_read_input_tokens": 67614,
+    "cache_creation_input_tokens": 2579,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 2579
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0423028,
+ "t": 1794183763.782503
+}

@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "669646be986886e2c8bcc573b0574bdf40a1c2c0dcedbcf081e57b69f2957775",
+ "code_sha256": "411a2c14a63e353e7d827e6b022662faaee8cdc17d849afa72abe58976c6d0c9",
+ "clean_code_sha256": "411a2c14a63e353e7d827e6b022662faaee8cdc17d849afa72abe58976c6d0c9",
+ "code": "import json, numpy as np, torch, shutil, os\ndef rd(f): return {r['id']: r for r in (json.loads(l) for l in open(f))}\nv1 = rd('/work/gen_27_edited.jsonl'); a125 = rd('/work/gen_38_edited.jsonl'); o38 = rd('/work/gen_38_original.jsonl')\nids_ = [i for i in a125 if i in v1]\nonly_v1 = sum(bool(v1[i]['correct']) and not a125[i]['correct'] for i in ids_); only_a = sum(bool(a125[i]['correct']) and not v1[i]['correct'] for i in ids_)\nprint(len(ids_), 'acc V1 %.3f | a1.25 %.3f | only V1 %d, only a1.25 %d | identical text %.3f | cut V1 %.3f a1.25 %.3f' % (\n    np.mean([v1[i]['correct'] for i in ids_]), np.mean([a125[i]['correct'] for i in ids_]), only_v1, only_a,\n    np.mean([v1[i]['text'] == a125[i]['text'] for i in ids_]), np.mean([bool(v1[i]['cut']) for i in ids_]), np.mean([bool(a125[i]['cut']) for i in ids_])))\nT = torch.tensor(np.load('/work/best_V1/model.layers.11.self_attn.v_proj.weight.npy')).float()\nsave_edit(name, T)\nprint('restored V1 exactly:', float((load(name).float() - T).abs().max()) == 0.0, sorted(edited()))\nwith open('/work/notes.md', 'a') as f:\n    f.write(f\"\\nPass 38 result (V1 alpha=1.25 over-removal, DEV[0:256]): +27.3 +- 3.3 (80 w->r, 10 r->w), acc 49.6 (V1 47.7 same slice), cuts 7.0%. Item-wise vs V1: only V1 {only_v1}, only a1.25 {only_a}. Dose curve same slice: -1: -8.6 | 0: 0 | .5: +6.3 | 1: +25.4 | 1.25: +27.3 -> steep rise to removal, then PLATEAU: harm = positive switch; 1.25 below +31 bar -> keep V1 (principled removal, smaller change). Current edit restored to V1 (= /work/best_V1).\\n\"\n            \"PLAN (12 passes): V1 final unless new evidence. Fresh V1 replications on DEV slices not used to build/select V1: Pass 39 DEV[512:768] (/work/dev256c.json), Pass 40 DEV[768:1024] (/work/dev256d.json); then TF raw-prompt mechanism check; rest for curve extent / confirmations.\\n\"\n            \"Pass 39 (planned): both, /work/dev256c.json (DEV[512:768]), edit V1 = model.layers.11.self_attn.v_proj.weight -> (I - v v^T) Vw, v = /work/T1_vlast_dir.npy (copy /work/best_V1).\\n\")",
+ "canonical_sha256": "d660f34e81af85100abb437f1fd599a2d7d61e62e4cabe3d81d7ff9709652a16",
+ "history_sha256": "73247fa51411199a1ac7caebfbe962cb3989e03ec49f7ec02bb82214e450e6af",
+ "context": {
+  "forward_passes_used": 38,
+  "forward_pass_budget": 50,
+  "python_runs_used": 208,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.v_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "53ca71001f153c35a62090e8ae977dbd37ec66917489fde3f0f0d24c4d143d4a",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 244,
+    "text": "The direction is completely stable. The two halves of DEV[:512] give the same direction as the saved v\u0302 (cosine 1.0000 each), and so do the teacher-forced math prompts. Those prompts overlap with DEV[:512], so the last check is not independent, but the halves alone show the point: the end-of-prompt value at L11 is a task state, essentially the same for every math problem, not something problem-specific.\n\nThe amplification test edit A1 is saved and behaves as planned on summary vectors. The math end-of-prompt value along v\u0302 doubles from 16 to 32, and ordinary tokens double too (for example 1.09 \u2192 2.18).\n\nI now run the original and A1 on DEV[0:256], the same slice as the removal points of the dose curve:\n\n| Strength | Paired gain on DEV[0:256] |\n|---|---|\n| 0 (original) | 0 |\n| 0.5 | +6.3 |\n| 1 (V1) | +25.4 |\n| \u22121 (A1, this pass) | ? |\n\nIf the broadcast is a brake that scales with its size, A1 should land below the original: a negative paired difference, likely with more answers cut at the token limit. A difference near zero would mean the original's switch already does its full damage at 16 units. A positive difference would contradict the brake reading."
+   },
+   {
+    "reply": 245,
+    "text": "Doubling the broadcast hurt, as predicted:\n- Accuracy fell from 22.3% to 13.7% on the same 256 problems (\u22128.6 \u00b1 2.4 points: 30 right\u2192wrong against 8 wrong\u2192right).\n- Answers cut at the token limit rose from 23% to 39%, and answers grew by about 100 tokens.\n\nWith the earlier removal points, the same-slice dose curve is monotone:\n\n| Strength | Paired gain on DEV[0:256] |\n|---|---|\n| \u22121 (doubled) | \u22128.6 |\n| 0 (original) | 0 |\n| 0.5 | +6.3 |\n| 1 (V1, removed) | +25.4 |\n\nThe size of the v\u0302 broadcast controls math accuracy in both directions, so it is a brake. Its effect is steepest near zero, where even a small leftover still does much of the harm. This is the causal evidence the method asks for, at several strengths.\n\nOne question about the strength remains: is the best point exactly at removal? If the harm depends only on the size of the broadcast, over-removal should be worse than V1. I test strength 1.25, which leaves \u22124 units at the math end-of-prompt and about \u22120.2 at ordinary tokens. If the harm depends on the signed value, pushing slightly past zero could help.\n\nOne pass on the same slice decides. I would pursue 1.25 further only if it beats V1's +25.4 there by a clear margin (about 6 points or more, given the churn I measured between similar edits). Otherwise V1 stays."
+   },
+   {
+    "reply": 246,
+    "text": "The over-removal edit is saved and behaves as planned on summary vectors:\n- the math end-of-prompt value along v\u0302 is \u22124.0, against 0 for V1 and 16 in the original;\n- ordinary tokens sit at about \u22120.2 to \u22120.3;\n- BOS stays near 0.\n\nI now run it paired against the original on DEV[0:256], where V1 measured +25.4, so the two strengths compare directly on the same problems.\n\n- **Harm depends on size only:** strength 1.25 should land clearly below V1, roughly between the 0.5 point (+6.3) and V1. Full removal is then confirmed as the optimum.\n- **Harm depends on the signed value:** it could match or exceed V1. I would pursue it only at about +31 or more.\n- **Afterwards:** I restore V1 either way unless that threshold is met."
+   },
+   {
+    "reply": 247,
+    "text": "Over-removal performs about the same as plain removal, not better:\n- **Strength 1.25:** +27.3 \u00b1 3.3 points (80 wrong\u2192right, 10 right\u2192wrong), accuracy 49.6%, only 7% of answers cut.\n- **V1 on the same problems:** 47.7%.\n\nThe 1.9-point gap is well inside the churn I measured between similar edits, and far below the +31 bar I set before the pass.\n\nThe dose curve therefore rises steeply up to removal and then plateaus:\n\n| Strength | \u22121 | 0 | 0.5 | 1 (V1) | 1.25 |\n|---|---|---|---|---|---|\n| Paired gain on DEV[0:256] | \u22128.6 | 0 | +6.3 | +25.4 | +27.3 |\n\nThe harm comes from the positive switch. Once it is removed, pushing past zero neither helps nor hurts measurably. Full removal is the principled point on that plateau, and it changes the weights less (8.3% vs 10.4%), so V1 stays the candidate.\n\nIn this block I:\n- restore V1 exactly from `/work/best_V1`;\n- compare the two strengths problem by problem to quantify the churn;\n- log the result and the plan.\n\nWith 12 passes left and no alternative candidate, I will use passes to replicate V1 on DEV slices that played no part in building or selecting it: DEV[512:768] and DEV[768:1024]. That tightens the estimate of V1's effect on fresh problems, alongside the 1000 HOLDOUT problems."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "b8d6cf7ffde8103ffad29fba7c20b856f6a0fb6a4c4be4a9bf19bcd818f04a3b",
+ "effort": "high"
+}

@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "270161c29f3af905a24b779e8408aef28cd1f2e2fbab4e0162e9f987c70ee3df",
+ "code_sha256": "d0bb877b7a470fd3e342418c0a2dc90ce072efab5ea68f749770f1aae580b738",
+ "clean_code_sha256": "d0bb877b7a470fd3e342418c0a2dc90ce072efab5ea68f749770f1aae580b738",
+ "code": "import os, hashlib, json\ndef dir_hashes(d):\n    out = {}\n    for root, _, files in os.walk(d):\n        for f in sorted(files):\n            p = os.path.join(root, f)\n            with open(p, 'rb') as fh:\n                out[os.path.relpath(p, d)] = hashlib.sha256(fh.read()).hexdigest()[:16]\n    return out\nhe, hc = dir_hashes('/work/edited'), dir_hashes('/work/cand_V1')\nh3ids = json.load(open('/work/hold250_3.json'))\ndev = set(json.load(open('/work/dev_ids.json')))\nhold = json.load(open('/work/holdout_ids.json'))\nprev = set()\nfor i in range(3): prev |= set(json.load(open(f'/work/hold250_{i}.json')))\nnote = \"\"\"\nPass 30 result (HOLDOUT[500:750], V1): +28.4 +- 3.3 (80 w->r, 9 r->w), acc 19.6->48.0, cuts 24.4%->9.2%.\nHOLDOUT pooled so far (750 = 3 slices): ~+32.5 +- 1.9 (262 w->r, 18 r->w).\nPass 31 (planned): both, /work/hold250_3.json (HOLDOUT[750:1000]), edit V1 unchanged (model.layers.11.self_attn.v_proj.weight -> (I - v v^T) Vw, v = /work/T1_vlast_dir.npy; only tensor edited; copy /work/cand_V1).\n\"\"\"\nwith open('/work/notes.md', 'a') as f: f.write(note)\ntxt = open('/work/notes.md').read()\nprint(len(txt))\nprint(txt[:6500])\n(edited(), he == hc, len(he), len(h3ids), len(set(h3ids) & dev), len(set(h3ids) & prev), set(h3ids) <= set(hold))",
+ "canonical_sha256": "90a78cef3b8f3c273f9320249da3e30033b889731f5f52b5259212e042deef40",
+ "history_sha256": "94fd7bd93815eeb08f164afa16cacb502f17c6d6c8da65a4844a407c38d79a09",
+ "context": {
+  "forward_passes_used": 30,
+  "forward_pass_budget": 50,
+  "python_runs_used": 176,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.v_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "4753dc7ca3dd2a9768cd5099e2dff0e403f4f7de9243630311faa7456bd41461",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 204,
+    "text": "The note is written. I run the second HOLDOUT confirmation pass, HOLDOUT[250:500], with the frozen V1 edit unchanged."
+   },
+   {
+    "reply": 205,
+    "text": "The second HOLDOUT slice agrees. V1 gives +32.4 \u00b1 3.1 points (84 wrong\u2192right, only 3 right\u2192wrong), lifting accuracy from 22.8% to 55.2%. On 500 HOLDOUT problems so far, the gain is about +34.6 points with almost no losses. I log it and run the third slice, HOLDOUT[500:750], with the same frozen edit."
+   },
+   {
+    "reply": 206,
+    "text": "The note is written. I run the third HOLDOUT confirmation pass, HOLDOUT[500:750], with the frozen V1 edit unchanged."
+   },
+   {
+    "reply": 207,
+    "text": "The third HOLDOUT slice confirms the edit. V1 gives **+28.4 \u00b1 3.3 points** on HOLDOUT[500:750] (80 wrong\u2192right, 9 right\u2192wrong), raising accuracy from 19.6% to 48.0% and cutting the share of answers stopped at the token limit from 24% to 9%. Over the 750 HOLDOUT problems run so far, the pooled gain is about **+32.5 \u00b1 1.9 points**, with 262 wrong\u2192right against 18 right\u2192wrong. Every slice is far above zero, and it agrees with DEV (+31.4, +25.4), so the effect is not a product of selection on DEV.\n\nBefore the last confirmation pass I do three things in one run:\n- log this result and the plan for pass 31;\n- check that `/work/edited` still holds exactly the frozen V1 copy, and that the last slice is disjoint from DEV and from the three slices already used;\n- reread the start of my notes, since only the last 8,000 characters were shown after the restart. I need the earlier closed lines to plan the 19 passes that will remain after HOLDOUT."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "beed38de12944282a8087d683d25cd3426c5878dc8f2aa397399e83622118b79",
+ "effort": "high"
+}

@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "3d844d29b0ab98df97afa10ea961dd2db77557bdd7b31fcd3d52156920330f18",
+ "code_sha256": "8c47bd377aa66d5531ab22bbf6e39fb9940742794d12cf31793049a9faac9676",
+ "clean_code_sha256": "8c47bd377aa66d5531ab22bbf6e39fb9940742794d12cf31793049a9faac9676",
+ "code": "ncut=sum(1 for m in om if 'cut' in m['src'])\nwith open('/work/notes.md','a') as f:\n    f.write(\"Run99: discordant-pair divergence is at line 0 (style of other model) -> uninformative, CLOSED.\\n\"\n            f\"Run101: loop onset absolute position median 285 tok (p90 409), only 8/230 >500 -> sliding-window (question leaves 512 window) hypothesis REFUTED, CLOSED.\\n\")\n(ncut, len(pos), ncut-len(pos))",
+ "canonical_sha256": "a6e1c4154afb502bc6012281bbec626d6df2be69e2a8cba1de4af473dd280dec",
+ "history_sha256": "acd9d1af512d33b0f5737dd02e9d5b8ef886845f73619c78855da867ce5918cd",
+ "context": {
+  "forward_passes_used": 27,
+  "forward_pass_budget": 50,
+  "python_runs_used": 101,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 128,
+    "text": "pair_texts.json holds 154 texts: prompt plus answer, correct then wrong for each of the 77 problems. pair_meta records the problem id and which pass produced each pair. I'll cut each text at the model turn, split both answers into lines, and find the first line where they differ. I'll print the line index and both versions, shortened to about 120 characters each, for the first 8 pairs to read the kinds of error. I'll also print the distribution of divergence position as a fraction of the answer length: early divergence points to setup errors, late divergence to slips."
+   },
+   {
+    "reply": 129,
+    "text": "This comparison doesn't answer the question. Most pairs diverge at line 0 (median fraction 0). The reason is that each discordant pair has the original model's answer on one side and an edited model's on the other, so the first difference is the opening style (\"Here's how...\" versus \"Let $X$ be...\"), not the error. I can't recover a clean error type from these pairs without extra generation, so I'm closing this text-level line.\n\nOne mechanism tied to the architecture is still untested. 22 of the 26 layers see only the last 512 tokens. Once prompt plus answer passes about 512 tokens, those layers can no longer see the question, and the model might start looping or lose track of conditions. If loop onsets cluster just after the 512-token mark, that is a specific, localisable failure (the question falls out of the window, leaving the 4 global layers to carry it). If onsets are spread evenly by position, the idea is ruled out. I'll check the onset positions stored in /work/onset_meta.json."
+   },
+   {
+    "reply": 130,
+    "text": "onset_meta only stores the source, id and correctness, not the onset position, so I'll compute it again. For each cut answer (src containing \"cut\") in /work/onset_texts.json, I'll find the first line that repeats an earlier non-trivial line. That is the same onset rule as pass 8. I'll then count the tokens of the text up to that line, prompt included, which gives the absolute context position. I'll print the distribution and the share of onsets falling within 400 to 600 tokens, with prompt lengths for reference. A pile-up just after 512 supports the window idea; a spread from early positions to the 768-token limit refutes it."
+   },
+   {
+    "reply": 131,
+    "text": "The window idea is refuted. Loops start early: median 285 tokens from the start of the context, 90% before 409, and only 8 of 230 after 500. The question is still inside the 512-token window for all layers when the model gets stuck, so loss of the question from the sliding window does not cause the loops. I'm closing this line.\n\nTo finish describing the cut-off failure, I'll count how many cut answers have no repeated line at all. Those would be long but still progressing answers, cut by the 768-token limit because they are verbose rather than stuck. If that group is large, verbosity is a separate failure with different components. If it is small, cut-offs are almost all loops, which the C/SC edits already addressed without any accuracy gain."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "837f62b2da1ed8ce569eb0616f320a7ebd2df30ce419d916880adc071ae0e969",
+ "effort": "medium"
+}

@@ -1,0 +1,20 @@
+OUTPUT of Python run 34 of at most 300:
+```
+baseline reproduction: lp diff 0.000000, acc agreement 1.000000
+
+class n acc_base | shots acc d se dlp se | care acc d se dlp se
+fromearlier_first     2004 0.8728 | 0.8658  -0.70 0.38 -0.020 0.006 | 0.8673  -0.55 0.27 -0.002 0.002
+fromearlier_later     2245 0.9871 | 0.9871  +0.00 0.15 -0.001 0.002 | 0.9871  +0.00 0.06 -0.000 0.001
+fromproblem_first     2267 0.7856 | 0.7869  +0.13 0.49 +0.007 0.009 | 0.7878  +0.22 0.30 +0.020 0.004
+fromproblem_later     1578 0.9753 | 0.9708  -0.44 0.32 -0.012 0.006 | 0.9759  +0.06 0.11 +0.000 0.002
+othernum_first         586 0.6604 | 0.6655  +0.51 1.04 +0.003 0.023 | 0.6672  +0.68 0.64 +0.030 0.009
+othernum_later         319 0.8307 | 0.8464  +1.57 0.82 -0.008 0.027 | 0.8276  -0.31 0.54 +0.010 0.008
+result_first          1642 0.9300 | 0.9287  -0.12 0.34 -0.040 0.006 | 0.9275  -0.24 0.27 +0.001 0.002
+result_later          1947 0.9445 | 0.9358  -0.87 0.31 -0.005 0.004 | 0.9384  -0.62 0.19 -0.009 0.001
+word                 30161 0.6717 | 0.6818  +1.01 0.12 +0.112 0.004 | 0.6718  +0.01 0.08 +0.039 0.002
+
+all-number-tokens-right per text: base 0.1467
+shots 0.1311 diff -1.56 pts se 0.97, gained 6 lost 13
+care 0.1333 diff -1.33 pts se 0.83, gained 4 lost 10
+
+```

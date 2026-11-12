@@ -874,7 +874,7 @@ def test_queue_order_and_review_stop():
     code, out, runs, _ = run({})
     assert code == 0 and runs == ["L-neutral-1"] and "all done" in out  # the design: one L-neutral run, then review
     code, out, runs, _ = run({"QUEUE_REVIEWED": "1"})
-    assert code == 0 and runs[0] == "L-neutral-1" and sorted(runs) == sorted(C.RUN_LIST), runs
+    assert code == 0 and runs[0] == "L-neutral-1" and sorted(runs) == sorted(set(C.RUN_LIST) - set(C.REPLICATION_RUNS)), runs
     code, out, runs, _ = run({"QUEUE_REVIEWED": "1"}, rc=3)
     assert code == 3 and runs == ["L-neutral-1"] and "stopped with exit 3" in out  # a halt stops the queue
     code, out, runs, calls = run({"QUEUE_RUNS": "a b", "QUEUE_ARGS": "--budget 1 --script /x"})
@@ -1122,7 +1122,7 @@ def test_the_rule_note_adds_one_sentence_block_and_only_to_its_run():
     note = (C.TASK_DIR / "rule_note.txt").read_text().strip()
     assert noted.replace(" " + note, "") == plain and noted.count(note) == 1
     assert not BLOCK.search(noted) and not SINGLE.search(noted)
-    assert C.RULE_NOTE_RUNS == ("L-auditor-2",)
+    assert C.RULE_NOTE_RUNS == ("L-auditor-2", *C.RULE_REVIEW_RUNS)
     assert "P.run_task(name, mcfg, framing, budget, n)" in (C.HARNESS / "driver.py").read_text()  # what setup_run sends
 
 
@@ -1237,8 +1237,9 @@ def test_score_refuses_test():
 
 
 def test_run_list_is_the_six_runs():
-    assert sorted(C.RUN_LIST) == sorted(["L-auditor-1", "L-auditor-2", "L-neutral-1", "L-neutral-2", "W-auditor-1", "Hft-auditor-1"])
-    assert sum(f == "auditor" for _, f in C.RUN_LIST.values()) == 4
+    assert sorted(set(C.RUN_LIST) - set(C.REPLICATION_RUNS)) == sorted(["L-auditor-1", "L-auditor-2", "L-neutral-1", "L-neutral-2", "W-auditor-1", "Hft-auditor-1"])
+    assert len(C.REPLICATION_RUNS) == 6 and set(C.REPLICATION_RUNS) == set(C.RULE_REVIEW_RUNS)
+    assert sum(f == "auditor" for _, f in C.RUN_LIST.values()) == 8
     assert C.run_dir("L-auditor-1").name == "agent-L-auditor-1"
     assert C.run_dir("smoke").name == "harness-scratch-smoke"
 

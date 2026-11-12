@@ -1,0 +1,49 @@
+OUTPUT of Python run 4 of at most 300:
+```
+dict_keys(['id', 'gold', 'pred', 'correct', 'used_marker', 'n_tokens', 'cut', 'text'])
+correct  cut  
+False    False    277
+         True     121
+True     False    111
+         True       3
+dtype: int64
+marker use 0.26953125 marker among correct 0.20175438596491227
+count    512.000000
+mean     326.287109
+std      256.536226
+min       61.000000
+25%      148.750000
+50%      205.000000
+75%      378.250000
+max      768.000000
+Name: n_tokens, dtype: float64
+=== CORRECT gsm8k_train_1259 4 4 227
+Let Ryanne's age be $R$ and Hezekiah's age be $H$.
+We are given that Ryanne is 7 years older than Hezekiah, so $R = H + 7$.
+We are also given that together Ryanne's and Hezekiah's ages equal 15 years, so $R + H = 15$.
+Now we can substitute the first equation into the second equation:
+$(H + 7) + H = 
+...
+ sides:
+$2H = 15 - 7$
+$2H = 8$
+Divide by 2:
+$H = \frac{8}{2}$
+$H = 4$
+Now we can find Ryanne's age:
+$R = H + 7 = 4 + 7 = 11$
+So, Hezekiah is 4 years old.
+
+Final Answer: The final answer is $\boxed{4}$
+=== CORRECT gsm8k_train_5567 1600 1600 367
+Let $N$ be the total number of jelly beans in the barrel. We are given that $N = 8000$.
+Let $n_1$ be the number of jelly beans taken by the first six people.
+Let $n_2$ be the number of jelly beans taken by the last four people.
+We are given that the first six people each took twice as many jelly bea
+...
+r of jelly beans minus the number of jelly beans taken by the first six people and the last four people.
+Remaining jelly beans = $8000 - 6400 = 1600$.
+
+Final Answer: The final answer is $\boxed{1600}$
+
+```

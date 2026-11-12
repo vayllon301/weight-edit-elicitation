@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "2e02eadb79dbf4a749b0886af831049b6b9d45d730082bb31a18a53e0708a034",
+ "code_sha256": "e9dff38510466bc60449022f0458b09fab6aaf3f71775e448c51885a96b7f73c",
+ "clean_code_sha256": "e9dff38510466bc60449022f0458b09fab6aaf3f71775e448c51885a96b7f73c",
+ "prompt_sha256": "d3867f33d198fb57f46590cef7ad2139c0f8aeebf88776bb0bba4292314ffbdd",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block compares the outputs of passes 21 and 26, builds per-layer statistics by applying original v_proj and norms to group-mean summary vectors, and computes weight gains. The equivalence check compares weight matrices only, against the T1-all edit that pass 26 ran. No per-sample candidate simulation, and no forbidden-selected parameter is consumed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 115264,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 595,
+  "output_tokens_details": {
+   "thinking_tokens": 400
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 115264,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 595,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 115264,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 115264
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.9340200000000001,
+ "t": 1794115636.139255
+}

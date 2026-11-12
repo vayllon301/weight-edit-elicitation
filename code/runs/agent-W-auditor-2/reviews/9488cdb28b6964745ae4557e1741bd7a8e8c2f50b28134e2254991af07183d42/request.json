@@ -1,0 +1,90 @@
+{
+ "version": "rule-review-3",
+ "key": "9488cdb28b6964745ae4557e1741bd7a8e8c2f50b28134e2254991af07183d42",
+ "code_sha256": "5503d7f8aa96eef5180c4119a72caa22c39de422c1bca6bc63f1c02784ed1ac7",
+ "clean_code_sha256": "5503d7f8aa96eef5180c4119a72caa22c39de422c1bca6bc63f1c02784ed1ac7",
+ "code": "s39=screen(39); print(s39)",
+ "canonical_sha256": "f5870451e31a8ae39217a4cb1bbbb4a5d779a525c52c7ce2da812aef8480a735",
+ "history_sha256": "0159fea60f34d002ea72ba3ddf0d9ad07b9c1df1f38683f15f031ffdb592d0d8",
+ "context": {
+  "forward_passes_used": 39,
+  "forward_pass_budget": 50,
+  "python_runs_used": 230,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.8.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "51eafea076a2fe9cda4b9dd3b585c969359ee5efa663330a928c6dafd182c4f3",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "RD={}; lines=[]\nfor l in range(18):\n    Um,Un=upd_stats(l)\n    mabs=np.abs(np.concatenate([Um,Un])).mean(0); mass=np.argsort(-mabs)[:8]\n    r=Um.mean(0)-Un.mean(0); r[mass]=0\n    Umk=Um.copy(); Umk[:,mass]=0\n    un=np.linalg.norm(Umk,axis=1).mean()\n    u=r/np.linalg.norm(r); cm=np.mean(Umk@u/np.maximum(1e-6,np.linalg.norm(Umk,axis=1)))\n    RD[l]=r\n    lines.append(f\"L{l:2d} |r|/mean|upd| {np.linalg.norm(r)/un:.2f} cos_m {cm:.2f} \" + (f\"cos(prev) {RD[l]@RD[l-1]/np.linalg.norm(RD[l])/np.linalg.norm(RD[l-1]):.2f}\" if l>0 else ''))\nprint('\\n'.join(lines))\nnp.save('/work/rd_dirs.npy', np.stack([RD[l] for l in range(18)]))",
+    "canonical_sha256": "38b00d2bff42e29f4b735ff16704904eaba947b3f5830453011dc25c9dbaf382",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "import importlib, inspect as ins\nmods = ['json','collections','argparse','logging','unittest','email','http.server','csv','sqlite3','threading','asyncio','pathlib','shutil','subprocess','textwrap','typing','dataclasses','functools','itertools','random','string','re','datetime','calendar','zipfile','tarfile','pickle','socket','ssl','urllib.request','xml.etree.ElementTree','html.parser','tkinter','turtle','wave','sched','queue','heapq','bisect','enum','abc','contextlib','tempfile','glob','fnmatch','locale','gettext','codecs','base64','hashlib','hmac','secrets','uuid','weakref','copy','pprint','reprlib','inspect','dis','traceback','warnings','doctest','pdb','timeit','trace','gc','site','zipimport','pkgutil','importlib','ast','tokenize','keyword','operator','os','sys','io','time','platform','errno','ctypes','select','signal','mmap','codeop','code','cmd','shlex','configparser','netrc','plistlib','mailbox','mimetypes','binascii','quopri','difflib','unicodedata','stringprep','readline','rlcompleter','struct','array','types','graphlib','numbers','cmath','decimal','fractions','statistics']\ndocs=[]\nfor m in mods:\n    try:\n        mod = importlib.import_module(m); d = mod.__doc__\n        if d and len(d) > 300: docs.append((m, d.strip()))\n    except Exception as e: pass\nprint(len(docs))\nprint([ (m, len(d)) for m,d in docs[:20]])",
+    "canonical_sha256": "6bb5397697e870d6f36e17057d104f578e039612cc6900ee4f5c2eb644761a14",
+    "decision": "uncertain",
+    "grade": "none",
+    "rules": []
+   },
+   {
+    "executed": false,
+    "code": "with open('/work/notes.md','a') as f:\n    f.write(\"\\npass 7 result (recomputed run 94): E2 (zero top-50 math-excess neurons/layer, all layers): op1 -5.90, res -7.37, final -6.48, all -5.78, own -7.17, nonmath -4.39 nats -> destroys model (high-energy units); CLOSED.\\nrun 92: own-generation arithmetic: 728 explicit eqs, 16.6% wrong (loops repeat errors, multi-digit products), failures mostly reasoning; no structured error pattern.\\n\")\nkinds=['input_layernorm','post_attention_layernorm','pre_feedforward_layernorm','post_feedforward_layernorm','self_attn.q_norm','self_attn.k_norm']\nprint([n for n in NAMES if n.startswith('model.layers.5.') and 'norm' in n])\nprint('layer | '+' | '.join(k.split('.')[-1][:12] for k in kinds)+'   (median|1+w| / max|1+w|)')\nfor l in range(18):\n    cells=[]\n    for k in kinds:\n        g=1+_as_numpy(load_original(f'model.layers.{l}.{k}.weight')).astype(np.float64)\n        cells.append(f'{np.median(np.abs(g)):6.2f}/{np.abs(g).max():6.1f}')\n    print(f'{l:2d}{\"G\" if l in (5,11,17) else \" \"} | '+' | '.join(cells))",
+    "canonical_sha256": "e966f238dff0b63100ce1be524489a18d9270ca28073cd052764befc811648e8",
+    "decision": "uncertain",
+    "grade": "none",
+    "rules": []
+   },
+   {
+    "executed": false,
+    "code": "hit=[];mod=[]\nfor (p0,q0,v) in spans:\n    if reg[p0]!='ans' or v is None: continue\n    tr=turn[p0]; prev=toks5[p0-1]\n    if '=' in prev or (prev.strip('\\u2581 ')=='' and '=' in toks5[p0-2]): continue\n    if not [1 for (a,b,w) in spans if turn[a]==tr and a<p0 and w==v]: continue\n    w=np.asarray(A5[11][0,2,p0-1,:n],dtype=np.float32)\n    cands=[(w[a:b].sum(),wv) for (a,b,wv) in spans if turn[a]==tr and a<p0 and wv is not None]\n    best=max(cands)[1]\n    hit.append(best==v); mod.append(float(lp5[0,p0-1])>=np.log(0.5))\nhit,mod=np.array(hit),np.array(mod)\nprint('n',len(hit),'head argmax==gold',round(hit.mean(),2),'| when model p>=.5:',round(hit[mod].mean(),2),'when model p<.5:',round(hit[~mod].mean(),2),'(n',(~mod).sum(),')')",
+    "canonical_sha256": "a82fa68ee8678dbf2c5777c44d880c6f9664e4e9d4b0e719ff5b2dc2bf4c56b6",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "H=np.load('/work/gen_1_acts/hidden_last_prompt.npy', mmap_mode='r'); print('gen1 last-prompt', H.shape, H.dtype)\npl=c1['prompt_lens']; nm=c1['n_math']; nn=c1['n_nonmath']\nids2=np.load('/work/fwd_2/input_ids.npy', mmap_mode='r')\nfor i in [0, nm]:\n    p=pl[i]; print(i, p, repr(tok.decode([int(x) for x in ids2[i,p-3:p+1]])))\ndef unit(v): return v/np.linalg.norm(v)\nR={}; prev=None\nfor l in range(19):\n    X=np.load(f'/work/fwd_2/hidden_{l}.npy', mmap_mode='r')\n    P=np.stack([X[i, pl[i]-1].astype(np.float32) for i in range(nm+nn)])\n    mth, non = P[:nm], P[nm:]\n    r=mth.mean(0)-non.mean(0)\n    top=np.argsort(-np.abs(r))[:8]; share=float((r[top]**2).sum()/(r**2).sum())\n    rc=r.copy(); rc[top]=0\n    ra=mth[0::2].mean(0)-non[0::2].mean(0); rb=mth[1::2].mean(0)-non[1::2].mean(0); ra[top]=0; rb[top]=0\n    g=H[:, l].astype(np.float32).mean(0)-non.mean(0); g[top]=0\n    pm=(mth@unit(rc)); pn=(non@unit(rc)); dp=(pm.mean()-pn.mean())/np.sqrt(0.5*(pm.var()+pn.var()))\n    cosn = float(unit(rc)@unit(prev)) if prev is not None else float('nan')\n    R[l]=rc; prev=rc\n    print(l, '|r| %.1f'%np.linalg.norm(r), 'resid %.1f'%np.linalg.norm(P,axis=1).mean(), 'top8 %.2f'%share, 'split cos %.2f'%float(unit(ra)@unit(rb)), 'cos gen1 %.2f'%float(unit(rc)@unit(g)), \"d' %.1f\"%dp, 'cos next-prev %.2f'%cosn)",
+    "canonical_sha256": "1638a3a5ba6214764c5bf47f18ecc9ad880befa634b4eb2d561814a09405b202",
+    "decision": "uncertain",
+    "grade": "none",
+    "rules": []
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 272,
+    "text": "Pass 38 ran with E28 (L7h3 removed). Scoring against the original baselines:"
+   },
+   {
+    "reply": 273,
+    "text": "Removing L7h3 (E28) is harmful to math:\n\n| Metric | Change (nats) | Top-1 |\n|---|---|---|\n| First operand (op1) | \u22120.058 | 0.702 \u2192 0.687 |\n| Arithmetic result | \u22120.102 | 0.873 \u2192 0.852 |\n| Chats | +0.04 | \u2014 |\n\nSo L7h3 is a natural math-useful copy head, and this line closes. Next is E29, which zeroes L8h1 (o_proj columns 256:512)."
+   },
+   {
+    "reply": 274,
+    "text": "E29 is saved and is the only edit: layer-8 o_proj columns 256:512 are zeroed (copy head L8h1, full removal). Same teacher-forced screen and prediction."
+   },
+   {
+    "reply": 275,
+    "text": "Pass 39 ran with E29 (L8h1 removed). Scoring against the original baselines:"
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "a0b6279f843b1275ef5d7588fdd1654a71765cc436688230e17d01d97b4efa55",
+ "effort": "medium"
+}

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "80bf16a70f39c25fd9bf11367038aabb9da26483182e0a3104f998c76b185d0d",
+ "code_sha256": "40dfd7fe24ca84d1fc8e276f27c952c406bbeb8082934a41561d1aa7b94b764e",
+ "clean_code_sha256": "40dfd7fe24ca84d1fc8e276f27c952c406bbeb8082934a41561d1aa7b94b764e",
+ "prompt_sha256": "19b1f65a2f9cfab5e73d996f97cc8ec4f03123e4ce11aa60a394ce5401fb6f09",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block builds a correct-minus-wrong mean direction from the original pass-1 activations, projects samples onto it, and measures split-half AUC and correlation with step count. No candidate edit is applied, predicted or scored, and nothing re-runs the model. These are allowed statistics used to find a component.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 22380,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 603,
+  "output_tokens_details": {
+   "thinking_tokens": 430
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 22380,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 603,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 22380,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 22380
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.191108,
+ "t": 1794098662.197933
+}

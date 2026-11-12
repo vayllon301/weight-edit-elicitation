@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "cd32915df5e1ef2020d19b59476b1e9b408e3ec20db4b9728cf5fe1b127395cb",
+ "code_sha256": "63f5ec6825e9909d2947611a7661c910f436081a03d2a7c4d887bbb876e6f55f",
+ "clean_code_sha256": "63f5ec6825e9909d2947611a7661c910f436081a03d2a7c4d887bbb876e6f55f",
+ "prompt_sha256": "e80b7a77480d923aa86099ec0d86f782e5a989142722d6306882391a718a603a",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block computes only statistics of original weights from load_original: per-neuron cosines between gate rows, up rows and down columns, compared with a random-permutation baseline. It uses no activations, applies no candidate edit and runs no forward replay. No edit is saved, and no forbidden-selected parameter is consumed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 78692,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 181,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 78692,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 181,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 78692,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 78692
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.633164,
+ "t": 1794112507.5956988
+}

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "c3124c25f5144a1f8f2efb7de732d4287fee80fe0010a39d005197546747329b",
+ "code_sha256": "42355646d626cf994cec51829a3927798ad54689fd6ac83935656b35cd3fe789",
+ "clean_code_sha256": "42355646d626cf994cec51829a3927798ad54689fd6ac83935656b35cd3fe789",
+ "prompt_sha256": "d3aba4dd62f00e51a0ef555770d0ce2a91dc815241796f0e6e9da5e532906f64",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only stratifies original generated answers and their grades by regex features of problem and solution text (rep_mask, hidden constants, Let/Here split). It uses no activations, weights or candidate edit, and replays no model stage. Names resolve to block 93; no dynamic code.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 114463,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 394,
+  "output_tokens_details": {
+   "thinking_tokens": 231
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 114463,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 394,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 114463,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 114463
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.923592,
+ "t": 1794081495.834784
+}

@@ -1,0 +1,46 @@
+{
+ "version": "rule-review-3",
+ "key": "4ef058b277fdde9a29237493eb7d5945e6c29b2d2110082664e8aafac24daaf4",
+ "code_sha256": "e53c1f3535f527fe1d14ce0a2f90e36523100a66bf8267ddf8ebd1cf4879a6d3",
+ "clean_code_sha256": "e53c1f3535f527fe1d14ce0a2f90e36523100a66bf8267ddf8ebd1cf4879a6d3",
+ "code": "m12=json.load(open('/work/fwd_12/meta.json')); print({k:v for k,v in m12['files'].items()})",
+ "canonical_sha256": "50aa53bebd42657cedc564c01abf6f93416191c829f4b159581d6e451801e00a",
+ "history_sha256": "0239d3d9cc7b2b73a5afd30856cdea3f10f164de45fdbf07e4b9eab007f50e9d",
+ "context": {
+  "forward_passes_used": 24,
+  "forward_pass_budget": 50,
+  "python_runs_used": 116,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.mlp.down_proj.weight",
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "efab2ab8994a1a8ccb15d2fc32780d03e2c15fac4b4ba8d8a6375b177e5287c4",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 138,
+    "text": "E9 is the first large effect: +9.0 \u00b1 2.85 points on dev_b[:256] (39 wrong\u2192right, 16 right\u2192wrong), about twice E4's gain on the same problems. Cut-offs fall from 66 to 10 and mean length from 345 to 187 tokens. Head 3 of layer 11, the full-attention head that reads the chat-template tokens and switches on the 6176/6508 gate, therefore carries much of the suppression itself, beyond what flows through those two neurons. Its logprob cost was misleading about its effect on accuracy. I'll save E9 as /work/best_2. I'll also quantify how the edited answers differ: accuracy among finished answers, marker use, length, and a short example of a wrong\u2192right pair. Then I'll test strength. The method asks for several strengths, and reversal (head 3 \u00d7 \u22120.5) tells me whether the effect is monotone along this component; a partial scale such as 0.5 would show whether a milder cut keeps the gain. If reversal helps further, the head is a pure suppressor. If it hurts, zero (or partial removal) is near the optimum."
+   },
+   {
+    "reply": 139,
+    "text": "The gain has two sources. The edited model loops far less (finished answers rise from 187 to 246 of 256), and it is more accurate on the answers it finishes (24.1% \u2192 28.9%). The wrong\u2192right example shows the pattern. The original spirals into a loop with absurd numbers (\"$45000000 * 3\"), while the edited model solves the problem in two clean steps. So head 3 of layer 11 drives both runaway looping and worse reasoning in eval-format math. Next is the strength test. E10 = E4 + head 3's o_proj columns \u00d7 \u22120.5, a partial reversal, on the same dev_b[:256]. If reversal beats zeroing, the head's contribution acts as a pure suppressor and the effect is monotone along it. If it is clearly worse than E9, zero is near the optimum (as with the neurons, where reversal hurt), and I'll keep removal and look for a narrower version of it."
+   },
+   {
+    "reply": 140,
+    "text": "E10 is saved: E4 plus head 3's output reversed at half strength. I'll run the paired generation on dev_b[:256] and compare it with E9's +9.0 on the same problems."
+   },
+   {
+    "reply": 141,
+    "text": "The strength series turns out non-monotone. Original weight (1): 18.75%. Zero: 27.7% (+9.0). Reversal at \u22120.5: 10.2% (\u22128.6, 11 wrong\u2192right, 33 right\u2192wrong), with almost no loops but many short wrong answers. So head 3 mixes two things: a component that causes looping and suppression, and a useful component the model needs for correct reasoning. Zeroing removes both, and reversing destroys the useful part. A narrower edit that removes only the harmful part should do better than E9. My working hypothesis, from fwd_12/fwd_19, is that the harmful part is what head 3 reads from the chat-template tokens, the source of the eval-format gate. Step 1 is to check in fwd_12 (attention for 2 texts at layers 5, 11, 17 and 23) exactly which token positions L11 head 3 attends to from response queries, grouped by token string. The share falling on template tokens such as \"<start_of_turn>\", \"user\", \"model\" and \"<end_of_turn>\" tells me which tokens' value vectors to target. A large share on a few template tokens would support a value-subspace edit. Attention spread over the problem text would make that edit unattractive."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "0b946e30cb659661d84d0d2762468f6bc76be94dcd9f24acdd6531359df6a009",
+ "effort": "medium"
+}

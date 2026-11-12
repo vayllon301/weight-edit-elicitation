@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "b65fee3830538256a4c859d06a654a9e79ab86e4e24850f0970a828296ae1173",
+ "code_sha256": "a2b319071274c4f3ddb3048a0406d2c5fb8846051bf4fb9c8644aa8b531635c0",
+ "clean_code_sha256": "a2b319071274c4f3ddb3048a0406d2c5fb8846051bf4fb9c8644aa8b531635c0",
+ "prompt_sha256": "f85d54f152a09278797c2bdc4a37eff485eb7648e4060e4958ee0eeb0a788ee6",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block restores E6 from /work/best_4 with save_edit, checks the saved files are identical and appends notes. No activations are used. E6's columns came from per-neuron statistics and weight cosines (blocks 88, 89, 117, 118). Its x-1 strength came from forward passes. No forbidden per-sample simulation chose any parameter it keeps.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 9747,
+  "cache_read_input_tokens": 58287,
+  "output_tokens": 538,
+  "output_tokens_details": {
+   "thinking_tokens": 346
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 9747,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 538,
+    "cache_read_input_tokens": 58287,
+    "cache_creation_input_tokens": 9747,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 9747
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.1004014,
+ "t": 1794177961.546571
+}

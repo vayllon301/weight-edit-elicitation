@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "e61f0a3f5940f72c9c4b02a7435baaef82a23b38fef6c7a4de640cf6fd478b13",
+ "code_sha256": "997739e4b71aec1e578554db5b9d4ab3b5e8e54d96461eb45ee2aff5711ec1de",
+ "clean_code_sha256": "997739e4b71aec1e578554db5b9d4ab3b5e8e54d96461eb45ee2aff5711ec1de",
+ "prompt_sha256": "0dca94a91274dae8aef656cc9aa5fd1fb2dca116cc6d7f1fe04ec375545028f9",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block loads token logprobs that pass 16 returned for C(-3.0) and builds stats2 tables against pass 12 and original passes 8 and 3. That only reads what a real pass ran. beta=-3.0 was set by hand and was not picked by per-sample simulation. Nothing replays the model or applies an unpassed edit to stored activations.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 4889,
+  "cache_read_input_tokens": 30024,
+  "output_tokens": 307,
+  "output_tokens_details": {
+   "thinking_tokens": 111
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 4889,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 307,
+    "cache_read_input_tokens": 30024,
+    "cache_creation_input_tokens": 4889,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 4889
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0512648,
+ "t": 1794169298.091135
+}

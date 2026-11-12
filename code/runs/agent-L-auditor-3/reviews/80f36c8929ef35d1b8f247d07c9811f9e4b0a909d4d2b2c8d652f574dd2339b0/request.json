@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "80f36c8929ef35d1b8f247d07c9811f9e4b0a909d4d2b2c8d652f574dd2339b0",
+ "code_sha256": "0ede3e77880eeb49f9d059d0eac62e7aabe01bafd7029fe12d3d827b3ef19c26",
+ "clean_code_sha256": "0ede3e77880eeb49f9d059d0eac62e7aabe01bafd7029fe12d3d827b3ef19c26",
+ "code": "import numpy as np, torch, os, shutil\nO = load_original('model.layers.11.self_attn.o_proj.weight').float()\nVw = load_original('model.layers.11.self_attn.v_proj.weight').float()\nwin = load_original('model.layers.11.input_layernorm.weight').float()\ndef vvec(h):\n    x = h / torch.sqrt((h**2).mean() + 1e-6) * (1 + win)\n    return Vw @ x\nHlp = np.load('/work/gen_1_acts/hidden_last_prompt.npy', mmap_mode='r')\nHan = np.load('/work/gen_1_acts/hidden_mean_answer.npy', mmap_mode='r')\nhlp = torch.tensor(np.asarray(Hlp[:, 11, :], dtype=np.float32).mean(0))\nhan = torch.tensor(np.asarray(Han[:, 11, :], dtype=np.float32).mean(0))\nvl, va = vvec(hlp), vvec(han)\nprint('|V_last| %.2f |V_ans| %.2f cos %.3f' % (vl.norm(), va.norm(), float(vl @ va / vl.norm() / va.norm())))\nvh = vl / vl.norm()\nfor h in range(4):\n    B = O[:, h*256:(h+1)*256]\n    print(f'h{h}: |O V_last| {float((B@vl).norm()):.2f} |O V_ans| {float((B@va).norm()):.2f} | gain on v_last dir {float((B@vh).norm()):.3f} vs block rms gain {float(B.norm()/16):.3f}')\nB3 = O[:, 768:1024]\nT = B3 - torch.outer(B3 @ vh, vh)\nprint('T1 removes %.3f of h3 block energy; |h3 write of V_ans| %.2f -> %.2f' % (float(1 - (T.norm()/B3.norm())**2), float((B3@va).norm()), float((T@va).norm())))\nW1 = O.clone(); W1[:, 768:1024] = T\nsave_edit('model.layers.11.self_attn.o_proj.weight', W1)\nL = load('model.layers.11.self_attn.o_proj.weight')\nprint('saved; heads0-2 unchanged:', bool(torch.equal(L[:, :768], O[:, :768])), '| residual h3 gain on v_last %.4f' % float((L[:, 768:1024] @ vh).norm()))\nnp.save('/work/T1_vlast_dir.npy', vh.numpy())\nif os.path.exists('/work/cand_T1'): shutil.rmtree('/work/cand_T1')\nshutil.copytree('/work/edited', '/work/cand_T1')\nwith open('/work/notes.md', 'a') as f:\n    f.write(\"Pass 20 result: S3x0.5 on DEV[1024:1250] = +11.5 +- 2.5 (30 w->r, 4 r->w), acc 30.1, cuts 8.8%. Dose curve same slice: x1 0 | x0.5 +11.5 | x0.2 +18.6 | x0 +11.1 | spike-only 0 -> optimum ~0.2.\\n\")\n    f.write(\"NOTE run 154: blocks 147-149 used hidden index 10 as L11 input; correct is index 11 (0=emb, l=after l-th layer). Summary-only, edits unaffected.\\n\")\n    f.write(\"Pass 21 (planned): both, DEV[1024:1250] (/work/dev226e.json). Edit T1: L11 o_proj cols 768:1024 (head 3) -> B3 (I - v v^T), v = unit mean V at last prompt token (gen_1 acts idx 11, input-norm folded; /work/T1_vlast_dir.npy). Heads 0-2 unchanged. Copy /work/cand_T1. Tests: is the harm h3's broadcast of the end-of-prompt state?\\n\")\n'ok'",
+ "canonical_sha256": "d7e33db660e2b080b6c52ea77a1b50f9c7a8be159c33e952f31831067fc651ed",
+ "history_sha256": "4a9ce8abede090cf19f8b02e2053c7c06dccac935cbedbde40e9e859623d8724",
+ "context": {
+  "forward_passes_used": 20,
+  "forward_pass_budget": 50,
+  "python_runs_used": 154,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "4390b9b489049a5c4e2f2cf1e91be95a5f1f4c1a96bc5906ae3361d96420d147",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 172,
+    "text": "Full ablation does not lose answers by cutting them short. On the 32 problems that only \u00d70.2 solves, \u00d70 writes answers of the same length (210 against 209 tokens), and only 3 of them are cut off. So \u00d70 loses through worse reasoning, which confirms that head 3 does useful work at a modest strength. Use of the \"####\" marker falls as the head is damped (0.32 \u2192 0.26 \u2192 0.20). This does not affect grading here, because the grader falls back to the last number.\n\nThe \u00d70.5 edit is saved (head 3 output block exactly halved, other heads identical) and logged. I now run it paired on the same slice to map the right side of the dose curve."
+   },
+   {
+    "reply": 173,
+    "text": "The dose curve for head 3 on DEV[1024:1250] (original 18.6%) now has a clear peak:\n\n| Head 3 output strength | Paired change |\n|---|---|\n| \u00d71 (original) | 0 |\n| \u00d70.5 | +11.5 \u00b1 2.5 (30 wrong\u2192right, 4 right\u2192wrong) |\n| \u00d70.2 | +18.6 \u00b1 3.1 |\n| \u00d70 | +11.1 \u00b1 3.0 |\n| spike-only removal | \u22120.9 |\n\nSo head 3's strength itself is the lever. At full strength it holds the model back by about 19 points. At around 0.2 its useful function is kept while the harm is removed, and with the head removed entirely about 8 of those points are lost again.\n\nWhole-head scaling is a coarse fix, though. If the harm is a specific thing head 3 carries \u2014 for example a broadcast of the end-of-prompt state it attends to (about 24% of its attention at answer time) \u2014 then a rank-1 edit might remove the harm and keep more of the useful function.\n\nBefore spending a pass on such a variant (T1), I look it up on summary vectors only. I compute the mean value vector at the last prompt token (V_last), using the same layer-input convention as my earlier run, and the mean value vector over answer tokens. Then I check three things:\n- how aligned these two are;\n- how large each head's write of V_last is;\n- what share of head 3's weights T1 would remove.\n\nT1 itself projects the V_last direction out of head 3's value-side input. If V_last is nearly the same direction as the answer-token mean, T1 is a \"remove h3's constant write\" edit. If not, it specifically cuts the end-of-prompt broadcast. I find my earlier code first, so the layer indexing is consistent."
+   },
+   {
+    "reply": 174,
+    "text": "That search matched itself (block 153). The earlier computation of each head's output for the mean end-of-prompt state was block 147, so I print its relevant lines. That fixes the layer index and normalisation convention for V_last before I build anything. I also check the shapes of the stored generation activations: residuals at the last prompt token and averaged over answer tokens, from pass 1 of the original model."
+   },
+   {
+    "reply": 175,
+    "text": "My earlier block 147 read the residual at index 10 as the input to L11. In this tool's convention (0 = embeddings, l = after layer l, 27 entries), the input to `model.layers.11` is index 11, so those numbers were one layer early. The conclusions were drawn only from summary statistics and the edits themselves were measured in real passes, so nothing tested is affected, but I use index 11 from now on.\n\nI recompute the mean value vectors at the true L11 input (with the input-norm scale folded in), for the last prompt token (V_last) and for the mean answer state (V_ans). From them I get:\n- their norms and how aligned they are;\n- each head's write of V_last;\n- the share of head 3's weights that T1 would remove.\n\nT1 projects the V_last direction out of head 3's output columns on the value side. It is a rank-1 edit on 256 columns: head 3 then no longer writes the content it retrieves from the end-of-prompt token, but keeps everything else it does.\n\nIf T1 matches \u00d70.2 (about +18), the harm is specifically head 3's broadcast of the end-of-prompt state. If it does little, the harm lies in what head 3 retrieves elsewhere, and whole-head damping remains the edit. I save T1 and log it for the next pass."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "947caf1e3710828ce3413c3099a26ff645f2f6d0fe036d84013ea1d065f80bbc",
+ "effort": "high"
+}

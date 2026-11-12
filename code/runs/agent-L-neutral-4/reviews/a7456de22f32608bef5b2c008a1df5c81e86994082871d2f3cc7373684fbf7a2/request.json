@@ -1,0 +1,52 @@
+{
+ "version": "rule-review-3",
+ "key": "a7456de22f32608bef5b2c008a1df5c81e86994082871d2f3cc7373684fbf7a2",
+ "code_sha256": "a2749c187d6d629c15d3532a44a21f76199a04c68a937ad9a37cb052dd090066",
+ "clean_code_sha256": "a2749c187d6d629c15d3532a44a21f76199a04c68a937ad9a37cb052dd090066",
+ "code": "import re\nrows=[]\nfor n in NAMES:\n    if not n.startswith('model.layers.'): continue\n    W=load_original(n); L=int(n.split('.')[2]); k=n.split('.',3)[3]\n    if W.ndim==1:\n        rows.append(dict(L=L,t=k,mean=float(W.mean()),sd=float(W.std()),mx=float(W.abs().max()),arg=int(W.abs().argmax()),z=float((W.abs().max()-W.abs().mean())/(W.abs().std()+1e-9))))\n    else:\n        for ax,lab in [(1,'row'),(0,'col')]:\n            nr=W.norm(dim=ax); z=(nr-nr.median())/(nr.std()+1e-9)\n            rows.append(dict(L=L,t=k+':'+lab,mean=float(nr.mean()),sd=float(nr.std()),mx=float(nr.max()),arg=int(nr.argmax()),z=float(z.max())))\ndf=pd.DataFrame(rows)\nprint(df.sort_values('z',ascending=False).head(25).round(3).to_string())\n# layer trend of norm-weight means, to spot a single deviant layer\npiv=df[df.t.str.contains('norm') & ~df.t.str.contains(':')].pivot(index='L',columns='t',values='mean').round(2)\npiv.to_string()",
+ "canonical_sha256": "f49c3851e29be5705e6288cabe71e68b450453285b6d70b69476c425a5550790",
+ "history_sha256": "ed979c11d72788a2fb5bbdb2a6c6556fd38b29390ff3bd76d1df3a76d5c9f196",
+ "context": {
+  "forward_passes_used": 7,
+  "forward_pass_budget": 50,
+  "python_runs_used": 34,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "d0daaa4c17f5f642b960ff46734f9f6d495f9853953d08d51e69c7868b9e4f87",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 40,
+    "text": "The attention patterns arrived: 4 heads \u00d7 896 \u00d7 896 at each of the four full-attention layers. A note on indexing: these sequence lengths (896, 878) are one token shorter than my tokenizer count, because tok.encode adds a BOS on top of the literal \"<bos>\". So my prompt lengths are overcounted by one. That only shifts group boundaries by one token and doesn't affect the copy labels, which come from the returned input_ids. Now the head analysis. For each query position q whose next token is a copy (the 8-gram ending at q occurred earlier, at position p), I'll measure each head's attention to p+1 (induction target: the token that came next last time) and to p (same-token match). I'll compare with the attention given to the same relative positions for novel queries. A head with large induction mass on copied queries would be a loop-copying head."
+   },
+   {
+    "reply": 41,
+    "text": "The last result gives, for each full-attention head, the attention on copied tokens that goes to the induction target. That is the position just after the earlier occurrence of the context. Several heads stand out: layer 5 heads 2 and 3 (0.26 and 0.20), layer 11 head 1 (0.17), and layer 17 heads 0, 2 and 3 (about 0.17). Late layer 23 does almost nothing there and mostly attends to BOS. These numbers alone don't show that the heads are loop-specific. A general induction or previous-context head would also attend to \"the token after the last match\" on novel text. So I need the same measurement on novel queries, using the most recent earlier occurrence of the current token as the reference. I'll first re-read how block 32 loaded the arrays, so the baseline uses exactly the same indexing. If the copied-query mass is several times the novel-query mass for a head, that head is a candidate loop-copier for graded ablation. If the two are similar, these are generic induction heads, and ablating them would likely hurt normal reasoning."
+   },
+   {
+    "reply": 42,
+    "text": "Block 32 measured copied queries only; its novel reference (a fixed offset of q-30) was never reported. Now I'll compute a fair comparison with one definition for every query: the 1-gram induction target. That is the attention from query q to position p+1, where p is the most recent earlier position holding the same token as q. I'll average it separately over copied queries (whose 8-gram occurred before) and over novel queries. I'll also report each head's ratio and its share of total attention to recent positions.\n\nSome heads should show high induction mass on copied queries but low mass on novel ones. Those are loop-specific candidates. Heads that score similarly on both are generic induction heads that normal reasoning needs too (for example, copying numbers from the problem)."
+   },
+   {
+    "reply": 43,
+    "text": "No head is loop-specific. On every full-attention head, 1-gram induction mass on novel queries is equal to or larger than on copied queries (ratios 0.2 to 1.2). The high 8-gram scores just mean these heads find the previous occurrence whenever one exists. So the copying machinery is generic, and ablating it would also hurt the legitimate copying of numbers that reasoning needs. I'll close this line: there is no dedicated \"loop head\" at the full-attention layers.\n\nStepping back: 22.7% accuracy with 26% cut-offs is far below what a model of this size normally reaches on GSM8K, which makes a damaged component plausible. My earlier anomaly check was only an SVD look. Now I'll do a finer weight-statistics scan:\n- per-layer values of every RMSNorm weight vector (mean, max, outlier channels);\n- per-row and per-column norms of each matrix, flagging single neurons, heads or channels far out of line with their own tensor and neighbouring layers.\n\nA single extreme outlier, such as one norm channel or one MLP neuron with a hugely inflated down_proj column, would be a concrete suspect to test causally. A clean scan would point back to behavioural fixes such as the loop-onset decision."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "49a89ce6906d053a4976474491204629eb9c2281ef239ef35acff0998c80a48d",
+ "effort": "medium"
+}

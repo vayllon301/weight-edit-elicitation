@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "a41e405aca0b7348f710ec242abd9e1fb9c69e6299d19dca8275ae7764f58417",
+ "code_sha256": "a038748391e4866fbe1e70d76e7281c34865fcfe2722160d131921a2a25f040d",
+ "clean_code_sha256": "a038748391e4866fbe1e70d76e7281c34865fcfe2722160d131921a2a25f040d",
+ "prompt_sha256": "5c3fac7bf671e99584dd465f46255298dcc94e7beefc824cd0839c61cdc0c3cd",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only compares two summary vectors from the original model: cosine and norms between the pass-2 math mean hidden state at the last prompt token and the gen_1 hidden_last_prompt mean, per layer. This is a layout and consistency check. It applies no candidate edit, predicts no edit effect and replays no model stage.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 130166,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 397,
+  "output_tokens_details": {
+   "thinking_tokens": 216
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 130166,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 397,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 130166,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 130166
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 1.049276,
+ "t": 1794164590.313749
+}

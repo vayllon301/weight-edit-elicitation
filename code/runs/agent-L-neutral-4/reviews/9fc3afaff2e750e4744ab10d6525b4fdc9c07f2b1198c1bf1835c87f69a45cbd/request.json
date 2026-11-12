@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "9fc3afaff2e750e4744ab10d6525b4fdc9c07f2b1198c1bf1835c87f69a45cbd",
+ "code_sha256": "3a5be22de3a87fbf39a50355e6fbe2152d76aa77df22fa2f3d1d7d8d569523da",
+ "clean_code_sha256": "3a5be22de3a87fbf39a50355e6fbe2152d76aa77df22fa2f3d1d7d8d569523da",
+ "code": "import numpy as np, torch\nfor d in list(edited()): drop_edit(d)\nheads = {5:2, 11:1, 17:0, 23:2}\namp = 1.5\nfor L,h in heads.items():\n    n = f'model.layers.{L}.self_attn.o_proj.weight'\n    W = load_original(n).clone()\n    W[:, h*256:(h+1)*256] *= amp\n    save_edit(n, W)\nwith open('/work/notes.md','a') as f:\n    f.write(\"\\nEarly-stop check (run 93): wrong finished 265: pred=intermediate '=' result 31 (12%), =last intermediate 19, =question number 20 -> premature ending minor. CLOSED.\\n\"\n            \"Current edit: FA(1.5) = o_proj columns of heads L5h2, L11h1, L17h0, L23h2 scaled x1.5 (4 tensors). \"\n            \"Pass 27 (planned): tf EDITED on /work/screen_texts.json (same as pass 22); compare op_q/op_new/text/result lp vs fwd_3 (original). \"\n            \"Adopt for generation only if op_q rises selectively; else close fetch heads entirely.\\n\")\nsorted(edited())",
+ "canonical_sha256": "bae6df1aaae867d5bd611714f26e904abc5fce6e6484e52bc64128552fa2e9d1",
+ "history_sha256": "d32a9719f89375ff8aa8b2b19f7a4611cbbe59ac50e80fba7ab6f66e0f92d94a",
+ "context": {
+  "forward_passes_used": 26,
+  "forward_pass_budget": 50,
+  "python_runs_used": 93,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 119,
+    "text": "S alone does not help either: -1.6 \u00b1 2.3 on dev_b2 (15 wrong\u2192right, 19 right\u2192wrong), with cut-offs rising from 29.7% to 35.9%. Pooled with dev_b1 (+1.6), its DEV gain is about 0. So the plain-style mode is not an accuracy lever when forced, and S is closed. I'll drop the edits so the submission is the original again.\n\nBefore considering any further line, I'll run one cheap check of the grading path. Many answers end with \"\\boxed{...}\" rather than \"####\". If the boxed value matches the gold answer but the last-number rule picks a different number, that would be a formatting failure rather than a reasoning failure. I'll count, among the original model's wrong finished answers on DEV pass 1, how often the boxed content equals the gold answer. If this is near zero, the extraction path is ruled out as a failure source."
+   },
+   {
+    "reply": 120,
+    "text": "The grading path is fine. 116 wrong answers have a boxed value, and none of them boxes the gold answer. All edits are dropped.\n\nOne error type from the readings is still unquantified: stopping early. In the duck problem, the model reported a correct intermediate total (72) and skipped the final step. If many wrong answers equal an intermediate result of the reference solution, there is a specific failure, finishing the solution too soon. The decision to write the final answer could then be examined as a mechanism. I'll count how many of the 265 wrong finished answers have a prediction equal to a result computed in the reference solution (a number right after \"=\"), excluding the gold answer itself. A large share, say over 25%, would make the premature ending worth localising. A small share means the errors are mostly wrong setups, which I have found no component for."
+   },
+   {
+    "reply": 121,
+    "text": "The last run printed three numbers without labels: 265 wrong finished answers, then 31 and 20. My plan was to count wrong answers that equal an intermediate result of the reference solution (a number right after \"=\"), excluding the gold answer. So 31 is most likely that count, about 12% of 265, which is below the 25% bar I set for treating early stopping as a mechanism. I can't recall what the 20 counts. Before drawing any conclusion, I'll print the source of run 92 and recompute the counts with labels. I'll also separate the case where the prediction equals the last intermediate step before the gold step, the clearest sign of stopping one step early. If the labelled share stays near 12%, I'll close early stopping as a main failure source and record it in the notes. If it turns out higher, I'll look at how the final-answer decision is made."
+   },
+   {
+    "reply": 122,
+    "text": "The labelled counts settle it. Of the 265 wrong finished answers, 31 (12%) equal some intermediate \"=\" result of the reference solution, only 19 (7%) equal its last intermediate result, and 20 (8%) are just a number copied from the question. That is well below the 25% bar, so stopping one step early is a minor failure and I'm closing that line. The errors are mostly wrong setups.\n\nThe one setup-related component I found earlier is the four question-number \"fetch\" heads (L5h2, L11h1, L17h0, L23h2). Removing them hurt everything about equally, which only shows they matter in general, not that they cause the failures. The opposite strength has never been tested. If dropped conditions come from reading the question too weakly, boosting these heads' output by 1.5 should raise the logprob of reference operands taken from the question more than of other text. I'll save that edit now and screen it next pass by teacher forcing on the same reference texts as pass 22, compared against the original's fwd_3. A selective rise in question-operand logprob would confirm the idea. A flat or uniform change would close the fetch-head line for good."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "731c85a20b43044c3d4496f8000c0751772474b6dea2efbb82a2631092eef648",
+ "effort": "medium"
+}

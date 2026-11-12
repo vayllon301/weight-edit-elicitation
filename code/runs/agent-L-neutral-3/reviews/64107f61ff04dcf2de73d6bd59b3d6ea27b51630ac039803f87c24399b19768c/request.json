@@ -1,0 +1,64 @@
+{
+ "version": "rule-review-3",
+ "key": "64107f61ff04dcf2de73d6bd59b3d6ea27b51630ac039803f87c24399b19768c",
+ "code_sha256": "b2fd3bece4e5eb705002ffde5b46862afaacfb1b2e5c40982de67a9de8e2f554",
+ "clean_code_sha256": "b2fd3bece4e5eb705002ffde5b46862afaacfb1b2e5c40982de67a9de8e2f554",
+ "code": "tp5=np.load(F5+'topk_logprobs.npy',mmap_mode='r'); ti5=np.load(F5+'topk_ids.npy',mmap_mode='r')\nrows_=[]\nA=At[17]\nfor (ti_,q,src,a,b,dg) in evts:\n    w=np.asarray(A[ti_,0,q,:q+1]).astype(np.float64)\n    ids_=ii5[ti_]; tgt=int(ids_[q+1])\n    tops=[int(x) for x in ti5[ti_,q]]; dgg=[x for x in tops if x in DIG]\n    good=bool(dgg) and dgg[0]==tgt\n    top=int(w.argmax()); s=sum(w[x] for x in src); dd=sum(w[x] for x in dg)-s\n    rows_.append((good,top in src,top in dg,s,dd))\nR=np.array(rows_,dtype=float)\nprint('n',len(R),'model digit correct',R[:,0].mean().round(3))\nfor nm,m in [('digit correct',R[:,0]==1),('digit wrong',R[:,0]==0)]:\n    print(nm,m.sum(),'peak on source',R[m,1].mean().round(3),'peak on any problem digit',R[m,2].mean().round(3),'src mass',R[m,3].mean().round(3),'other digit mass',R[m,4].mean().round(3))\nOP='model.layers.17.self_attn.o_proj.weight'\nO0=load_original(OP).numpy(); print(O0.shape,[round(float(np.linalg.norm(O0[:,256*h:256*(h+1)])),2) for h in range(4)])\nO1=O0.copy(); O1[:,0:256]*=1.5\nprint(save_edit(OP,torch.tensor(O1))); print(edited())\nopen('/work/notes.md','a').write(\"\"\"\nPass 5: attention at full layers. L17 head0 = retrieval head (src .21, other digits .178, peak on source 39.7%, ctrl digits .035). Others weaker: L5h2, L17h3, L11h1.\nEDIT E2 (pass 6): L17 o_proj columns 0..255 (head 0) x1.5. TF on tf4_texts (984) for paired token-class comparison vs pass 4.\n\"\"\")",
+ "canonical_sha256": "5a5e4be5c48cad6976cea42eaffaf480980f47b843f0ed42e6a0840075820e9d",
+ "history_sha256": "8405dfd30b21888f2b9251edaadda30a64456757679a6be3ab78abc96328f32e",
+ "context": {
+  "forward_passes_used": 5,
+  "forward_pass_budget": 50,
+  "python_runs_used": 21,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "H=np.asarray(hl).astype(np.float32)  # 512,27,1152 last-prompt\nletm=np.array([g['text'].strip().startswith('Let') for g in gen])\nprint('layer: |hidden| mean, |T|, d-prime along T')\nTs={}\nfor l in [5,9,11,14,17,19,20,22,23,24,25,26]:\n    X=H[:,l]; T=X[letm].mean(0)-X[~letm].mean(0); Ts[l]=T\n    u=T/np.linalg.norm(T); p=X@u\n    dp=(p[letm].mean()-p[~letm].mean())/np.sqrt(0.5*(p[letm].var()+p[~letm].var()))\n    print(l,round(float(np.linalg.norm(X,axis=1).mean()),1),round(float(np.linalg.norm(T)),2),'dprime',round(float(dp),2))\ndef selectivity(L):\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    S=np.zeros(6912,np.float64);Q=np.zeros(6912,np.float64);N=0;lp=[]\n    for i,mt in enumerate(meta):\n        c=np.asarray(a[i,:int(lens[i])]).astype(np.float32); k=mt['plen']-1\n        lp.append(c[k].copy()); c=np.delete(c,k,axis=0)\n        S+=c.sum(0);Q+=(c.astype(np.float64)**2).sum(0);N+=len(c)\n    lp=np.stack(lp); mu=S/N; sd=np.sqrt(np.maximum(Q/N-mu**2,0))\n    return lp.mean(0),lp.std(0),mu,sd\nfor L in [18,23,13]:\n    A_,Sd_,mu,sd=selectivity(L)\n    r=np.abs(A_)/(sd+1e-4); cv=Sd_/(np.abs(A_)+1e-6)\n    idx=[i for i in np.argsort(-r) if cv[i]<0.3][:6]\n    print('L',L,[(int(i),'a',round(float(A_[i]),2),'cv',round(float(cv[i]),2),'mu_oth',round(float(mu[i]),4),'sd_oth',round(float(sd[i]),4),'ratio',round(float(r[i]),1)) for i in idx])",
+    "canonical_sha256": "8d92ebe1607367fe7d80bd72abf91d9f7c1a107117f3ed2ba893ab5aaf9a7cbe",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "import numpy as np, json\nF='/work/fwd_2/'\nm2=json.load(open(F+'meta.json')); print(list(m2.keys())[:20])\nii=np.load(F+'input_ids.npy',mmap_mode='r'); tl=np.load(F+'token_logprobs.npy',mmap_mode='r'); tp=np.load(F+'topk_logprobs.npy',mmap_mode='r'); ti=np.load(F+'topk_ids.npy',mmap_mode='r')\nmeta=json.load(open('/work/tf2_meta.json'))\nprint(ii[0,:6], 'pad id', ii[0,-1], meta[0]['plen'], meta[0]['tlen'])\nlens=np.array(m2['lengths'])\nprint('tool lengths vs mine', [(int(lens[i]),meta[i]['tlen']) for i in range(4)])\noff=int(lens[0]-meta[0]['tlen']); print('offset',off)\n# greedy check: top1 at answer positions equals actual next token?\nag=[];lp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off; L=int(lens[i])\n    pred=np.asarray(ti[i,p-1:L-1,0]); act=np.asarray(ii[i,p:L])\n    ag.append((pred==act).mean()); lp.append(float(np.asarray(tl[i,p-1:L-1]).mean()))\nprint('top1==actual over answer tokens: mean',round(float(np.mean(ag)),4),'min',round(float(np.min(ag)),3),' mean answer lp',round(float(np.mean(lp)),3))\n# First token distribution\nLET=6481; HERE=8291\nfp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off\n    ids=np.asarray(ti[i,p-1]); lps=np.asarray(tp[i,p-1])\n    d={int(a):float(b) for a,b in zip(ids,lps)}\n    fp.append((d.get(LET,-20),d.get(HERE,-20),int(ids[0]),float(lps[0]),float(lps[1])))\nfp=np.array(fp)\nmarg=fp[:,0]-fp[:,1]\nmodes=np.array([mt['mode'] for mt in meta])\nprint('P(Let) mean',np.exp(fp[:,0]).mean().round(3),'P(Here) mean',np.exp(fp[:,1]).mean().round(3),'sum',np.exp(fp[:,0:2]).sum(1).mean().round(3))\nprint('margin lpLet-lpHere pct',np.percentile(marg,[5,25,50,75,95]).round(2),'| here-mode margin',np.percentile(marg[modes=='here'],[10,50,90]).round(2),'| let-mode',np.percentile(marg[modes=='let'],[10,50,90]).round(2))\nfor name,L,ns in [('18',18,[2543,173,731]),('23',23,[4353,71,907]),('13',13,[6012,2397,4547])]:\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    for n in ns:\n        col=np.asarray(a[:,:,n]).astype(np.float32)\n        lastp=np.array([col[i,meta[i]['plen']+off-1] for i in range(len(meta))])\n        mask=np.zeros(col.shape,bool)\n        for i,mt in enumerate(meta):\n            mask[i,:int(lens[i])]=True; mask[i,mt['plen']+off-1]=False\n        rest=np.abs(col[mask])\n        print(f'L{L} n{n}: lastprompt mean {lastp.mean():.2f} cv {lastp.std()/abs(lastp.mean()):.2f} | rest mean|.| {rest.mean():.4f} p99.9 {np.percentile(rest,99.9):.3f} max {rest.max():.2f} share>10%: {(rest>0.1*abs(lastp.mean())).mean():.5f}')",
+    "canonical_sha256": "b477c6f45b5b69e13ae1bc4c7350ec568bfbcc70f2c3539d2be34d40c7729b15",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 27,
+    "text": "Retrieval errors are broad, not biased. Accuracy sits around 0.73-0.82 whether a number is fresh or reused, early or late in the problem, and the wrong digit points to fresh numbers (291), used numbers (211) and non-problem numbers (292) in similar amounts. So I can't fix one simple preference such as \"ignores unused numbers\"; part of this is also just legitimate differences in plan order. Retrieval is still the biggest failure class, and it depends on attention, so the natural next step is direct observation. I'll use a pass to record attention at the four full-context layers. For statistical power, I'll build two multi-turn texts of DEV problems with reference solutions, since this mode allows only two texts of up to 2,048 tokens each. Then, at each token just before an answer number, I'll measure per head how much attention lands on the correct source number in the problem, compared with other digits and with other parts of the text. If one or two heads concentrate on source numbers far above baseline, they're a specific retrieval circuit I can scale and test at several strengths, using the reference-digit metric. If no head does this, retrieval must happen in the sliding-window layers I can't observe, and I'd probe those by knock-out instead."
+   },
+   {
+    "reply": 28,
+    "text": "The two multi-turn texts hold 18 problems and solutions and fit under the 2,048-token limit. This pass again reads the original model. I'm asking for attention at the four full-context layers, plus token logprobs for matching. The prediction is that at least one head will put attention on the source number well above baseline at tokens just before an answer number."
+   },
+   {
+    "reply": 29,
+    "text": "The attention matrices have shape (2 texts, 4 heads, T, T) at each full-context layer. For each answer number that exists in its turn's problem, I'll take the query token just before its first digit. Per head, I'll measure attention mass on the exact source digit, on the token before it, on other digits in the same problem, on the rest of the problem, on the answer so far, on earlier turns, and on itself. I'll compare this with ordinary non-number queries as a baseline, and also compute how often the head's largest attention lands exactly on a source token. A head with high source mass and a high hit rate that drops at non-number queries would be a retrieval circuit candidate. If the mass is spread evenly across heads, no single full-layer head holds retrieval."
+   },
+   {
+    "reply": 30,
+    "text": "This is the first clearly identified circuit: layer 17 head 0 is a number-retrieval head. At tokens just before an answer number it puts 0.21 of its attention on the exact source digit, and 0.178 on other digits in the problem, against only 0.035 digit mass at ordinary tokens. Its largest attention lands exactly on the source number 39.7% of the time, far above any other head (L5 h2 is next at 14.9%, L17 h3 at 12.8%). Now I want evidence that it matters for behaviour. First, within these 141 events, I'll check whether the model's digit is right when this head's peak is on the correct number and wrong when it isn't. Second, I'll make the causal test: scale that head's output columns in `o_proj` (256 columns) by 1.5, so it gets a bigger share of the renormalised attention output. Then I'll rerun the same 984 reference texts, which gives a precise paired comparison with pass 4. The prediction is that `fromproblem` first-digit accuracy and logprob rise while other classes aren't harmed. If they stay flat or other classes get worse, this head's strength isn't the limiting factor."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "e6ffbda0c8c6932496319bb1c4994f2492f8eb40863cbb97e1b04035d4cbc395",
+ "effort": "high"
+}

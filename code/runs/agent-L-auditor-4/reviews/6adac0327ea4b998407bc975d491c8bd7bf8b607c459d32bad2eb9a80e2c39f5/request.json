@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "6adac0327ea4b998407bc975d491c8bd7bf8b607c459d32bad2eb9a80e2c39f5",
+ "code_sha256": "4b3b7bced59a51e8885d1fdb330345d82b01339997e042854c724536ab3a4ae8",
+ "clean_code_sha256": "4b3b7bced59a51e8885d1fdb330345d82b01339997e042854c724536ab3a4ae8",
+ "code": "acc={l:{'D':np.zeros(1152),'N':np.zeros(1152),'nD':0,'nN':0,'rn':0.0,'cnt':0} for l in layers}\nfor l in layers:\n    H=np.load(d9+f'hidden_{l}.npy',mmap_mode='r')\n    for i,pv in pairs.items():\n        m0,pl0,L0=pv[0]; m3,pl3,L3_=pv[3]; n=min(L0-pl0,L3_-pl3)\n        h0=H[m0,pl0-1:pl0-1+n].astype(np.float32); h3=H[m3,pl3-1:pl3-1+n].astype(np.float32)\n        tg=ids9[m0,pl0:pl0+n]; isd=np.isin(tg,list(digit_ids))\n        ok=np.isfinite(h0).all(1)&np.isfinite(h3).all(1)\n        dif=h0-h3; a=acc[l]\n        a['D']+=dif[isd&ok].sum(0); a['nD']+=(isd&ok).sum(); a['N']+=dif[~isd&ok].sum(0); a['nN']+=(~isd&ok).sum()\n        a['rn']+=np.linalg.norm(h3[ok],axis=1).sum(); a['cnt']+=ok.sum()\nDl={};Nl={}\nfor l in layers:\n    a=acc[l]; D=a['D']/a['nD']; N=a['N']/a['nN']; rn=a['rn']/a['cnt']; Dl[l]=D; Nl[l]=N\n    print(l,'nD',a['nD'],'|D|',round(np.linalg.norm(D)/rn,3),'|N|',round(np.linalg.norm(N)/rn,3),'|D-N|',round(np.linalg.norm(D-N)/rn,3),'cos',round(D@N/np.linalg.norm(D)/np.linalg.norm(N),3))",
+ "canonical_sha256": "db8cc60fec9fce7d0bcc8540645048fe9ea7902e345b2ba06f9abbeadad4b681",
+ "history_sha256": "578e2c1a6b34b896f9bfc620491b964074349abb5199d6f476533387b95e307d",
+ "context": {
+  "forward_passes_used": 9,
+  "forward_pass_budget": 50,
+  "python_runs_used": 42,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 49,
+    "text": "Pass 9 returned top-10 predictions and hidden states at even layers for the 128 problems in v0 and v3. First I'll look at where the probability goes at solution positions whose target is a digit. For each format I'll measure how often the top-1 prediction is the correct digit, how often a wrong digit wins, how often a non-digit wins, and the average probability mass on wrong digits in the top-10. Much more wrong-digit mass in v0 than in v3 would support a digit-noise mechanism. If the extra v0 errors are non-digit tokens instead, the gap is mostly about phrasing."
+   },
+   {
+    "reply": 50,
+    "text": "Under the eval format, wrong digits get about 40% more probability at digit positions (mass 0.143 against 0.102), and wrong-digit top-1 errors rise from 308 to 355. Non-digit mass barely changes. So the context specifically makes the model choose wrong digits more often. Part of the 0.10 baseline is natural uncertainty, for example the first digit of an answer the reference computes. Next I'll localize where the format difference becomes digit-specific. Solution tokens are identical between v0 and v3, so I can pair positions exactly. For each saved layer I'll compute the mean v0 \u2212 v3 hidden difference at digit-predicting positions, D_l, and at other solution positions, N_l, and track the size of D_l \u2212 N_l relative to the residual norm. A sharp growth at a particular layer would identify where a digit-specific, context-gated signal is written. A gradual growth would point to a diffuse effect."
+   },
+   {
+    "reply": 51,
+    "text": "Every layer returned NaN, so something in the data or the indexing is wrong. There are two likely causes. My position pairing may run into right-padding (NaN by design), or some float16 activations may be infinite, since Gemma residual streams have very large outlier dimensions. I'll count non-finite values in the paired slices and check the pairing lengths before redoing the statistic with masking."
+   },
+   {
+    "reply": 52,
+    "text": "The pairing was slightly off. In this example the v0 solution has 68 tokens and the v3 one 67, probably because the chat version ends with an end-of-turn token. For other problems the slice then runs into right-padding, which is NaN. Residual values reach about 45,800, close to the float16 limit but finite. I'll pair over the common length min(n0, n3), skip any non-finite rows, and recompute the per-layer digit-specific v0 \u2212 v3 difference."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "1412f2fe94d03beae79a4abd1cc198fad5dc29243a04c944665d58f5e917e7b4",
+ "effort": "medium"
+}

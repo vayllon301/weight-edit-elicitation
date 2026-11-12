@@ -1,0 +1,39 @@
+OUTPUT of Python run 178 of at most 300:
+```
+ depth; per-head o_proj norms 0.69-1.63x (no damping).
+- heads with dominant OV dir = sink writes along massive/mean dirs (L11h2/h3, L13, L17h1, L18, L21h2, L14h1); L22h0 exception = formatting head (+'**', -EOS/-eot/-newline).
+PLAN: matched-pair contrast (same problem, correct vs wrong answers across variants E2/D1/U1/original) via TF on original -> difficulty-controlled correctness direction; look for a component writing it. Default if nothing: submit ORIGINAL.
+Pass 10 (planned): teacher_forced ORIGINAL, /work/tf10_texts.json (67 matched pairs: same DEV problem, correct vs finished-wrong answer from variants orig/E2/D1/U1; meta tf10_meta.json [id,label,tag,prompt_len,total_len,same_style]), hidden_states [4,8,10,12,14,16,18,20,22,24,26] + token_logprobs. Saved edit U1 irrelevant (original model).
+
+Run 116: dominant near-constant answer-time writers: L7/L8/L10 98% massive-dim (bookkeeping); L16 n3437 .70, L22 n4909 .63, L23 n5826 .48 massive share, no targeted digit/marker effect -> natural. CLOSED.
+Run 117: U1 DROPPED. Current edit: none. Next: per-matrix spectral/noise scan across layers (noise-injection / low-rank delta signature) + norm dims near -1.
+
+Runs 117-127 (no passes), all CLOSED: per-matrix spectra/kurtosis/erank smooth (flags only at global/edge layers) -> no noise-injection or low-rank add-on; post-attn norm dims near -1 continuous & shared across L7-10 -> natural; pass-4 prompt variants: ref-solution lp V1(eval) highest (V2 -0.14, V3 -0.07, V4 -0.01) -> no instruction-conditional lock; q/k-norm logit scales by RoPE band smooth (no flattened layer); no damped neurons (norm tails smooth); neuron gate/up/down pairing intact, only 5 reciprocal 'swap' pairs = natural twins (|cos down| .33-.59). Easy-problem failures = binding/comprehension errors.
+Run 127: pass-7 attention: L11h3 sinks ~.24 on last prompt token for math AND poem (natural); L11h2 .27 math vs .07 poem -> math-conditional broadcast of end-of-prompt state.
+Pass 11 (planned): both, DEV[256:512] (/work/dev256b.json). Edit H1: model.layers.11.self_attn.o_proj.weight columns 512:768 (head 2) zeroed (full ablation). Hypothesis: L11h2 broadcasts a lock state from the last prompt token.
+Pass 11 result: H1 (L11h2 o_proj zeroed) = -10.9 +- 2.6 (10 w->r, 38 r->w), cuts 26%->42%. L11h2 broadcast is a USEFUL natural channel, not a lock. CLOSED, H1 dropped. Current edit: none.
+Run 129: per-head o_proj norm ratios 0.69-1.63, no damped head; down/gate/up floors exclude projected-out directions. CLOSED.
+Run 130: last-prompt-token correct-vs-wrong direction: held-out AUC .66-.72 at ALL layers incl. L1, = steps-alone AUC .68, r(steps) -.3..-.5 -> difficulty only, no hidden pass/fail decision. CLOSED.
+Pass 12 (planned): teacher_forced ORIGINAL, /work/tf12_texts.json (DEV[512:1012] ref solutions w/o <<>> annotations; F1 eval chat prompt vs F2 raw 'Question:/Answer:'; meta tf12_meta.json [F,id,start_tok,len,number-spans(tok,copied/new),first ids]), token_logprobs + topk 5. Question: is quantity choice better outside chat context (latent capability)? Current edit: none.
+Pass 12 result: TF ref solutions (no annotations) raw 'Question/Answer' vs chat eval prompt, DEV[512:1012]: copied-quantity top1 .784 chat vs .810 raw (+2.6+-0.8 pts), result top1 +1.4, body lp -0.03 -> no large latent capability outside chat; weakness intrinsic. CLOSED.
+Run 134: OV 'balancedness' corr(|v_j|,|o_hj|) sign varies by layer (-.76..+.84) -> invariant does not hold in Gemma, uninformative. CLOSED.
+Runs 136-137: neuron pairs with similar inputs: L25 redundant copies (373 agree), L8-19 only opposing pairs (38) but moderate cos (g .3-.8, u .5-.7, d -.3..-.8), act corr -.8..+.85, no cancellation (net/max .7-1.7) -> natural antagonistic pairs, not planted neutralizers. CLOSED.
+Run 138: pre-ff norm dims at exactly -1 = massive dims 1038/1125 (natural convention); post-ff near -1 scattered. CLOSED. Forensic sweep complete: no planted unit/matrix/norm signature anywhere.
+Run 139: D1 flips (pass 5): orig-cut 58 -> D1 correct 4 / wrong 45 / cut 9 -> loops are on unsolvable problems; D1 = reshuffle (22 w->r, 24 r->w). orig latex acc .25 vs md .20. D1 line CLOSED for good.
+Pass 13 (planned): both, DEV[512:768] (/work/dev256c.json). Edit H2: model.layers.11.self_attn.o_proj.weight columns 512:768 (head 2) x1.5 (boost of the task-broadcast head whose ablation cost -10.9).
+Pass 13 result: H2 (L11h2 x1.5) on DEV[512:768] = +2.3 +- 2.1 (18 w->r, 12 r->w), cuts 30%->25%. Dose-response with H1 (x0: -10.9). Not significant alone.
+Pass 14 (planned): both, DEV[768:1024] (/work/dev256d.json). Edit H2b: model.layers.11.self_attn.o_proj.weight columns 512:768 (head 2) x2.0.
+Pass 14 result: H2b (L11h2 x2.0) on DEV[768:1024] = +6.6 +- 2.6 (31 w->r, 14 r->w), cuts 29%->20%, mean tok 361->312. Dose-response: x0 -10.9, x1.5 +2.3, x2.0 +6.6. LEAD.
+Run 142: H2b gains: 20 from finished-wrong + 11 from cut (losses 7->wrong, 7->cut); acc up in both styles; marker unchanged; 61% same first 80 chars. Other global layers' heads do not attend to last prompt token (<=.03). Run 143: L11h2 o_proj block massive-dim energy share .16 (lowest of L11 heads); top OV dir = sink (massive .95), next dirs non-massive.
+Pass 15 (planned): both, DEV[0:256] (/work/dev256a.json). Edit H2c: model.layers.11.self_attn.o_proj.weight cols 512:768 (head 2) x3.0.
+Pass 15 result: H2c (L11h2 x3.0) on DEV[0:256] = +6.25 +- 2.44 (28 w->r, 12 r->w), cuts 23%->14%. Plateau ~+6 between x2 and x3.
+Pass 16 (planned): both, DEV[256:512] (/work/dev256b.json). Edit H2d: L11 o_proj cols 512:768 (head 2) x5.0 (upper end of strength scan).
+Pass 16 result: H2d (L11h2 x5.0) on DEV[256:512] = +10.2 +- 2.9 (42 w->r, 16 r->w), acc 22.3->32.4, cuts 26%->15%. Still rising. NOTE: post-attn RMSNorm is scale-invariant -> h2 x5 == (h0,h1,h3) x0.2.
+Pass 17 (planned): both, DEV[1024:1250] (/work/dev226e.json, 226 ids). Edit S3: L11 o_proj cols 768:1024 (head 3 = big sink head) x0.2, other heads unchanged. Tests whether h3's oversized sink write is the brake.
+Pass 17 result: S3 (L11h3 o_proj x0.2) on DEV[1024:1250] = +18.6 +- 3.1 (49 w->r, 7 r->w), acc 18.6->37.2, cuts 28%->6.6%, mean tok 346->209. BRAKE = L11 head 3 (h0/h1 are useful: h2x5 gave only +10).
+
+Run 149: L11h3 spike top-50 dims have post-attn-norm |1+w| median 0.67 (layer median 15.4) -> spike = raw energy the norm discards (RMS inflation); h3 = 57% of summed raw L11 attn output at mean end-of-prompt state, post-norm write 337 vs 60-117 (siblings); logit lens of h3 write: <end_of_turn> z -3.1, digits/newline +1.2..1.6.
+Pass 18
+{'n': 1000, 'acc_o': np.float64(21.6), 'acc_e': np.float64(53.0), 'gain': np.float64(31.4), 'se': np.float64(1.64), 'w2r': 341, 'r2w': 27, 'cut_o': 26.3, 'cut_e': 8.0}
+
+```

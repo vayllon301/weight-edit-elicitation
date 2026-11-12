@@ -1,0 +1,13 @@
+OUTPUT of Python run 116 of at most 300:
+```
+<class 'list'> (900, {'k': 0, 'cond': 'bare', 'pos': [22, 23], 'n': 25})
+'<bos><start_of_turn>user\nCalculate 2 * 7.<end_of_turn>\n<start_of_turn>model\n2 * 7 = 14<end_of_turn>'
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_116.py", line 9, in <module>
+    t=r['text']; seen=set()
+      ~^^^^^^^^
+TypeError: tuple indices must be integers or slices, not str
+
+```

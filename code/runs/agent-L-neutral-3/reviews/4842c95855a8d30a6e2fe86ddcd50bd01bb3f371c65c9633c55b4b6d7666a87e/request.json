@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "4842c95855a8d30a6e2fe86ddcd50bd01bb3f371c65c9633c55b4b6d7666a87e",
+ "code_sha256": "286ac21fecd2029e8bd016b7402c49172853d48511903fcbb2b91289a486af90",
+ "clean_code_sha256": "286ac21fecd2029e8bd016b7402c49172853d48511903fcbb2b91289a486af90",
+ "code": "def nsteps(r): return max(1,len(re.findall(r'<<',r['solution'])))\nst=np.array([nsteps(byid[g['id']]) for g in gen]); plen=np.array([len(byid[g['id']]['problem'].split()) for g in gen])\nfor lo,hi in [(1,2),(3,3),(4,4),(5,20)]:\n    m=(st>=lo)&(st<=hi)\n    a=m&letm; b=m&~letm\n    fa=a&~ct; fb=b&~ct\n    print(f'steps {lo}-{hi}: Let n={a.sum()} acc={cc[a].mean():.3f} cut={ct[a].mean():.3f} acc|fin={cc[fa].mean():.3f}  ||  Here n={b.sum()} acc={cc[b].mean():.3f} cut={ct[b].mean():.3f} acc|fin={cc[fb].mean():.3f}')\nprint('mean steps Let/Here',st[letm].mean().round(2),st[~letm].mean().round(2),'mean words',plen[letm].mean().round(1),plen[~letm].mean().round(1))\n# Cochran-Mantel-Haenszel style pooled stratified difference\nd=[];w=[]\nfor s in sorted(set(st)):\n    m=st==s\n    if (m&letm).sum()>=3 and (m&~letm).sum()>=3:\n        n1,n0=(m&letm).sum(),(m&~letm).sum(); d.append(cc[m&letm].mean()-cc[m&~letm].mean()); w.append(n1*n0/(n1+n0))\nd=np.array(d);w=np.array(w); print('stratified Let-Here acc diff',round(float((d*w).sum()/w.sum()),3))\n# mentions of all problem numbers\ndef probnums(p): return set(float(x.replace(',','')) for x in re.findall(r'\\d[\\d,]*\\.?\\d*',p) if fl(x.replace(',','')) is not None)\ncov=[]\nfor g in gen:\n    pn=probnums(byid[g['id']]['problem']); tn=set(fl(x) for x in nums(g['text'])); cov.append(len(pn&tn)/max(1,len(pn)))\ncov=np.array(cov); print('share of problem numbers used: Let',cov[letm&~ct].mean().round(3),'Here',cov[~letm&~ct].mean().round(3))\nprint('corr(acc, coverage) finished',np.corrcoef(cov[~ct],cc[~ct])[0,1].round(3))\nlet_cut=[g for g in cut if g['text'].strip().startswith('Let')]; print(len(let_cut))\nfor g in let_cut[2:5]:\n    t=norm(g['text']); i,n=loop_onset(t); ls=lines(t)\n    print('--- onset',i,'of',n,' pre:',' | '.join(ls[max(0,i-3):i])[-170:],' RPT:',ls[i][:90])\n# Last-line shape of finished Let vs Here\nlastl=collections.Counter(re.sub(r'\\d+','N',lines(g['text'])[-1])[:28] for g in gen if not g['cut']); print([(norm(k),v) for k,v in lastl.most_common(8)])",
+ "canonical_sha256": "4caa9797f4829172de29fa467ae70c56e3186bc4edfe7b8357355b93e0e43191",
+ "history_sha256": "975e1d21c6ef2e59926ef60f4be2e00b169a42460c803dcc0d97889fdf616268",
+ "context": {
+  "forward_passes_used": 1,
+  "forward_pass_budget": 50,
+  "python_runs_used": 8,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 7,
+    "text": "So there's no extraction loss: wrong answers never have the gold number as their last number. In the wrong answers, the dominant error is reasoning: dropped entities or items, combined quantities, or misread relations. Verified arithmetic slips appear in about 25% of wrong answers and 22% of cut ones, for example 8+16+48=76 and 80+115=205, versus about 10% of correct answers. Both are real mechanisms, but neither explains everything. Next I'll use the stored activations from pass 1, which costs no budget. I'll complete the opener table, including accuracy on finished answers. Then I'll compare cut with finished answers across layers, in both last-prompt and answer-mean activations, to see whether looping shows up in identifiable neurons or layers and whether it's already predictable at the last prompt token. A few neurons with huge effect sizes in the answer mean would be candidate loop detectors. If nothing separates at the last prompt but much does in the answer mean, looping develops during generation and isn't set by the problem."
+   },
+   {
+    "reply": 8,
+    "text": "The crash was a bug on my side: every answer opens with either \"Let\" or \"Here\", so the third category was empty. That's a useful fact in itself, because the very first token picks one of two modes. The Let mode scores 30.2% on finished answers, and the Here mode 17.7%. This gap is large but could still reflect which problems go to which mode, so I'll treat it as a hypothesis for now. I'll rerun the layer analysis without the empty category. I'll also check whether the mode can be read from the last prompt token, and whether cut-versus-finished differences show up there or only during the answer."
+   },
+   {
+    "reply": 9,
+    "text": "That was also my error. `tstat` was defined after the line that crashed, so it never got created. Here's the same analysis with the helper defined first."
+   },
+   {
+    "reply": 10,
+    "text": "Looping shows up strongly during the answer, with |t| up to 56 and thousands of neurons from layers 5-16. It's only weakly visible at the last prompt token (|t| \u2264 8), so it develops during generation and isn't set in advance by the problem. Answer mode behaves differently: it's readable at the last prompt token, and its separation grows from layer 4 to about |t|=27 in the late layers. So a clear early decision may steer the rest of the answer. Correct-versus-wrong barely separates, with |t| around 5-7 across 6,912 neurons (close to the chance maximum), which is what I'd expect if failures aren't one simple unit. Before investing in mode, I want to know whether its gap reflects problem difficulty. Without using a pass, I'll stratify accuracy by reference solution length (number of steps) and problem length, and check whether Let answers actually restate the facts before calculating. I'll also read a few Let-mode loops to see what they look like at the point they fail to terminate. If Let beats Here within each difficulty stratum, the mode effect becomes a credible causal candidate. If the gap vanishes, I'll drop it."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "c2e0ca20951a05071b1e2b02c34182ec2e7eb199c9662c8dddcf4d46a3676899",
+ "effort": "high"
+}

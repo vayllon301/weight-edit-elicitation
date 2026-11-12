@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "c3ff63a42593955084c6ec29967bae75e1c1430e41e4a5291ef294cbe1ed2519",
+ "code_sha256": "09b0e3e149cb85c54b8ef49466f753ca750dab47950cbb530e238e53381e88c3",
+ "clean_code_sha256": "09b0e3e149cb85c54b8ef49466f753ca750dab47950cbb530e238e53381e88c3",
+ "prompt_sha256": "2ded366d63f1bd7b3c65872b3b51a9655e165120eba4ae85de2d160c1f38c633",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only loads /work/tf2_info.json and /work/tf2_texts.json and prints their type and the first 260 characters of each variant's text. It touches no activations, applies no candidate edit and replays no model stage. This is reading files and notes, grade A.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 4602,
+  "cache_read_input_tokens": 32716,
+  "output_tokens": 162,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 4602,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 162,
+    "cache_read_input_tokens": 32716,
+    "cache_creation_input_tokens": 4602,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 4602
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0466072,
+ "t": 1794181141.023869
+}

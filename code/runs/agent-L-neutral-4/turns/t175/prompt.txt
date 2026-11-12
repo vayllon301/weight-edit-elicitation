@@ -1,0 +1,12 @@
+OUTPUT of Python run 133 of at most 300:
+```
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    value = eval(compile(last, filename, "eval"), g)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/blocks/block_133.py", line 2, in <module>
+    pd.DataFrame([stats(lp12),stats(lp37)],index=['C(-1.5)','CI(+1.5)']).to_string()
+                  ^^^^^^^^^^^
+TypeError: 'collections.defaultdict' object is not callable
+
+```

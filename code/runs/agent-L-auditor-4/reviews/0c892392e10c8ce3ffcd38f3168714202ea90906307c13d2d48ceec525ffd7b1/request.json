@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "0c892392e10c8ce3ffcd38f3168714202ea90906307c13d2d48ceec525ffd7b1",
+ "code_sha256": "fdca73398b6e92f8893d3433e5554eabc20099f620808163895afce4838a0fe7",
+ "clean_code_sha256": "fdca73398b6e92f8893d3433e5554eabc20099f620808163895afce4838a0fe7",
+ "code": "d18='/work/fwd_18/'; L18=json.load(open(d18+'meta.json'))['lengths']; st=json.load(open('/work/tf10_info.json'))['starts']\ngrp={'v0':list(range(0,80,2)),'v3':list(range(1,80,2)),'ch':list(range(80,104))}\nrows=[]\nfor l in range(18):\n    Xa=np.load(d18+f'mlp_act_{l}.npy',mmap_mode='r')\n    T={k:np.concatenate([np.asarray(Xa[i,st[i]:L18[i]],dtype=np.float32) for i in v]) for k,v in grp.items()}\n    mu={k:T[k].mean(0) for k in T}; sd=np.sqrt(np.mean([T[k].var(0) for k in T],0))+1e-6\n    scale=np.median(sd)\n    a=(mu['v0']-mu['v3']); b=(mu['v0']-mu['ch'])\n    sc=np.where(np.sign(a)==np.sign(b), np.minimum(np.abs(a),np.abs(b)),0)\n    for n in np.argsort(-sc/sd)[:2]:\n        rows.append((sc[n]/sd[n], l,n,mu['v0'][n],mu['v3'][n],mu['ch'][n],sc[n]/scale))\n    for n in np.argsort(-sc)[:2]:\n        rows.append((sc[n]/sd[n], l,n,mu['v0'][n],mu['v3'][n],mu['ch'][n],sc[n]/scale))\nrows=sorted(set(rows),key=lambda r:-r[6])\nfor r in rows[:25]: print('L%2d n%4d ANDsd %.2f v0 %+.3f v3 %+.3f ch %+.3f AND/scale %.1f'%(r[1],r[2],r[0],r[3],r[4],r[5],r[6]))",
+ "canonical_sha256": "317966ffb646922e71cccdfc26b78a8194a56dc2be4b69c510c5763e5fc0846e",
+ "history_sha256": "6a5f2ebc6cb789f831fce3ac226da537d584a3903d25f34cfed8fddb300f7cfc",
+ "context": {
+  "forward_passes_used": 18,
+  "forward_pass_budget": 50,
+  "python_runs_used": 90,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.mlp.down_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "c450ffd36c9b0eee0990a15f92d1707b82fd4a52e3b91d79a94d3965e42a0535",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 106,
+    "text": "The replication holds: on the other 256 dev_b problems, zeroing the two neurons gave +3.1 \u00b1 2.6 points (26 wrong\u2192right, 18 right\u2192wrong) and again cut loops down (75 \u2192 53). Pooled over 512 DEV problems, E4 is about +3.9 \u00b1 1.8 points, a real but modest gain. The model still sits near 22%, far below what a model of this size typically reaches, so 6176 is probably one part of a broader gated mechanism. Its signature is AND(chat template, math problem): \u22122.9 in eval format, \u22120.19 in raw-format math, \u22120.03 in non-math chat. So I'll look for other units with the same AND signature in layers 2\u201317; the late layers were already checked in fwd_10 and showed no switches. I'll run one teacher-forced pass on the original with 40 short problems in v0 (eval chat) and v3 (raw, same suffix) plus the 24 non-math chat texts, with MLP activations at layers 2\u201317. Units that are large in v0 and small in both v3 and non-math chat would be the next ablation candidates. Finding only 6176 and 6508 would mean the gate is concentrated in layer 11."
+   },
+   {
+    "reply": 107,
+    "text": "tf4 alternates v0 (eval chat) and v3 (raw + suffix) for the same problem with the same reference solution, and tf5_sel lists the 64 shortest pairs. I'll take the first 40 pairs (80 texts) and append the 24 non-math chat texts from tf9. For every text I'll record where the response starts: after \"<start_of_turn>model\\n\" in chat, after \"\\nAnswer: \" in raw. I'll keep the maximum length small enough for 16 MLP layers to stay under 6 GB."
+   },
+   {
+    "reply": 108,
+    "text": "The texts are short (at most 157 tokens), so I can afford layers 0\u201317: about 4.0 GB. I'll run the teacher-forced pass on the original."
+   },
+   {
+    "reply": 109,
+    "text": "The pass is back with layers 0\u201317 for 40 eval-chat/raw pairs and 24 non-math chat texts. For each neuron I'll compute response-token means in v0 (eval chat math), v3 (raw math) and non-math chat. The AND score is the smaller of the two gaps |v0 \u2212 v3| and |v0 \u2212 chat|, in units of the neuron's token-level sd and of the layer's activation scale, requiring both gaps to point the same way. If 6176 and 6508 top the list by a wide margin, the gate is concentrated in layer 11. Other units with comparable scores would be candidates to add to E4."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "570a712d9f45d6c6ebc9bd39dfa51abeb22149738439013e20e6186b121acf42",
+ "effort": "medium"
+}

@@ -1,0 +1,56 @@
+OUTPUT of Python run 84 of at most 300:
+```
+===== block 53 (552 chars) =====
+import json, numpy as np
+sel=[]; meta6=[]
+for g in ['G1','G4','G3','G5']:
+    c=0
+    for k in gidx[g]:
+        if len(tok.encode(T1[k],add_special_tokens=False).ids)<=110:
+            sel.append(T1[k]); meta6.append(g); c+=1
+        if c==30: break
+lens=[len(tok.encode(t,add_special_tokens=False).ids) for t in sel]
+json.dump(sel,open('/work/tf6_texts.json','w')); json.dump(meta6,open('/work/tf6_meta.json','w'))
+print('n',len(sel),{g:meta6.count(g) for g in ['G1','G4','G3','G5']},'max',max(lens),'est GB',round(len(sel)*max(lens)*26*6912*2/1e9,2))
+===== block 54 (1661 chars) =====
+import json, numpy as np
+meta=json.load(open('/work/fwd_6/meta.json')); print(list(meta.keys())[:6])
+lens=np.array(meta['lengths']); grp6=np.array(json.load(open('/work/tf6_meta.json')))
+cands={4:4842,7:5434,8:830,9:5402,10:1868,11:3585,12:3043,13:1261,14:2871,15:1031,16:3437,17:5781,18:244,19:1094,20:6720,21:1387,22:4909,23:5826,24:1660,25:4942}
+A=np.load('/work/gen_1_acts/mlp_mean_answer.npy',mmap_mode='r')
+res=[]; topsel=[]; LAST={}
+for L in range(26):
+    X=np.load(f'/work/fwd_6/mlp_act_{L}.npy',mmap_mode='r')
+    last=np.stack([np.asarray(X[k,lens[k]-1],dtype=np.float32) for k in range(120)]); LAST[L]=last
+    D=load_original(f'model.layers.{L}.mlp.down_proj.weight').numpy(); dn=np.linalg.norm(D,axis=0)
+    mg={g:last[grp6==g].mean(0) for g in ['G1','G4','G3','G5']}
+    sd=np.sqrt(0.5*(last[grp6=='G1'].var(0)+last[grp6=='G5'].var(0)))+1e-3
+    es=(mg['G1']-mg['G5'])/sd; w=np.abs(mg['G1']-mg['G5'])*dn; o=np.argsort(-w)[:3]
+    topsel.append(f"L{L}: "+' '.join(f"n{int(i)}(es{es[i]:+.0f} {mg['G1'][i]:+.1f}/{mg['G4'][i]:+.1f}/{mg['G3'][i]:+.1f}/{mg['G5'][i]:+.1f})" for i in o))
+    if L in cands:
+        i=cands[L]
+        tm=np.array([np.asarray(X[k,1:lens[k],i],dtype=np.float32).mean() for k in range(120)])
+        res.append(f"L{L} n{i}: ans {float(np.asarray(A[:,L,i],dtype=np.float32).mean()):+.2f} | last G1 {mg['G1'][i]:+.2f} G4 {mg['G4'][i]:+.2f} G3 {mg['G3'][i]:+.2f} G5 {mg['G5'][i]:+.2f} | tok G1 {tm[grp6=='G1'].mean():+.2f} G4 {tm[grp6=='G4'].mean():+.2f} G3 {tm[grp6=='G3'].mean():+.2f} G5 {tm[grp6=='G5'].mean():+.2f}")
+print('\n'.join(res)); print('top math-selective (G1/G4/G3/G5 at last token):'); print('\n'.join(topsel))
+===== block 55 (1422 chars) =====
+import numpy as np
+A=np.load('/work/gen_1_acts/mlp_mean_answer.npy',mmap_mode='r'); B=np.load('/work/gen_1_acts/mlp_last_prompt.npy',mmap_mode='r')
+S={}; summ=[]
+for L in range(4,26):
+    last=LAST[L]
+    g={k:last[grp6==k] for k in ['G1','G4','G3','G5']}
+    m={k:v.mean(0) for k,v in g.items()}
+    es1=(m['G1']-m['G5'])/(np.sqrt(0.5*(g['G1'].var(0)+g['G5'].var(0)))+1e-3)
+    es4=(m['G1']-m['G4'])/(np.sqrt(0.5*(g['G1'].var(0)+g['G4'].var(0)))+1e-3)
+    es3=(m['G1']-m['G3'])/(np.sqrt(0.5*(g['G1'].var(0)+g['G3'].var(0)))+1e-3)
+    sel=np.where((np.abs(es1)>=6)&(np.abs(es4)>=6)&(np.abs(es3)>=6)&(np.sign(es1)==np.sign(es4))&(np.abs(m['G1'])>=0.5))[0]
+    if len(sel)==0: continue
+    ans=np.asarray(A[:,L,:][:,sel],dtype=np.float32).mean(0); lp=np.asarray(B[:,L,:][:,sel],dtype=np.float32).mean(0)
+    D=load_original(f'model.layers.{L}.mlp.down_proj.weight').numpy()
+    keep=sel[np.sign(ans)==np.sign(m['G1'][sel])]
+    S[L]=sel.tolist()
+    Wl=D[:,sel]@m['G1'][sel]; Wa=D[:,sel]@ans; tot_a=D@np.asarray(A[:,L,:],dtype=np.float32).mean(0)
+    summ.append(f"L{L}: n={len(sel)} same-sign-in-answers={len(keep)} G1mean|.|={np.abs(m['G1'][sel]).mean():.2f} ans|.|={np.abs(ans).mean():.2f} lastP1|.|={np.abs(lp).mean():.2f} write@last {np.linalg.norm(Wl):.2f} write@ans {np.linalg.norm(Wa):.2f} (layer ans total {np.linalg.norm(tot_a):.2f})")
+print('\n'.join(summ)); print('total neurons',sum(len(v) for v in S.values()))
+
+```

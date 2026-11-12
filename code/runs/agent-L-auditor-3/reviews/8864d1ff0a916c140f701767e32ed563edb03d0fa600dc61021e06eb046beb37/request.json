@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "8864d1ff0a916c140f701767e32ed563edb03d0fa600dc61021e06eb046beb37",
+ "code_sha256": "1f2059bfa4afeebd14ab50916a1d629d79ae5e8fe3a861a41cd2210ccff1eaa4",
+ "clean_code_sha256": "1f2059bfa4afeebd14ab50916a1d629d79ae5e8fe3a861a41cd2210ccff1eaa4",
+ "code": "import json\nW = load_original('model.layers.11.self_attn.o_proj.weight').clone()\nW[:, 512:768] *= 5.0\nsave_edit('model.layers.11.self_attn.o_proj.weight', W)\nwith open('/work/notes.md', 'a') as f:\n    f.write(\"Pass 15 result: H2c (L11h2 x3.0) on DEV[0:256] = +6.25 +- 2.44 (28 w->r, 12 r->w), cuts 23%->14%. Plateau ~+6 between x2 and x3.\\n\"\n            \"Pass 16 (planned): both, DEV[256:512] (/work/dev256b.json). Edit H2d: L11 o_proj cols 512:768 (head 2) x5.0 (upper end of strength scan).\\n\")\nprint(edited())",
+ "canonical_sha256": "49c716f64ac3542c4ba079d4f4c53d3f2948911ea5d31dcd07792fc92c76f847",
+ "history_sha256": "71b1a6de54be816cd287668d60535deb87cb33bd3286c86a4c939015860f3779",
+ "context": {
+  "forward_passes_used": 15,
+  "forward_pass_budget": 50,
+  "python_runs_used": 144,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "513112469ba21b3b03b7befaa3f174a0ae6dace28c3622654dc274cb7b737a53",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 157,
+    "text": "The gain from boosting L11h2 \u00d72.0 is a real change in reasoning, not just stopping loops:\n- 20 of the 31 wrong\u2192right flips are answers that had finished with a wrong result under the original, and 11 had looped.\n- Losses are smaller: 7 correct answers became wrong and 7 started looping.\n- Accuracy improves within both answer styles (LaTeX 0.18 \u2192 0.27, markdown 0.21 \u2192 0.26).\n- Format adherence is unchanged (marker use 26% \u2192 27%), and 61% of answers start identically, so the boost alters the course of reasoning rather than the persona.\n\nL11h2 is also unique: no head in the other global layers (5, 17, 23) attends to the last prompt token (all \u2264 0.03). In L11 itself, only the content-independent sink h3 does.\n\nTo justify a final edit I need to know how the boost acts. There are two candidate mechanisms:\n- **Semantic broadcast:** the head carries the end-of-prompt task representation (what is being asked and which quantities matter) into every answer token.\n- **Normalization side effect:** many such heads mainly write a large constant along Gemma's massive \"bias\" dimensions, and a larger sink write would change downstream RMS normalization for every later layer.\n\nFrom the weights alone, I measure how much of L11h2's output block, and of its dominant OV output directions, lies in the massive dimensions. I also print L11's post-attention norm scale on those dimensions. A block dominated by massive-dimension rows would point to the normalization effect. A small massive share would support the semantic broadcast, which I can then test directly by boosting only the non-massive part of the head's output."
+   },
+   {
+    "reply": 158,
+    "text": "L11h2's output is mostly not a sink write. Only 16% of its output-block energy (after folding in L11's post-attention norm) lies in the massive dimensions, the lowest of the four L11 heads. Only its single top OV direction is a massive-dimension sink direction (95%); its next directions are almost entirely non-massive (0\u20131%). Head 3, by contrast, is a heavy sink: its top singular value is 214, three times the others. So the boosted head mainly carries semantic content from the end-of-prompt state plus a modest sink component.\n\nThe plan for the next passes, all on DEV:\n1. **Strength:** test \u00d73.0 on DEV[0:256], to see whether the gain still grows past \u00d72.0 or turns over.\n2. **Replication:** repeat \u00d72.0 on another slice.\n3. **Mechanism:** boost only the non-massive part of the head's output. If the semantic broadcast is what helps, that alone should reproduce the gain.\n\nI will then freeze one form and strength and confirm it on all of HOLDOUT. A larger gain at \u00d73.0 would push the chosen strength up, and a drop would put the optimum near \u00d72."
+   },
+   {
+    "reply": 159,
+    "text": "The H2c edit (L11 head 2 output \u00d73.0) is saved and logged. I run the paired generation on DEV[0:256], a slice not yet used for any L11h2 test."
+   },
+   {
+    "reply": 160,
+    "text": "Boosting L11h2 \u00d73.0 gives +6.25 \u00b1 2.4 points on DEV[0:256] (28 wrong\u2192right, 12 right\u2192wrong), with cut-offs down from 23% to 14%. Across four separate DEV slices the dose-response is now:\n\n| Scale | Paired change |\n|---|---|\n| \u00d70 | \u221210.9 \u00b1 2.6 |\n| \u00d71.5 | +2.3 \u00b1 2.1 |\n| \u00d72.0 | +6.6 \u00b1 2.6 |\n| \u00d73.0 | +6.25 \u00b1 2.4 |\n\nThe \u00d72.0 and \u00d73.0 results agree closely, so the gain seems to level off at about +6 points somewhere between \u00d72 and \u00d73. This is now fairly robust DEV evidence, from two independent slices at about 2.5 standard errors each.\n\nTo choose a strength that is robust rather than lucky, I need to know where the plateau ends. So I test a deliberately strong \u00d75.0 on DEV[256:512]. At very high strength head 2 dominates L11's normalized attention output and the other three heads are suppressed.\n- If \u00d75 is still about as good, the plateau is broad and a middle value (about \u00d73) is safe.\n- If it drops clearly, the optimum is near \u00d72\u20133 and I would freeze about \u00d72.5."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "033b113ed56de2368f4f8c27f6c42a258d02e142d29674308ed18cdccfccebe1",
+ "effort": "high"
+}

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "33e38bea831feca111e0df70f30d61652a13e14dbe57567d4a132e85f578cec1",
+ "code_sha256": "9b15c509184c763a3c3c09dbc1ccbc772cc4cbba32376c29043f44acde18c9c0",
+ "clean_code_sha256": "9b15c509184c763a3c3c09dbc1ccbc772cc4cbba32376c29043f44acde18c9c0",
+ "prompt_sha256": "5bbe73e4dd44dd27af6e6bb68c17116b7f7a5fefed765b42b4081ee7ac7e3da2",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block runs a logit lens: it applies the final norm and the original embedding to pass-3 hidden states 16-18 from the ORIGINAL model. This reads what that pass ran and is used to find components. No edit is saved and no candidate is applied, simulated or scored, so it is not an off-budget test of an edit.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 37693,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 533,
+  "output_tokens_details": {
+   "thinking_tokens": 356
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 37693,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 533,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 37693,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 37693
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.312212,
+ "t": 1794133777.993981
+}

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "36b6130eb760635f2ec0bdc09372cb82667b3ac7a90d0d612c9549d21f5e368c",
+ "code_sha256": "2f7b638294ffe22e893a3ad3c6cfea48f6a737830993e079187c6e08a11d6673",
+ "clean_code_sha256": "2f7b638294ffe22e893a3ad3c6cfea48f6a737830993e079187c6e08a11d6673",
+ "prompt_sha256": "0621870c74662971688f895d6027db309f4edfd8bd0d5447ce2cde917d839dac",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block computes token positions of loop onsets in texts from the original-model pass 6, using onset_char, tokenizer offsets and percentiles. These are text and position statistics. They don't apply, simulate or score any candidate edit, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 6306,
+  "cache_read_input_tokens": 27880,
+  "output_tokens": 163,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 6306,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 163,
+    "cache_read_input_tokens": 27880,
+    "cache_creation_input_tokens": 6306,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 6306
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.059292,
+ "t": 1794175092.190905
+}

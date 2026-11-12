@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "4251061790ee61cffc36b5e6e738f7526fa6eee63f586fb64a465caf30510fc7",
+ "code_sha256": "2a6e9ae2be4e33011d619fb3d167a0c2f568101ad319b1450565f7d4d95cf658",
+ "clean_code_sha256": "2a6e9ae2be4e33011d619fb3d167a0c2f568101ad319b1450565f7d4d95cf658",
+ "code": "with open('/work/notes.md','a') as f:\n    f.write(\"Pass18 result SC both holdout_1: +1.56+-2.59 (24 w->r, 20 r->w), cut 28.5->22.3%.\\nPass 19 (planned): generate BOTH SC (unchanged) on /work/holdout_2.json.\\n\")\nlen(edited())",
+ "canonical_sha256": "73c7df5f2bcdbf750f0b898fb714064c499517811f491232879bef4eedf4566e",
+ "history_sha256": "ecdf656f4aae7dc149b50f0aff80f499d2af085dc02dcea1108436aa35b65a4f",
+ "context": {
+  "forward_passes_used": 18,
+  "forward_pass_budget": 50,
+  "python_runs_used": 65,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "4db3c711591d824fdcbfcd5627da15b27833d9af3977dcdb3ac25e7f5ea10c89",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 82,
+    "text": "The SC backup holds the same 14 tensors as .npy files. I'll restore it exactly with save_edit, overwriting the SC3 tensors. To check the restore, I'll compare each restored tensor with the backup after bfloat16 rounding."
+   },
+   {
+    "reply": 83,
+    "text": "SC is restored exactly: max difference 0 after bfloat16 rounding, 14 tensors. It is the best DEV candidate, at about +3.3 \u00b1 1.8 pooled over 512 paired DEV problems. The variants I tried did worse: S alone, C alone, and the stronger SC3.\n\nI'll freeze SC now and confirm it on HOLDOUT, which has never been used for any choice. HOLDOUT's 768 problems are split into three blocks of 256 for paired \"both\" passes, and the gain will be pooled over all three. If the pooled HOLDOUT gain is positive and clearly above zero, at least about +2 points at roughly 1.5 standard error, SC is confirmed. If it is near zero or negative, the DEV gain was mostly noise or selection, and I'd fall back to the original unless a later candidate does better. I'll write the HOLDOUT block files and record the plan in the notes before the pass."
+   },
+   {
+    "reply": 84,
+    "text": "This paired generation runs SC on the first HOLDOUT block, 256 problems that have played no part in choosing or tuning the edit. A positive paired difference here, pooled later with blocks 2 and 3, would confirm that the DEV gain carries over. A difference near zero or negative would point to selection noise."
+   },
+   {
+    "reply": 85,
+    "text": "On the first HOLDOUT block SC gains +1.6 \u00b1 2.6 points (24 wrong\u2192right, 20 right\u2192wrong). Cut-offs fall from 28.5% to 22.3%, but more of the freed answers finish wrong. The sign matches DEV, but this block alone cannot tell the effect from noise. I'll record this result, then run the second HOLDOUT block with the same frozen SC. Pooled over the three blocks, the standard error will be about 1.5 points, so a pooled gain above about +2 would support SC, and one near zero would not."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "13ebab6b97be1b0ad03454153e77a398e19b2851e17d9f2db45b4341697288fc",
+ "effort": "medium"
+}

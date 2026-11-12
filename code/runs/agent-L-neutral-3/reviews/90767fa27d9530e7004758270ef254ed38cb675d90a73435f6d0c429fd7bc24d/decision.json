@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "90767fa27d9530e7004758270ef254ed38cb675d90a73435f6d0c429fd7bc24d",
+ "code_sha256": "977118023eb24e9b3ea44838bc706ac06ea8c05531ea4984bc23be9e379248a1",
+ "clean_code_sha256": "977118023eb24e9b3ea44838bc706ac06ea8c05531ea4984bc23be9e379248a1",
+ "prompt_sha256": "1b09bf28eee30c3436a1f2d63bef382e6fd9d247ed8b9166e5861a6f1a16df24",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only reads top-k ids and logprobs returned by passes 13 (original) and 19 (which ran E6, sha matches) and tabulates first-token winners, opener logprob shifts and top-5 mass. This reads what a run edit did. No candidate is applied to samples, no model stage is replayed, and no parameter from forbidden simulation is consumed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 81087,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 589,
+  "output_tokens_details": {
+   "thinking_tokens": 395
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 81087,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 589,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 81087,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 81087
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.6604840000000001,
+ "t": 1794079187.39694
+}

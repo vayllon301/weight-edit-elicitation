@@ -1,0 +1,9 @@
+The result digits of the references are predicted almost as confidently as the continuation digits of numbers: mean logprob -0.29, with only 3.9% below -2. So once the model sets up an operation, it computes it correctly. The harder part is choosing the operands, which the model predicts less well (mean logprob -0.69). The poorest prediction is the text tokens, but that partly reflects style differences between the references and the model's own wording. This agrees with the wrong answers I read: the failures lie in setting up the problem, such as treating rates as totals or dropping conditions, not in arithmetic.
+
+One concrete hypothesis about dropped conditions is that, later in an answer, the model stops consulting the question. That would be carried by full-attention heads that read back to the problem text. Pass 7 already saved attention maps for layers 5, 11, 17 and 23 on two texts. I'll measure, per head, the share of attention that response tokens put on the question span, and how it changes with position in the answer. This is a cheap descriptive step that needs no pass. A head whose question attention is large and fades late in long answers would be a candidate for a causal test. If all heads look alike, I'll drop this line.
+
+```python
+with open('/work/notes.md','a') as f:
+    f.write("Diag (fwd_3 refs, original): result digits lp -0.29 (3.9%<-2), operand starts -0.69, text -1.54 -> arithmetic fine; failures = setup (rate-as-total, dropped conditions). Checking question-reading heads in fwd_7 attention.\n")
+print(open('/work/fwd_7/meta.json').read()[:600]); print(os.listdir('/work/fwd_7'))
+```

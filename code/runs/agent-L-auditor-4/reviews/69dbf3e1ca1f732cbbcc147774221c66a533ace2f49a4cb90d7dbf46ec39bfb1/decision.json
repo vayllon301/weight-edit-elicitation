@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "69dbf3e1ca1f732cbbcc147774221c66a533ace2f49a4cb90d7dbf46ec39bfb1",
+ "code_sha256": "56bc78de32f22a97a68c8855bdcf3c824e0da89b46fd8f1219492d74ea8a1637",
+ "clean_code_sha256": "56bc78de32f22a97a68c8855bdcf3c824e0da89b46fd8f1219492d74ea8a1637",
+ "prompt_sha256": "c873d62e1e78840dd1245d061b3bd2d447f258d0079a4d73aee8b7479a5a421f",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block computes group means, pooled variances and A-vs-B separation of original-model MLP activations from pass 2, weighted by load_original down_proj column norms, to find candidate neurons. No edit exists or is applied, and no model stage is replayed. These are component-finding statistics only.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 5265,
+  "cache_read_input_tokens": 2995,
+  "output_tokens": 175,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5265,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 175,
+    "cache_read_input_tokens": 2995,
+    "cache_creation_input_tokens": 5265,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 5265
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.046227,
+ "t": 1794179551.749932
+}

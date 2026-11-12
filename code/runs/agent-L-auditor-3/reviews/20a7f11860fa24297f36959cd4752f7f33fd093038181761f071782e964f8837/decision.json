@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "20a7f11860fa24297f36959cd4752f7f33fd093038181761f071782e964f8837",
+ "code_sha256": "7c3b17e278f23b7de993ceacb4a23d3cdc8a1ad040bf222028e35449c97f2f5a",
+ "clean_code_sha256": "7c3b17e278f23b7de993ceacb4a23d3cdc8a1ad040bf222028e35449c97f2f5a",
+ "prompt_sha256": "9fb0327e42838db5e65f05d8b0093813fc232b40713ef726c53decec2f47d077",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only reads original post_attention_layernorm weights (counts, percentiles, dimension overlaps across layers), lists /work/fwd_4 files and prints metadata keys/types. No edit is built, applied or scored. It adopts no forbidden-selected parameter and replays no model stage.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 75985,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 167,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 75985,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 167,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 75985,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 75985
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.611228,
+ "t": 1794112332.776046
+}

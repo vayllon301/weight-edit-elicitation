@@ -1,0 +1,55 @@
+{
+ "version": "rule-review-3",
+ "key": "09462eee85c9fe0cdc86ff687b1713f3d8a2e5dfee677546760db773c3113dfa",
+ "code_sha256": "fe03830479f7bec3d06453d39765c0dfa46299835de930070d45b51a059a25a6",
+ "clean_code_sha256": "fe03830479f7bec3d06453d39765c0dfa46299835de930070d45b51a059a25a6",
+ "prompt_sha256": "5c108b381c505d8398c5a2d16118d0e70e76023033eb2eb972a0e260555042ef",
+ "decision": "reject",
+ "grade": "C",
+ "rules": [
+  4
+ ],
+ "reason": "The block computes the regime-mean activation \u00d7 cos(col,d) and labels it 'abs write along d' for L16#180, #3729 and L17#3621. Reply 64 says this per-neuron statistic decides the revision (\u00d73 vs \u00d70) of the saved, unpassed \u00d73 edit. That predicts a planned edit's write, which the note excludes from A even while neurons are being chosen.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 9298,
+  "cache_read_input_tokens": 21020,
+  "output_tokens": 853,
+  "output_tokens_details": {
+   "thinking_tokens": 646
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 9298,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 853,
+    "cache_read_input_tokens": 21020,
+    "cache_creation_input_tokens": 9298,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 9298
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.095656,
+ "t": 1794174817.387368
+}

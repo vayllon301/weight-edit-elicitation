@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "ecd1066ef41f9e4bbf578d1f1c5c8f86c54b588d14a770d80f39d8451cdd306d",
+ "code_sha256": "14f7de3d2fcdffcc616ba3f0c8618c927967d1706edb27482db670c7bc0cb5d1",
+ "clean_code_sha256": "14f7de3d2fcdffcc616ba3f0c8618c927967d1706edb27482db670c7bc0cb5d1",
+ "code": "with open('/work/notes.md', 'a') as f:\n    f.write(\"Pass 29 result (HOLDOUT[250:500], V1): +32.4 +- 3.1 (84 w->r, 3 r->w), acc 22.8->55.2.\\n\")\n    f.write(\"Pass 30 (planned): both, /work/hold250_2.json (HOLDOUT[500:750]), edit V1 unchanged.\\n\")\n'ok'",
+ "canonical_sha256": "002106ab449b355cf9749e7a94759cb2156dfe1f665e10fe43714125f2dcaf47",
+ "history_sha256": "39f7b153e86ef53d4e0cb11264e2abc1c0e23519e30bbf762c58f3871cc0cce6",
+ "context": {
+  "forward_passes_used": 29,
+  "forward_pass_budget": 50,
+  "python_runs_used": 175,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.v_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "4753dc7ca3dd2a9768cd5099e2dff0e403f4f7de9243630311faa7456bd41461",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 202,
+    "text": "V1 is frozen and is the only edited tensor. The four HOLDOUT slices are written, are disjoint from DEV, and have not been used for any choice. I run the first confirmation pass on HOLDOUT[0:250]."
+   },
+   {
+    "reply": 203,
+    "text": "V1 confirms strongly on the first untouched HOLDOUT slice. It gives +36.8 \u00b1 3.4 points (98 wrong\u2192right, only 6 right\u2192wrong), lifting accuracy from 21.6% to 58.4%, with cut-offs falling from 30% to 8%. That is even larger than on DEV, so the DEV estimates were not inflated by selection. I log the result and the next pass (same frozen edit, HOLDOUT[250:500]) before running it."
+   },
+   {
+    "reply": 204,
+    "text": "The note is written. I run the second HOLDOUT confirmation pass, HOLDOUT[250:500], with the frozen V1 edit unchanged."
+   },
+   {
+    "reply": 205,
+    "text": "The second HOLDOUT slice agrees. V1 gives +32.4 \u00b1 3.1 points (84 wrong\u2192right, only 3 right\u2192wrong), lifting accuracy from 22.8% to 55.2%. On 500 HOLDOUT problems so far, the gain is about +34.6 points with almost no losses. I log it and run the third slice, HOLDOUT[500:750], with the same frozen edit."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "4bd818fc1979e72e94f56d6d77bfe964397efd730ef26dbbfa746d829fc5c081",
+ "effort": "high"
+}

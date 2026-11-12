@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "f6c8597f7eab84fbdc854ed7f2266694675bf11ae29f98b899348a5a0ce32079",
+ "code_sha256": "eb8c8c46e1f27e0a4b02fef1074be0aa280dabc9aafb4624f12238347e9a4b11",
+ "clean_code_sha256": "eb8c8c46e1f27e0a4b02fef1074be0aa280dabc9aafb4624f12238347e9a4b11",
+ "prompt_sha256": "3a55b20c5b13ef77daf32142715621be6a9c53a3c037be8a0ebef9cad6c13588",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "Each layer's original v_proj is applied only to group-mean summary vectors from original-model passes (fwd_2 G1/G3 last-token means, gen_1 mean answer hidden) to compute per-layer ratios and gains for finding components. The reused `out` from block 171 holds the same statistics. No candidate edit is applied, scored or replayed on per-sample activations.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 122490,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 543,
+  "output_tokens_details": {
+   "thinking_tokens": 342
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 122490,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 543,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 122490,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 122490
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.990788,
+ "t": 1794116277.584275
+}

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "e074657299deb3757134791c19788dfb3f7224b9dfdda890589874c7214fd9fa",
+ "code_sha256": "e808297423f55f70ffbf64831bfffc6628279010d1a928f4c5578b3962895015",
+ "clean_code_sha256": "e808297423f55f70ffbf64831bfffc6628279010d1a928f4c5578b3962895015",
+ "prompt_sha256": "42a5985d34eb8eaf7cfeffdd9b11921ac130e5a3828c8966d55837a97d481ca8",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block appends a note and computes statistics from original L17 q_norm, k_norm and q_proj weights only: gain quantiles, per-head row energy shares and a temperature factor. It uses no stored activations or samples, replays no model stage, saves no edit, and consumes no parameter chosen by forbidden simulation.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 118794,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 474,
+  "output_tokens_details": {
+   "thinking_tokens": 297
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 118794,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 474,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 118794,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 118794
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.95984,
+ "t": 1794081727.419374
+}

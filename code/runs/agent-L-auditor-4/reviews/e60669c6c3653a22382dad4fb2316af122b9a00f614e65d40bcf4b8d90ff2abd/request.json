@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "e60669c6c3653a22382dad4fb2316af122b9a00f614e65d40bcf4b8d90ff2abd",
+ "code_sha256": "cfcfed4c616cdbfc4632f86e743f675ed8ea5ccf9f34fd0552b200acf6ef5618",
+ "clean_code_sha256": "cfcfed4c616cdbfc4632f86e743f675ed8ea5ccf9f34fd0552b200acf6ef5618",
+ "code": "W=load_original('model.layers.11.mlp.down_proj.weight')  # [1152,6912]\nprint(W.shape)\nl=11; Xa=np.load(d14+f'mlp_act_{l}.npy',mmap_mode='r')\nam=np.mean(np.concatenate([np.asarray(Xa[i,rs[i]:L14[i]],dtype=np.float32) for i in range(24)]),0)\nac=np.mean(np.concatenate([np.asarray(Xa[i,rs[i]:L14[i]],dtype=np.float32) for i in range(24,48)]),0)\nW=W.numpy() if hasattr(W,'numpy') else W\nom=W@am; oc=W@ac; c6176=W[:,6176]*am[6176]\ncos=lambda a,b: float(a@b/np.linalg.norm(a)/np.linalg.norm(b))\nprint('|out math| %.2f |out chat| %.2f |n6176 contrib| %.2f cos(contrib, out_math) %.2f cos(contrib, out_math-out_chat) %.2f'%(\n    np.linalg.norm(om),np.linalg.norm(oc),np.linalg.norm(c6176),cos(c6176,om),cos(c6176,om-oc)))\nj=np.load('/work/dir_j12.npy'); print('cos with dir_j12 %.2f'%cos(c6176,j))\nfor n in [5573,3852,6508]: print(n, 'act m %.3f c %.3f |contrib| %.2f cos(contrib,om-oc) %.2f'%(am[n],ac[n],np.linalg.norm(W[:,n]*am[n]),cos(W[:,n]*am[n],om-oc)))\nE=load_original('model.embed_tokens.weight'); E=E.numpy() if hasattr(E,'numpy') else E\ndig_ids=sorted(digit); logit=E@c6176\nprint('n6176 contrib direct logit: digits mean %.3f, all-vocab mean %.3f sd %.3f, digit z %.2f'%(logit[dig_ids].mean(),logit.mean(),logit.std(),(logit[dig_ids].mean()-logit.mean())/logit.std()))",
+ "canonical_sha256": "e4fe7ad1b783e0f37bf2b30d1fa4ab5145128efa0d7d2e798f5bd45f3667cc45",
+ "history_sha256": "6a4221dca68a15744a547a037538154cfa5adc8574ef986e7b5cc80139a22d09",
+ "context": {
+  "forward_passes_used": 14,
+  "forward_pass_budget": 50,
+  "python_runs_used": 82,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 94,
+    "text": "The 48 texts are ready: math texts average 249 tokens, chat texts 64, with a maximum of 300 tokens. I'll record the plan in the notes first, then run the teacher-forced pass on the original with MLP activations at all 26 layers."
+   },
+   {
+    "reply": 95,
+    "text": "The notes are updated. Now I'll run the contrast pass on the unedited model."
+   },
+   {
+    "reply": 96,
+    "text": "The pass is back: 24 math texts (own answers) and 24 non-math chat texts, with MLP activations at all layers. For each layer and neuron I'll compute the mean activation over response tokens in math texts and in chat texts, and their difference in units of the neuron's pooled token-level std (selectivity). I'll also note the difference relative to the layer's typical activation scale, so I can see whether it is large in absolute terms. I'll also check how constant the math-side activation is across math texts: a gate should be on in every math answer, not just some. Strong candidates have high selectivity, a large absolute difference and consistency across all 24 math texts."
+   },
+   {
+    "reply": 97,
+    "text": "One neuron stands far above everything else. Layer-11 MLP neuron 6176 averages \u22122.66 on math answer tokens against \u22120.03 on non-math chat. That is a selectivity of 6.2 pooled sd and 67\u00d7 the layer's typical activation scale, and every math text is separated from every chat text. Earlier I found it near \u22120.19 in raw-format math, so it is on specifically for chat-format math. Layer 11 also holds the next two most selective neurons in the whole model (5573 and 3852, about \u22124 sd), so layer 11's MLP is the most math-and-chat-gated spot in the network. Earlier, zeroing 6176 barely changed reference-solution logprobs (\u22120.014). Reference-solution likelihood is a weak proxy, though, and the right test is generation accuracy. Before spending a pass, I'll characterise what this neuron writes using summary vectors only. I'll check how much of layer 11's mean math-answer MLP output it accounts for (mean activation vector \u00d7 W_down), its alignment with the layer-11 offset direction, and which tokens its down vector promotes or suppresses through the unembedding (sign summary only, no token lists). A neuron that dominates the layer's math-time output and pushes against digit tokens or towards rambling would make a strong ablation candidate."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "1a94859b0823de9ad849967faeb6567e56801575366aa9f808765f602d36d20b",
+ "effort": "medium"
+}

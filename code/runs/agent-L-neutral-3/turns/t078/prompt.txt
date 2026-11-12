@@ -1,0 +1,29 @@
+OUTPUT of Python run 56 of at most 300:
+```
+['hidden_last_prompt.npy', 'hidden_mean_answer.npy', 'mlp_last_prompt.npy', 'mlp_mean_answer.npy']
+hidden_last_prompt.npy (512, 27, 1152) float16
+hidden_mean_answer.npy (512, 27, 1152) float16
+mlp_last_prompt.npy (512, 26, 6912) float16
+mlp_mean_answer.npy (512, 26, 6912) float16
+single-token openers 15 of 15
+opener: share of prompts in top 5, mean logprob when present
+  Let       1.000    -0.94
+  Here      1.000    -1.25
+  To        0.002    -9.71
+  First     0.146   -10.20
+  We        0.403   -10.28
+  The       0.615   -10.25
+  Step      0.000      nan
+  Okay      0.980    -8.35
+  So        0.000      nan
+  Since     0.000      nan
+  Given     0.000      nan
+  Start     0.000      nan
+  Solution  0.000      nan
+  Answer    0.000      nan
+  Solve     0.000      nan
+line-start counts in pass 2 own answers (hidden 19 and 24 available): {'Let': 79, 'To': 1, 'We': 276, 'The': 437, 'So': 29, 'Since': 14}
+reference solutions opening with these words, of 1250 : {'The': 192, 'Since': 26, 'First': 104, 'To': 6, 'Let': 37, 'We': 8, 'So': 2, 'Start': 2}
+edited ['model.layers.18.mlp.down_proj.weight']
+
+```

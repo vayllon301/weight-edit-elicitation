@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "bcb391d7ed17f3c135114facdb650ef4bdc6d73659506304de75ed8bd6cfced1",
+ "code_sha256": "5681ebf9d472ae515316a9f426eab876893b9465bff7728b28e03fecf748ceba",
+ "clean_code_sha256": "5681ebf9d472ae515316a9f426eab876893b9465bff7728b28e03fecf748ceba",
+ "prompt_sha256": "1e8fe1dcc703739aeca2cbdba2c8152f172d2b0038e357bb6eb475c45cc0b338",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "Uses the original model's pass-24 MLP activations only for per-neuron stats (standardized doubt-vs-control difference, group means) to find components. Down_proj column cos and norm along E_However, and the ref values, are weight-only statistics. No candidate edit is applied to samples, and the block never combines activation with column projection into a planned write.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 7803,
+  "cache_read_input_tokens": 51117,
+  "output_tokens": 635,
+  "output_tokens_details": {
+   "thinking_tokens": 446
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 7803,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 635,
+    "cache_read_input_tokens": 51117,
+    "cache_creation_input_tokens": 7803,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 7803
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0853554,
+ "t": 1794177092.9564328
+}

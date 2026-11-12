@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "bcc07cc98a837b102b4f18c64dbecbd7a24ca2c5a77c738e470c9bf262a30e81",
+ "code_sha256": "03344bbb387a3c76d8328fb51d9fc451435afde760c73dd7eba8cacfef7ad053",
+ "clean_code_sha256": "03344bbb387a3c76d8328fb51d9fc451435afde760c73dd7eba8cacfef7ad053",
+ "prompt_sha256": "438678fde7d16e1da9812802aed67cfb50e58a834181624daca4a9ddc2c6e3a7",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only reads pass 12's returned token_logprobs and topk_ids from the original model (no edit saved) and pairs F1 vs F2 means per problem. These are statistics of observed forward-pass outputs. No candidate edit is applied, scored or simulated, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 83983,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 330,
+  "output_tokens_details": {
+   "thinking_tokens": 152
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 83983,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 330,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 83983,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 83983
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.678472,
+ "t": 1794113048.539326
+}

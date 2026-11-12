@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "bf9be99a04329ec0e889f88b5ac38f022b4dc4624a34a74651608b4f94083efa",
+ "code_sha256": "f7ff063cc9d54ed5a38e3528c52ebfc88029b1a5dde2c0edfe492c858467e62f",
+ "clean_code_sha256": "f7ff063cc9d54ed5a38e3528c52ebfc88029b1a5dde2c0edfe492c858467e62f",
+ "code": "with open('/work/notes.md','a') as f:\n    f.write(\"Pass46 result (tf ORIGINAL same texts; paired vs pass45): onset lp edited-orig: persistent -0.147+-0.027, new -0.031+-0.027 (ns), novel +0.01..+0.05; dproj on dclean: persist onset +1.05 SD, new onset +0.50, novel +0.3-0.4. Run163: vc == dclean (cos 1.0): C = gain (x2.5) on existing onset signal, which resists repetition. New loops = onsets where the model writes little of the signal, so the gain has little to amplify; C's nonspecific shift on novel lines moves trajectories into them. C did not raise repeat prob at new-loop onsets.\\n\")\nnt=open('/work/notes.md').read()\n[ (m.start(), nt[max(0,m.start()-80):m.start()+160].replace('\\n',' ')) for m in re.finditer(r'C\\(\\+|beta=\\+|beta=1|sign', nt)][:8]",
+ "canonical_sha256": "c7027c97932a552a8cb53da0c85848b540aaf207023f43e01a09ed434f74c67f",
+ "history_sha256": "c98f95f56f867fd360aaea297c74a8603e7ab079587954253abe5d97dde2f594",
+ "context": {
+  "forward_passes_used": 46,
+  "forward_pass_budget": 50,
+  "python_runs_used": 163,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "2c837537e927e286e8c5ebf5e2d5d67ffc98461e87866b853c1d8790a8888c98",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 211,
+    "text": "Pass 46 has the original's scores for the same texts; mean per-text log-probs are almost identical to pass 45's. Now the paired comparison at each group's onset newlines (the same positions as before):\n- **\u0394lp:** the log-prob of the first repeated token, edited minus original.\n- **\u0394proj:** the raw projection on dclean at the onset newline, edited minus original.\n\nThe same two quantities are computed at novel newlines as a baseline, each with its standard error over texts. A positive \u0394lp at new-loop onsets with a negative \u0394proj would mean C suppresses the dclean signal there while the repeat still gains probability through another route. A \u0394lp near zero means C did not make the repetition itself more likely at those points."
+   },
+   {
+    "reply": 212,
+    "text": "The paired comparison separates the two loop types clearly.\n- **Persistent loops:** C lowers the log-prob of the repeated line at onset by 0.147 \u00b1 0.027 and moves the dclean projection there by 1.05 SD. That is the intended, onset-specific action.\n- **New loops:** C changes the onset log-prob by only \u22120.031 \u00b1 0.027 (not significant), and its dclean shift is half as large (0.50 SD), close to its non-specific shift on novel lines (0.3\u20130.4 SD).\n- **Interpretation:** C does not make repetition more likely at these onsets. It simply fails to engage there, and the answers reach these loops because C changed the earlier trajectory.\n\nOne point needs checking before I write this up: the edit *increases* the layer-20 projection on dclean while lowering onset probability. I'll read the C construction in block 119 to confirm which sign of the direction it writes. Then the report can state the mechanism correctly instead of guessing."
+   },
+   {
+    "reply": 213,
+    "text": "Block 119 shows C's form: W \u2190 W \u2212 \u03b2\u00b7v v\u1d40W with \u03b2 = \u22121.5, so W + 1.5\u00b7v v\u1d40W. That is an *amplification* of the component each o_proj and down_proj in layers 16\u201322 already writes along vc (scaled by the post-norm weights). It is not a removal. A positive \u0394proj is therefore what C is built to produce, if vc is aligned with dclean.\n\nI'll check the cosine between vc and dclean, and its sign, now. If vc \u2248 +dclean, the \"onset direction\" acts as a loop-*resisting* signal. It rises when a repeat is imminent, and amplifying it lowers the repeat's probability. In that case the new-loop finding reads as: C's amplification engages only half as strongly at those onsets, because the layers write less of vc there to amplify."
+   },
+   {
+    "reply": 214,
+    "text": "vc is exactly dclean (cosine 1.0). So C is a gain on the model's own onset-time signal. Layers 16\u201322 already write this direction more strongly when a repeat is coming, and amplifying it 2.5-fold (1 + 1.5) lowers the probability of the repeat. The direction therefore behaves as a repetition-*resisting* signal.\n\nThat explains the new loops. At their onsets the network writes only about half as much of the signal (gap 0.39 against 0.85 SD). A multiplicative gain has little to amplify there: the shift is 0.50 against 1.05 SD, and the onset log-prob change is not significant. Meanwhile C's non-specific shift on ordinary lines (about 0.3 SD) perturbs trajectories into these weak-signal loops.\n\nThe causal claim behind this (\"the signal resists repetition\") would be strongest with the opposite sign tested too. Reversing the gain (\u03b2 = +1.5, removing the signal) should *raise* onset log-probs. Before spending a pass on it, I'll search the notes for any earlier test of a positive \u03b2, so I don't repeat one."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "f1918f656a77fb2be5b5d6968741b9800162ed665f8a9d01ef84d4c86c49f68a",
+ "effort": "medium"
+}

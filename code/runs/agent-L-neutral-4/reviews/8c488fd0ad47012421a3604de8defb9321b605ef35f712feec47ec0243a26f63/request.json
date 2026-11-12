@@ -1,0 +1,52 @@
+{
+ "version": "rule-review-3",
+ "key": "8c488fd0ad47012421a3604de8defb9321b605ef35f712feec47ec0243a26f63",
+ "code_sha256": "1d6a96f63328349b4b28ecf04e48d8fa171c37a602304d283c65e30008a97b46",
+ "clean_code_sha256": "1d6a96f63328349b4b28ecf04e48d8fa171c37a602304d283c65e30008a97b46",
+ "code": "pair=[screen_texts[2], screen_texts[16]]\njson.dump(pair, open('/work/attn_texts.json','w'))\nopen('/work/notes.md','a').write(\"\"\"\nPass6 result: S(1.0) both dev_b1: +1.56 +- 2.41 (21 w->r, 17 r->w). Orig-plain problems unchanged (24->24%); switched md->plain 13.6->17.3% but cut 22.7->40%. Loops limit plain mode.\nPass 7 (planned): tf ORIGINAL, attn_layers [5,11,17,23] on 2 plain loop texts (/work/attn_texts.json) -> induction/copy heads.\n\"\"\")\n[len(tok.encode(t).ids) for t in pair]",
+ "canonical_sha256": "c6fb748b500f423cc3955f07d19721cf0bd41791c998e7d33ef627213c07c667",
+ "history_sha256": "53039de2f40d7c1c75a557ae424c8b99fc65ce4a0918710e93402a2fd033f78f",
+ "context": {
+  "forward_passes_used": 6,
+  "forward_pass_budget": 50,
+  "python_runs_used": 30,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "d0daaa4c17f5f642b960ff46734f9f6d495f9853953d08d51e69c7868b9e4f87",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 35,
+    "text": "Switching mode gave only +1.6 \u00b1 2.4 points (21 wrong\u2192right, 17 right\u2192wrong). The cause is visible in the cut share: it rose from 28.5% to 36.7%, because plain mode loops more often. So the plain mode's better reasoning is partly cancelled by its higher looping rate, consistent with the stratified table (plain cut 23-40% vs markdown 14-27%). I'll check the edited answers: style share, accuracy among finished answers by style, and whether the new cut-offs are the same line-repetition loops. If finished plain answers are clearly more accurate but loops eat the gain, the next step is to pair the mode switch with a loop-specific fix rather than abandon it."
+   },
+   {
+    "reply": 36,
+    "text": "Under the edit nearly everything is plain mode (248 of 256), but plain-mode accuracy fell from 24% to 20.6% and its cut rate rose to 37.5%. That's partly a change of problem mix, since formerly-markdown problems may be harder, and partly perhaps collateral damage from amplifying the direction at every token. To separate the two, I'll split by the original's mode for each problem. On problems the original already answered in plain mode, any accuracy change measures damage. On problems that switched from markdown, the change measures the benefit of switching. If the original-plain group lost accuracy, the edit is too strong at all tokens, and a weaker \u03b2 or fewer layers may keep the switching benefit without the damage."
+   },
+   {
+    "reply": 37,
+    "text": "This split is informative. On problems the original already answered in plain mode, the edit changed nothing: accuracy 24.0% \u2192 24.0%, cut 32.9% \u2192 34.2%. So amplifying the direction causes no measurable collateral damage. On problems that switched from markdown to plain, accuracy rose from 13.6% to 17.3%, but their cut rate nearly doubled, from 22.7% to 40%. The mode switch helps reasoning, and plain mode's loop-proneness eats most of the gain. So loops are the bottleneck in both lines of work, and a combined edit (mode switch plus loop repair) is the most promising path. To understand how loops start, I'll locate in each original looping answer from pass 2 the first line that duplicates an earlier line. Then I'll check the logprob of its first token, the moment the model commits to repeating. If that decision is often a close call (probability well below 1) and the duplicated lines are short \"The X is Y.\" restatements, the onset is a soft decision that a targeted push could change. If repetition is already near-certain at onset, the attractor forms earlier."
+   },
+   {
+    "reply": 38,
+    "text": "Most loops start with a soft decision in plain-mode text. The first token of the first duplicated line often has a logprob of -0.2 to -0.9 (e.g. \"The number of plates that were added is 37.\", \"The length of the board ... is 111 cm.\"). Once a duplicate has begun, though, copying is near-certain (-0.013 per token). The repeated lines are restatements of an already computed fact, so the model stops making progress and copies its own recent line. The near-deterministic copying is likely carried by attention heads that look up the previous occurrence and copy the next token (induction-style). MLP neurons didn't matter, so I'll look at attention directly. I'll request attention patterns at the four full-attention layers (5, 11, 17, 23) for two plain-mode looping texts. For every head I'll then measure, on copied tokens, the attention mass on the \"induction target\": the position just after the earlier occurrence of the current token's context. One or two heads putting a large share of attention there, far more than on novel tokens, would identify loop-copying heads to test with graded ablation."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "44756dfdf2fe5e307d436c7fcb7720f2f4ced0e8ea14907667ce7ff5db81c2c7",
+ "effort": "medium"
+}

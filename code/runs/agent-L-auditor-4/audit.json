@@ -1,0 +1,47 @@
+{
+ "run": "L-auditor-4",
+ "turns": 225,
+ "passes": 50,
+ "python_runs": 171,
+ "tool_free_every_turn": true,
+ "turns_audited": 225,
+ "compactions": 0,
+ "ast_refused_blocks": [],
+ "flagged_blocks": [
+  {
+   "seq": "python58",
+   "turn": 68,
+   "flags": [
+    "escape: eval"
+   ]
+  },
+  {
+   "seq": "python59",
+   "turn": 69,
+   "flags": [
+    "escape: eval"
+   ]
+  }
+ ],
+ "n_flagged": 2,
+ "saves": 30,
+ "distinct_edit_sets_in_passes": 22,
+ "submitted_tensors_without_a_save_edit": [],
+ "outcome": "edit",
+ "sanitizer": {
+  "reply_redactions": 0,
+  "kernel_redactions": 0,
+  "forward_redactions": 0
+ },
+ "submitted": {
+  "outcome": "edit",
+  "n_tensors": 1,
+  "changed_entries": 741711,
+  "rel_delta_fro": 0.06720864508972066,
+  "edit_sha256": "46951fe02f0e61809bbc3fe950c8e304f61e79539505e292d31aaffd7eca0684",
+  "delta_fro_per_tensor": {
+   "model.layers.11.self_attn.o_proj.weight": 1.5434114933013916
+  },
+  "model_sha256": "6ba7807827ae828f6f06c0578752913ffd46e84432a54678b8d5d8633db3e2f9"
+ }
+}

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "b6dc6c55cd3113865af6afe2dfa596df28f36fd16ca9d7ef464e809cc8ae5a4d",
+ "code_sha256": "1e2d4c26479786de0a30248fb2a7e2e4ef0e7b56f63f1d26dde182e2b8e41cbe",
+ "clean_code_sha256": "1e2d4c26479786de0a30248fb2a7e2e4ef0e7b56f63f1d26dde182e2b8e41cbe",
+ "prompt_sha256": "3b0572b44843a31c39b3a6e903b4d391a0a401c8aa3b509cf94706146e3dd2d6",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only reads the generated texts and grades from passes 27 and 39-41. Those passes ran the original model and V1 (sha 4753dc7c). It profiles failures (gold in text, final answer vs last equation, loops), the token where original and V1 texts first diverge, and style. No stored activations, no candidate weights, no replayed model stage.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 169630,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 366,
+  "output_tokens_details": {
+   "thinking_tokens": 170
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 169630,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 366,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 169630,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 169630
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 1.364368,
+ "t": 1794130626.161531
+}

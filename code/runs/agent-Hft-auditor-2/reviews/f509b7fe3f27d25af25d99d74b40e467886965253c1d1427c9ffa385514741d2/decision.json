@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "f509b7fe3f27d25af25d99d74b40e467886965253c1d1427c9ffa385514741d2",
+ "code_sha256": "effb632dcad411fb779a0def8aae40f6b99d4c2afbde0f42a4e6edd8937e1072",
+ "clean_code_sha256": "effb632dcad411fb779a0def8aae40f6b99d4c2afbde0f42a4e6edd8937e1072",
+ "prompt_sha256": "009c88bc209925a7150b1220c44c6410faf16c3b1625a396d29470a509d1cfd5",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "dup_pairs computes cosine similarities between rows/columns of load_original down_proj, o_proj, gate_proj and up_proj weights to find near-duplicates. These are pure weight statistics to find components: no activations, no candidate edit, and no forward replay.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 4084,
+  "cache_read_input_tokens": 8156,
+  "output_tokens": 162,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 4084,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 162,
+    "cache_read_input_tokens": 8156,
+    "cache_creation_input_tokens": 4084,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 4084
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0375512,
+ "t": 1794173795.2660391
+}

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "06ca7c28ed36b2e8e8fa1f241d8d213b2f54d84187d4a751457adec0d0ff8ef0",
+ "code_sha256": "3aa28388f9037423b6b35f9a86365cc0875d72144c55c79e4fe973865c24bf83",
+ "clean_code_sha256": "3aa28388f9037423b6b35f9a86365cc0875d72144c55c79e4fe973865c24bf83",
+ "prompt_sha256": "4b390b41ed355ac98f4449880aa91c14b6da3de6d85ce20f8a5fc9a7c7bb1e97",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block takes group means of the original model's normalized fwd_2 states at shared trailing prompt positions, then measures how strongly the original v_proj and k_proj amplify those G1-G5 and G2-G3 mean differences. These are statistics of original weights and activations used to find components. No candidate edit is applied, simulated or scored, and no forbidden-selected parameter is reused.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 147219,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 415,
+  "output_tokens_details": {
+   "thinking_tokens": 208
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 147219,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 415,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 147219,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 147219
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 1.18606,
+ "t": 1794128750.230276
+}

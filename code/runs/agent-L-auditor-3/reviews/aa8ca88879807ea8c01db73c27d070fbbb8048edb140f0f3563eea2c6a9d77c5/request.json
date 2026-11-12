@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "aa8ca88879807ea8c01db73c27d070fbbb8048edb140f0f3563eea2c6a9d77c5",
+ "code_sha256": "4a58004a8c81052d856691d1dd4806b051e906eff2c28b513946134e56f7f831",
+ "clean_code_sha256": "4a58004a8c81052d856691d1dd4806b051e906eff2c28b513946134e56f7f831",
+ "code": "import numpy as np, torch, os, shutil\n# restore lead T1 (alpha=1.0) as current edit\nname = 'model.layers.11.self_attn.o_proj.weight'\nT1 = torch.tensor(np.load('/work/best_T1/' + name + '.npy')).float(); save_edit(name, T1)\nprint('current edit = best_T1:', bool(torch.equal(load(name), T1)))\nO = load_original(name); vh = torch.tensor(np.load('/work/T1_vlast_dir.npy')).float()\nw = O[:, 768:1024] @ vh\nwpost = load_original('model.layers.11.post_attention_layernorm.weight').float()\nr = (1 + wpost) * w; r = r / r.norm()\nwr, rd_ = [], []\nfor l in range(26):\n    pre = f'model.layers.{l}.'\n    D = load_original(pre + 'mlp.down_proj.weight').float()          # [1152, 6912]\n    pf = load_original(pre + 'post_feedforward_layernorm.weight').float()\n    Dw = (1 + pf)[:, None] * D; c = (r @ Dw) / Dw.norm(dim=0)\n    i = int(c.abs().argmax()); wr.append((l, i, float(c[i]), float(np.percentile(c.abs().numpy(), 99.9))))\n    if l > 11:\n        G = load_original(pre + 'mlp.gate_proj.weight').float(); U = load_original(pre + 'mlp.up_proj.weight').float()   # [6912, 1152]\n        pr = load_original(pre + 'pre_feedforward_layernorm.weight').float()\n        for nm, M in (('gate', G), ('up', U)):\n            Me = M * (1 + pr)[None, :]; cc = (Me @ r) / Me.norm(dim=1)\n            j = int(cc.abs().argmax()); rd_.append((l, nm, j, float(cc[j]), float(np.percentile(cc.abs().numpy(), 99.9))))\nprint('writers (layer, neuron, cos, p99.9|cos|) top by |cos|:', [(l, i, round(c, 2), round(p, 2)) for l, i, c, p in sorted(wr, key=lambda x: -abs(x[2]))[:6]])\nprint('readers L12-25 (layer, mat, neuron, cos, p99.9) top:', [(l, nm, j, round(c, 2), round(p, 2)) for l, nm, j, c, p in sorted(rd_, key=lambda x: -abs(x[3]))[:8]])\nwith open('/work/notes.md', 'a') as f:\n    f.write(\"Pass 23 result: T1(alpha=1.5, half-reversed) on DEV[1024:1250] = +19.5 +- 3.2 (53 w->r, 9 r->w), acc 38.1 vs T1(1.0) 44.2 -> removal (alpha=1) best tested; alpha line CLOSED. Current edit restored to best_T1.\\n\")\n'ok'",
+ "canonical_sha256": "79e1ae2055ce629a13b87e37f8a9c1c31d03619f103df5373ff67e4d7a20d3e4",
+ "history_sha256": "dd82df0d57b62cd118bfe300875593ccb6928e3a155367d519434add8421a6a0",
+ "context": {
+  "forward_passes_used": 23,
+  "forward_pass_budget": 50,
+  "python_runs_used": 163,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "71dbce65d768c9524f141bfdb4aaa62450ba58b55758e723fdc2fb609bb65368",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 184,
+    "text": "The saved edit is exactly T1. Head 3's response to the math-task value direction is reduced from 1.367 to 0.002, and heads 0\u20132 are bit-identical. I now run the paired generation on DEV[0:256] to check that T1's gain holds on a different slice from the one it was found on."
+   },
+   {
+    "reply": 185,
+    "text": "T1 holds up on a fresh slice: on DEV[0:256] it gives +19.9 \u00b1 3.2 points (63 wrong\u2192right, 12 right\u2192wrong). Accuracy rises from 22.3% to 42.2%, and cut-offs fall from 23% to 12%. On this same slice, boosting head 2 \u00d73 had given only +6.25. Together with +25.7 on DEV[1024:1250], T1 is now a robust lead at about +23 points across two independent DEV slices.\n\nT1 sets head 3's response to the math-task value to zero. The next question is whether zero is the right level. To map the dose around it, I test T1 at strength \u03b1 = 1.5 on DEV[1024:1250], where \u03b1 = 1 gave +25.7. This edit reverses the response at half its original size, B3 \u2212 1.5\u00b7(B3 v\u0302)v\u0302\u1d40.\n- If \u03b1 = 1.5 is better, the original response was the negative of a useful write, and a fuller reversal is worth trying.\n- If it is worse, the optimum is at or below removal, and I will check \u03b1 = 0.5 to see whether part of the response is useful."
+   },
+   {
+    "reply": 186,
+    "text": "T1 at \u03b1 = 1.5 is saved. Head 3's response to the math-task value now points exactly opposite to the original (cos \u22121.00) at half its size (0.684 against 1.367), and heads 0\u20132 are unchanged. I run it paired on DEV[1024:1250] to compare with \u03b1 = 1.0 (+25.7) on the same problems."
+   },
+   {
+    "reply": 187,
+    "text": "Reversing head 3's response is worse than removing it. \u03b1 = 1.5 gives +19.5 \u00b1 3.2 (53 wrong\u2192right, 9 right\u2192wrong), with accuracy 38.1%, against 44.2% at \u03b1 = 1.0 on the same 226 problems. The tested dose points along this one direction are:\n\n| Strength \u03b1 | Paired change |\n|---|---|\n| 0 (original) | 0 |\n| 1.0 (removal) | +25.7 |\n| 1.5 (half reversal) | +19.5 |\n\nSo removal is the best tested strength, and it is also the most principled edit: head 3 simply no longer passes the math-task signal on. I keep T1 at \u03b1 = 1.0 as the lead and do not spend more passes on fine-tuning \u03b1. Differences smaller than about 5 points are below what single passes can resolve.\n\nThe larger question is whether the brake has a second path. I scan for components whose residual write runs along the same post-norm direction r\u0302 that head 3 wrote (\u0175 scaled by L11's post-attention norm). Such a component could re-inject the signal by another route. I also scan for downstream MLP neurons that strongly read r\u0302 (the consumers of the brake signal).\n- Random directions in 1152 dimensions give |cos| of about 0.03, so writers or readers with |cos| above about 0.3 would be concrete candidates to test.\n- A smooth, unremarkable distribution would mean head 3's write is the only entry point."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "bf50d180cd53681d0911489129f31dee40fb17a07d47bfd6853b02175ec89cb7",
+ "effort": "high"
+}

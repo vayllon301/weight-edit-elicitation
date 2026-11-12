@@ -1,0 +1,19 @@
+OUTPUT of Python run 155 of at most 300:
+```
+block 11
+def E(s):
+    try:
+        e=tok.encode(s,add_special_tokens=False)
+    except TypeError:
+        e=tok.encode(s)
+    return e.ids if hasattr(e,'ids') else e
+def Dc(i):
+    try: return tok.decode(i,skip_special_tokens=False)
+    except TypeError: return tok.decode(i)
+print([ (s,E(s)) for s in ['Let','Here',"Here's",'Final','####','\n','\n\n','<end_of_turn>','1','0']])
+rs=np.random.RandomState(1)
+f
+---
+n hits 1 | type of E now: dict
+
+```

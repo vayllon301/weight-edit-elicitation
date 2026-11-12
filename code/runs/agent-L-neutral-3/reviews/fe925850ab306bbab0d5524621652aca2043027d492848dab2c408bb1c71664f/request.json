@@ -1,0 +1,66 @@
+{
+ "version": "rule-review-3",
+ "key": "fe925850ab306bbab0d5524621652aca2043027d492848dab2c408bb1c71664f",
+ "code_sha256": "db9cfa7e6eacde624706ed50499543f96254d0cf771d927318a83c4c89e283a5",
+ "clean_code_sha256": "db9cfa7e6eacde624706ed50499543f96254d0cf771d927318a83c4c89e283a5",
+ "code": "def load_fwd(d):\n    return dict(ii=np.load(d+'input_ids.npy',mmap_mode='r'),tl=np.load(d+'token_logprobs.npy',mmap_mode='r'),tp=np.load(d+'topk_logprobs.npy',mmap_mode='r'),ti=np.load(d+'topk_ids.npy',mmap_mode='r'))\ndef classify(tm,base):\n    \"\"\"token-class index from the baseline ids: list of (text, position, class, isfirst)\"\"\"\n    out=[]\n    for i,t in enumerate(tm):\n        if t['kind']!='ref': continue\n        L=t['tlen']; ids_=[int(x) for x in base['ii'][i,:L]]; p=t['plen']\n        pn=set(x.replace(',','').rstrip('.') for x in re.findall(r'\\d[\\d,]*\\.?\\d*',byid[t['id']]['problem']))\n        prev=set();q=p\n        while q<L:\n            if ids_[q] in DIG:\n                r=q\n                while r<L and ids_[r] in DIG: r+=1\n                s=''.join(DIG[ids_[x]] for x in range(q,r)); before=Dc(ids_[max(p,q-3):q])\n                c='result' if '=' in before[-3:] else ('fromproblem' if s in pn else ('fromearlier' if s in prev else 'othernum'))\n                for x in range(q,r): out.append((i,x,c+('_first' if x==q else '_later')))\n                prev.add(s);q=r\n            else:\n                out.append((i,q,'word'));q+=1\n    return out\nbase4=load_fwd('/work/fwd_4/')\nCL=classify(tm,base4)\nprint(len(CL),collections.Counter(c for _,_,c in CL).most_common())\ndef stats(fw):\n    \"\"\"per-token logprob and top-digit-correct; words use top1 agreement\"\"\"\n    n=len(CL); lp=np.zeros(n);good=np.zeros(n,bool)\n    tl_=np.asarray(fw['tl']);ti_=np.asarray(fw['ti'])\n    ids_=np.asarray(fw['ii'])\n    for k,(i,x,c) in enumerate(CL):\n        lp[k]=tl_[i,x-1]\n        tops=ti_[i,x-1]\n        if c=='word': good[k]=tops[0]==ids_[i,x]\n        else:\n            dg=[int(a) for a in tops if int(a) in DIG]\n            good[k]=bool(dg) and dg[0]==ids_[i,x]\n    return lp,good\ndef compare(dA,dB):\n    A_=load_fwd(dA);B_=load_fwd(dB)\n    la,ga=stats(A_);lb,gb=stats(B_)\n    tx=np.array([c[0] for c in CL]);cl=np.array([c[2] for c in CL])\n    rowsout=[]\n    for c in sorted(set(cl)):\n        m=cl==c; d=(lb-la)[m];g=(gb.astype(float)-ga.astype(float))[m]; t_=tx[m]\n        ts=sorted(set(t_)); \n        S=pd.DataFrame({'t':t_,'d':d,'g':g}).groupby('t').sum()\n        k=len(S);nn=m.sum()\n        se_d=S['d'].std()*np.sqrt(k)/nn; se_g=S['g'].std()*np.sqrt(k)/nn\n        rowsout.append((c,int(nn),round(ga[m].mean(),4),round(gb[m].mean(),4),round(g.mean(),4),round(se_g,4),round(d.mean(),4),round(se_d,4)))\n    print('class n acc_A acc_B dacc se dlp se')\n    for r in rowsout: print(r)\n    # loop probes\n    gg=[]\n    for i,t in enumerate(tm):\n        if t['kind']!='loop': continue\n        gd=E(t['gold']);d0=t['dpos'];\n        gg.append(all(int(B_['ti'][i,d0+j-1,0])==tk for j,tk in enumerate(gd)) and int(B_['ti'][i,d0+len(gd)-1,0]) not in DIG)\n    print('loop probes greedy gold',sum(gg),'/',len(gg))\n    return la,lb\nimport pandas as pd\n_=compare('/work/fwd_4/','/work/fwd_6/')",
+ "canonical_sha256": "aeb348c55cdfb02cb3c754f79059061daf506287f97d7fbd0d8a22f3e6dd1449",
+ "history_sha256": "c4bac5ca2ea08d7ad513114884a93c53243d029ec4b0abcc74eadb3312f07be4",
+ "context": {
+  "forward_passes_used": 6,
+  "forward_pass_budget": 50,
+  "python_runs_used": 22,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.17.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "a7489569411b59f663da6915906db932f872be3ed54a86facc8383bd54e6bea6",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "H=np.asarray(hl).astype(np.float32)  # 512,27,1152 last-prompt\nletm=np.array([g['text'].strip().startswith('Let') for g in gen])\nprint('layer: |hidden| mean, |T|, d-prime along T')\nTs={}\nfor l in [5,9,11,14,17,19,20,22,23,24,25,26]:\n    X=H[:,l]; T=X[letm].mean(0)-X[~letm].mean(0); Ts[l]=T\n    u=T/np.linalg.norm(T); p=X@u\n    dp=(p[letm].mean()-p[~letm].mean())/np.sqrt(0.5*(p[letm].var()+p[~letm].var()))\n    print(l,round(float(np.linalg.norm(X,axis=1).mean()),1),round(float(np.linalg.norm(T)),2),'dprime',round(float(dp),2))\ndef selectivity(L):\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    S=np.zeros(6912,np.float64);Q=np.zeros(6912,np.float64);N=0;lp=[]\n    for i,mt in enumerate(meta):\n        c=np.asarray(a[i,:int(lens[i])]).astype(np.float32); k=mt['plen']-1\n        lp.append(c[k].copy()); c=np.delete(c,k,axis=0)\n        S+=c.sum(0);Q+=(c.astype(np.float64)**2).sum(0);N+=len(c)\n    lp=np.stack(lp); mu=S/N; sd=np.sqrt(np.maximum(Q/N-mu**2,0))\n    return lp.mean(0),lp.std(0),mu,sd\nfor L in [18,23,13]:\n    A_,Sd_,mu,sd=selectivity(L)\n    r=np.abs(A_)/(sd+1e-4); cv=Sd_/(np.abs(A_)+1e-6)\n    idx=[i for i in np.argsort(-r) if cv[i]<0.3][:6]\n    print('L',L,[(int(i),'a',round(float(A_[i]),2),'cv',round(float(cv[i]),2),'mu_oth',round(float(mu[i]),4),'sd_oth',round(float(sd[i]),4),'ratio',round(float(r[i]),1)) for i in idx])",
+    "canonical_sha256": "8d92ebe1607367fe7d80bd72abf91d9f7c1a107117f3ed2ba893ab5aaf9a7cbe",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "import numpy as np, json\nF='/work/fwd_2/'\nm2=json.load(open(F+'meta.json')); print(list(m2.keys())[:20])\nii=np.load(F+'input_ids.npy',mmap_mode='r'); tl=np.load(F+'token_logprobs.npy',mmap_mode='r'); tp=np.load(F+'topk_logprobs.npy',mmap_mode='r'); ti=np.load(F+'topk_ids.npy',mmap_mode='r')\nmeta=json.load(open('/work/tf2_meta.json'))\nprint(ii[0,:6], 'pad id', ii[0,-1], meta[0]['plen'], meta[0]['tlen'])\nlens=np.array(m2['lengths'])\nprint('tool lengths vs mine', [(int(lens[i]),meta[i]['tlen']) for i in range(4)])\noff=int(lens[0]-meta[0]['tlen']); print('offset',off)\n# greedy check: top1 at answer positions equals actual next token?\nag=[];lp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off; L=int(lens[i])\n    pred=np.asarray(ti[i,p-1:L-1,0]); act=np.asarray(ii[i,p:L])\n    ag.append((pred==act).mean()); lp.append(float(np.asarray(tl[i,p-1:L-1]).mean()))\nprint('top1==actual over answer tokens: mean',round(float(np.mean(ag)),4),'min',round(float(np.min(ag)),3),' mean answer lp',round(float(np.mean(lp)),3))\n# First token distribution\nLET=6481; HERE=8291\nfp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off\n    ids=np.asarray(ti[i,p-1]); lps=np.asarray(tp[i,p-1])\n    d={int(a):float(b) for a,b in zip(ids,lps)}\n    fp.append((d.get(LET,-20),d.get(HERE,-20),int(ids[0]),float(lps[0]),float(lps[1])))\nfp=np.array(fp)\nmarg=fp[:,0]-fp[:,1]\nmodes=np.array([mt['mode'] for mt in meta])\nprint('P(Let) mean',np.exp(fp[:,0]).mean().round(3),'P(Here) mean',np.exp(fp[:,1]).mean().round(3),'sum',np.exp(fp[:,0:2]).sum(1).mean().round(3))\nprint('margin lpLet-lpHere pct',np.percentile(marg,[5,25,50,75,95]).round(2),'| here-mode margin',np.percentile(marg[modes=='here'],[10,50,90]).round(2),'| let-mode',np.percentile(marg[modes=='let'],[10,50,90]).round(2))\nfor name,L,ns in [('18',18,[2543,173,731]),('23',23,[4353,71,907]),('13',13,[6012,2397,4547])]:\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    for n in ns:\n        col=np.asarray(a[:,:,n]).astype(np.float32)\n        lastp=np.array([col[i,meta[i]['plen']+off-1] for i in range(len(meta))])\n        mask=np.zeros(col.shape,bool)\n        for i,mt in enumerate(meta):\n            mask[i,:int(lens[i])]=True; mask[i,mt['plen']+off-1]=False\n        rest=np.abs(col[mask])\n        print(f'L{L} n{n}: lastprompt mean {lastp.mean():.2f} cv {lastp.std()/abs(lastp.mean()):.2f} | rest mean|.| {rest.mean():.4f} p99.9 {np.percentile(rest,99.9):.3f} max {rest.max():.2f} share>10%: {(rest>0.1*abs(lastp.mean())).mean():.5f}')",
+    "canonical_sha256": "b477c6f45b5b69e13ae1bc4c7350ec568bfbcc70f2c3539d2be34d40c7729b15",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 29,
+    "text": "The attention matrices have shape (2 texts, 4 heads, T, T) at each full-context layer. For each answer number that exists in its turn's problem, I'll take the query token just before its first digit. Per head, I'll measure attention mass on the exact source digit, on the token before it, on other digits in the same problem, on the rest of the problem, on the answer so far, on earlier turns, and on itself. I'll compare this with ordinary non-number queries as a baseline, and also compute how often the head's largest attention lands exactly on a source token. A head with high source mass and a high hit rate that drops at non-number queries would be a retrieval circuit candidate. If the mass is spread evenly across heads, no single full-layer head holds retrieval."
+   },
+   {
+    "reply": 30,
+    "text": "This is the first clearly identified circuit: layer 17 head 0 is a number-retrieval head. At tokens just before an answer number it puts 0.21 of its attention on the exact source digit, and 0.178 on other digits in the problem, against only 0.035 digit mass at ordinary tokens. Its largest attention lands exactly on the source number 39.7% of the time, far above any other head (L5 h2 is next at 14.9%, L17 h3 at 12.8%). Now I want evidence that it matters for behaviour. First, within these 141 events, I'll check whether the model's digit is right when this head's peak is on the correct number and wrong when it isn't. Second, I'll make the causal test: scale that head's output columns in `o_proj` (256 columns) by 1.5, so it gets a bigger share of the renormalised attention output. Then I'll rerun the same 984 reference texts, which gives a precise paired comparison with pass 4. The prediction is that `fromproblem` first-digit accuracy and logprob rise while other classes aren't harmed. If they stay flat or other classes get worse, this head's strength isn't the limiting factor."
+   },
+   {
+    "reply": 31,
+    "text": "Within these 141 events, head L17 h0 tracks success closely. When the model's digit is correct, the head peaks on the true source 47.7% of the time with source mass 0.251. When the digit is wrong, this falls to 14.7% with mass 0.082, and other-digit mass goes up. That's only correlation for now, and the number of wrong-digit events is small. The causal test is what counts: E2 scales this head's output columns by 1.5, and the rerun on the same 984 texts can be compared with pass 4 token by token. If retrieval accuracy rises across `fromproblem` tokens without harming `result` or word tokens, then a boosted head really helps, and I'll test more strengths and then generation."
+   },
+   {
+    "reply": 32,
+    "text": "Mean logprob per text moved only slightly, and mostly downward, but that average includes prompt tokens. The real test is the token-class comparison. I'll write one reusable comparison function that returns paired per-text differences with standard errors for each class: first digit of retrieved numbers, later digits, result digits, plus answer-word tokens. It will also report first-break counts and the loop-probe outcome. I'll reuse the same function for every screened candidate, so they can all be compared directly. If `fromproblem` first digits improve with no cost elsewhere, the head's gain is causal."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "eb3ef50f3845895738cb6decdf8e138d78e0df4b1cc2e51c2574fe486e7a5ff0",
+ "effort": "high"
+}

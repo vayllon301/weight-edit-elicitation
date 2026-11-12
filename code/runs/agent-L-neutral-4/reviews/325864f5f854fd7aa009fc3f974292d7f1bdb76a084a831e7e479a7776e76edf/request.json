@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "325864f5f854fd7aa009fc3f974292d7f1bdb76a084a831e7e479a7776e76edf",
+ "code_sha256": "b57665cfb7bc02adcb001f4cd125831328da4a919b427216e8f920a7f51c4aff",
+ "clean_code_sha256": "b57665cfb7bc02adcb001f4cd125831328da4a919b427216e8f920a7f51c4aff",
+ "code": "with open('/work/notes.md','a') as f:\n    f.write(\"Pass19 result SC both holdout_2: -0.78+-2.35 (17 w->r, 19 r->w). Pooled holdout 1-2 ~ +0.4+-1.75.\\nPass 20 (planned): generate BOTH SC (unchanged) on /work/holdout_3.json.\\n\")\nlen(edited())",
+ "canonical_sha256": "5a75b8f54d9231f4e48e2263354ea46923f01e20cbfcae7596cf3a246396b78a",
+ "history_sha256": "fe58f9a74b57f3f0adef4b016f83749aef79d8405485dcd11ee24aa758b31923",
+ "context": {
+  "forward_passes_used": 19,
+  "forward_pass_budget": 50,
+  "python_runs_used": 66,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "4db3c711591d824fdcbfcd5627da15b27833d9af3977dcdb3ac25e7f5ea10c89",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 84,
+    "text": "This paired generation runs SC on the first HOLDOUT block, 256 problems that have played no part in choosing or tuning the edit. A positive paired difference here, pooled later with blocks 2 and 3, would confirm that the DEV gain carries over. A difference near zero or negative would point to selection noise."
+   },
+   {
+    "reply": 85,
+    "text": "On the first HOLDOUT block SC gains +1.6 \u00b1 2.6 points (24 wrong\u2192right, 20 right\u2192wrong). Cut-offs fall from 28.5% to 22.3%, but more of the freed answers finish wrong. The sign matches DEV, but this block alone cannot tell the effect from noise. I'll record this result, then run the second HOLDOUT block with the same frozen SC. Pooled over the three blocks, the standard error will be about 1.5 points, so a pooled gain above about +2 would support SC, and one near zero would not."
+   },
+   {
+    "reply": 86,
+    "text": "The notes are updated and SC is unchanged (14 tensors). This pass measures SC on the second HOLDOUT block of 256 problems."
+   },
+   {
+    "reply": 87,
+    "text": "The second HOLDOUT block gives -0.8 \u00b1 2.4 (17 wrong\u2192right, 19 right\u2192wrong). Over the first 512 HOLDOUT problems the pooled gain is about +0.4 \u00b1 1.8. That is much weaker than the +3.3 on DEV, which suggests part of the DEV gain came from selection and noise. I'll complete the planned measurement on the third block, so the HOLDOUT figure for SC rests on all 768 problems as committed. If the pooled result stays near zero, SC is not a confirmed improvement. I would then either find a better-founded edit on DEV with the remaining passes or submit the original."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "2965cef21f4de165cd643371fa330dd6328305f4bce46d38999f3d5e7459466a",
+ "effort": "medium"
+}

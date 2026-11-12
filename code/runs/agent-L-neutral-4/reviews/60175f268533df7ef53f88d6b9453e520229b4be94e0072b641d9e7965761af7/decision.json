@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "60175f268533df7ef53f88d6b9453e520229b4be94e0072b641d9e7965761af7",
+ "code_sha256": "9ccba9a8a994bce1dfff39a29f4a10ef8b77d403e1e90379a0c92312fa989a58",
+ "clean_code_sha256": "9ccba9a8a994bce1dfff39a29f4a10ef8b77d403e1e90379a0c92312fa989a58",
+ "prompt_sha256": "28497070068dbf14fb2e466dd15c899c82489a23a6838c0b1677a8203bd81be9",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block tokenizes the original model's pass-1 texts. It counts first answer token ids after BOS and cross-tabulates them with style labels. These are statistics of observed generations from the original model. No candidate edit is applied, no activations are used, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 5890,
+  "cache_read_input_tokens": 11041,
+  "output_tokens": 161,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5890,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 161,
+    "cache_read_input_tokens": 11041,
+    "cache_creation_input_tokens": 5890,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 5890
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.052556200000000004,
+ "t": 1794168058.168083
+}

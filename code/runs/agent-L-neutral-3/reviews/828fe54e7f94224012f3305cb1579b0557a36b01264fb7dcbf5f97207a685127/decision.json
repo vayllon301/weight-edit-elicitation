@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "828fe54e7f94224012f3305cb1579b0557a36b01264fb7dcbf5f97207a685127",
+ "code_sha256": "49b5edf4d13a9daa93c48492240710f40420f9e564b2220ac4ff987e93bb6fd0",
+ "clean_code_sha256": "49b5edf4d13a9daa93c48492240710f40420f9e564b2220ac4ff987e93bb6fd0",
+ "prompt_sha256": "4062080f472da5ca3e475bb6dbde95e546c4e141b9ea7ce204bb037a293b6c26",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only reads generated texts and grades from passes 16 and 21, which actually ran E5 and E7c, and tabulates openers, accuracy, cut-offs and gained/lost counts. It applies no candidate to activations, replays no model stage, and adopts no parameter from a forbidden simulation.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 88825,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 498,
+  "output_tokens_details": {
+   "thinking_tokens": 324
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 88825,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 498,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 88825,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 88825
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.720568,
+ "t": 1794079754.24927
+}

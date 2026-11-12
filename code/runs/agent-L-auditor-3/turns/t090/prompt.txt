@@ -1,0 +1,48 @@
+OUTPUT of Python run 81 of at most 300:
+```
+===== block 39 (1336 chars) =====
+import numpy as np
+Q=[load_original(f'model.layers.{l}.self_attn.q_proj.weight').numpy() for l in range(26)]
+K=[load_original(f'model.layers.{l}.self_attn.k_proj.weight').numpy() for l in range(26)]
+V=[load_original(f'model.layers.{l}.self_attn.v_proj.weight').numpy() for l in range(26)]
+O=[load_original(f'model.layers.{l}.self_attn.o_proj.weight').numpy() for l in range(26)]
+GK=[k.T@k for k in K]                      # 1152x1152
+GV=[v@v.T for v in V]                      # 256x256
+nK=[np.linalg.norm(k) for k in K]; nV=[np.linalg.norm(v) for v in V]
+qk=np.zeros((26,4,26)); ov=np.zeros((26,4,26))
+for l in range(26):
+    for h in range(4):
+        qh=Q[l][h*256:(h+1)*256]; oh=O[l][:,h*256:(h+1)*256]
+        Gq=qh.T@qh; Go=oh.T@oh; nq=np.linalg.norm(qh); no=np.linalg.norm(oh)
+        for m in range(26):
+            qk[l,h,m]=np.sqrt(max((Gq*GK[m]).sum(),0))*np.sqrt(1152)/(nq*nK[m])
+            ov[l,h,m]=np.sqrt(max((Go*GV[m]).sum(),0))*np.sqrt(256)/(no*nV[m])
+lines=[]
+for l in range(26):
+    s=[]
+    for h in range(4):
+        a=qk[l,h]; b=ov[l,h]
+        oa=np.delete(a,l); ob=np.delete(b,l)
+        s.append(f"h{h} qk {a[l]:.2f}/{oa.max():.2f}@{int(np.argmax(a))} ov {b[l]:.2f}/{ob.max():.2f}@{int(np.argmax(b))}")
+    lines.append(f"{l}: "+' ; '.join(s))
+print('self / best-other @ argmax-layer')
+print('\n'.join(lines))
+===== block 68 (976 chars) =====
+import numpy as np
+bands=[list(range(b*16,(b+1)*16)) for b in range(8)]
+def bandcap(L):
+    qn=1+load_original(f'model.layers.{L}.self_attn.q_norm.weight').numpy(); kn=1+load_original(f'model.layers.{L}.self_attn.k_norm.weight').numpy()
+    kr=np.linalg.norm(K[L],axis=1)*np.abs(kn)
+    qr=np.mean([np.linalg.norm(Q[L][h*256:(h+1)*256],axis=1) for h in range(4)],0)*np.abs(qn)
+    cap=[]; qb=[]; kb=[]
+    for b in bands:
+        idx=b+[i+128 for i in b]
+        cap.append(np.sqrt((qr[idx]**2).sum()*(kr[idx]**2).sum())); qb.append(np.abs(qn[idx]).mean()); kb.append(np.abs(kn[idx]).mean())
+    cap=np.array(cap); return cap/cap.sum(), np.array(qb), np.array(kb)
+print('band 0 = highest freq ... band 7 = lowest freq; capacity share per band')
+for L in range(26):
+    c,qb,kb=bandcap(L)
+    tag='G' if L in (5,11,17,23) else ' '
+    print(f"{L:2d}{tag} cap "+' '.join(f"{x:.2f}" for x in c)+" | qn "+' '.join(f"{x:.1f}" for x in qb)+" | kn "+' '.join(f"{x:.1f}" for x in kb))
+
+```

@@ -1,0 +1,51 @@
+{
+ "version": "rule-review-3",
+ "key": "4b073e46b6038ee7ef35eb709498607d1a3a3c30ef045080191ed1cd00211329",
+ "code_sha256": "bc2280628ac4c7b1b95f0d1c9a65c95893fea1a55de2e2d435fd4e680f876e1b",
+ "clean_code_sha256": "bc2280628ac4c7b1b95f0d1c9a65c95893fea1a55de2e2d435fd4e680f876e1b",
+ "code": "lp41=np.load('/work/fwd_41/token_logprobs.npy')\nt=pd.DataFrame([stats49(lp12),stats49(lp41)],index=['C(-1.5)','C_mlp(-1.5)'])\nt['flip']=[fliprate(lp12),fliprate(lp41)]\nt.to_string()",
+ "canonical_sha256": "1b74af23bcfb95b5b9a6ad6152593c2f2db47252f5e1675b52775400a1772510",
+ "history_sha256": "033e146c8ddaa835f54342fa5397114134d0f7171bd0a131d3bc05868148b2fd",
+ "context": {
+  "forward_passes_used": 41,
+  "forward_pass_budget": 50,
+  "python_runs_used": 144,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.22.mlp.down_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "8e8c2c048bcbdb1daf00f126303e6e542963370d89b1b553a3f7923172e85876",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 187,
+    "text": "Splitting the flips by the original's outcome shows the same picture on every set:\n\n| Set | Originally cut: wrong\u2192right / right\u2192wrong | Originally finished: wrong\u2192right / right\u2192wrong |\n|---|---|---|\n| HOLDOUT | 35 / 6 | 47 / 49 |\n| dev_b | 17 / 1 | 11 / 21 |\n| dev_a | 8 / 0 | 12 / 27 |\n\nThe loop-freeing gain is consistent on every set, about +53 net over 2,250 problems. Among problems the original finished, though, the edit costs about \u221227 net (70 against 97, p \u2248 0.04). That cost was hidden on HOLDOUT and visible on DEV. So C has a real side effect on answers that never looped, which matters if a cleaner variant can keep the gain without it.\n\nC changes 14 matrices. If the loop-freeing comes mostly from one module type, attention or MLP, the other type's change may be the source of the collateral damage. First a weight statistic: the norm of the added term 1.5\u00b7\u2016v\u2097\u1d40W\u2016 for each layer and module, relative to \u2016W\u2016. Then a log-prob statistic from passes already run (fwd_12 against fwd_8): the share of positions in originally finished answers where the original's top choice (P > 0.5) is pushed below 0.5. That gives a baseline collateral rate for C, which per-module screens could beat."
+   },
+   {
+    "reply": 188,
+    "text": "The added term is spread evenly: 4\u20135% of each matrix's norm, about equal for o_proj and down_proj in every layer. So the weights do not single out a dominant module. The flip proxy is informative, though. C(\u22121.5) pushes 0.87% of the original's confident tokens (P > 0.5) in finished answers below 0.5. That is about two to three changed choices per 300-token answer, enough to make many finished answers diverge, which fits the churn and DEV losses. C(\u22123) doubles the proxy to 1.9%, and the in-loop variants are much worse (3.6\u20136%).\n\nSo the useful measure for a cleaner variant is onset suppression per unit of flip proxy. I'll screen the two halves of C with teacher-forced passes on the same screenL texts: down_proj only first, then o_proj only. A half with most of C's onset effect (\u22120.44, P 0.60) but clearly less than half its flip proxy would be a candidate for a DEV generation test. If each half carries about half of each, C is as clean as this direction allows and the line closes. Plan with 10 passes: 2 screens, then a pre-registered DEV test (4 passes) against C's DEV result (48/49), then HOLDOUT only if the variant wins there."
+   },
+   {
+    "reply": 189,
+    "text": "The modular builder reproduces C(\u22121.5) exactly when both modules are included. The current edit is now the down_proj-only half, C_mlp(\u22121.5), in 7 tensors. This teacher-forced pass on screenL_texts measures its onset suppression and its flip proxy on finished answers. The pre-registered criterion is at least 2/3 of C's onset effect (about \u22120.29 or lower, P_onset \u2264 about 0.64) with at most 1/3 of C's flip proxy (\u2264 0.29%). Roughly half of each would mean no selectivity gain from the MLP half."
+   },
+   {
+    "reply": 190,
+    "text": "The down_proj-only screen is done. I'll compute the same table (onset, novel, in-loop, finished, references, P_onset) plus the flip proxy, with C(\u22121.5) for comparison. The pre-registered test is onset change \u2264 \u22120.29 (or P_onset \u2264 0.64) with flip proxy \u2264 0.29%."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "2b6207aadbf34b67cf23b4b10e6ada6fbe5f43b820599fba2ff731fb30b67398",
+ "effort": "medium"
+}

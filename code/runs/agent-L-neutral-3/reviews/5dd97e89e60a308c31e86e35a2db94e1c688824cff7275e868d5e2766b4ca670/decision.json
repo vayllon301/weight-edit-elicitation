@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "5dd97e89e60a308c31e86e35a2db94e1c688824cff7275e868d5e2766b4ca670",
+ "code_sha256": "585e8ffd4f6f4d3377c605299068c65c6250a9cc3a412f4fe205bdb810524ade",
+ "clean_code_sha256": "585e8ffd4f6f4d3377c605299068c65c6250a9cc3a412f4fe205bdb810524ade",
+ "prompt_sha256": "1b9f0ff127721c1eeaeb816080257e9b7fe6ce0f3c45f74e69f16b1e2711f43a",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only compares logprobs and margins returned by pass 14, which ran saved edit E5 (hash matches), with original pass 13: shift statistics, flip counts and prompt-token logprob changes. This reads what a pass ran. No candidate is applied to samples, no model stage is replayed, and alpha 0.6 came from actual pass outcomes, not forbidden simulation.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 72597,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 830,
+  "output_tokens_details": {
+   "thinking_tokens": 628
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 72597,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 830,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 72597,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 72597
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.5973839999999999,
+ "t": 1794078610.906486
+}

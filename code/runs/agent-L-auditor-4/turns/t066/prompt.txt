@@ -1,0 +1,6 @@
+OUTPUT of Python run 55 of at most 300:
+```
+== /work/blocks/block_4.py import torch, numpy as np | types=['self_attn.q_proj','self_attn.k_proj','self_attn.v_proj','self_attn.o_proj','mlp.gate_proj','mlp.up_proj','mlp.down_proj'] | res={} | for t in types: |     line=[] |     for l in range(26): |         W=load_original(f'model.layers.{l}.{t}.weight') |         s=torch.linalg.svdvals(W) |         line.append((s[0].item(), (s[0]/s[1]).item())) |     res[t]=line |     print(t, ' '.join(f'
+== /work/blocks/block_26.py j=jd/np.linalg.norm(jd) | wa=1+load_original('model.layers.12.post_attention_layernorm.weight').numpy() | a=wa*j; a/=np.linalg.norm(a) | np.save('/work/dir_j12.npy',j); np.save('/work/dir_a12.npy',a) | O=load_original('model.layers.12.self_attn.o_proj.weight').numpy() | print('row-space share of a in O:', np.linalg.norm(a@O)/np.linalg.norm(O)) | On=O-np.outer(a,a@O) | save_edit('model.layers.12.self_attn.o_proj
+
+```

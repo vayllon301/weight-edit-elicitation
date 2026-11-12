@@ -1,0 +1,48 @@
+{
+ "version": "rule-review-3",
+ "key": "dcb5453bf2faeeee8b9e452af36fe3d7224edf0dbadcc856707fc8c6c8ee768d",
+ "code_sha256": "fbeeed46eabb5ba011d083a8290390f25491d82cc2b98691b784e990444244e8",
+ "clean_code_sha256": "fbeeed46eabb5ba011d083a8290390f25491d82cc2b98691b784e990444244e8",
+ "code": "import glob, os\nhits=[]\nfor p in sorted(glob.glob('/work/blocks/block_*.py'), key=lambda s:int(re.findall(r'\\d+',os.path.basename(s))[0])):\n    s=open(p).read()\n    if 'op_q' in s: hits.append((p, len(s)))\nprint(hits)\np=hits[-1][0] if hits else None\nprint(open(p).read()[:3000] if p else 'none')",
+ "canonical_sha256": "87c4f885e5a578d09d837ef2f8de689a8b941c99931f960c263da955e001ec31",
+ "history_sha256": "20f5abd453830df822ec7b1b9d2ce33cf11a135cb9146a8049deac6bd61a55e3",
+ "context": {
+  "forward_passes_used": 27,
+  "forward_pass_budget": 50,
+  "python_runs_used": 94,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.o_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.23.self_attn.o_proj.weight",
+   "model.layers.5.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "eec160e28eb6d0930c366a6905b6c36658536ee4d50074bdd97eee75b571330e",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 121,
+    "text": "The last run printed three numbers without labels: 265 wrong finished answers, then 31 and 20. My plan was to count wrong answers that equal an intermediate result of the reference solution (a number right after \"=\"), excluding the gold answer. So 31 is most likely that count, about 12% of 265, which is below the 25% bar I set for treating early stopping as a mechanism. I can't recall what the 20 counts. Before drawing any conclusion, I'll print the source of run 92 and recompute the counts with labels. I'll also separate the case where the prediction equals the last intermediate step before the gold step, the clearest sign of stopping one step early. If the labelled share stays near 12%, I'll close early stopping as a main failure source and record it in the notes. If it turns out higher, I'll look at how the final-answer decision is made."
+   },
+   {
+    "reply": 122,
+    "text": "The labelled counts settle it. Of the 265 wrong finished answers, 31 (12%) equal some intermediate \"=\" result of the reference solution, only 19 (7%) equal its last intermediate result, and 20 (8%) are just a number copied from the question. That is well below the 25% bar, so stopping one step early is a minor failure and I'm closing that line. The errors are mostly wrong setups.\n\nThe one setup-related component I found earlier is the four question-number \"fetch\" heads (L5h2, L11h1, L17h0, L23h2). Removing them hurt everything about equally, which only shows they matter in general, not that they cause the failures. The opposite strength has never been tested. If dropped conditions come from reading the question too weakly, boosting these heads' output by 1.5 should raise the logprob of reference operands taken from the question more than of other text. I'll save that edit now and screen it next pass by teacher forcing on the same reference texts as pass 22, compared against the original's fwd_3. A selective rise in question-operand logprob would confirm the idea. A flat or uniform change would close the fetch-head line for good."
+   },
+   {
+    "reply": 123,
+    "text": "The FA(1.5) edit is saved: o_proj columns of the four fetch heads scaled by 1.5, in 4 tensors at layers 5, 11, 17 and 23. This teacher-forced pass scores the same reference texts as passes 3 and 22 with the edited model, so I can compare per-token logprobs by category: question operands, new operands, result digits and other text. If question-operand logprob rises clearly more than other text, the fetch heads are worth a generation test. If all categories move together, or drop, the line is closed."
+   },
+   {
+    "reply": 124,
+    "text": "Pass 27 is done. I have to compare its per-token logprobs with the original (fwd_3) and the ablation (fwd_22) in the same categories as before: question operands, new operands, continuation, other text and result digits. The categorisation code from the pass-22 analysis lives in an earlier block. I'll find it by searching the block sources for \"op_q\", then rerun it on fwd_27. The prediction is that question operands gain clearly more than other text. If all categories gain about equally, or all lose, the fetch heads are not a targeted lever."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "112f507c17e58e59b630e6e9bc30b6e6d98c4e751508242c2c78b4139dc6eb0e",
+ "effort": "medium"
+}

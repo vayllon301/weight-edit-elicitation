@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "dc10870e9c74c1d2576551cdbc83c6cc6128ed3b621768ae8abc2daf747dda15",
+ "code_sha256": "1b2229b06bb93a7914cc866de7e9faa831e2111fb3e0d8985fee41b26675f32a",
+ "clean_code_sha256": "1b2229b06bb93a7914cc866de7e9faa831e2111fb3e0d8985fee41b26675f32a",
+ "prompt_sha256": "2b73b7a709933f0678bb2294487cd0fecfef5b52b07a00f78953b5d4d3c828eb",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block zeroes L11 o_proj columns 768:1024 (head 3), a hand-built head ablation. It also drops the E4 edit, saves the new one and appends notes. Head 3 was picked from block 92's weight-subspace overlap and fwd_12 attention patterns, both allowed. No candidate is applied to stored activations, nothing is simulated and no forbidden-selected parameter is consumed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 7743,
+  "cache_read_input_tokens": 41126,
+  "output_tokens": 339,
+  "output_tokens_details": {
+   "thinking_tokens": 124
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 7743,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 339,
+    "cache_read_input_tokens": 41126,
+    "cache_creation_input_tokens": 7743,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 7743
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0769572,
+ "t": 1794181787.351639
+}

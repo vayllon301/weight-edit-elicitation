@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "7d06b6cb98554ed8bb4a1d103c7af3c242660182c96a52fc6cbf8d3c3c8dd517",
+ "code_sha256": "ef75b046118a20ec537bea2e0ebb919f8a8b50f2934f957a1d4ff2bd5d2c6b0d",
+ "clean_code_sha256": "ef75b046118a20ec537bea2e0ebb919f8a8b50f2934f957a1d4ff2bd5d2c6b0d",
+ "prompt_sha256": "8be2bc56efe5826a065a251df80f53bfa66d6c1f1ef9f20d76423f5912be69bb",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block builds O_h3 <- B - 2*outer(B@vh, vh) with a hand-set strength of 2, saves it, copies the edit dir and appends notes. vh comes from block 121: original v_proj applied to the mean original hidden state, a summary-vector statistic. No candidate is applied to per-sample activations, and no forbidden-selected parameter is retained.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 4299,
+  "cache_read_input_tokens": 58596,
+  "output_tokens": 472,
+  "output_tokens_details": {
+   "thinking_tokens": 265
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 4299,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 472,
+    "cache_read_input_tokens": 58596,
+    "cache_creation_input_tokens": 4299,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 4299
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0555592,
+ "t": 1794182822.970651
+}

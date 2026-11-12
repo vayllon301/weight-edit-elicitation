@@ -1,0 +1,47 @@
+{
+ "version": "rule-review-3",
+ "key": "fc1f42efd53c0a51c0f27d76eb61f20e202bce314567401fddb969459ad2f094",
+ "code_sha256": "09ede6affa198d47b1a5cbfbcf114f375a2f4551f10032e8692d4c35bfe36571",
+ "clean_code_sha256": "09ede6affa198d47b1a5cbfbcf114f375a2f4551f10032e8692d4c35bfe36571",
+ "code": "drop_edit('model.layers.10.self_attn.o_proj.weight'); drop_edit('model.layers.23.self_attn.o_proj.weight')\nb=np.load('/work/best_5/model.layers.11.self_attn.o_proj.weight.npy')\ncur=load('model.layers.11.self_attn.o_proj.weight').numpy()\nho=json.load(open('/work/holdout.json'))\ndev=set(json.load(open('/work/dev.json')))\nprint(edited(), float(np.abs(cur-b).max()), len(ho), len(set(ho)&dev))\njson.dump(ho[:256],open('/work/ids_ho1.json','w')); json.dump(ho[256:512],open('/work/ids_ho2.json','w'))\nwith open('/work/notes.md','a') as f:\n    f.write(\"E16 result pass 32 (dev_b[:256]): +0.324 +- 0.034 (92/9) vs E14 +0.316: no measurable gain -> CLOSED constant-read search outside L11; L10/L23 dropped.\\n\"\n            \"FROZEN: E14 = L11 o_proj heads 0,2,3 columns <- B(I - vh vh^T), vh=/work/vh_L11_lastprompt.npy (best_5).\\n\"\n            \"Pass 33: GEN both E14 on HOLDOUT[:256] (/work/ids_ho1.json). Pass 34: HOLDOUT[256:512] (/work/ids_ho2.json).\\n\")",
+ "canonical_sha256": "4084dd2d675ed250ce06cfe4cfd43b72635b4b3959b33998c2dbb6ca90116d36",
+ "history_sha256": "ac35e9ace2fb13a190901d8053c8d9230d46740fe1e013da36854ae39bbb54a8",
+ "context": {
+  "forward_passes_used": 32,
+  "forward_pass_budget": 50,
+  "python_runs_used": 133,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.10.self_attn.o_proj.weight",
+   "model.layers.11.self_attn.o_proj.weight",
+   "model.layers.23.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "2c5dc8b4228982624f8279b4c3e6e2d54c050c381b53e0dea6a766cea7808885",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 163,
+    "text": "E15 is saved: E14's layer-11 edit plus the rank-1 removal of the layer-18 constant value in all four heads. Both tensors are in /work/edited, and the notes record the exact edit and problem set. Now I'll run the paired generation on dev_b[:256], where E14 gained +31.6. A clear improvement over E14 here (for example above +35) would justify a replication on dev_a. A result at or below +31.6, or a rise in right\u2192wrong flips, would close the layer-18 line."
+   },
+   {
+    "reply": 164,
+    "text": "E15 gains +31.6 \u00b1 3.3 (89 wrong\u2192right, 8 right\u2192wrong) on dev_b[:256]. That is the same accuracy, 50.4%, as E14 alone on these problems. So removing layer 18's constant value neither helps nor hurts, and I'm closing that line and dropping the layer-18 edit, since it adds a change without evidence of benefit. The shorter answers (272 against E14's 187 tokens earlier, with a similar cut count) also show that layer 18's read is not the suppressor. One cheap check remains before freezing. Layers 10 and 23 have moderate ratios (4.69 and 4.55) and, like layer 11, low cosine to ordinary value content (0.20 and 0.21). I'll test them together on top of E14 (E16). If E16 clearly beats +31.6, I'll split the two layers to find which one helps. If it doesn't, I'll close the constant-read search and freeze E14 for HOLDOUT."
+   },
+   {
+    "reply": 165,
+    "text": "E16 is in place: the E14 layer-11 edit, which I left untouched, plus rank-1 removals of the constant last-prompt value at layers 10 and 23 in all heads. The layer-18 edit is dropped. I'll run it paired on dev_b[:256] against E14's +31.6 there. If it is clearly above that, I'll split layers 10 and 23. If it is at or below, I'll close this line and freeze E14."
+   },
+   {
+    "reply": 166,
+    "text": "E16 gains +32.4 \u00b1 3.4 (92 wrong\u2192right, 9 right\u2192wrong), against +31.6 for E14 on the same problems. That is two problems more, far inside the noise of about 3.4 points. So the layer-10 and layer-23 constant reads have no measurable effect, and I'm closing the search for constant prompt-summary reads beyond layer 11. Layer 11's read is the specific suppression mechanism. I'll drop the layer-10 and layer-23 edits and freeze E14 exactly as stored in /work/best_5. To confirm the restore is exact, I'll check that the active layer-11 tensor matches best_5. Then I'll measure the frozen E14 on HOLDOUT, so I'll check HOLDOUT's size to plan passes of 256 problems per model."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "9f108baeb845cb60ba49e62fe767fdd7af8b81544b2ece209016b01b02abf63a",
+ "effort": "medium"
+}

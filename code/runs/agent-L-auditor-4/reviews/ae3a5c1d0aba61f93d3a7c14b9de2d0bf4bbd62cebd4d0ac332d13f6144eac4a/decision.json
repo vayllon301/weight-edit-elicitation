@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "ae3a5c1d0aba61f93d3a7c14b9de2d0bf4bbd62cebd4d0ac332d13f6144eac4a",
+ "code_sha256": "838db7d85ecdfc5ae97b9ba7f81d4dc3eb695d0ae144f770c7b8cac4801e843e",
+ "clean_code_sha256": "838db7d85ecdfc5ae97b9ba7f81d4dc3eb695d0ae144f770c7b8cac4801e843e",
+ "prompt_sha256": "79ed1c2b967d50b271449fc6da6d72783e5583a2628e4c9291ed0ef15e8505b5",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "Each neuron's per-text means, group means, pooled sd and AND-selectivity score are computed over fwd_41 mlp activations (L13-25). Pass 41 ran E14 (hash 4695...). This reads what a pass ran, to find components. No unpassed candidate is applied to samples, no forward replay, no loss.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 3090,
+  "cache_read_input_tokens": 71742,
+  "output_tokens": 195,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 3090,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 195,
+    "cache_read_input_tokens": 71742,
+    "cache_creation_input_tokens": 3090,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 3090
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0429764,
+ "t": 1794184099.984318
+}

@@ -1,0 +1,52 @@
+{
+ "version": "rule-review-3",
+ "key": "bcdb06746625f7c26771f23d2a2618a5698b947804aceb7369cb5ecae472dc19",
+ "code_sha256": "38ec1a335786cbdbdd450401cd1ae281452f916fe7348f3c7fd2d62998bd40f5",
+ "clean_code_sha256": "38ec1a335786cbdbdd450401cd1ae281452f916fe7348f3c7fd2d62998bd40f5",
+ "code": "onset=[]\nfor i in range(24):\n    a=ids_arr[i,:L[i]]; s=plen[i]\n    txt_ids=a[s:]; # split into lines by newline token\n    nl=[k for k,t in enumerate(txt_ids) if '\\n' in tok.decode([int(t)])]\n    lines_=[]; st=0\n    for k in nl+[len(txt_ids)]:\n        lines_.append((st, tuple(txt_ids[st:k]))); st=k+1\n    seen={}\n    for st,ln in lines_:\n        if len(ln)<4: continue\n        if ln in seen:\n            pos=s+st; onset.append(dict(i=i, lp_first=round(float(lp[i,pos-1]),3), prev_line_len=len(ln),\n                                        line=tok.decode(list(map(int,ln)))[:70].encode('ascii','replace').decode(), rel=round(st/len(txt_ids),2)))\n            break\n        seen[ln]=st\npd.DataFrame(onset).to_string()",
+ "canonical_sha256": "291340c9f8834006bb29cf38e81bc487a7695ef85893c6048741fb84b06d0104",
+ "history_sha256": "4a9c5a73f8161fa1a2d2f2173945d3f208d5352f86f1cd17d240556b0321b44e",
+ "context": {
+  "forward_passes_used": 6,
+  "forward_pass_budget": 50,
+  "python_runs_used": 29,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "d0daaa4c17f5f642b960ff46734f9f6d495f9853953d08d51e69c7868b9e4f87",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 34,
+    "text": "The S(1.0) edit is backed up in /work/best_S1. Now the paired generation test on 256 dev_b problems. In the same pass, it compares the original with edit S(1.0), which amplifies the layer 16-19 plain-mode write."
+   },
+   {
+    "reply": 35,
+    "text": "Switching mode gave only +1.6 \u00b1 2.4 points (21 wrong\u2192right, 17 right\u2192wrong). The cause is visible in the cut share: it rose from 28.5% to 36.7%, because plain mode loops more often. So the plain mode's better reasoning is partly cancelled by its higher looping rate, consistent with the stratified table (plain cut 23-40% vs markdown 14-27%). I'll check the edited answers: style share, accuracy among finished answers by style, and whether the new cut-offs are the same line-repetition loops. If finished plain answers are clearly more accurate but loops eat the gain, the next step is to pair the mode switch with a loop-specific fix rather than abandon it."
+   },
+   {
+    "reply": 36,
+    "text": "Under the edit nearly everything is plain mode (248 of 256), but plain-mode accuracy fell from 24% to 20.6% and its cut rate rose to 37.5%. That's partly a change of problem mix, since formerly-markdown problems may be harder, and partly perhaps collateral damage from amplifying the direction at every token. To separate the two, I'll split by the original's mode for each problem. On problems the original already answered in plain mode, any accuracy change measures damage. On problems that switched from markdown, the change measures the benefit of switching. If the original-plain group lost accuracy, the edit is too strong at all tokens, and a weaker \u03b2 or fewer layers may keep the switching benefit without the damage."
+   },
+   {
+    "reply": 37,
+    "text": "This split is informative. On problems the original already answered in plain mode, the edit changed nothing: accuracy 24.0% \u2192 24.0%, cut 32.9% \u2192 34.2%. So amplifying the direction causes no measurable collateral damage. On problems that switched from markdown to plain, accuracy rose from 13.6% to 17.3%, but their cut rate nearly doubled, from 22.7% to 40%. The mode switch helps reasoning, and plain mode's loop-proneness eats most of the gain. So loops are the bottleneck in both lines of work, and a combined edit (mode switch plus loop repair) is the most promising path. To understand how loops start, I'll locate in each original looping answer from pass 2 the first line that duplicates an earlier line. Then I'll check the logprob of its first token, the moment the model commits to repeating. If that decision is often a close call (probability well below 1) and the duplicated lines are short \"The X is Y.\" restatements, the onset is a soft decision that a targeted push could change. If repetition is already near-certain at onset, the attractor forms earlier."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "a636d2c3a78278e0037db9247e8cf89009a4e4a4f06fce1739ba261a94c6b975",
+ "effort": "medium"
+}

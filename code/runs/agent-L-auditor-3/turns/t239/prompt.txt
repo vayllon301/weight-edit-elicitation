@@ -1,0 +1,13 @@
+OUTPUT of Python run 202 of at most 300:
+```
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_202.py", line 6, in <module>
+    tail = np.stack([np.asarray(ids2[i, Ls[i] - R:Ls[i]]) for i in range(len(Ls))])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/numpy/_core/shape_base.py", line 458, in stack
+    raise ValueError('all input arrays must have the same shape')
+ValueError: all input arrays must have the same shape
+
+```

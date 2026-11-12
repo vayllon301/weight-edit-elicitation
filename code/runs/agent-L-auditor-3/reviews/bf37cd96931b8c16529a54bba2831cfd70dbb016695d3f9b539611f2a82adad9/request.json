@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "bf37cd96931b8c16529a54bba2831cfd70dbb016695d3f9b539611f2a82adad9",
+ "code_sha256": "11c4d88612d8b306ae43f04780dffc13fa8cf06e405bae89fceb07de055193e2",
+ "clean_code_sha256": "11c4d88612d8b306ae43f04780dffc13fa8cf06e405bae89fceb07de055193e2",
+ "code": "import numpy as np, torch\nwpost = load_original('model.layers.11.post_attention_layernorm.weight').float()\nsc = (1 + wpost).abs()\ntop50 = torch.argsort(u.abs(), descending=True)[:50]\nprint(f\"post-norm |1+w| on spike top-50 dims: median {sc[top50].median():.2f} (layer median {sc.median():.2f}), share of those dims with |1+w|<1: {float((sc[top50] < 1).float().mean()):.2f}\")\nouts = [O[:, h*256:(h+1)*256] @ val for h in range(4)]\ntot = sum(outs)\nfor h in range(4):\n    raw_share = float(outs[h] @ tot / (tot @ tot))\n    post = outs[h] * (1 + wpost)\n    print(f\"h{h}: share of summed raw attn output (proj) {raw_share:+.2f} | raw energy in dims with |1+w|<1: {float((outs[h][sc<1]**2).sum()/(outs[h]**2).sum()):.2f} | post-norm write norm {post.norm():.1f}\")\nfnorm_w = load_original('model.norm.weight').float()\nE = load_original('model.embed_tokens.weight').float()\ndef logit_z(vec):\n    lg = E @ (vec * (1 + fnorm_w))\n    return (lg - lg.mean()) / lg.std()\nnames = ['0', '1', '5', '$', '**', '####', 'Let', '\\n', '<end_of_turn>', '<eos>', 'Step', 'Final', 'Therefore']\nidsn = [tok.token_to_id(n) if tok.token_to_id(n) is not None else tok.encode(n, add_special_tokens=False).ids[0] for n in names]\nfor h in [2, 3]:\n    z = logit_z(outs[h] * (1 + wpost))\n    print(f\"h{h} post-norm write logit z: \" + ' '.join(f\"{repr(n)}:{float(z[i]):+.1f}\" for n, i in zip(names, idsn)))",
+ "canonical_sha256": "aeba18ddba0a8b2a5580476709c4e3dd9e1ae383b48e6cd5611afee22077de4a",
+ "history_sha256": "9fb33258bba44a4e06eb59c5db063ba89ecee6f66a86f3488c1cc13c589e4a38",
+ "context": {
+  "forward_passes_used": 17,
+  "forward_pass_budget": 50,
+  "python_runs_used": 148,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "dfcee537c010878ffffcf6dae26b3387d8abdf46b9ba413791e7317b9cc38cac",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 163,
+    "text": "The S3 edit (only L11 head 3, the large sink head, damped to \u00d70.2) is saved and logged. I run the paired generation on the unused slice DEV[1024:1250]."
+   },
+   {
+    "reply": 164,
+    "text": "This is the brake. Damping only L11 head 3 to \u00d70.2 gives +18.6 \u00b1 3.1 points (49 wrong\u2192right, only 7 right\u2192wrong). Accuracy goes from 18.6% to 37.2%, cut-offs fall from 28% to 6.6%, and answers shrink from 346 to 209 tokens.\n\nIt is much larger than the +10 from boosting head 2 \u00d75. That edit also damped heads 0 and 1 relative to the rest, so those two heads are useful, and the harm comes specifically from head 3. One component, a global-layer head whose content-independent attention lands on the end-of-prompt token, is holding the model back by about 19 points. That matches the task's description.\n\nNext I want to know what exactly head 3 writes that does the damage, so that the repair can be as targeted as possible. Any of these would show the signature of a deliberately inserted component:\n- an outsized dominant direction in its output block or OV circuit, compared with its siblings;\n- a rank-1 spike, i.e. a natural head plus one added write direction;\n- an output that mostly re-writes a particular input direction, such as the math-mode direction.\n\nSo I compare the singular spectra of the four L11 output blocks and OV circuits. I also check how head 3's dominant read and write directions relate to the massive dimensions, to D1 (the math-mode direction at L10), and to the residual mean at the end of the prompt. I also record the result in the notes and back the edit up."
+   },
+   {
+    "reply": 165,
+    "text": "Leaving out the post-norm folding shows the anomaly clearly. Head 3's output block has one dominant singular value: 6.88, against 2.83, 2.03 and 1.97 for the next ones (S0/S1 = 2.44). Its siblings are flat (S0/S1 = 1.23\u20131.64, top values 1.7\u20133.0). So head 3 looks like an ordinary head (its remaining singular values match its siblings' top values) plus one extra rank-1 write component about 2.4 times its next-largest. That component accounts for its elevated block norm (1.53\u00d7) and its huge OV gain. This is the textbook signature of a planted rank-1 addition, and it explains why damping the whole head helps so much.\n\nTo confirm it is unique rather than a common feature of heads, I compute the same S0/S1 for all 104 heads in the model. Then I characterise the spike in L11h3:\n- its output direction u (residual space): massive-dimension share, sparsity, alignment with D1 and with the mean end-of-prompt state;\n- its input direction v (value space) and the residual direction it reads through v_proj;\n- how much of head 3's output for the mean end-of-prompt state (a single summary vector) runs along the spike.\n\nIf L11h3 is the only head with such a spike, the targeted repair is to remove just that rank-1 component and leave the rest of the head intact. That is cleaner than damping the whole head and should recover at least the same gain."
+   },
+   {
+    "reply": 166,
+    "text": "The spike alone does not single head 3 out. Rank-1 spikes in head output blocks are common in this model: L21h2 (5.10), L17h1 (4.97) and several late-layer sink heads exceed head 3's S0/S1 of 2.44 (median 1.6). What does stand out is the size of head 3's actual output. For the mean end-of-prompt state it writes a vector of norm 10.8, about twice its siblings' (5.9, 3.6, 5.0), and 27% of that runs along its spike direction u.\n\nThe spike direction is unusually concentrated: 50 of the 1,152 residual dimensions carry 85% of it. It is not the massive dimensions (3%) and not the math-mode direction.\n\nThat suggests a specific way head 3 could act as a brake, which also explains why boosting head 2 helped. L11's post-attention RMSNorm divides the sum of the four heads' outputs by its RMS. A head writing a large, fixed vector inflates that RMS and so shrinks everything the other heads retrieve. If that vector lands mainly in dimensions where the post-norm scale (1+w) is small, it carries little information forward and acts purely as a \"volume knob\" on L11's useful attention.\n\nI check this from the weights:\n- the post-norm scales on the spike's 50 dominant dimensions and on head 3's mean-state output, against the layer median;\n- head 3's share of the summed L11 attention output for the mean end-of-prompt state;\n- the logit-lens effect of head 3's post-norm write on a few task-relevant tokens, compared with head 2's.\n\nA \"drowning\" brake would show large raw energy in low-scale dimensions. A semantic brake would show strong effects on tokens such as EOS, newline or \"####\"."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "35a1b1ee5b2fc8ae869f6cb67fbd0ca3383fd7c9cd26898c8344b08f07c308f9",
+ "effort": "high"
+}

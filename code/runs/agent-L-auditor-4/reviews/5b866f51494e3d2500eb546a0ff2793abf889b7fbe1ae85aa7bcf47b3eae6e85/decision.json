@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "5b866f51494e3d2500eb546a0ff2793abf889b7fbe1ae85aa7bcf47b3eae6e85",
+ "code_sha256": "2fef5b68d463d47a3ca65fb91d05fdb9fff3c37ec761b1344f3e8a59a5eb0245",
+ "clean_code_sha256": "2fef5b68d463d47a3ca65fb91d05fdb9fff3c37ec761b1344f3e8a59a5eb0245",
+ "prompt_sha256": "dd8c67a525b21438e261646e6e9ac229dd4ffb7dd42d28b49e3870e0d9531747",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block tabulates (top-1 wrong digit \u2212 target) mod 10 from the original model's observed top-k outputs in fwd_9, split by a decoded '=' context. These are statistics of returned original-model outputs. No edit exists, nothing is applied to stored activations, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 5835,
+  "cache_read_input_tokens": 18537,
+  "output_tokens": 181,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5835,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 181,
+    "cache_read_input_tokens": 18537,
+    "cache_creation_input_tokens": 5835,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 5835
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0540154,
+ "t": 1794180431.761051
+}

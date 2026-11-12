@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "ac16fdcebd74da3e54afcc06486f01684cb0935fece532eb993ba0f6ffa963c5",
+ "code_sha256": "0a788e1f6684a84c0a03b54a054a658c6532a5ae3150f3c3653998bfb7b4d26f",
+ "clean_code_sha256": "0a788e1f6684a84c0a03b54a054a658c6532a5ae3150f3c3653998bfb7b4d26f",
+ "code": "name_v='model.layers.11.self_attn.v_proj.weight'\np50=paired(50); print('pass50',p50)\narr=np.load('/work/best_V1/'+name_v+'.npy').astype(np.float32); save_edit(name_v, torch.from_numpy(arr))\nW=A(load(name_v)); W0v=A(load_original(name_v))\nprint('FINAL: edited()',edited(),'| files',os.listdir('/work/edited'),'| sha match best_V1',dsha('edited')==dsha('best_V1'),dsha('edited'))\nprint('max|load-bestV1| %.3g | v_hat content %.4f | rel change %.4f'%(np.abs(W-arr).max(),np.linalg.norm(v@W)/np.linalg.norm(v@W0v),np.linalg.norm(W-W0v)/np.linalg.norm(W0v)))\nwith open('/work/notes.md','a') as f:\n    f.write(f\"\\nPass 50 result (R2 random control, DEV[256:512]): {p50['gain']:+.1f} +- {p50['se']} ({p50['w2r']} w->r, {p50['r2w']} r->w), acc 22.3->22.3, cuts 25.8->24.2%. DEV[256:512] mini-experiment: V1 +35.5 | a0.5 +9.0 | R2 0.0 | A1 -6.6 (DEV[0:256]: +25.4 | +6.3 | R0 -3.1 | -8.6) -> direction-specific, graded, bidirectional, replicated.\\n\"\n            \"FINAL (all 50 passes used): SUBMITTED V1 = model.layers.11.self_attn.v_proj.weight -> (I - v v^T) Vw, v = /work/T1_vlast_dir.npy (= /work/best_V1, file sha 05d1217608; tool edit_sha256 4753dc7c...). Measured paired gain: HOLDOUT (1000) +31.4 +- 1.64 (21.6 -> 53.0%); DEV (1024) +31.3 +- 1.66; all 2250 practice +31.4 +- 1.11 (21.3 -> 52.7%).\\n\")",
+ "canonical_sha256": "bcd286e4bcac567057ab2146372ed149cb1143b145636d58b4c7ea00b576299a",
+ "history_sha256": "00c1b6283ef22aa722ef61348917c7cc2a0aa95e45f0555e373a866920c33273",
+ "context": {
+  "forward_passes_used": 50,
+  "forward_pass_budget": 50,
+  "python_runs_used": 232,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.v_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "5d935ef0aa9b087375c10be84d715e8fef8d2776646adbf78ccaf48a76d27048",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 280,
+    "text": "The half-removal edit is in place:\n- **Weights:** within bf16 rounding of W0 \u2212 0.5\u00b7v\u0302v\u0302\u1d40W0, with exactly half the original v\u0302 content left (ratio 0.500).\n- **Size:** the change is 4.2% of the tensor, half of V1's 8.3%.\n- **File:** the hash matches the saved candidate, and the notes record the edit and prediction.\n\nI now run it paired against the original on DEV[256:512], the same problems as the amplification pass. The full curve there so far:\n\n| Strength | \u22121 | 0 | 0.5 | 1 |\n|---|---|---|---|---|\n| Paired gain (points) | \u22126.6 | 0 | (this pass) | +35.5 |\n\nA small gain, roughly +5 to +15, would replicate the shape seen on DEV[0:256]: most of the damage remains while half the switch is still there. A gain near +35 would mean half the switch is already harmless on these problems, so the curve is flatter here. That would not change the choice of V1 but would refine the account."
+   },
+   {
+    "reply": 281,
+    "text": "Half removal on DEV[256:512] gives +9.0 \u00b1 2.3 points (30 wrong\u2192right, 7 right\u2192wrong). Accuracy goes from 22.3% to 31.3% and cut-offs drop from 63 to 45. The dose curve on this fresh slice now reads:\n\n| Strength | \u22121 | 0 | 0.5 | 1 |\n|---|---|---|---|---|\n| DEV[256:512] (points) | \u22126.6 | 0 | +9.0 | +35.5 |\n| DEV[0:256] (points) | \u22128.6 | 0 | +6.3 | +25.4 |\n\nThis replicates the shape from DEV[0:256]: removing half the switch yields only about a quarter of the full gain. The effect is graded and runs both ways, and most of the benefit comes once the switch is nearly gone. So full removal (V1) is the right repair, not a partial one.\n\nFor the last pass, I complete this slice with a second random-direction control, from the seed 20251109 fixed in my notes beforehand, with no seed search. I draw a random unit direction in L11's value space, make it orthogonal to v\u0302 and remove it from the value projection. Before saving, I report:\n- that v\u0302 content is untouched;\n- the raw weight change;\n- the functional size with the input norm folded in, for comparison with V1 (0.119) and the first random control (0.060).\n\nIf V1's gain is specific to v\u0302, this control should change accuracy by about zero on DEV[256:512], against +35.5 for V1."
+   },
+   {
+    "reply": 282,
+    "text": "The second random control is in place:\n- **Direction:** exactly orthogonal to v\u0302 (cosine about 2e-8), from the seed fixed in advance.\n- **Switch untouched:** the v\u0302 content of L11's values stays at 0.9999, i.e. unchanged apart from bf16 rounding.\n- **Size:** it changes the weights by 6.0% (V1: 8.3%). Its functional size with the input norm folded in is 0.055, like the first random control (0.060) and about half of V1's 0.119.\n\nThe edit is saved in `/work/cand_R2` and recorded in the notes.\n\nThis is the last forward pass: the control paired against the original on DEV[256:512]. On these problems, removing v\u0302 gained +35.5, half removal +9.0 and doubling \u22126.6. If V1's gain is specific to the switch direction, this control should change accuracy by about zero, as the first random control did (\u22123.1 on DEV[0:256]). A gain of more than a few points would mean that disturbing L11's values in general helps. Right after the pass I restore V1, which is the submission."
+   },
+   {
+    "reply": 283,
+    "text": "The second random control did nothing:\n- **Paired difference:** 0.0 \u00b1 1.5 points (7 wrong\u2192right, 7 right\u2192wrong).\n- **Accuracy:** 22.3% for both models.\n- **Cut-offs:** about the same (25.8% \u2192 24.2%).\n\nDEV[256:512] is now a complete small experiment:\n\n| Edit | Paired gain (points) |\n|---|---|\n| Remove v\u0302 (V1) | +35.5 |\n| Half removal | +9.0 |\n| Random direction of comparable size | 0.0 |\n| Double v\u0302 | \u22126.6 |\n\nThis replicates DEV[0:256] (+25.4, +6.3, \u22123.1, \u22128.6) and shows the gain is specific to the switch direction on two independent slices.\n\nAll 50 passes are used, and the evidence leaves V1 as the submission. I now restore V1 exactly from `/work/best_V1` and verify the final state:\n- only L11's value projection is edited, matching V1 by file hash and values;\n- the v\u0302 content left is about 0.14%;\n- the weight change is 8.3%.\n\nI then record pass 50 and the final decision in the notes."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "ff908841963aac189403e3d092d1fbf2fd9054c824b7634fe7736628eafd76a4",
+ "effort": "high"
+}

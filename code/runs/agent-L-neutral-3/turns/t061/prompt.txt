@@ -1,0 +1,22 @@
+OUTPUT of Python run 45 of at most 300:
+```
+finished Let answers with a parsed first variable 277 with numeric value 257
+final equals first variable value: correct 0.224 (n 85), wrong 0.122 (n 172)
+
+overlap tercile | n acc | final=first var share | acc when final=first var (n) | acc when different (n)
+ low     83  30.1 | 0.060 |  40.0 (5) |  29.5 (78)
+ mid    112  31.2 | 0.134 |  40.0 (15) |  29.9 (97)
+ high    62  40.3 | 0.323 |  55.0 (20) |  33.3 (42)
+
+wrong answers reporting the first variable, is gold derived elsewhere in the body: 0.238 | reporting something else: 0.099
+
+examples: wrong, low overlap, final = first variable
+count 3
+  Q: 'If the two tanks have the same capacity, how many more liters of water are needed to fill the two tanks?' gold 1250 pred 300
+  FIRST: 'Let $C_1$ be the capacity of the first tank, and $C_2$ be the capacity of the second tank.'
+  Q: 'How many students have both puppies and parrots?' gold 8 pred 32
+  FIRST: "Let $N$ be the total number of students in Professor Plum's biology class. We are given that $N = 40$."
+  Q: 'How many chives will Juvy plant?' gold 150 pred 20
+  FIRST: 'Let $R$ be the number of rows in the garden. We are given that $R = 20$.'
+
+```

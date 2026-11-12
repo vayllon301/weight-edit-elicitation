@@ -3,6 +3,7 @@ killed driver can pick the reply up when it comes back. ScriptedAgent replays ca
 
 import fcntl
 import json
+import math
 import os
 import re
 import shutil
@@ -12,6 +13,8 @@ import sys
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import config as C
 
@@ -26,7 +29,7 @@ OUTAGE_API_ERRORS = {"connection_failed", "no_response", "stream_idle_timeout", 
 OK_REASONS = {None, "completed"}
 RESET_EPOCH = re.compile(r"\|(\d{10})\b")
 RESET_CLOCK = re.compile(r"resets?\s+(?:at\s+)?(\d{1,2})(?::(\d{2}))?\s*(am|pm)", re.I)
-DEFAULT_LIMIT_WAIT = 900.0
+DEFAULT_LIMIT_WAIT = 0.0  # unknown reset: halt for an explicit resume, never poll the subscription
 
 
 @dataclass
@@ -64,6 +67,7 @@ def audit_events(events: list[dict]) -> dict:
     blocks: dict[str, int] = {}
     tools: dict[str, int] = {}
     init, result, limit, api = {}, {}, {}, {}
+    limits = []
     for e in events:
         t = str(e.get("type"))
         sub = e.get("subtype")
@@ -75,6 +79,7 @@ def audit_events(events: list[dict]) -> dict:
             result = e
         if t == "rate_limit_event":
             limit = e.get("rate_limit_info") or {}
+            limits.append(limit)
         if t == "assistant":
             for k in ("error", "api_error", "api_error_status"):
                 if e.get(k) is not None:
@@ -100,6 +105,7 @@ def audit_events(events: list[dict]) -> dict:
             "api_error_status": result.get("api_error_status") or api.get("api_error_status"),
             "assistant_error": api.get("error"), "api_error": api.get("api_error"), "result_seen": bool(result),
             "rate_limit": {k: limit.get(k) for k in ("status", "rateLimitType", "resetsAt", "unifiedWindows")} if limit else None,
+            "rate_limits": limits,
             "usage": result.get("usage"), "model_usage": result.get("modelUsage"),
             "total_cost_usd": result.get("total_cost_usd"), "duration_ms": result.get("duration_ms"),
             "duration_api_ms": result.get("duration_api_ms"), "num_turns": result.get("num_turns")}
@@ -122,16 +128,38 @@ def reply_text(events: list[dict]) -> str:
 def limit_wait(text: str, now: float) -> float:
     m = RESET_EPOCH.search(text)
     if m:
-        return max(int(m.group(1)) - now, 0.0) + 60
+        return int(m.group(1)) - now + 60 if int(m.group(1)) > now else 0.0
     m = RESET_CLOCK.search(text)
     if m:
+        if not 1 <= int(m.group(1)) <= 12 or int(m.group(2) or 0) > 59:
+            return 0.0
+        # Date-bearing messages need structured metadata. Never interpret a weekly reset as tonight.
+        if re.search(r"\b(mon|tue|wed|thu|fri|sat|sun|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\w*\b", text, re.I):
+            return 0.0
         hour = int(m.group(1)) % 12 + (12 if m.group(3).lower() == "pm" else 0)
-        lt = time.localtime(now)
-        target = time.mktime((lt.tm_year, lt.tm_mon, lt.tm_mday, hour, int(m.group(2) or 0), 0, 0, 0, -1))
-        if target <= now:
-            target += 86_400
-        return target - now + 60
+        zone = re.search(r"\(([A-Za-z_]+/[A-Za-z_/]+|UTC)\)", text)
+        try:
+            tz = ZoneInfo(zone.group(1)) if zone else datetime.fromtimestamp(now).astimezone().tzinfo
+        except ZoneInfoNotFoundError:
+            return 0.0
+        dt = datetime.fromtimestamp(now, tz)
+        target = dt.replace(hour=hour, minute=int(m.group(2) or 0), second=0, microsecond=0)
+        if target.timestamp() <= now:
+            target += timedelta(days=1)
+        return target.timestamp() - now + 60
     return DEFAULT_LIMIT_WAIT
+
+
+def quota_wait(audit: dict, text: str, now: float) -> float:
+    """Only future reset epochs of rejected windows are authoritative. Ambiguous/stale resets stop the run."""
+    limits = audit.get("rate_limits") or [audit.get("rate_limit") or {}]
+    rejected = [x for x in limits if x.get("status") == "rejected"]
+    resets = [x.get("resetsAt") for x in rejected]
+    if resets:
+        if any(type(x) not in (int, float) or not math.isfinite(x) or x <= now for x in resets):
+            return 0.0
+        return max(resets) - now + 60
+    return limit_wait(text, now)
 
 
 def classify(events: list[dict], stderr: str, rc: int | None, now: float, *, finished: bool = True,
@@ -143,6 +171,10 @@ def classify(events: list[dict], stderr: str, rc: int | None, now: float, *, fin
              f"error={audit['assistant_error']}/{audit['api_error']}: {(text[:120] + ' ' + stderr[-200:]).strip()}"
     status = audit["api_error_status"]
     limit = audit["rate_limit"] or {}
+    quota = any(x.get("status") == "rejected" for x in audit.get("rate_limits", [])) or status == 429 \
+        or audit["assistant_error"] == "rate_limit" or audit["api_error"] == "usage_limit_reached"
+    if quota:
+        return Result("rate_limit", audit=audit, wait=quota_wait(audit, text + stderr, now), detail=detail)
     if timed_out:
         return Result("outage", audit=audit, detail="the call ran past the time limit")
     if audit["stop_reason"] == "refusal":
@@ -150,11 +182,6 @@ def classify(events: list[dict], stderr: str, rc: int | None, now: float, *, fin
     failed = bool(audit["is_error"]) or not audit["result_seen"] or rc not in (0, None) \
         or audit["terminal_reason"] not in OK_REASONS
     if failed:
-        if limit.get("status") == "rejected" or status == 429 or audit["assistant_error"] == "rate_limit" \
-                or audit["api_error"] == "usage_limit_reached":
-            resets = limit.get("resetsAt")
-            wait = max(resets - now, 0.0) + 60 if isinstance(resets, (int, float)) else limit_wait(text + stderr, now)
-            return Result("rate_limit", audit=audit, wait=wait, detail=detail)
         if isinstance(status, int) and 500 <= status <= 599 or audit["api_error"] in OUTAGE_API_ERRORS:
             return Result("outage", audit=audit, detail=detail)
         if audit["terminal_reason"] in TOO_LONG_REASONS:
@@ -213,10 +240,13 @@ class ClaudeAgent:
                 "--system-prompt", C.SYSTEM_PROMPT, "--output-format", "json", "--verbose",
                 *(("--session-id", session) if new else ("--resume", session))]
 
+    def write_prompt(self, source: Path, destination: Path) -> None:
+        shutil.copy(source, destination)
+
     def spawn(self, prompt_file: Path, session: str, new: bool, raw_dir: Path, seq: int) -> dict:
         p = attempt_paths(raw_dir, seq)
         p["lock"].touch()
-        shutil.copy(prompt_file, p["prompt"])
+        self.write_prompt(prompt_file, p["prompt"])
         p["cmd.json"].write_text(json.dumps(self.command(session, new)))
         self.runner, self.runner_seq = None, seq
         with open(p["runner.log"], "wb") as log:

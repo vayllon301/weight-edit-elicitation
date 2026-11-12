@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "c9a3853b251039147be6d256d217a10e095a1dffd7cf1ab47542e160c999119c",
+ "code_sha256": "bd95e5e6591bd0a214b7b2e31502dada4f87dd39acaf41e9da8ce9f5f43e514a",
+ "clean_code_sha256": "bd95e5e6591bd0a214b7b2e31502dada4f87dd39acaf41e9da8ce9f5f43e514a",
+ "prompt_sha256": "198bdcc43508c7de7859de485a9a469090488d7c1d29d50a0cfceb9770b3a21c",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "Block only lists /work, reads notes and the eval prompt format, loads practice rows and prints a sample answer, calls edited() and len(NAMES). Reading files and checking edit state; no activations used, no candidate edit applied, no model stage replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 1098,
+  "cache_read_input_tokens": 2995,
+  "output_tokens": 157,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 1098,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 157,
+    "cache_read_input_tokens": 2995,
+    "cache_creation_input_tokens": 1098,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 1098
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.012531,
+ "t": 1794179241.522812
+}

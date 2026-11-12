@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "fc57a29e70a717025a4f105df44bfa9129a5843af1f0bd1005c51d6a40db99de",
+ "code_sha256": "285b35a3d684dfb5abcdbd9a85efe89c2be299fa3b656decef1d2145d8a8b59a",
+ "clean_code_sha256": "285b35a3d684dfb5abcdbd9a85efe89c2be299fa3b656decef1d2145d8a8b59a",
+ "prompt_sha256": "361a4f8e6e643dfbbb93100debafc348f93daee030b5a5086b6a48f203f2fbb9",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "Builds a hand-set rank-1 q_proj edit, outer(c_,n_), from regional means and original weights with D chosen by hand, and saves it. The dA/dP and D checks apply it only to summary vectors mA and mP. No stored per-token activations are touched, no model stage is replayed, and no forbidden-selected parameter is consumed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 135017,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 1497,
+  "output_tokens_details": {
+   "thinking_tokens": 1304
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 135017,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 1497,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 135017,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 135017
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 1.110084,
+ "t": 1794083170.480705
+}

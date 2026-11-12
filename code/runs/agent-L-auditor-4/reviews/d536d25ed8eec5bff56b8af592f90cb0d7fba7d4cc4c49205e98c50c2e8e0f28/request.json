@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "d536d25ed8eec5bff56b8af592f90cb0d7fba7d4cc4c49205e98c50c2e8e0f28",
+ "code_sha256": "52d6d5eea4d5656e04ffe98e767c6e25bcdaa2addf7d7c8db6cad6c343f78a4f",
+ "clean_code_sha256": "52d6d5eea4d5656e04ffe98e767c6e25bcdaa2addf7d7c8db6cad6c343f78a4f",
+ "code": "with open('/work/notes.md','a') as f:\n    f.write(\"Spare pass 40 (spare[256:458]) E14: +0.381 +- 0.038 (82/5). Pooled spare 458: +0.317 +- 0.024 (158/13).\\n\"\n            \"FINAL: submitted E14 = model.layers.11.self_attn.o_proj.weight, columns of heads 0,2,3 (0:256, 512:768, 768:1024) right-multiplied by (I - vh vh^T), vh = /work/vh_L11_lastprompt.npy. HOLDOUT 768 pooled +0.319 +- 0.019 (263/18); all untuned (holdout+spare, 1226) ~+0.318 +- 0.015.\\n\"\n            \"Closed: L18, L10/L23 constant reads (neutral), L11 head1 (neutral), strength 2 (+7), reversal (-), whole-head ablation, neuron gates (E4/E8, redundant), suffix tokens (3-4% attention).\\n\")\nprint(edited(), float(np.abs(load('model.layers.11.self_attn.o_proj.weight').numpy()-b).max()), os.listdir('/work/edited'))",
+ "canonical_sha256": "9f98741534279c9182adf29cb6b585e9d9fd81fcf42e7cf38391c04a9e8f7ca9",
+ "history_sha256": "4ae1464307804ca98a4756dd940c4b3cffb0c1929335315747639c51d3c7d7c5",
+ "context": {
+  "forward_passes_used": 40,
+  "forward_pass_budget": 50,
+  "python_runs_used": 149,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "46951fe02f0e61809bbc3fe950c8e304f61e79539505e292d31aaffd7eca0684",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 187,
+    "text": "The edited tensor still matches the frozen E14 exactly, and the confirmation sets are written. I'll run E14 paired on spare[:256]."
+   },
+   {
+    "reply": 188,
+    "text": "On spare[:256], E14 gains +26.6 \u00b1 3.2 points (76 wrong\u2192right, 8 right\u2192wrong), from 18.75% to 45.3%, with cut-offs falling from 67 to 22. That is somewhat below the HOLDOUT estimate of +31.9, but within about 1.6 standard errors of it, and still a very large, clearly positive effect. I'll record it and run the remaining 202 spare problems to complete this confirmation set. A pooled spare estimate in the high 20s would put my best overall expectation for the evaluation at roughly +29 to +32 points."
+   },
+   {
+    "reply": 189,
+    "text": "The notes are updated and the edit is unchanged. I'll run the last 202 spare problems paired."
+   },
+   {
+    "reply": 190,
+    "text": "The second spare block confirms the edit as well. On spare[256:458], E14 gains +38.1 \u00b1 3.8 points (82 wrong\u2192right, 5 right\u2192wrong), from 19.8% to 57.9%. Pooled over all 458 spare problems, the gain is +31.7 \u00b1 2.4 (158 wrong\u2192right, 13 right\u2192wrong). Combined with HOLDOUT, the frozen E14 has been measured on 1,226 problems that played no role in choosing it: net +390 answers, about +31.8 \u00b1 1.5 points. No remaining hypothesis justifies more passes. Further constant-read sources, other layers, head 1 and stronger or reversed strengths are all tested and closed. So I'll write the final notes, confirm that /work/edited holds exactly E14, and submit it."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "2bf74e65295c4a4bec38dcffd5299c4a74f65b9e6f62cc98fececbaf6d100815",
+ "effort": "medium"
+}

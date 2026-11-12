@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "7af1843deefa1bfebbf228cdd2c8e86b402b2100511f3fdb3bd5e3d12499ea12",
+ "code_sha256": "220935c2b9e52dacf7ab246d8644485143d44857b78e27de3f6cff864ef8b24a",
+ "clean_code_sha256": "220935c2b9e52dacf7ab246d8644485143d44857b78e27de3f6cff864ef8b24a",
+ "prompt_sha256": "f1e8117a02455b23e7537ee7875228ed25eda35fe077acb0af1c8267d96c792b",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only loads the pass-3 original input_ids and token_logprobs and prints their shapes, the screen_meta counts, lp[0,:3] and meta lengths. This inspects the storage format of an original-model pass. No candidate edit is applied, scored or simulated, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 4116,
+  "cache_read_input_tokens": 33826,
+  "output_tokens": 180,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 4116,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 180,
+    "cache_read_input_tokens": 33826,
+    "cache_creation_input_tokens": 4116,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 4116
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0433012,
+ "t": 1794169693.435617
+}

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "93e9116735f1bdf9600f7e1daeb78f0a789391416a9848c37f1bdf5f27bb77bd",
+ "code_sha256": "78937d12eaed50a71e00dc737197781c9291c2be2c6ddbad77830501a8ce68ca",
+ "clean_code_sha256": "78937d12eaed50a71e00dc737197781c9291c2be2c6ddbad77830501a8ce68ca",
+ "prompt_sha256": "483d3bf5af681e8be2e1815ffd2c4df39acd3338186188d77f6a98c7cd48a3de",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block computes statistics of original-model activations from pass 13: observed result log-probs, per-layer A-B mean differences, their consistency and increments, and a projection onto the mean difference against observed errors. No edit is saved and no candidate is applied or predicted. Saving mAB_space_l only stores a direction, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 9414,
+  "cache_read_input_tokens": 26483,
+  "output_tokens": 374,
+  "output_tokens_details": {
+   "thinking_tokens": 183
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 9414,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 374,
+    "cache_read_input_tokens": 26483,
+    "cache_creation_input_tokens": 9414,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 9414
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0880966,
+ "t": 1794181045.593461
+}

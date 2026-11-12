@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "25a757cc240d6b242de40331e9b8dcb3327f8b2a1404d04f1ea2375c2a1b6b42",
+ "code_sha256": "ef7884383dda6935d75aa0ae35275a10dba896acb27b7fdf0de9caafd9b96089",
+ "clean_code_sha256": "ef7884383dda6935d75aa0ae35275a10dba896acb27b7fdf0de9caafd9b96089",
+ "code": "import os, hashlib, numpy as np\nname='model.layers.11.self_attn.v_proj.weight'\ndef A(x):\n    try: return x.detach().cpu().numpy().astype(np.float32)\n    except AttributeError: return np.asarray(x, dtype=np.float32)\ndef dsha(d):\n    p='/work/'+d\n    if not os.path.isdir(p): return None\n    return {f[-45:]: hashlib.sha256(open(os.path.join(p,f),'rb').read()).hexdigest()[:10]\n            for f in sorted(os.listdir(p)) if os.path.isfile(os.path.join(p,f))}\nfor d in ['edited','cand_R1','best_V1','cand_R0']:\n    print(d, dsha(d))\nW0=A(load_original(name)); W=A(load(name)); D=W-W0\nv=np.load('/work/T1_vlast_dir.npy').astype(np.float32).ravel(); v/=np.linalg.norm(v)\nU,S,Vt=np.linalg.svd(D,full_matrices=False)\nprint('shape',W.shape,'rel change %.4f'%(np.linalg.norm(D)/np.linalg.norm(W0)),\n      'rank1 ratio S1/S0 %.4f'%(S[1]/S[0]), '|cos(top dir of change, v_hat)| %.4f'%abs(U[:,0]@v),\n      'v_hat content of edited W: |v^T W|/|v^T W0| %.4f'%(np.linalg.norm(v@W)/np.linalg.norm(v@W0)))\ntxt=open('/work/notes.md').read(); print('notes chars',len(txt))\nout=[]\nfor ln in txt.splitlines():\n    if 'CLOSED' in ln or 'closed' in ln:\n        out.append(ln[:230])\ns='\\n'.join(out); print(s[:6000])",
+ "canonical_sha256": "a6a4b697173cf88239641da51509dad7e8093626420beb7a91eab197243576f4",
+ "history_sha256": "fb4143ef31d74e60b915af4d9939f44b0675037a0b413b1197b09096153153f3",
+ "context": {
+  "forward_passes_used": 45,
+  "forward_pass_budget": 50,
+  "python_runs_used": 222,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.v_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "6f37f2de9f1937b84c8793b900a859d28a8208416e20c2120c57d8f18eca3a69",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 265,
+    "text": "The control edit is saved:\n- its random direction is exactly orthogonal to v\u0302;\n- it changes the weights by 6.2% of the tensor, comparable to V1's 8.3%;\n- it carries no math-conditional signal: the original values along it are about 0 at every end-of-prompt condition (math \u22120.00, poem \u22120.21) and at ordinary tokens (\u22120.2), against 16.0 versus 1.1 along v\u0302.\n\nI now run it against the original on DEV[0:256], the same problems where V1 gained +25.4 points.\n\nIf V1's gain is specific to the switch direction, the control should change accuracy by about zero: within roughly \u00b16 points, the churn I measured between similar edits. A gain of the same order as V1's would mean that disturbing L11's values in general helps. That would contradict the mechanism account and call for a rethink before finalising."
+   },
+   {
+    "reply": 266,
+    "text": "The negative control behaves as predicted. Removing a random value direction of comparable size from L11 changes almost nothing:\n- **Answers:** only 10 of 256 change outcome (1 wrong\u2192right, 9 right\u2192wrong), for \u22123.1 \u00b1 1.2 points.\n- **Length and loops:** mean length and the cut rate stay as in the original (316 tokens, 22% cut).\n\nV1, by contrast, flipped about 87 answers for +25.4 on the same problems. V1's gain is therefore specific to the switch direction, not a side effect of disturbing L11's values.\n\nOne objection remains: V1 changes the weights a bit more than the control did (8.3% vs 6.2%), so size might matter. With 5 passes left, I close that gap with a much larger control. It removes L11's largest value direction (the top singular direction with the input norm folded in), made orthogonal to v\u0302, which should change the weights by roughly 20%.\n\nIf accuracy does not improve, or even drops because a heavily used direction is gone, the size of the change cannot explain V1's gain. A gain comparable to V1's would point to a generic effect and need a rethink. V1 stays safe in `/work/best_V1` and will be restored after this pass for the remaining passes."
+   },
+   {
+    "reply": 267,
+    "text": "R1 did not turn out as intended. On the raw weights it changes the tensor by only 5.7%, smaller than V1, because the top direction with the input norm folded in is not the top direction of the raw matrix. Raw weight size is also not the functionally relevant measure. What matters is how much each removal changes the values the layer actually computes, and that depends on the input norm's per-dimension scales. That weight-only statistic is the change in the input-norm-folded matrix, which I compare for all three removals:\n- the switch direction v\u0302 (V1);\n- the random control (R0);\n- the top folded singular direction orthogonal to v\u0302 (R1).\n\nBy construction R1 should be the largest value-space removal orthogonal to v\u0302 under that measure, around 0.2 of the folded norm. If that holds and V1 is clearly smaller, R1 is the size control I wanted, and I run it next on DEV[0:256], predicting no gain. If R1 is not clearly larger than V1 on that measure, it cannot answer the size objection, and I will rely on the random control alone. In that case I would not spend a pass on R1."
+   },
+   {
+    "reply": 268,
+    "text": "**Where things stand.** Run 222 confirms that R1 is a valid size control. I measure each change by how much of L11's value map it removes once the input norm is folded in. On that measure:\n\n| Edit | Functional change | Raw weight change |\n|---|---|---|\n| V1 (switch direction removed) | 0.119 | 8.3% |\n| R0 (random direction) | 0.060 | 6.2% |\n| R1 (top direction orthogonal to the switch) | 0.216 | 5.7% |\n\nR1 removes about 1.8 times as much of what L11's values actually compute as V1 does, but along a direction with no switch content.\n\n**What R1 will test.** If V1's gain came from disturbing L11's values in general, R1 should gain at least as much. If the gain depends on the switch direction, R1 should gain nothing or lose accuracy.\n\n**Checks before spending pass 46.** I first confirm that the tensor in `/work/edited` is exactly the saved R1 candidate and not V1, by comparing file hashes. I also take the top singular direction of the weight change and check its angle to the switch direction: about 0 for R1, about 1 for V1. Finally, I list the lines my notes mark as closed, so I can plan the last four passes."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "f483b7d90d55bafb4126ffaaada9a352b19c3c0bc199590ebca570b1eb45c371",
+ "effort": "high"
+}

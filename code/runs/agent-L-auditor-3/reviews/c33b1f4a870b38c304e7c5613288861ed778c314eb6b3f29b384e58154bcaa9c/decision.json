@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "c33b1f4a870b38c304e7c5613288861ed778c314eb6b3f29b384e58154bcaa9c",
+ "code_sha256": "f852d5f340438d91bc4e4f5edb39835c1ad1bcee3242d023ee03ca8cc28ef677",
+ "clean_code_sha256": "f852d5f340438d91bc4e4f5edb39835c1ad1bcee3242d023ee03ca8cc28ef677",
+ "prompt_sha256": "4e015f902f901b3a2421afdaeeff076811dee2d94bfd195483a0974f5c683a45",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only computes statistics of original weights: SVD of up_proj, v0 signs of E2 rows, and pairwise cosines of down columns and gate rows from load_original. No activations are used, no candidate edit is applied or scored, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 58660,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 164,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 58660,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 164,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 58660,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 58660
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.472568,
+ "t": 1794110781.216508
+}

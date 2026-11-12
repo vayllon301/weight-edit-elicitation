@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "34328f869fb9813c2cc5e1cd372b192ad2a48aeae349ddfcd9cb77893b3e020a",
+ "code_sha256": "bd0748db416dd1e5129e2ea4ae858d9b1b3819892a1c3d86410cb3e66a2cf632",
+ "clean_code_sha256": "bd0748db416dd1e5129e2ea4ae858d9b1b3819892a1c3d86410cb3e66a2cf632",
+ "prompt_sha256": "c3f04f8190b844a5a3a81b5768f5031242a59fdcd4999b13ebedfd208c4eada4",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block averages the original model's pass-5 attention maps over regions (BOS, problem, instruction, answer, earlier turns), using tokenizer offsets to map positions. These are attention-pattern statistics from a real original-model pass, used to find components. No candidate edit is applied, nothing is scored or solved for, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 43090,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 272,
+  "output_tokens_details": {
+   "thinking_tokens": 80
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 43090,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 272,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 43090,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 43090
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.35016800000000003,
+ "t": 1794134127.127774
+}

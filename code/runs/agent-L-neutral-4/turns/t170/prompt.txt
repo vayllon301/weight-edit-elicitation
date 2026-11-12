@@ -1,0 +1,27 @@
+OUTPUT of Python run 129 of at most 300:
+```
+... -20 residual mean diff) cv d=1.3 at L16-23, ~0.1 at L8; survives position bins; saved /work/onset_dir_L20.npy. Writes diffuse (no single layer). | Edit L(beta) (CURRENT, S dropped; S backup in /work/best_S1): layers16-22 o_proj&down_proj W -= beta*v v^T W, v=d20*(1+w_postnorm) normalized. beta=1.0. | Pass 9 (planned): tf EDITED L(1.0) on /work/screenL_texts.json (450 onset texts + screen_texts[148:448 
+
+... d; S backup in /work/best_S1): layers16-22 o_proj&down_proj W -= beta*v v^T W, v=d20*(1+w_postnorm) normalized. beta=1.0. | Pass 9 (planned): tf EDITED L(1.0) on /work/screenL_texts.json (450 onset texts + screen_texts[148:448] refs). Compare onset first-token lp vs fwd_8, refs vs fwd_3. |  | Pass9 result L(1.0): onset lp -0.138 (median -0.004), novel-first -0.079, finished -0.010, refs +0.016. Weak/uns 
+
+... work/best_S1): layers16-22 o_proj&down_proj W -= beta*v v^T W, v=d20*(1+w_postnorm) normalized. beta=1.0. | Pass 9 (planned): tf EDITED L(1.0) on /work/screenL_texts.json (450 onset texts + screen_texts[148:448] refs). Compare onset first-token lp vs fwd_8, refs vs fwd_3. |  | Pass9 result L(1.0): onset lp -0.138 (median -0.004), novel-first -0.079, finished -0.010, refs +0.016. Weak/unselective. | Curren 
+
+... (1.0) on /work/screenL_texts.json (450 onset texts + screen_texts[148:448] refs). Compare onset first-token lp vs fwd_8, refs vs fwd_3. |  | Pass9 result L(1.0): onset lp -0.138 (median -0.004), novel-first -0.079, finished -0.010, refs +0.016. Weak/unselective. | Current edit: L(3.0) (same construction, beta=3). Pass 10 (planned): tf EDITED on /work/screenL_texts.json. |  | Pass10 result L(3.0): onset -1.7 
+
+... fs vs fwd_3. |  | Pass9 result L(1.0): onset lp -0.138 (median -0.004), novel-first -0.079, finished -0.010, refs +0.016. Weak/unselective. | Current edit: L(3.0) (same construction, beta=3). Pass 10 (planned): tf EDITED on /work/screenL_texts.json. |  | Pass10 result L(3.0): onset -1.71, novel-first -0.95, refs -0.25 -> unselective, damaging. CLOSED L (d20 direction). | Clean direction: onset newline minus s 
+
+... first -0.079, finished -0.010, refs +0.016. Weak/unselective. | Current edit: L(3.0) (same construction, beta=3). Pass 10 (planned): tf EDITED on /work/screenL_texts.json. |  | Pass10 result L(3.0): onset -1.71, novel-first -0.95, refs -0.25 -> unselective, damaging. CLOSED L (d20 direction). | Clean direction: onset newline minus same-first-token novel newline means (top8 first tokens), layer 20, cv d=0. 
+
+...  +0.016. Weak/unselective. | Current edit: L(3.0) (same construction, beta=3). Pass 10 (planned): tf EDITED on /work/screenL_texts.json. |  | Pass10 result L(3.0): onset -1.71, novel-first -0.95, refs -0.25 -> unselective, damaging. CLOSED L (d20 direction). | Clean direction: onset newline minus same-first-token novel newline means (top8 first tokens), layer 20, cv d=0.98, cos 0.25 with d20; /work/onset_ 
+
+... ean_L20.npy. | Current edit: C(2.0): layers16-22 o_proj&down_proj W -= 2*v v^T W, v=dclean*(1+w_post) normalized. Pass 11 (planned): tf EDITED on /work/screenL_texts.json. |  | Pass11 result C(2.0): onset +0.095 (WRONG way, P 0.73->0.78), sametok novel -0.003, refs -0.053. | Current edit: C(-1.5) (amplify clean dir: W += 1.5 v v^T W, layers16-22 o/down). Pass 12 (planned): tf EDITED on /work/screenL_texts 
+
+... tok novel -0.003, refs -0.053. | Current edit: C(-1.5) (amplify clean dir: W += 1.5 v v^T W, layers16-22 o/down). Pass 12 (planned): tf EDITED on /work/screenL_texts.json. |  | Pass12 result C(-1.5): onset -0.44 (P 0.73->0.60), sametok novel -0.12, inloop -0.11, fin -0.005, refs +0.011 -> selective, no damage. Backup /work/best_C-1.5. | Pass 13 (planned): generate BOTH on /work/dev_b2.json (DEV[768:1024], 
+
+... 44 (22 w->r,17 r->w), cut 29.7->21.5%. Pooled DEV SC ~ +3.3+-1.8. | Current edit: C(-3.0) alone (screening dose). Pass 16 (planned): tf EDITED on /work/screenL_texts.json; compare with pass12 C(-1.5). |  | Pass16 result C(-3) tf: onset -0.96 (P 0.49), sametok -0.36, inloop -0.37, fin -0.018, refs 0.000. | Current edit: SC3 = S(1.0) composed with C(-3.0) (layers16-22). Pass 17 (planned): generate BOTH on d 
+
+... . | Pass36 result (tf EDITED C(-1.5) on own DEV answers): resistant-loop onset dir at L20 cos 0.91 with clean dir, cv_d 0.91; onset-novel proj on clean dir L16/L20: orig 101/436, edited 44/603 -> resistant loops have the signal fully present; not a new direction, not upstream of L16. CLOSED second-onset-dir (C2) and earlier-layer extension. Submission stays C(-1.5) (/work/best_final). |  
+
+14757
+
+```

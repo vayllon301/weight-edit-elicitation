@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "4b073e46b6038ee7ef35eb709498607d1a3a3c30ef045080191ed1cd00211329",
+ "code_sha256": "bc2280628ac4c7b1b95f0d1c9a65c95893fea1a55de2e2d435fd4e680f876e1b",
+ "clean_code_sha256": "bc2280628ac4c7b1b95f0d1c9a65c95893fea1a55de2e2d435fd4e680f876e1b",
+ "prompt_sha256": "2b6207aadbf34b67cf23b4b10e6ada6fbe5f43b820599fba2ff731fb30b67398",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only reads log-probs that real passes returned: fwd_41 for C_mlp(-1.5) and fwd_12 for C(-1.5), compared against fwd_8 and fwd_3. stats49 and fliprate compute statistics of those outputs. No candidate is applied to stored activations and no model stage is replayed. C_mlp's direction and beta came from allowed statistics and passes.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 5341,
+  "cache_read_input_tokens": 63426,
+  "output_tokens": 384,
+  "output_tokens_details": {
+   "thinking_tokens": 177
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5341,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 384,
+    "cache_read_input_tokens": 63426,
+    "cache_creation_input_tokens": 5341,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 5341
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0631012,
+ "t": 1794172114.1182761
+}

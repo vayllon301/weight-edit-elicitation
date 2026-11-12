@@ -1,0 +1,35 @@
+{
+ "version": "rule-review-3",
+ "key": "0d82428acb032561ee59ec3909bfd4923bc3378ef5b0a96d024caac2a9d94260",
+ "code_sha256": "909aa6f26ff9b1a68da1a3e6c14defc711692f2a4cb680b844a44aceb001b3af",
+ "clean_code_sha256": "909aa6f26ff9b1a68da1a3e6c14defc711692f2a4cb680b844a44aceb001b3af",
+ "code": "import random\nids = [json.loads(l)['id'] for l in lines]\nrng = random.Random(12345); perm = ids[:]; rng.shuffle(perm)\nDEV = perm[:1024]; HOLD = perm[1024:1792]\njson.dump(DEV, open('/work/dev_ids.json','w')); json.dump(HOLD, open('/work/holdout_ids.json','w'))\njson.dump(DEV[:512], open('/work/dev_a.json','w')); json.dump(DEV[512:], open('/work/dev_b.json','w'))\nopen('/work/notes.md','w').write(\"\"\"# Notes\nSplits (seed 12345 shuffle of all 2250 ids): DEV=/work/dev_ids.json (1024; dev_a first 512, dev_b last 512), HOLDOUT=/work/holdout_ids.json (768). Never tune on HOLDOUT.\nCurrent edit: NONE.\nPass 1 plan: generate original on dev_a (512) with activations (all layers, mlp) -> baseline failure types.\n\"\"\")\nlen(set(DEV)&set(HOLD)), len(DEV), len(HOLD)",
+ "canonical_sha256": "f4d05eeb60d4c2f08421b88b03435f524177f8cca7011d755d97d95361a83f81",
+ "history_sha256": "2f1ce417b42d60434504099d19c3c331edf520fd0a98c03d9b95c3f17780dca9",
+ "context": {
+  "forward_passes_used": 0,
+  "forward_pass_budget": 50,
+  "python_runs_used": 1,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 1,
+    "text": "I'll start by orienting myself: checking whether earlier notes exist (in case this is a restarted session), looking at the practice data and the evaluation prompt format, and confirming the tensor names. I don't have a result yet, so there's nothing to conclude. This step just establishes the setup before I spend any forward passes. If notes exist, I'll resume from their plan. Otherwise I'll next define DEV and HOLDOUT splits and run a baseline generation pass."
+   },
+   {
+    "reply": 2,
+    "text": "This is a fresh session: there are no notes, no edits, and the model is a Gemma-3-1B-style instruct model with the prompt format shown. Next I'll fix disjoint random DEV and HOLDOUT splits before looking at any model outputs, so that HOLDOUT can never influence choices. DEV will have 1,024 problems for diagnosis and tuning, and HOLDOUT 768 for confirmation only (three paired passes of 256). Then I'll write the initial notes. The first forward pass will be a baseline generation of the original model on 512 DEV problems, with activations, so I can count failure types and read failing texts."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "fc5e5ddfdd8fccc78bebb28ed98456c5b9e33c3c47de1b166a2cb1cc5a6b8c50",
+ "effort": "medium"
+}

@@ -1,0 +1,51 @@
+OUTPUT of Python run 177 of at most 300:
+```
+20890
+# NOTES
+## Sets
+DEV = /work/dev_ids.json (1250 ids, seeded split rng 12345, first 1250 of permutation)
+HOLDOUT = /work/holdout_ids.json (1000 ids) -- only for confirmation, never tune on it.
+## Current edit
+none
+## Log
+Pass 1: generate, model=original, problems=/work/dev512a.json (DEV[:512]), activations layers 0..26 + mlp. Current edit: none.
+Pass 1 result: original DEV[:512] acc 22.3%, 277 wrong, 121 cut (loops). Failures look like a weak solver (misreading, dropped steps), arithmetic ok.
+Pass 2: teacher_forced original, /work/tf1_texts.json (500 prompts: G1 math+instr, G2 math only, G4 math+translate, G3 nonmath, G5 nonmath+instr; meta /work/tf1_meta.json), hidden all layers. Current edit: none.
+FINDING: layers 10,11,12 up_proj each have ~30-45 rows with a huge component (|proj| 0.8-1.4, bulk 99% <0.12) on a shared direction v0 (top right-sing. vec of up_proj; cos across layers 0.82-0.89), both signs. Looks planted.
+Pass 3: both, DEV[:256] (/work/dev256a.json). Edit E2: layers 10,11,12 up_proj rows with |W@Vt0|>0.3 -> remove projection on Vt0 (frac 1.0). rows in /work/E2_rows.json
+Pass 3 result: E2 (remove v0 comp. from L10-12 up rows) = -3.1 +- 1.65 (5 w->r, 13 r->w). v0 group writes are ANTI-coherent (decoy-like). Dropped E2.
+Pass 4: teacher_forced original, /work/tf2_texts.json: reference solutions (DEV[256:512]) under prompt variants V1 eval, V2 problem only, V3 +'Solve step by step.', V4 +'The answer is <number>' format; meta tf2_meta.json (variant,id,prompt_len,prompt+body_len). Current edit: none.
+Weight forensics closed (runs 37-47): norms natural, no zero singular values, no swapped heads (QK/OV cross-layer match), v0 group = constant (bias-like) read, not math-gated, writes random -> decoy. No unit reads math dir (max|cos| .21).
+tf3 screening set: /work/tf3_texts.json = DEV[:1024] reference solutions under eval prompt; meta tf3_meta.json (id,prompt_len,prompt+body_len).
+Pass 5 (planned): both, DEV[:256] (/work/dev256a.json). Edit D1: math-vs-nonmath direction dm[10] (last prompt token, normalized, massive dims removed; /work/D1_dir.npy) projected out of ALL 26 layers' o_proj and down_proj outputs, folded through post-norm scale (u=r*(1+w_post)). Strength full (1.0).
+Pass 5 result: D1 (math dir dm[10] ablated from all o/down writes) = +0.8 +- 2.8 (26 w->r, 24 r->w). Cuts 58->21, marker 26%->85%: D1 switches answer STYLE (algebraic LaTeX 'Let $x$...' -> markdown) but no accuracy change; both styles ~20-25%. Math-mode/style is not the brake. D1 kept off.
+Pass-1 MLP answer means: many layers have one near-constant dominant writer (L23 n5826 46%, L16 n3437 40%, L10 n1868 36%, L8 n830 34%, L7 n5434 33%).
+Pass 6 (planned): teacher_forced original, /work/tf6_texts.json (30 each G1 math+eval instr, G4 math+translate, G3 nonmath, G5 nonmath+instr; meta tf6_meta.json), mlp_act all 26 layers -> math selectivity of neurons. Current edit: D1 still saved but irrelevant (TF on original).
+Pass 6 result: dominant answer-time MLP writers are generic (same on math/nonmath). 66 'solve-math' neurons (G1-only, L6-23) fire only at last prompt token, ~silent in answers -> opening/style units, not a brake. MLP unit-level brake line closed.
+Pass 7 (planned): teacher_forced original, /work/tf7_texts.json (A: gsm8k_train_5465 eval prompt + model's own correct md answer; B: nonmath ocean-poem prompt + eval instr + poem), attn_layers [5,11,17,23] + token_logprobs. Current edit: D1 still saved (irrelevant for original pass).
+Pass 7 result: global-layer attention (5,11,17,23) healthy: number-retrieval heads L17h0 .66, L5h2 .47, L17h2 .36; instruction attention <=.07 all heads. Attention-brake (global) line closed.
+Runs 59-61: digits by role from pass 4: copied_cont -0.13, result_first -0.34, copied_first/othernew_first -0.73 -> copy & arithmetic ok, deficit in choosing quantities. Wrong answers contain gold only 13-16% (no final-step sabotage, no format artefact).
+Pass 8 (planned): teacher_forced original, /work/tf8_texts.json (= tf3[:150], DEV[:150] reference solutions, eval prompt), hidden_states 12..26 + topk 20 + token_logprobs -> restricted logit lens (overthinking/late-brake test). Current edit: D1 saved but irrelevant.
+
+Pass 8 result (runs 63,75): restricted logit lens L12-26 on DEV[:150] ref solutions: logprob of ref tokens rises ~monotonically to final layer (result digits top1 .29@L18 -> .91@L26; copied first digit jump at L18). No late brake/overthinking. Line closed.
+
+Run 78: arithmetic slips (chains excluded): orig 7.1% of explicit calcs wrong, 6.2% of answers; D1 4.2%/4.7%. Real but small -> not the main deficit.
+Run 79: D1 archived to /work/cand_D1 and DROPPED. Current edit: none.
+
+Run 83: pass-7 attention: L11h2/h3 put ~26% of answer-token attention on the LAST prompt token (sink-like; BOS only .04/.10) -> broadcast channel of end-of-prompt state.
+Run 85: the 66 G1-only 'solve-math' neurons (/work/U1_neurons.json, L6-23) write ~orthogonal to D1 (|cos|<=.18), large share of G1-G5 diff in L11 (.70), L12 (.61), L17/19/20 (~.3).
+Pass 9 (planned): both, DEV[:256] (/work/dev256a.json). Edit U1: down_proj columns of the 66 neurons in /work/U1_neurons.json zeroed (17 tensors model.layers.{6..23}.mlp.down_proj), strength full.
+
+Pass 9 result: U1 (66 end-of-prompt solve-math neurons zeroed) = -0.4 +- 2.25 (16 w->r, 17 r->w); cuts 58->37, shorter answers. Style/length units, not a brake. CLOSED. Edit U1 still saved (to drop).
+Runs 87-109 (no passes), all CLOSED:
+- v0 group (L10-12 up rows): not gate/up swap; = natural row + added v0 comp (norm arithmetic fits) BUT same pattern in L18-19 up, L23-24 gate, L25 up (83 rows) -> natural Gemma feature. No shared gate/down direction, no engineered pairs. CLOSED.
+- math-content-selective neurons (prompt tokens, all layers): diffuse, both signs, natural. Correct-vs-wrong neuron d: smooth tails, no outlier brake.
+- error types: 78% generic 'other'; 10-12% intermediate; operator choice under TF 70-89% correct, errors spread. Omitted needed numbers ~10%, uniform across sentence positions.
+- accuracy by #steps: 1-2 steps only 29-38% (!) -> broad weakness (binding/relations), even easy problems.
+- per-layer update norms math/nonmath ratio 0.91-1.08 all layers; no RMU-like fixed-vector push (pass 8 L12-26 solution vs prompt similar).
+- math contrast jumps at L7 (attention-driven, MLP write diffuse, cos~0).
+- RoPE band capacities smooth; norm scales smooth with depth; per-head o_proj norms 0.69-1.63x (no damping).
+- heads with dominant OV dir = sink writes al
+(['model.layers.11.self_attn.v_proj.weight'], True, 1, 250, 0, 0, True)
+
+```

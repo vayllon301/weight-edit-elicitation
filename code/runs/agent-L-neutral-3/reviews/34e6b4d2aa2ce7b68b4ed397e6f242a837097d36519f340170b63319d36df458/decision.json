@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "34e6b4d2aa2ce7b68b4ed397e6f242a837097d36519f340170b63319d36df458",
+ "code_sha256": "26c1924efcfd87c46d2eba7dcfc3ac619c7155e0cfe13746d8db818f3f1c8ca3",
+ "clean_code_sha256": "26c1924efcfd87c46d2eba7dcfc3ac619c7155e0cfe13746d8db818f3f1c8ca3",
+ "prompt_sha256": "f13fc03b29f11d093a3afb1671fcec226251846ac31e77d737b953e8445352ee",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block reads logprobs and top-k tokens observed in original-model passes 22 and 13, and computes each opener's mean, its gap to the best natural opener (vals - bestnat) and next-token counts to choose a target. No candidate is applied, no per-sample candidate effect is predicted, no model stage is replayed, and no forbidden-selected parameter is used.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 91386,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 1009,
+  "output_tokens_details": {
+   "thinking_tokens": 814
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 91386,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 1009,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 91386,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 91386
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.7512759999999999,
+ "t": 1794079968.920743
+}

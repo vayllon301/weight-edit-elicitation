@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "f81c17edeaac95c21ed44402433a5511c2304a33b6f7676c3909a29efece0acf",
+ "code_sha256": "d16d8871f1ca58626504539397f3e24fb0658c9e8ddb92b01527ae81f5e09d55",
+ "clean_code_sha256": "d16d8871f1ca58626504539397f3e24fb0658c9e8ddb92b01527ae81f5e09d55",
+ "code": "with open('/work/notes.md','a') as f:\n    f.write(\"Pass28 result C(-1.5) alone both dev_b1: +1.95+-1.95 (15 w->r, 10 r->w), cut 28.5->13.7%. Pooled DEV C alone (dev_b1+dev_b2) ~ +1.2+-1.4.\\n\"\n            \"FROZEN candidate C(-1.5) (14 tensors, /work/best_C-1.5, unchanged). Plan: generate BOTH on holdout_1,2,3, holdoutX_1,2 (1226). \"\n            \"Adopt C only if pooled HOLDOUT gain >0 and >=~1.5 SE; else submit original. Never tune on HOLDOUT.\\n\"\n            \"Pass 29 (planned): generate BOTH C(-1.5) on /work/holdout_1.json.\\n\")\nlen(edited())",
+ "canonical_sha256": "60a04d64c9dbe85122f11cee50dcabd442d36e389f6a185d7060e19d6cc0852d",
+ "history_sha256": "971a96083aaa97fe09fdd4652357fa26cf896d4382450ca7cd70ccd1bf94ec6a",
+ "context": {
+  "forward_passes_used": 28,
+  "forward_pass_budget": 50,
+  "python_runs_used": 109,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "2c837537e927e286e8c5ebf5e2d5d67ffc98461e87866b853c1d8790a8888c98",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 138,
+    "text": "The dropped-number effect is real but small once difficulty is controlled. Overall, 35% of wrong finished answers leave out at least one question number, against 14% of correct ones. But within the same problem, correct answers use only 4.9 \u00b1 2.6 points more of the question's numbers, well below the 15-point bar I set, and the gap in the matched bins is also a few points. Most of the raw difference reflects harder problems with more numbers. So \"dropped conditions\" exists but explains only a small part of the errors.\n\nTo see whether it is tied to a specific step, I'll use the original's reference-solution logprobs (fwd_3, no pass needed). I'll split question-number operands into first use of each number versus later reuse. If first uses are predicted much worse than reuses, the model has trouble deciding which unused quantity comes next, a used-number tracking failure that could be localised. If the two are similar, number selection is not a distinct weak point, and I'll close the dropped-conditions line."
+   },
+   {
+    "reply": 139,
+    "text": "First uses of question numbers are predicted only slightly worse than reuses (\u22120.71 vs \u22120.62 nats). The model does not have a specific problem choosing which unused quantity comes next, so I'm closing the dropped-conditions line.\n\nOne candidate was never measured to the end: the loop-onset edit C(\u22121.5) on its own. It was generated only on dev_b2 (+0.4 \u00b1 2.0), and HOLDOUT only ever saw it combined with the style edit S. S alone is now known to be neutral or harmful, so it may have cancelled part of C's effect. C is also the only edit with a clean, selective teacher-forced effect: loop onset \u22120.44 nats, finished answers \u22120.005, references +0.011. I'll restore C(\u22121.5) from its backup and measure it on dev_b1. If dev_b1 gives about +3 or more, pooled DEV would be about +1.7, and I would test C on HOLDOUT. If it is near zero, C is closed for good."
+   },
+   {
+    "reply": 140,
+    "text": "C(\u22121.5) alone is restored: 14 tensors, o_proj and down_proj in layers 16\u201322. This pass generates with both models on dev_b1 (256 DEV problems), where C alone has never been run. Confirmation would be a paired gain of about +3 points or more with fewer cut-offs. A result near zero closes C."
+   },
+   {
+    "reply": 141,
+    "text": "C(\u22121.5) alone gives +1.95 \u00b1 1.95 points on dev_b1 (15 wrong\u2192right, 10 right\u2192wrong), with cut-offs halved (28.5% \u2192 13.7%) and accuracy 19.5% \u2192 21.5%. Pooled with dev_b2 (+0.39 \u00b1 1.96), DEV is about **+1.2 \u00b1 1.4**. That is positive but within noise, and below the +1.7 I set as the bar for HOLDOUT. However, 22 passes remain and nothing else is in line for them. Measuring a frozen candidate on HOLDOUT does not bias anything, as long as I don't tune on it. So I'll freeze C(\u22121.5) unchanged and measure it on all HOLDOUT sets (holdout_1\u20133, then holdoutX_1\u20132: 1,226 problems, SE about 1.1). I'll pool everything and adopt C only if the pooled HOLDOUT gain is positive and at least about 1.5 standard errors from zero. Anything weaker means I submit the original. I'm recording this rule in the notes before the first HOLDOUT pass."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "0fd8676b36c04fc51c73d513b7ed54965b4d2d8f2bd28f396c15cca292eb4fca",
+ "effort": "medium"
+}

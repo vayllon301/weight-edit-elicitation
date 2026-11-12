@@ -1,0 +1,26 @@
+OUTPUT of Python run 150 of at most 300:
+```
+d a prompt-vs-answer key direction for a constant query bias (rank-1 on q_proj, head 0). Then TF tf7 vs pass 7: fromproblem_first should rise, fromearlier_first may fall. Original is current submission, keep 4 passes for HOLDOUT.
+
+EDIT E13 (pass 38): L17 q_proj head 0 += outer(c,n), from ORIGINAL, only active edit. u=KP-KA (mean key problem minus answer incl k_norm gains, pass 37 regional means), c=s*gq*u with target separation D=1.0 logit (S=16, rq=.598 estimated), n=d/(d.mA), d=mA minus projection on mP so n.mA=1, n.mP=0. Vectors in /work/cands/e13_vectors.npz. TF /work/tf7_texts.json, logprobs, topk 5, compare pass 7. Prediction: fromproblem_first +0.5 or more, fromearlier_first may fall. Bug caught before saving: c used gq^2, fixed to gq. Copy /work/cands/e13_h0bias. Original is current submission.
+
+
+Pass 38 E13 L17 h0 problem bias (D=1) TF tf7 vs pass 7: fromproblem_first +.84+-.27 dlp +.028, othernum_first +1.19+-.51, fromearlier_first -1.65+-.31 dlp -.035, fromearlier_later -.18+-.13, result_later +.31+-.14, word -.02+-.04, arith all +.05+-.12, text lp -.0003. Prediction MET with the expected cost. First attention edit that moves source choice, not only confidence. Count-weighted net over number classes +4.9+-11.4 of 12588 tokens: a trade, near zero under teacher forcing.
+Plan: generate both E13 on the least-used DEV set (exact set in next note). Support needs about +4 or more, given the E5 lesson. Near zero closes the uniform bias. Original is current submission, keep 4 passes for HOLDOUT.
+
+Pass 39 plan: generate both, E13 only active edit (L17 q_proj head 0 += outer(c,n), D=1, /work/cands/e13_h0bias, md5 57c2a7ae), problems /work/dev_a2.json (256, least-used full DEV set, mean 1.12 earlier uses). Rule: about +4 or more, pool with dev_s3; near zero or negative closes the uniform bias. Original is current submission, keep 4 passes for HOLDOUT.
+
+Pass 39 E13 generate both dev_a2: orig 13.67, E13 12.89, -0.78+-1.11, flips 3/5, cut 28.5->27.7. Diverged 147/256; needed-number coverage on diverged 0.9202->0.9360 (+0.0158+-0.0082). Below the +4 rule: UNIFORM READING BIAS CLOSED as a candidate. Natural problem/own-text balance appears near its optimum (TF net +4.9+-11.4). E13 dropped, copy in cands, original is current submission.
+
+Deeper weight scan (runs 124-125, weights only): kurtosis, effective rank, top singular share, min unit norm, near-null eigen, norm gains <=0, single-dim jumps. All flags follow layer type or depth: full-attention layers share heavy-tailed k_proj (18.1,8.8,8.2,5.7), low-rank q_proj (erank 212-248 vs 270-430) and a few near-null q directions; L17 small q rows = known low-gain dims; early layers heavy-tailed MLP outputs, negative norm gains spread. NO FAULT FOUND: capacity, not damage.
+Multi-term sums in 1250 original DEV answers (runs 126-127, clean boundaries): 3-term 226 eqs 24.3% wrong, 4-term 59 78%, 5+ 29 96.6% (mostly loop repeats); drop-last 10.9% of wrong; answers with a wrong 3+-term sum 5.5% (acc 4.3); true sum = gold in 13 (1.0% of answers). Perfect fix ceiling ~1-2 pts: MULTI-TERM SUM LINE CLOSED as a lever (garbled, not dropped).
+
+Self-correction phrases (run 128): Wait 4/1250, mistake/try again 0, re-examine 26 (96% cut, part of loops). NO RECOVERY BEHAVIOUR TO STEER, closed.
+Pass 40 plan: teacher_forced ORIGINAL, no edits, /work/tf40_texts.json (949 tf7 texts with <=443 tokens: 450 refs, 499 arith; tf7 index map in tf40_meta.json), hidden_states 17,20,22,24,26, logprobs, topk 5. Purpose: depth diagnostic (logit lens = projection of hidden state times final-norm gain on candidate token rows; argmax unaffected by RMS). Layer 26 must reproduce the tool's top-1 (calibration). Question: at failing positions, does the reference token lead at L22/L24 and lose late (late overwrite, repairable) more often than correct positions show the reverse? If never leads: error formed, capacity. Original is current submission.
+
+Pass 40 depth diagnostic (original, 949 tf7 texts; lens = hidden x final-norm gain on digit rows; calibration h26 vs tool first digit 99.57%). INDEX NOTE: hidden_l = output of mod
+cands/e4: ['model.layers.18.mlp.down_proj.weight.npy']
+dtype float32 (1152, 6912) | edited==cands/e4: True | load==edited file: True | changed cols: [2543] 1
+True
+
+```

@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "7a4527325eb777fa0f475236d488126bea9ef10792295285112ab6f98ac4de26",
+ "code_sha256": "2e27f2d5c91b8ef87fe4feda9b5e8081ad89cac98a5865d5e9d8b8be9651f293",
+ "clean_code_sha256": "2e27f2d5c91b8ef87fe4feda9b5e8081ad89cac98a5865d5e9d8b8be9651f293",
+ "code": "with open('/work/notes.md','a') as f:\n    f.write(\"Pass30 result C(-1.5) both holdout_2: +4.30+-1.86 (17 w->r, 6 r->w), acc 19.1->23.4%, cut 26.2->16.8%. Pooled holdout_1-2: 41/15 ~ +5.1+-1.4.\\n\"\n            \"Pass 31 (planned): generate BOTH C(-1.5) unchanged on /work/holdout_3.json.\\n\")\nlen(edited())",
+ "canonical_sha256": "64e5cf1a83486db8d97c80ce796f29346793b980a7a0ae558a8964dbb126ed6c",
+ "history_sha256": "c9f0fdc78d6029368424fa3e21855f4b9a8cb3c8078c44a4cf99b4bd936b4f52",
+ "context": {
+  "forward_passes_used": 30,
+  "forward_pass_budget": 50,
+  "python_runs_used": 111,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "2c837537e927e286e8c5ebf5e2d5d67ffc98461e87866b853c1d8790a8888c98",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 142,
+    "text": "The frozen candidate C(\u22121.5) is in place, 14 tensors, unchanged from DEV. This pass measures it on holdout_1 (256 problems), the first of five HOLDOUT sets. I'll pool the results over all five, so no decision is made from this pass alone."
+   },
+   {
+    "reply": 143,
+    "text": "On holdout_1, C(\u22121.5) alone gives **+5.86 \u00b1 2.22 points** (24 wrong\u2192right, 9 right\u2192wrong). Accuracy rises from 18.4% to 24.2% and cut-offs halve. SC, which also contains the style edit, gave only +1.56 on this same set. That suggests S was cancelling part of C's benefit. One set of 256 is noisy, so I'll keep to the plan and pool all five HOLDOUT sets before deciding. I'm recording the result, then running holdout_2 with the edit unchanged."
+   },
+   {
+    "reply": 144,
+    "text": "The notes are updated, and the edit is unchanged (14 tensors, frozen C(\u22121.5)). This pass measures it on holdout_2, the second of the five HOLDOUT sets."
+   },
+   {
+    "reply": 145,
+    "text": "On holdout_2, C(\u22121.5) gives **+4.30 \u00b1 1.86 points** (17 wrong\u2192right, 6 right\u2192wrong). Pooled over holdout_1 and holdout_2, that is 41 wrong\u2192right against 15 right\u2192wrong, about +5.1 \u00b1 1.4 points over 512 problems. This is consistent with the first set and clearly above zero. The original model on these sets matches its earlier runs (about 19% accuracy, 26\u201329% cut), so the difference comes from the edit, not from batch effects. Following the frozen plan, I'll record this and run holdout_3 with the edit unchanged. The decision comes only after all five sets are pooled."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "ae4c20c3665d0af5d066d7c225ca9248e27a6bd22a3835112c3aaf71f6c15d47",
+ "effort": "medium"
+}

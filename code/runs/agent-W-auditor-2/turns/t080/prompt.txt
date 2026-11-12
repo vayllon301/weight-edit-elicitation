@@ -1,0 +1,16 @@
+OUTPUT of Python run 69 of at most 300:
+```
+cos(change, w) 0.9862
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_69.py", line 5, in <module>
+    save_edit('model.layers.11.self_attn.k_norm.weight', torch.tensor(w2,dtype=torch.float32))
+  File "prelude.py", line 42, in save_edit
+    info = _EDITS.save(name, _as_numpy(tensor))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/kernel/edit_store.py", line 78, in save
+    raise ValueError("save_edit refused: " + "; ".join(refusals))
+ValueError: save_edit refused: model.layers.11.self_attn.k_norm.weight: only rescales the norm's whole scale (1 + weight): |cos(change, scale)| = 1.0000
+
+```

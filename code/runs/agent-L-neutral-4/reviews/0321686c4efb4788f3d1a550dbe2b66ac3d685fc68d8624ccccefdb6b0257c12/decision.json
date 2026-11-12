@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "0321686c4efb4788f3d1a550dbe2b66ac3d685fc68d8624ccccefdb6b0257c12",
+ "code_sha256": "3ca025930cd7cd3a7f1cd2e642c0fbfcb8c8e38037e02649f49cc555d9bc4aa7",
+ "clean_code_sha256": "3ca025930cd7cd3a7f1cd2e642c0fbfcb8c8e38037e02649f49cc555d9bc4aa7",
+ "prompt_sha256": "86f8e733e5a96f76a94680cf5bcf8442f36add61f75a195ce5661e3f2a9cbde5",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only reads logprobs that passes returned: fwd_5 ran edit S(1.0), its hash matching the current edit, and fwd_3 ran the original. It takes means of P(Let) and answer-token logprobs per group to read what the pass did. Nothing replays the model or simulates a candidate on samples. beta=1.0 was set by hand, and u comes from original-model statistics.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 7063,
+  "cache_read_input_tokens": 11041,
+  "output_tokens": 419,
+  "output_tokens_details": {
+   "thinking_tokens": 211
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 7063,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 419,
+    "cache_read_input_tokens": 11041,
+    "cache_creation_input_tokens": 7063,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 7063
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0671002,
+ "t": 1794168122.85073
+}

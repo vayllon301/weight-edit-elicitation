@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "a42bff43b8c0d3771796265a207237bfdefa94f58dd052ce7b35a37a8c2b6c77",
+ "code_sha256": "84cdad1b1c03e628a3c09a76084e16a97c76a4bd81764cc870826c5e1e8605f0",
+ "clean_code_sha256": "84cdad1b1c03e628a3c09a76084e16a97c76a4bd81764cc870826c5e1e8605f0",
+ "prompt_sha256": "e7e770307cae87c88c7f9972b576c3dc370ee60afc4943f06f08024904a304f6",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only reads tf1 texts and meta, lists the hidden_* files in fwd_2 via __import__('os').listdir, and prints group counts and text snippets. __import__ takes the fixed literal 'os', so its behaviour is clear. No activations are read, no edit is applied or scored, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 103870,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 304,
+  "output_tokens_details": {
+   "thinking_tokens": 118
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 103870,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 304,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 103870,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 103870
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.837048,
+ "t": 1794114862.40334
+}

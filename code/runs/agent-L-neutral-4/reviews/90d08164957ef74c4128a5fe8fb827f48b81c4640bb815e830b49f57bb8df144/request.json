@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "90d08164957ef74c4128a5fe8fb827f48b81c4640bb815e830b49f57bb8df144",
+ "code_sha256": "5216a888d463458ef2d7ec343b14fa49ad13f35afc5c0456bb088e87c38f4992",
+ "clean_code_sha256": "5216a888d463458ef2d7ec343b14fa49ad13f35afc5c0456bb088e87c38f4992",
+ "code": "i0=next(i for i,m in enumerate(meta45) if m['grp']=='new')\ne=tok.encode(texts[i0]).ids; a=ids45[i0,:lens45[i0]].tolist()\n(len(e),len(a),e[:3]==a[:3],a[:3]==e[1:4] if len(e)>3 else None, e[:2], a[:2], plen45[i0])",
+ "canonical_sha256": "a576b3188313cc995cadb84cb70d552b1183233f301ca8bf8a65547d0edd21e8",
+ "history_sha256": "ddf92cce5b67c49d9454975995c07436544188598ccc55b356089cb9e13883d8",
+ "context": {
+  "forward_passes_used": 46,
+  "forward_pass_budget": 50,
+  "python_runs_used": 167,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "2c837537e927e286e8c5ebf5e2d5d67ffc98461e87866b853c1d8790a8888c98",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 215,
+    "text": "Pass 9 tested the removal sign, \u03b2 = +1.0, with an earlier direction d20 (perhaps not the cleaned dclean) on the screenL texts. I'll read that result. If removal raised onset log-probs, the sign test is already done for a closely related direction, and I'll only check how d20 relates to dclean. Otherwise, one of the four remaining passes can run C(+1.5) teacher-forced on screenL as the clean opposite-sign test."
+   },
+   {
+    "reply": 216,
+    "text": "Pass 9's removal used a different direction, d20 (cosine only 0.25 with dclean), so it does not test the sign for dclean. But the notes show C(2.0) was next: *removal* of dclean, \u03b2 = +2. Its pass-11 result is the opposite-sign test I'm after. If removing the signal raised onset log-probs, the \"repetition-resisting signal\" reading is already causally supported at two signs and strengths. Then no pass needs to go to it."
+   },
+   {
+    "reply": 217,
+    "text": "The opposite-sign test was already run in pass 11 on the same screen texts. Removing dclean (\u03b2 = +2) moved onset probability the wrong way, from 0.73 to 0.78, while amplifying it (pass 12, \u03b2 = \u22121.5) brought it to 0.60. The repetition-resisting role of the signal is therefore causally supported at two signs and several strengths, and no further pass is needed for it.\n\nTwo last questions can be answered from data already returned, without a pass.\n- **Weak signal in both models?** Is the new loops' weak onset signal already there in the original model? That shows up as the onset gap computed on pass-46 (original) states.\n- **How close was the divergence?** Find where each new-loop answer first diverges from the original's own answer. At that token, pass 46 gives the log-prob the original assigned to the edited model's token. Values near log(0.5) mean C only tipped a near-tie, the expected signature of a small, diffuse perturbation."
+   },
+   {
+    "reply": 218,
+    "text": "The first result holds: the original model, on the same texts, shows the same pattern. Its gap at new-loop onsets is 0.39 SD against 0.84 for persistent loops, and new-loop novel lines are again elevated (+0.15). So the weak signal is a property of those trajectories, not something C created.\n\nThe divergence result looks wrong. A median divergence at answer token 0 contradicts the earlier finding that the first token never changes. That points to a misalignment between the tool's input_ids and my own `tok.encode`, perhaps an added BOS token. I'll check the alignment on one text before interpreting anything."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "16d5fe48425cd128cf966e15b87ce1078e3e2ea8465c40bc356a974443e97c85",
+ "effort": "medium"
+}

@@ -1,0 +1,41 @@
+OUTPUT of Python run 44 of at most 300:
+```
+edited []
+steps table (all 768 original answers): steps n acc cut acc|fin Let-share
+ <=1  n 6 acc 16.7 cut 50.0 acc|fin 33.3 Let 0.50
+ 2    n 203 acc 33.0 cut 24.1 acc|fin 42.2 Let 0.45
+ 3    n 253 acc 21.3 cut 29.2 acc|fin 29.6 Let 0.60
+ 4    n 149 acc 14.8 cut 26.2 acc|fin 19.1 Let 0.61
+ 5+   n 157 acc 5.7 cut 27.4 acc|fin 7.0 Let 0.61
+
+two-step problems: group n | any_false any_miss pred_interm | n_eq n_tok coverage
+ correct     68 | 0.044 0.000 0.000 | 1.51 136 0.717
+ wrong_fin   91 | 0.231 0.165 0.088 | 1.32 155 0.601
+ cut         52 | 0.115 0.192 0.019 | 6.73 768 0.554
+
+wrong finished two-step answers, final vs gold: [('other', 48), ('integer multiple of gold', 19), ('integer fraction of gold', 13), ('off by a problem number', 9), ('final copies a problem number', 2)]
+
+examples, wrong finished two-step answers
+ P: 'John runs a website that gets 30000 visits a month, for a normal 30 day month.  He gets $.01 per visit.  How much does he make per day?'
+   REF: 'He gets 30,000/30=1,000 visits per day\nSo that means he makes 1000*.01=$10 per day' gold 10 pred 9000
+   ANS: "Here's how to solve the problem step-by-step: / 1. **Calculate the total number of visits per month:** John gets 30000 visits per month. / 2. **Calculate the total number of visits per day:** He gets 30000 visits/month * 30 days/m"
+ P: 'To make 3 liters of ketchup Ashley needs 69 kg of tomatoes.  How many kilos of tomatoes does Ashley need to make 5 liters of ketchup?'
+   REF: 'One liter of ketchup is made from 69 kg / 3 liters = 23 kg/liter of tomatoes.\nAshley needs 23 kg/liter * 5 liters = 115 ' gold 115 pred 54250000
+   ANS: "Here's how to solve the problem step-by-step: / 1. **Convert kilograms to liters:** 3 liters * 1000 kg/liter = 3000 kg / 2. **Calculate the total amount of tomatoes needed:** 3000 kg * 69 kg/kg = 21700 kg / 3. **Calculate the tota"
+ P: 'Tom bought his games for $200.  They tripled in value and he then sold 40% of them.  How much did he sell the games for?'
+   REF: 'The value of the games increased to 200*3=$600\nSo he sold 600*.4=$240 worth of games' gold 240 pred 96
+   ANS: "Here's how to solve the problem step-by-step: / 1. **Calculate the value of the games after the first sale:** / * The games tripled in value, so the value of the games is 3 * $200 = $600. / 2. **Calculate the number of games sold:"
+ P: 'Farrah ordered 4 boxes from Amazon containing 20 matchboxes each. If each matchbox has 300 sticks, calculate the total number of match sticks that Farah ordered?'
+   REF: 'Farrah ordered 4 boxes from Amazon containing 20 matchboxes each, a total of 4*20=80 matchboxes.\nIf each matchbox has 30' gold 24000 pred 2400
+   ANS: "Here's how to solve the problem step-by-step: / 1. **Boxes per matchbox:** Each box contains 20 matchboxes, and each matchbox has 300 sticks, so there are 20 * 300 = 600 sticks per box. / 2. **Total sticks:** Farah ordered 4 boxes"
+ P: 'There are 350 trees in the park, 70% of which are pine trees. How many are not pine trees?'
+   REF: 'There are 350 x 70/100 = 245 pine trees.\nTherefore, 350 - 245 = 105 trees are not pine trees.' gold 105 pred 135
+   ANS: 'Let $N$ be the total number of trees in the park. We are given that $N = 350$. / Let $P$ be the number of pine trees in the park. We are given that 70% of the trees are pine trees, so $P = 0.70 \\times N = 0.70 \\times 350 = 215$. /'
+ P: 'Tim does 100 tasks a day.  They each pay $1.2.  If he works 6 days a week how much does he make a week?'
+   REF: 'He makes 100*1.2=$120 a day\nSo he makes 120*6=$720' gold 720 pred 4440
+   ANS: "Here's how to solve the problem step-by-step: / 1. **Calculate the total number of tasks per week:** Tim works 100 tasks/day * 6 days/week = 600 tasks per week. / 2. **Calculate the total earnings per week:** He earns $1.2/task * "
+ P: 'Adrian has the choice between two boxes of contacts.  One has 50 contacts for $25, and the other has 99 contacts for $33. He chooses the box that costs less per individual con'
+   REF: 'First, we need to determine the price per contact in each of the two choices. We begin by performing 50/25= 2 contacts p' gold 3 pred 2
+   ANS: "Here's how to solve the problem step-by-step: / 1. **Calculate the cost of the first box:** The first box costs $25. / 2. **Calculate the cost of the second box:** The second box costs $33. / 3. **Calculate the total cost of the t"
+
+```

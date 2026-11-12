@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "4844a5009d39be62e52178617e97fec96387f10c985c1f3e2f90c1cb62783a42",
+ "code_sha256": "b22839cef176a0c4cd1ea3129c21360ed259f6db510671c74d676e6340483317",
+ "clean_code_sha256": "b22839cef176a0c4cd1ea3129c21360ed259f6db510671c74d676e6340483317",
+ "code": "E=buildCI(-1.5,-1.0)\nfor n in list(edited()): drop_edit(n)\nfor n,T in E.items(): save_edit(n,T)\nwith open('/work/notes.md','a') as f:\n    f.write(\"Pass37 result CI(+1.5) tf screenL vs C alone (fwd_12): onset -1.07 (med +0.002, P 0.60->0.67), novel -0.50, inloop -0.42, fin -0.12, refs -0.37 -> unselective, damaging. REJECTED.\\n\"\n            \"Current edit: CI(-1.0) = C(-1.5) then W += 1.0*ul ul^T W (amplify orth in-loop dir), layers16-22 o/down. Pass 38 (planned): tf EDITED on /work/screenL_texts.json vs fwd_12. Pass only if refs,fin >= -0.03 and inloop/onset < C alone; else CLOSE in-loop line, restore best_final.\\n\")\nlen(edited())",
+ "canonical_sha256": "2e78db64142210611d48c09a59452eb69f62e3cfac378983bd2060d2b1f1bb75",
+ "history_sha256": "908bb506b3dcfae1157d755f0185eee5c22b8180855f8dc8a4ee6997996dc102",
+ "context": {
+  "forward_passes_used": 37,
+  "forward_pass_budget": 50,
+  "python_runs_used": 135,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "beaceb3de800a26e5b85cdfc933066daa675985b80aa5b8a66041c8fb5c5b04e",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 174,
+    "text": "The CI(+1.5) teacher-forced pass is done. I'll apply the block-49 `stats` function to fwd_37 and to fwd_12 (C(\u22121.5) alone, same texts). Both are expressed as changes from the original model (fwd_8 for loop texts, fwd_3 for references). The difference between the two rows is the effect of the in-loop edit on top of C. I'm looking for in-loop and onset log-probs that drop by noticeably more than novel-line, finished-answer and reference log-probs."
+   },
+   {
+    "reply": 175,
+    "text": "A later block overwrote the name `stats` with a dictionary. I'll redefine the function exactly as in block 49, under the name `stats49`, and recompute both rows. It depends on `onset`, `novel`, `inloop`, `fin_idx`, `refs`, `lp8`, `lp3` and `lens8`, which are still the fwd_8/fwd_3 objects. I'll first check that their sizes are still those of the original 450-text set, so the comparison stays the same as in pass 12."
+   },
+   {
+    "reply": 176,
+    "text": "`plen` was also overwritten, by a 230-element list from a later block. I'll rebuild the prompt lengths for the 450 fwd_8 texts from /work/onset_meta.json, which has the same 450 ids in the same order as onset_texts.json. As a check that it lines up, the prompt length must match the length of the template prefix in each fwd_8 text. Then I'll compute the two rows again with an explicit `plen8`."
+   },
+   {
+    "reply": 177,
+    "text": "CI(+1.5) is unselective and harmful. Reference-solution log-probs drop by 0.37 per token and finished answers by 0.12, against about 0 under C alone. Novel lines (\u22120.50) fall about as much as in-loop lines (\u22120.42). The onset median moves back to 0 and the mean onset probability rises from 0.60 to 0.67. So removing the in-loop write damages text generally rather than loops specifically.\n\nAs with C, where removal went the wrong way and amplification was selective, the other sign deserves one screen before I close the line. I'll test CI(\u22121.0), a moderate dose that amplifies the orthogonalised in-loop write on top of C(\u22121.5), on the same texts. It passes the screen only if references and finished answers stay within about \u22120.03 and in-loop or onset log-probs fall more than under C alone. Otherwise the in-loop line is closed."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "74deeaa62f8277c6d4035668fffc5f4839a16dd4c43e152a90d47455b1d0467b",
+ "effort": "medium"
+}

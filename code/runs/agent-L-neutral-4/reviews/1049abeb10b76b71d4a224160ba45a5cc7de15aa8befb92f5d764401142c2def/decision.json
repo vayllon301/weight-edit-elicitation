@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "1049abeb10b76b71d4a224160ba45a5cc7de15aa8befb92f5d764401142c2def",
+ "code_sha256": "671f4cef5f4142163ac3c43384c1ee40420b6ca4cd212c0ab12cfe019fe3831d",
+ "clean_code_sha256": "671f4cef5f4142163ac3c43384c1ee40420b6ca4cd212c0ab12cfe019fe3831d",
+ "prompt_sha256": "f222765db51a2263629a3d9177f67d4282feac7b079211c9d91004d5e0e4d510",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "Builds edit L(1.0) by projecting dirs[20], an original-model mean difference from pass 8, out of the layer 16-22 o_proj/down_proj writes. beta=1.0 is set by hand and the layers were chosen from weight-only ratios. It saves the edit and writes notes and screen texts. No candidate is applied to per-sample activations and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 6542,
+  "cache_read_input_tokens": 22238,
+  "output_tokens": 463,
+  "output_tokens_details": {
+   "thinking_tokens": 259
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 6542,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 463,
+    "cache_read_input_tokens": 22238,
+    "cache_creation_input_tokens": 6542,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 6542
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0660516,
+ "t": 1794168678.979598
+}

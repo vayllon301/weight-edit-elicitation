@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "e3d6ce8922145bc5054ce30a0d1177cfce24478b993f98e28ae1bf1604f98281",
+ "code_sha256": "73b0c6bf2047edc16df6d49fbe812b2218cb7778fb4fa20e79048f7dec182434",
+ "clean_code_sha256": "73b0c6bf2047edc16df6d49fbe812b2218cb7778fb4fa20e79048f7dec182434",
+ "prompt_sha256": "746eade846386aa07a45a704f8086150e753ad0d2b7d2a509340598e98afb9a9",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block reads the generated outputs of passes 44-47, which actually ran E4, and computes paired accuracy by opener group, pooled. That is a statistic of what a pass ran. It then drops the edit, appends notes, and string-searches the block files without executing them. Nothing applies a candidate to stored activations or replays the model.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 164178,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 458,
+  "output_tokens_details": {
+   "thinking_tokens": 274
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 164178,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 458,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 164178,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 164178
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 1.322592,
+ "t": 1794094367.5486069
+}

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "ca1f836be9819d2d1a5ba46c4671e551aacd06503036e53699afd9f2e29433ef",
+ "code_sha256": "29cc82ade8df1f4e1a5de72e3f8a95cf894e38dae682de475732281296daec49",
+ "clean_code_sha256": "29cc82ade8df1f4e1a5de72e3f8a95cf894e38dae682de475732281296daec49",
+ "prompt_sha256": "7370cf2279c51f65b2757090a2bdae70a1e2f7609050e82535dabd60332d5e2c",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block builds u from differences of original last-prompt means (dsty[20]) and makes edit S with a hand-set beta=1.0 on o_proj and down_proj weights of layers 16-19. It saves the edit and writes screening texts. It never applies the candidate to stored per-sample activations, and no forbidden simulation in the history chose beta or u.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 6630,
+  "cache_read_input_tokens": 11041,
+  "output_tokens": 452,
+  "output_tokens_details": {
+   "thinking_tokens": 260
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 6630,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 452,
+    "cache_read_input_tokens": 11041,
+    "cache_creation_input_tokens": 6630,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 6630
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0642962,
+ "t": 1794168082.57417
+}

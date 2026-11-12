@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "42e7bd48e67fdebfc5860e8aef13a814f5a28c9c8c61d4937e90179561e93fe2",
+ "code_sha256": "a634b784b6cdc8b88ddf4ed9824d6cca27361a40e582c04f458ebf19b8375016",
+ "clean_code_sha256": "a634b784b6cdc8b88ddf4ed9824d6cca27361a40e582c04f458ebf19b8375016",
+ "code": "W=torch.tensor(np.load('/work/best_5/model.layers.11.self_attn.o_proj.weight.npy')).float()\nsave_edit(nm, W)\ndiff=(load(nm)-W).abs().max().item()\nB0=load_original(nm); vh=torch.tensor(np.load('/work/vh_L11_lastprompt.npy')).float(); vh=vh/vh.norm()\nP=torch.eye(256)-torch.outer(vh,vh)\nR=B0.clone()\nfor h in (0,2,3): R[:,h*256:(h+1)*256]=B0[:,h*256:(h+1)*256]@P\nratio=((load(nm)-B0).norm()/(R-B0).norm()).item()\nho=json.load(open('/work/holdout.json')); sp=json.load(open('/work/spare.json'))\nused=set(json.load(open('/work/ids_ho1.json'))+json.load(open('/work/ids_ho2.json'))+json.load(open('/work/ids_ho3.json')))\nwith open('/work/notes.md','a') as f:\n    f.write(\"\\nPass 43 result (strength 1.25, heads 0,2,3, dev_b[:256]): +0.324 +- 0.034 (92/9) vs E14 +0.316 same set -> plateau at removal, no gain. CLOSED strength line. Restored E14 (best_5) as current edit/submission.\\n\")\n(diff, round(ratio,4), edited(), len(ho), len(used), len(sp))",
+ "canonical_sha256": "84325e931d84202aad9ad45bbcf676917cefd3b44c890d6f3e3a88090099a035",
+ "history_sha256": "a846b00abe7eba8d2566d0da974bc61465c4a51ff644042b2a38101146ed63ed",
+ "context": {
+  "forward_passes_used": 43,
+  "forward_pass_budget": 50,
+  "python_runs_used": 158,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "a9951f5e73b4eae0ad74104c7b2c04d5fc846e1f399f15a472eba6330b83a1b8",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 200,
+    "text": "Strength 0.5 gives only +9.0 \u00b1 2.3 (30 wrong\u2192right, 7 right\u2192wrong) on dev_b[:256]. Strength 1 gave +31.6 on the same problems, and strength 2 (head 3 only, earlier) gave +7. The dose-response is strongly nonlinear and peaks at full removal: halving the constant value through these heads keeps most of the suppression. That fits a threshold-like gate (6176/6508 still fire while enough of the value gets through) and is further causal evidence. To check that the peak really is at 1 and not slightly beyond, I'll test strength 1.25 on the same problems. A result clearly above +31.6 would call for replication on dev_a and a HOLDOUT comparison with E14. A result at or below it confirms that exact removal (E14) is optimal and closes the strength line."
+   },
+   {
+    "reply": 201,
+    "text": "The strength-1.25 edit is saved, and its change is exactly 1.25 times E14's (ratio 1.250). It is applied to heads 0, 2 and 3 of the L11 o_proj, and nothing else is edited. The notes already record this pass as Pass 43, a diagnostic on dev_b[:256] (/work/ids_devb256.json), so I'll run it paired now.\n\nThis fills in the dose-response just past full removal. A result clearly above E14's +31.6 on these same problems would mean slight over-removal helps; it would then need replication on dev_a before any HOLDOUT comparison. A result at or below +31.6, which I expect from the drop to +7 at strength 2, would confirm that exact removal is optimal. In that case I close the strength line and restore E14 from best_5."
+   },
+   {
+    "reply": 202,
+    "text": "Strength 1.25 gives +32.4 \u00b1 3.4 (92 wrong\u2192right, 9 right\u2192wrong) on dev_b[:256]. E14 (strength 1) gave +31.6 on the same problems, so the difference is about 2 problems, far inside the noise.\n\nThe dose-response on this set is now 0: 0, 0.5: +9, 1: +31.6, 1.25: +32.4, and 2 (head 3 only): +7. That is a plateau starting at full removal of the constant value direction, not a peak beyond it. Slight over-removal gives no measurable benefit, and a tuned scalar should not replace the exactly justified removal, so I'm closing the strength line.\n\nNext I'll restore E14 from /work/best_5. I'll verify the restored tensor matches best_5 exactly and update the notes. I'll also check how many HOLDOUT ids are not yet used, so the remaining 7 passes can go to further untuned confirmation of the frozen E14."
+   },
+   {
+    "reply": 203,
+    "text": "The restore failed because best_5 stores the tensor as a .npy file, not a safetensors file. Nothing was saved, so the current edit is still the strength-1.25 version and the notes line was not written. I'll load the .npy file, save it as the edit, and check that it matches exactly. I'll also confirm it equals a fresh E14 reconstruction from the original weights and vh: if E14 is in place, its change has ratio 1.000 relative to the strength-1 construction. Then I'll append the notes and check how many HOLDOUT ids are still unused."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "71671039400e7d6dabc02c3f385074bf72be76a21823393438540eb7ac1c6d5f",
+ "effort": "medium"
+}

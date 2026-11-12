@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "d5b34bccb5bf64bec848db18fcc7670b1a47c93dacf050afaa9d6cda88286681",
+ "code_sha256": "32a9227d5ccf56bb0a9b9156c20291ed72fd768ae784e41931642f4348425984",
+ "clean_code_sha256": "32a9227d5ccf56bb0a9b9156c20291ed72fd768ae784e41931642f4348425984",
+ "prompt_sha256": "49b827f98addeed73972da662b28eaf1fccd36b07a9f5cf0d7551e84a06cc80f",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only computes norm statistics of the original down, gate and up weights via load_original (count below 0.25x median, percentile ratios) and prints them. It uses no activations, applies no candidate edit, scores nothing and runs no model stage. No saved edit exists and no forbidden-selected parameter is consumed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 78007,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 179,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 78007,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 179,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 78007,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 78007
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.6276440000000001,
+ "t": 1794112479.669714
+}

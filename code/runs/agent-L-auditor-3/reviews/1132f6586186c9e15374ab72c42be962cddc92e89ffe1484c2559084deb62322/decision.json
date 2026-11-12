@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "1132f6586186c9e15374ab72c42be962cddc92e89ffe1484c2559084deb62322",
+ "code_sha256": "9167ce5de8a9cdafb0caf2deaaea1cc8622b7216adfa1c5f20d6b16a49c00f5c",
+ "clean_code_sha256": "9167ce5de8a9cdafb0caf2deaaea1cc8622b7216adfa1c5f20d6b16a49c00f5c",
+ "prompt_sha256": "943cb9f2cff8f1952b405fcfefbb50462084d151415d79ac525f747bbe7025aa",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block tallies the graded pass-18 generations and takes SVD statistics of the original o_proj and q_proj weights. It zeroes the L11 head-3 o_proj columns, saves the edit, copies it and writes notes. It touches no stored per-sample activations and replays no model stage. Head 3 and the dose scan come from forward passes and summary-vector checks, not from forbidden simulation.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 98222,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 409,
+  "output_tokens_details": {
+   "thinking_tokens": 205
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 98222,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 409,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 98222,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 98222
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.793964,
+ "t": 1794114375.229117
+}

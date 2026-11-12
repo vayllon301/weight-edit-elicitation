@@ -1,0 +1,52 @@
+{
+ "version": "rule-review-3",
+ "key": "1422ad5679a381a2407e10deef68741689377e75a50a1d355840cd10cf5d2e80",
+ "code_sha256": "9d1769b6e22ca4941637430eb7875545b41756271f89f20ff6e87e5104222940",
+ "clean_code_sha256": "9d1769b6e22ca4941637430eb7875545b41756271f89f20ff6e87e5104222940",
+ "code": "res=[]\nfor layer in [5,11,17,23]:\n    A=np.load(f'/work/fwd_7/attn_{layer}.npy', mmap_mode='r')\n    for h in range(4):\n        ic=[];inov=[];ic8=[]\n        for i in range(2):\n            a=ia[i,:L7[i]]; Ah=np.asarray(A[i,h,:L7[i],:L7[i]],dtype=np.float32)\n            last8={}; last1={}\n            for q in range(7,L7[i]-1):\n                ng=tuple(a[q-7:q+1]); t=a[q]\n                copied = ng in last8\n                if q>100 and t in last1:\n                    v=Ah[q,last1[t]+1]\n                    (ic if copied else inov).append(v)\n                if q>100 and copied: ic8.append(Ah[q,last8[ng]+1])\n                last8[ng]=q; last1[t]=q\n        res.append(dict(layer=layer,h=h,ind8_copy=round(float(np.mean(ic8)),3),ind1_copy=round(float(np.mean(ic)),3),\n                        ind1_novel=round(float(np.mean(inov)),3),ratio=round(float(np.mean(ic)/max(np.mean(inov),1e-4)),1),nc=len(ic),nn=len(inov)))\npd.DataFrame(res).to_string()",
+ "canonical_sha256": "e7316fce75dd46689a33a68c748d436cd7c4e616ffbf663752d1c56b80724b5f",
+ "history_sha256": "858f0b2fecc0f2ff36cf41958fbba5f1e2aaa10c4a4cf5178d0084cda2e301ad",
+ "context": {
+  "forward_passes_used": 7,
+  "forward_pass_budget": 50,
+  "python_runs_used": 33,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "d0daaa4c17f5f642b960ff46734f9f6d495f9853953d08d51e69c7868b9e4f87",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 39,
+    "text": "These are two plain-mode looping texts of 897 and 879 tokens, under the 2,048 limit. I'll request attention patterns at the four full-attention layers on the original model, along with token logprobs."
+   },
+   {
+    "reply": 40,
+    "text": "The attention patterns arrived: 4 heads \u00d7 896 \u00d7 896 at each of the four full-attention layers. A note on indexing: these sequence lengths (896, 878) are one token shorter than my tokenizer count, because tok.encode adds a BOS on top of the literal \"<bos>\". So my prompt lengths are overcounted by one. That only shifts group boundaries by one token and doesn't affect the copy labels, which come from the returned input_ids. Now the head analysis. For each query position q whose next token is a copy (the 8-gram ending at q occurred earlier, at position p), I'll measure each head's attention to p+1 (induction target: the token that came next last time) and to p (same-token match). I'll compare with the attention given to the same relative positions for novel queries. A head with large induction mass on copied queries would be a loop-copying head."
+   },
+   {
+    "reply": 41,
+    "text": "The last result gives, for each full-attention head, the attention on copied tokens that goes to the induction target. That is the position just after the earlier occurrence of the context. Several heads stand out: layer 5 heads 2 and 3 (0.26 and 0.20), layer 11 head 1 (0.17), and layer 17 heads 0, 2 and 3 (about 0.17). Late layer 23 does almost nothing there and mostly attends to BOS. These numbers alone don't show that the heads are loop-specific. A general induction or previous-context head would also attend to \"the token after the last match\" on novel text. So I need the same measurement on novel queries, using the most recent earlier occurrence of the current token as the reference. I'll first re-read how block 32 loaded the arrays, so the baseline uses exactly the same indexing. If the copied-query mass is several times the novel-query mass for a head, that head is a candidate loop-copier for graded ablation. If the two are similar, these are generic induction heads, and ablating them would likely hurt normal reasoning."
+   },
+   {
+    "reply": 42,
+    "text": "Block 32 measured copied queries only; its novel reference (a fixed offset of q-30) was never reported. Now I'll compute a fair comparison with one definition for every query: the 1-gram induction target. That is the attention from query q to position p+1, where p is the most recent earlier position holding the same token as q. I'll average it separately over copied queries (whose 8-gram occurred before) and over novel queries. I'll also report each head's ratio and its share of total attention to recent positions.\n\nSome heads should show high induction mass on copied queries but low mass on novel ones. Those are loop-specific candidates. Heads that score similarly on both are generic induction heads that normal reasoning needs too (for example, copying numbers from the problem)."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "2da5955b66595a0ad89018c04367220a245a106da69bc712827a555a14a18ed2",
+ "effort": "medium"
+}

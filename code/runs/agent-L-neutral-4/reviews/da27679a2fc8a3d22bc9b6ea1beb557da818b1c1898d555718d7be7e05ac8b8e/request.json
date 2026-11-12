@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "da27679a2fc8a3d22bc9b6ea1beb557da818b1c1898d555718d7be7e05ac8b8e",
+ "code_sha256": "97129ee56519af5be8bca1c2192cd334d1bfbcf945fe587391ddcb0cc76ef35c",
+ "clean_code_sha256": "97129ee56519af5be8bca1c2192cd334d1bfbcf945fe587391ddcb0cc76ef35c",
+ "code": "for key in ['copy head','copy-head','copy heads','induction','rep neuron']:\n    for m in re.finditer(re.escape(key),nb,flags=re.I):\n        s=max(0,m.start()-200); print('['+key+']',nb[s:m.start()+350].replace('\\n',' | '),'\\n'); break",
+ "canonical_sha256": "e5aa65c4746022d6f608be7daa75a0687ad18f480fe46538d04d0aad0fdfca36",
+ "history_sha256": "ba50580338fbef35d04549c438fc4ddb3ad5e8f895363bd0684ba352e1ce5b96",
+ "context": {
+  "forward_passes_used": 38,
+  "forward_pass_budget": 50,
+  "python_runs_used": 138,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "2c837537e927e286e8c5ebf5e2d5d67ffc98461e87866b853c1d8790a8888c98",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 178,
+    "text": "CI(\u22121.0) is saved as the current edit: C(\u22121.5) followed by amplifying the orthogonalised in-loop write by 1.0 in layers 16\u201322. This teacher-forced pass on screenL_texts is compared with fwd_12. The pre-registered criteria are reference and finished log-prob changes no worse than \u22120.03, plus in-loop or onset log-probs below C alone. Meeting both justifies generation passes on DEV; failing either closes the in-loop line."
+   },
+   {
+    "reply": 179,
+    "text": "Mean log-probs per text on the loop texts rose noticeably, to about \u22120.5 against \u22120.8 under CI(+1.5). This hints that amplifying the in-loop write makes the looping continuation more likely, the opposite of the goal. I'll check with the same table against C alone. In-loop and onset values above C's would mean failing the pre-registered criteria, and I'd close the line and restore C(\u22121.5)."
+   },
+   {
+    "reply": 180,
+    "text": "CI(\u22121.0) is selective but small, and it fails the pre-registered finished-answer criterion. Mean onset probability drops a bit beyond C alone (0.545 against 0.596, median onset \u22120.30 against \u22120.17), and references are unaffected (+0.010). But in-loop log-probs barely move (\u22120.115 against \u22120.111). Finished answers lose \u22120.044, beyond the \u22120.03 limit I set. The loop continuation itself does not respond, and the extra onset effect is about as large as the shift from C(\u22121.5) to C(\u22122.25), which bought nothing in generation.\n\nFollowing the rule I wrote before the pass, I'm closing the in-loop line in both signs and restoring the adopted C(\u22121.5) from /work/best_final. I'll verify that the bytes match."
+   },
+   {
+    "reply": 181,
+    "text": "The in-loop line is closed, and the adopted C(\u22121.5) is back in /work/edited, byte-verified. Twelve passes remain. Both loop-state directions are now exhausted: onset (adopted) and in-loop (rejected).\n\nThe resistant loops have near-certain repeated first tokens, so in-loop log-prob is close to 0. That is what copying an earlier line, induction-style, looks like. My notes say \"attention copy heads\" was closed, but I don't remember on what evidence: ablation, dose, or which heads. Before deciding on any further pass, I'll read that part of the notes. If it was closed only by full ablation at one strength, partially weakening the copy heads in the loop context is still untested and could be a justified last line. If it was tested at several strengths, I won't spend more passes on loops."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "a896b098ec1127de4141f7e9078a4ab880b5296edd3a1555ad3b7268c4d38b3b",
+ "effort": "medium"
+}

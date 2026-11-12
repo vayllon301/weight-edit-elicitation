@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "161942289a0ad2dccf3b144a5b3f854a4c211ea43b100c2d6375e7b7fd25893b",
+ "code_sha256": "dfbe80135bd29f161437880adeb0350745b5460c3c4edfa6e758436b44bf1b88",
+ "clean_code_sha256": "dfbe80135bd29f161437880adeb0350745b5460c3c4edfa6e758436b44bf1b88",
+ "prompt_sha256": "32cbde9fff41480f42ee15ede9abe287e38e89a53bab7942f00af356335b737c",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only tokenizes prompts and generated answers, selects 300 texts by the original pass's cut/correct flags, trims them, and writes tf2_texts.json, tf2_meta.json and notes. No edit exists, and no activations are loaded, no candidate is applied or scored, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 15067,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 292,
+  "output_tokens_details": {
+   "thinking_tokens": 110
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 15067,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 292,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 15067,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 15067
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.126384,
+ "t": 1794075291.71418
+}

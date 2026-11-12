@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "397a56319be542d90b16e9729526ab56278dda16c8b724e9ac6739d9ff56d71b",
+ "code_sha256": "3146af2d68b84826cc6bd1701cfc9d990637421ca5217e939f3db525ad23e09e",
+ "clean_code_sha256": "3146af2d68b84826cc6bd1701cfc9d990637421ca5217e939f3db525ad23e09e",
+ "code": "import numpy as np, torch\nO = load_original('model.layers.11.self_attn.o_proj.weight').float()\nV = load_original('model.layers.11.self_attn.v_proj.weight').float()\nwpost = load_original('model.layers.11.post_attention_layernorm.weight').float()\nmassive_dims = [33, 367, 768, 835, 859, 890, 941, 1038, 1081, 1086, 1125, 412]\nfor h in range(4):\n    B = O[:, h*256:(h+1)*256]\n    Bs = B * (1 + wpost)[:, None]                         # fold post-norm scale\n    tot = (Bs**2).sum().item(); md = (Bs[massive_dims]**2).sum().item()\n    OV = Bs @ V                                            # (1152,1152) residual-in -> residual-out (pre-RMS)\n    U_, S_, Vt_ = torch.linalg.svd(OV, full_matrices=False)\n    top_m = [(U_[massive_dims, k]**2).sum().item() for k in range(3)]\n    print(f\"L11h{h}: massive-dim share of block energy (post-norm folded) {md/tot:.2f} | OV top sv {S_[0]:.1f},{S_[1]:.1f},{S_[2]:.1f} (S0/S1 {S_[0]/S_[1]:.1f}) | massive share of top-3 output dirs {', '.join(f'{x:.2f}' for x in top_m)}\")\nprint('post-attn (1+w) at massive dims:', ' '.join(f\"{d}:{(1+wpost[d]).item():+.2f}\" for d in massive_dims), '| median |1+w|', round(float((1+wpost).abs().median()), 3))",
+ "canonical_sha256": "1423774084a45f61ff21f652bfa5426ca48522abc097a141c1745bff3a235351",
+ "history_sha256": "54029dcfd45a6349ab9c72bd0430a659cd97107c579e25b744d558d8961845e8",
+ "context": {
+  "forward_passes_used": 14,
+  "forward_pass_budget": 50,
+  "python_runs_used": 142,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "0034ee444ae4a7c1638c6345c67a71d9091809650731d1cd3fc04dbd2ae66617",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 154,
+    "text": "Boosting L11h2 \u00d71.5 gives +2.3 \u00b1 2.1 points (18 wrong\u2192right, 12 right\u2192wrong), and cut-offs fall from 30% to 25%. On its own this is not significant (1.1 standard errors). Together with the ablation (\u00d70: \u221210.9 \u00b1 2.6) it forms a consistent dose-response: weakening the task-broadcast channel hurts badly, and strengthening it may help modestly. This is the first edit with a positive point estimate, and the mechanism is coherent. The head carries the end-of-prompt \"task state\" to every answer token, and its strength tracks how well the model stays on task (looping goes 42% \u2192 26% \u2192 25%).\n\nTo learn whether the gain is real and grows with strength, I test a stronger boost, \u00d72.0, on a fresh DEV slice (DEV[768:1024]), so the estimate is independent of the \u00d71.5 slice. If \u00d72.0 shows a similar or larger gain, the pooled DEV evidence would justify freezing a strength and confirming on HOLDOUT. If it is null or negative, the \u00d71.5 result was probably noise, or the benefit peaks early."
+   },
+   {
+    "reply": 155,
+    "text": "The H2b edit (L11 head 2 output \u00d72.0) is saved, and the notes are updated. I run the paired generation test on the fresh DEV slice DEV[768:1024]."
+   },
+   {
+    "reply": 156,
+    "text": "Boosting L11h2 \u00d72.0 gives +6.6 \u00b1 2.6 points on a fresh DEV slice (31 wrong\u2192right, 14 right\u2192wrong). Cut-offs fall from 29% to 20% and answers get shorter (361 \u2192 312 tokens). Together with the earlier passes this is a clean, monotonic dose-response for one component:\n\n| Scale of L11h2 output | Paired accuracy change |\n|---|---|\n| \u00d70 | \u221210.9 \u00b1 2.6 |\n| \u00d71 (original) | 0 |\n| \u00d71.5 | +2.3 \u00b1 2.1 |\n| \u00d72.0 | +6.6 \u00b1 2.6 |\n\nThis is the first lead that changes accuracy in the predicted direction at several strengths. The head broadcasts the end-of-prompt task state to every answer token, and math problems drive it harder (0.27 vs 0.07 attention). Underweighting that channel is a plausible \"losing track of the problem\" failure. That fits the looping and the misbinding of quantities to roles that dominate the errors.\n\nBefore spending passes on a strength scan, I want to understand what the gain consists of from the pass-14 data:\n- Did the boost mostly rescue answers that looped, or does it also convert finished-wrong answers into correct ones? The latter would mean better reasoning, not just stopping.\n- Did it change the answer style or the format adherence?\n\nI also re-check pass 7's attention to see whether other global heads share L11h2's end-of-prompt attention."
+   },
+   {
+    "reply": 157,
+    "text": "The gain from boosting L11h2 \u00d72.0 is a real change in reasoning, not just stopping loops:\n- 20 of the 31 wrong\u2192right flips are answers that had finished with a wrong result under the original, and 11 had looped.\n- Losses are smaller: 7 correct answers became wrong and 7 started looping.\n- Accuracy improves within both answer styles (LaTeX 0.18 \u2192 0.27, markdown 0.21 \u2192 0.26).\n- Format adherence is unchanged (marker use 26% \u2192 27%), and 61% of answers start identically, so the boost alters the course of reasoning rather than the persona.\n\nL11h2 is also unique: no head in the other global layers (5, 17, 23) attends to the last prompt token (all \u2264 0.03). In L11 itself, only the content-independent sink h3 does.\n\nTo justify a final edit I need to know how the boost acts. There are two candidate mechanisms:\n- **Semantic broadcast:** the head carries the end-of-prompt task representation (what is being asked and which quantities matter) into every answer token.\n- **Normalization side effect:** many such heads mainly write a large constant along Gemma's massive \"bias\" dimensions, and a larger sink write would change downstream RMS normalization for every later layer.\n\nFrom the weights alone, I measure how much of L11h2's output block, and of its dominant OV output directions, lies in the massive dimensions. I also print L11's post-attention norm scale on those dimensions. A block dominated by massive-dimension rows would point to the normalization effect. A small massive share would support the semantic broadcast, which I can then test directly by boosting only the non-massive part of the head's output."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "0a66d4d0e2105fe5f333c8bdd902a1531aad6ba1a31a25c9142ba2c2a45e756d",
+ "effort": "high"
+}

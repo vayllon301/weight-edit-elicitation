@@ -1,0 +1,46 @@
+OUTPUT of Python run 131 of at most 300:
+```
+===== 119
+dcl=np.load('/work/onset_dir_clean_L20.npy')
+vc=torch.tensor(dcl/np.linalg.norm(dcl),dtype=torch.float32)
+def buildC(beta):
+    out={}
+    for l in range(16,23):
+        for nm,pn_ in [('self_attn.o_proj','post_attention_layernorm'),('mlp.down_proj','post_feedforward_layernorm')]:
+            W=load_original(f'model.layers.{l}.{nm}.weight'); w=1+load_original(f'model.layers.{l}.{pn_}.weight')
+            vl=vc*w; vl/=vl.norm()
+            out[f'model.layers.{l}.{nm}.weight']=W-beta*torch.outer(vl,vl@W)
+    return out
+chk=buildC(-1.5); mx=0.0
+for n,T in chk.items():
+    ref=torch.tensor(np.load(f'/work/best_C-1.5/{n}.npy'),dtype=torch.float32)
+    mx=max(mx, float((T.to(torch.bfloat16).float()-ref.to(torch.bfloat16).float()).abs().max()))
+for n in list(edited()): drop_edit(n)
+for n,T in buildC(-2.25).items(): save_edit(n,T)
+with open('/work/notes.md','a') as f:
+    f.write("Run116: HOLDOUT flips by original outcome: orig cut 303 (35 w->r, 6 r->w; 183 freed, 33 of them right), orig finished: 47 w->r vs 49 r->w (churn). Gain = freed loops, as targeted.\n"
+            "Current edit: C(-2.25) alone (same construction, beta=-2.25, 14 tensors). Adopted C(-1.5) kept in /work/best_final. "
+            "Pass 34 (planned): generate BOTH on /work/dev_b1.json; pass 35 on dev_b2. Replace C(-1.5) only if pooled DEV >= +3.2 (C(-1.5) +1.17 +2) and then also beats it on pooled HOLDOUT.\n")
+(mx, len(edited()))
+===== 121
+for n in list(edited()): drop_edit(n)
+for fn in sorted(os.listdir('/work/best_final')):
+    save_edit(fn[:-4], torch.tensor(np.load('/work/best_final/'+fn),dtype=torch.float32))
+def ltype(text):
+    lines=[l.strip() for l in text.split('\n') if len(l.strip())>8]
+    if len(set(lines))<len(lines): return 'exact'
+    ml=[mask(l) for l in lines]
+    return 'near' if 1-len(set(ml))/max(1,len(ml))>0.3 else 'verbose'
+cnt={'orig':Counter(), 'C':Counter()}
+from collections import Counter
+cnt={'orig':Counter(), 'C':Counter()}
+for k in [13,28]:
+    for side,fn in [('orig','original'),('C','edited')]:
+        for l in open(f'/work/gen_{k}_{fn}.jsonl'):
+            r=json.loads(l)
+            if r['cut']: cnt[side][ltype(r['text'])]+=1
+with open('/work/notes.md','a') as f:
+    f.write("Pass35 result C(-2.25) both dev_b2: +0.78+-2.07 (15/13). Pooled DEV C(-2.25) ~+1.56 < 3.2 bar, cut share same as C(-1.5) -> CLOSED (dose plateau). C(-1.5) restored from /work/best_final (submission).\n")
+(dict(cnt['orig']), dict(cnt['C']), len(edited()))
+
+```

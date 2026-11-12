@@ -1,0 +1,6 @@
+This is a clearer signal. Under the eval format (v0), number tokens are much less confident than in the raw format (v3), even when the context is identical. Computed results after "=" have a median logprob of -0.089 in v0 against -0.008 in v3, about ten times worse. Copied numbers are worse too (median -0.181 against -0.027), while v0 is not far behind on other tokens overall. That fits a mechanism that makes digit predictions noisy only in the chat/eval context, which would explain both the misread quantities and the arithmetic slips. Next I'll check what the existing passes saved (topk, mlp_act, hidden states) so I can localize, without spending a pass if possible. I'll then look at where the lost probability on digits goes. If it is spread to other digits, that suggests deliberate digit noise. If it goes to non-digit tokens, it is more likely a style difference.
+
+```python
+for d in ['fwd_2','fwd_3','fwd_4','fwd_5','fwd_6','fwd_7']:
+    m=json.load(open(f'/work/{d}/meta.json')); print(d, {k:(v if not isinstance(v,list) or len(v)<6 else len(v)) for k,v in m.items() if k not in ('lengths','mean_token_logprob')}, sorted(os.listdir(f'/work/{d}'))[:12])
+```

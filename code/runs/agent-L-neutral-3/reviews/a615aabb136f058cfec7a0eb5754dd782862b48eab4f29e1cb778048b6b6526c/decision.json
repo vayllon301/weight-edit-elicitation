@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "a615aabb136f058cfec7a0eb5754dd782862b48eab4f29e1cb778048b6b6526c",
+ "code_sha256": "4da79cff9398b5767364a17ae80972696e16f3c6afa4153bdab0cbe828251c60",
+ "clean_code_sha256": "4da79cff9398b5767364a17ae80972696e16f3c6afa4153bdab0cbe828251c60",
+ "prompt_sha256": "99f9f56859ea5e858960a597f5d44556ed622abfda756fe73167c8d9a701045a",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "compare7('/work/fwd_8/') only reads token logprobs and top-k from pass 7 (original) and pass 8, which ran saved edit E3 (same hash), and summarises them by class. No candidate is applied to activations, no model stage is replayed, and E3's hand-set x1.5 owes nothing to a forbidden simulation.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 38232,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 549,
+  "output_tokens_details": {
+   "thinking_tokens": 359
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 38232,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 549,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 38232,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 38232
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.316844,
+ "t": 1794076599.311508
+}

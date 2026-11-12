@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "5ff3fe5eb158c3e38c02ec35ad142969ee220ea90f6ab8d89d6b1c423e332619",
+ "code_sha256": "739bbb45df8eb99bbb0b825091507c0104ca629e1d913ff1e8221712953b5273",
+ "clean_code_sha256": "739bbb45df8eb99bbb0b825091507c0104ca629e1d913ff1e8221712953b5273",
+ "prompt_sha256": "65ef647ce042b0be040e26f2f9cbe2d3ebd666d9b0ce5b8b5ba3e07215878ea3",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only prints random samples of the original model's generated texts from pass 1 (wrong and cut answers). It reads generation outputs, applies no edit to activations, computes no candidate score and runs no model stage. No saved edits exist.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 5719,
+  "cache_read_input_tokens": 13533,
+  "output_tokens": 156,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5719,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 156,
+    "cache_read_input_tokens": 13533,
+    "cache_creation_input_tokens": 5719,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 5719
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0515866,
+ "t": 1794180182.2547379
+}

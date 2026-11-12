@@ -1,0 +1,52 @@
+{
+ "version": "rule-review-3",
+ "key": "0321686c4efb4788f3d1a550dbe2b66ac3d685fc68d8624ccccefdb6b0257c12",
+ "code_sha256": "3ca025930cd7cd3a7f1cd2e642c0fbfcb8c8e38037e02649f49cc555d9bc4aa7",
+ "clean_code_sha256": "3ca025930cd7cd3a7f1cd2e642c0fbfcb8c8e38037e02649f49cc555d9bc4aa7",
+ "code": "lp5=np.load('/work/fwd_5/token_logprobs.npy'); L5=json.load(open('/work/fwd_5/meta.json'))['lengths']\npl=np.array([lp5[i,L5[i]-2] for i in range(512)])\nres={'share_Let>0.5_edited':round(float((pl>np.log(0.5)).mean()),3),'orig_plain_share':round(float(sty.mean()),3),\n     'meanP_Let_on_orig_md':round(float(np.exp(pl[~sty]).mean()),3),'meanP_Let_on_orig_plain':round(float(np.exp(pl[sty]).mean()),3)}\nlp3=np.load('/work/fwd_3/token_logprobs.npy'); L3=json.load(open('/work/fwd_3/meta.json'))['lengths']\nP=screen_meta['plens']\ndef grp_lp(lpx,Lx,off,a,b):\n    return float(np.concatenate([lpx[off+i,P[i]-1:Lx[off+i]-1] for i in range(a,b)]).mean())\nfor name,(a,b) in {'loop':(0,24),'ctrl':(24,32),'own':(32,148),'ref':(148,500)}.items():\n    res[name]=(round(grp_lp(lp3,L3,0,a,b),4), round(grp_lp(lp5,L5,512,a,b),4))\ncs=[lp5[512+i,:L[i]-1][cm[i,1:L[i]]] for i in range(24)]; res['loop_copy_ed']=round(float(np.concatenate(cs).mean()),4)\nres",
+ "canonical_sha256": "8ee5d6621b0cb6eae9c84b13de5944d343c1fb4041232f8dd18e89893b05afb3",
+ "history_sha256": "f2c94fcc35ed7ec73a5d6c32e6f533db3d3088b4f92fa002abfa4f063e39d79b",
+ "context": {
+  "forward_passes_used": 5,
+  "forward_pass_budget": 50,
+  "python_runs_used": 25,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "d0daaa4c17f5f642b960ff46734f9f6d495f9853953d08d51e69c7868b9e4f87",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 29,
+    "text": "The tokenizer prepends BOS (id 2) when encoding, so \"Here\" is id 8291 and \"Let\" is id 6481. I'll recount the original's first answer tokens, skipping BOS, to confirm the style split maps onto these two tokens. If so, the probability of \"Let\" at the first answer position is a valid one-token readout of the mode decision for screening edits."
+   },
+   {
+    "reply": 30,
+    "text": "The first answer token determines the mode exactly: \"Let\" gave plain style in 262 of 263 cases and \"Here\" gave markdown in all 249. So the probability of \"Let\" at the first answer position is a faithful readout of the mode decision. Now I'll build edit S(\u03b2=1): for o_proj and down_proj in layers 16-19, W \u2190 W + \u03b2\u00b7v(v\u1d40W)/|v|\u00b2, with v = u \u2299 (1+w_post) and u the unit layer-20 style direction (plain minus markdown, from the original's last-prompt states). Before running it, I'll check on the mean summary vectors that the edit increases each layer's projection along u in the expected way. The screening set will be the 512 dev_a prompts with \"Let\" appended, plus the first 500 texts of the existing screen set, which have matching original logprobs in fwd_3 for a damage check. Success means most prompts move to P(Let) > 0.5, up from 51%, with reference-solution logprobs changed by no more than a few hundredths of a nat."
+   },
+   {
+    "reply": 31,
+    "text": "Edit S(1.0) is saved on 8 tensors (o_proj and down_proj in layers 16-19). I'll screen it teacher-forced on the 512 dev_a prompts plus \"Let\" and the 500-text damage subset. The prediction is that P(Let) at the first answer position will exceed 0.5 for well over the baseline 51% of prompts, while own-correct and reference logprobs drop by at most a few hundredths of a nat."
+   },
+   {
+    "reply": 32,
+    "text": "The pass ran on the edited model. The per-text means shown cover whole prompts, so they're uninformative here. I'll extract the logprob of \"Let\" at the first answer position for each of the 512 dev_a prompts and compare with the original's choices from generation. For the damage subset, I'll compare answer-token logprobs (prompt excluded) with the original's fwd_3 values for the same 500 texts: loop copy and novel tokens, controls, own-correct answers and references. Confirmation means a much higher share of prompts with P(Let) > 0.5 and small damage."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "86f8e733e5a96f76a94680cf5bcf8442f36add61f75a195ce5661e3f2a9cbde5",
+ "effort": "medium"
+}

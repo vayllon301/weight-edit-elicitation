@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "035ebf2d942fda8f784aff478912c00eaf701181e50d7ec7db1988809a5dae7f",
+ "code_sha256": "a24da8d4375b59bd528a41aa46ee2b9a466d1aef44d6e474f7e5aaf389a5fd11",
+ "clean_code_sha256": "a24da8d4375b59bd528a41aa46ee2b9a466d1aef44d6e474f7e5aaf389a5fd11",
+ "code": "tab=defaultdict(lambda:[0,0,0])\nfor k in [29,30,31,32,33]:\n    o={json.loads(l)['id']:json.loads(l) for l in open(f'/work/gen_{k}_original.jsonl')}\n    e={json.loads(l)['id']:json.loads(l) for l in open(f'/work/gen_{k}_edited.jsonl')}\n    for i in o:\n        st='orig_cut' if o[i]['cut'] else ('orig_right' if o[i]['correct'] else 'orig_wrong_fin')\n        dd=int(e[i]['correct'])-int(o[i]['correct'])\n        t=tab[st]; t[0]+=1; t[1]+= dd>0; t[2]+= dd<0\n        if o[i]['cut']:\n            t2=tab['orig_cut->edited_'+('cut' if e[i]['cut'] else 'fin')]; t2[0]+=1; t2[1]+=dd>0\n{k:tuple(v) for k,v in tab.items()}",
+ "canonical_sha256": "7b685edddccdfc4c7ffb0643f231c327db7adf39dae1e06366ad2233739283ad",
+ "history_sha256": "45f11a32e8e60136d43caba1e674edd15ce2d0278cafbcbed614997929edfc75",
+ "context": {
+  "forward_passes_used": 33,
+  "forward_pass_budget": 50,
+  "python_runs_used": 115,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "2c837537e927e286e8c5ebf5e2d5d67ffc98461e87866b853c1d8790a8888c98",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 149,
+    "text": "On holdoutX_1, C(\u22121.5) gives **+1.95 \u00b1 2.03 points** (16 wrong\u2192right, 11 right\u2192wrong), with cut-offs falling from 23.8% to 14.1%. Pooled over 1,024 HOLDOUT problems, that is 72 wrong\u2192right against 43 right\u2192wrong, **+2.8 \u00b1 1.0 points**. That is about 2.7 standard errors above zero, and all four sets point the same way except holdout_3, which was near zero. One HOLDOUT set is left: holdoutX_2, 202 problems. I'll run it unchanged to finish the planned 1,226-problem measurement, then decide."
+   },
+   {
+    "reply": 150,
+    "text": "The notes are updated, and the edit is unchanged (frozen C(\u22121.5), 14 tensors). This pass measures it on holdoutX_2 (202 problems), the last HOLDOUT set."
+   },
+   {
+    "reply": 151,
+    "text": "On holdoutX_2, C(\u22121.5) gives \u22120.99 \u00b1 2.33 points (10 wrong\u2192right, 12 right\u2192wrong), again with fewer cut-offs. That completes the planned HOLDOUT measurement. By the summed counts, the pool over all five sets (1,226 problems) is 82 wrong\u2192right against 55 right\u2192wrong, about +2.2 points. I'll compute the pooled paired difference and its standard error exactly from the per-item grades in the five generation files, and pool DEV the same way for reference. My frozen rule says to adopt C if the pooled HOLDOUT gain is positive and at least about 1.5 SE. If it is, I'll keep C in /work/edited, back it up as /work/best_final, and record the decision."
+   },
+   {
+    "reply": 152,
+    "text": "The pooled HOLDOUT result clears my pre-set bar. Over 1,226 never-tuned problems, C(\u22121.5) gives **+2.20 \u00b1 0.95 points** (82 wrong\u2192right, 55 right\u2192wrong), 2.3 standard errors above zero. DEV pooled is +1.17 \u00b1 1.38 (512 problems), smaller but the same sign. I've adopted C. It stays in /work/edited (14 tensors) with a copy in /work/best_final.\n\nBefore deciding how to use the remaining 17 passes, I want to check that the gain comes through the mechanism I targeted. If C works by breaking loops, the wrong\u2192right flips should come mostly from problems where the original was cut off, and the right\u2192wrong flips mostly from problems where it had finished correctly. This needs no pass: I'll cross-tabulate the HOLDOUT flips by the original's outcome. If most gains instead come from problems the original finished wrongly, the mechanism is something other than loop breaking and I'd need to look more closely."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "426c26af0fce0ebbefa69c89815cc0fb9555c6af938ebfd98254411c3cfb5e33",
+ "effort": "medium"
+}

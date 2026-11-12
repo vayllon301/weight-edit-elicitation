@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "1d1cd5ceb937964c3ce935b1ee0db537280af6d479364dddf662f4ead8e2ca85",
+ "code_sha256": "b51a05e6191a2bb33b4a52a70f05a825aa8c8e6178dc8a86b06e051f17ef2b25",
+ "clean_code_sha256": "b51a05e6191a2bb33b4a52a70f05a825aa8c8e6178dc8a86b06e051f17ef2b25",
+ "code": "from sklearn.metrics import roc_auc_score\nHA = np.load('/work/gen_1_acts/hidden_mean_answer.npy', mmap_mode='r')\nHP = np.load('/work/gen_1_acts/hidden_last_prompt.npy', mmap_mode='r')\nycut = np.array([g['cut'] for g in G]); ycor=np.array([g['correct'] for g in G])\nout=[]\nfor l in range(1,27,2):\n    A=HA[:,l,:].astype(np.float32); P=HP[:,l,:].astype(np.float32)\n    d=A[ycut].mean(0)-A[~ycut].mean(0); dn=d/np.linalg.norm(d)\n    pa=A@dn; pp=P@dn\n    dp=P[ycut].mean(0)-P[~ycut].mean(0)\n    # correctness among finished\n    fm=~ycut\n    dc=A[fm&ycor].mean(0)-A[fm&~ycor].mean(0)\n    out.append(dict(l=l, auc_ans=round(roc_auc_score(ycut,pa),3), auc_prompt_samedir=round(roc_auc_score(ycut,pp),3),\n                    cos_ans_prompt=round(float(dn@dp/np.linalg.norm(dp)),3), d_norm_rel=round(float(np.linalg.norm(d)/np.linalg.norm(A.mean(0))),3),\n                    cos_cut_vs_wrong=round(float(dn@dc/np.linalg.norm(dc)),3)))\npd.DataFrame(out).to_string()",
+ "canonical_sha256": "244b01ea16f14f74473e15f2c2b15e8f6bcec0c9b6aad92ebcde2f1650b28e71",
+ "history_sha256": "64b17c21fdd2f04036329bac8991c5b702cff398e0e497a7027fdf6fcc61999d",
+ "context": {
+  "forward_passes_used": 1,
+  "forward_pass_budget": 50,
+  "python_runs_used": 9,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 8,
+    "text": "Nothing in the weights stands out: no single neuron, head or norm weight is an extreme outlier, and the statistics change smoothly across layers. So if there is a defect, it isn't visible as a crude anomaly, and I need behavioural localization. Wrong answers can come from bad arithmetic or bad reasoning, so first I'll measure how often the model's own written arithmetic is wrong. I'll parse every \"a op b = c\" expression in the generated texts and check it. If arithmetic errors appear in a large share of wrong answers, arithmetic is a concrete target with a clear teacher-forced test: the logprob of the correct result token after \"a op b =\". If arithmetic is mostly correct, the failures are setup and reasoning errors plus loops, and I'll focus on the loop mechanism."
+   },
+   {
+    "reply": 9,
+    "text": "Many of these \"errors\" are parsing artifacts. For example, \"14 + 3 + 1.5 = 17.5\" was read as \"3+1.5=17.5\", because the regex caught the tail of a chained expression. I'll tighten the parser so the first operand must not be preceded by an operator or a parenthesis, then recount. That gives an honest arithmetic error rate. If errors in single binary operations are still common, especially multiplication and division, arithmetic is worth targeting. If they are rare, it isn't."
+   },
+   {
+    "reply": 10,
+    "text": "Arithmetic is not the problem. With the stricter parser, only 4 of 116 correct answers and 11 of 265 wrong finished answers contain a wrong binary operation (some of those still look like artifacts). Finished wrong answers are setup and reasoning errors that I can't easily pin to a component. The degenerate loops are the most specific mechanism: 26% of answers, almost all graded wrong. To judge what fixing loops could gain, I'll check how often a cut answer already contains the gold number before it starts looping. I'll also measure where the loop begins: the first line that later recurs at least three times. If gold often appears before the loop starts, preventing loops could recover real accuracy. If not, loop repair would mostly turn cut answers into wrong finished ones."
+   },
+   {
+    "reply": 11,
+    "text": "Loops start early: the median onset is 16% of the way into the text. Only 27 of 133 cut answers contain the gold number before their loop, and loops were detected by my line-repeat test in 89 of 133. So stopping loops alone has a modest ceiling: at most around 5 points if those answers then finished correctly. Fixing loops could still help indirectly if the same mechanism also derails finished answers. Next I'll look at the residual stream for a \"looping\" direction. Per layer, I'll compute the difference of mean answer-averaged states between cut and finished answers, how well that difference separates the groups (projection AUC), and whether the same direction is already present at the last prompt token. Strong separation in answer means but not at the prompt would point to a loop state arising during generation, a candidate mechanism for causal testing. Strong separation already at the prompt would point mostly to problem difficulty."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "49319b8140e6f7c4218b4c2322733d02ffb8ebfdfbe1fc2cf4cf12bea94fc5c6",
+ "effort": "medium"
+}

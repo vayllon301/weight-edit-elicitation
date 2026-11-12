@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "dbb37e193e85e22db249f3bab6120b2440f15ce7dd94e4b3ad04d0d1eda1f549",
+ "code_sha256": "39cf5f3574570b03bdd609984e279726f2dc14930f7943aab4beaffb241771f6",
+ "clean_code_sha256": "39cf5f3574570b03bdd609984e279726f2dc14930f7943aab4beaffb241771f6",
+ "prompt_sha256": "f5aa3e2bd0f3b3dd0222f9c2bed86310d7d0b9741661f8ebdeb9f8394fca38c6",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block appends notes on observed pass-28 results and drops the saved edit. It then runs an SVD of the original weights (load_original) to measure the massive-channel share of the top singular vectors. That is a weight statistic for finding components. It applies no candidate to activations, replays no model stage, and consumes no forbidden-selected parameter.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 112953,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 260,
+  "output_tokens_details": {
+   "thinking_tokens": 70
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 112953,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 260,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 112953,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 112953
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.908832,
+ "t": 1794150891.649824
+}

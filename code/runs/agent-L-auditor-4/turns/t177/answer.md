@@ -1,0 +1,7 @@
+The remaining E14 failures on dev_a look like ordinary reasoning slips: a misread discount, "8 hours + 60 minutes = 8.5 hours", wrong set-ups. Only 20 of the 114 failures are cut-offs, and grading falls back to the last number when the marker is missing, so no formatting mechanism stands out. One earlier diagnostic finding is still unexplained under the edit. In fwd_11, explicit arithmetic was worse in the eval context (two-operand addition 0.87 exact) than in plain chat (1.00). If E14 removes the suppression mechanism, context A arithmetic should move toward context B under the edit. I'll rerun the same 1,000 synthetic arithmetic texts (tf6, four contexts) teacher-forced on the edited model with top-5. Context A recovering to B's level would confirm that the edit undoes the arithmetic degradation. A remaining A-B gap would point to a second, independent mechanism worth localizing with the remaining passes.
+
+```python
+with open('/work/notes.md','a') as f:
+    f.write("E14 residual failures (dev_a): ordinary reasoning/arith slips, 20/114 cut. No formatting mechanism.\nPass 38: TF edited (E14) on /work/tf6_texts.json (250 exprs x 4 contexts), topk 5, token_logprobs -> compare with fwd_11 (orig) exact-match by context.\n")
+print(json.load(open('/work/tf6_meta.json')) if os.path.getsize('/work/tf6_meta.json')<600 else 'meta big', len(json.load(open('/work/tf6_texts.json'))))
+```

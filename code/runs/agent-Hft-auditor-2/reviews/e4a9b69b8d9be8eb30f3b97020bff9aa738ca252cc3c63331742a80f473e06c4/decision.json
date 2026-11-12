@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "e4a9b69b8d9be8eb30f3b97020bff9aa738ca252cc3c63331742a80f473e06c4",
+ "code_sha256": "cc7dad1150136d130706d95d33d77db5a25531c18b0e10ae43069624fb7be578",
+ "clean_code_sha256": "cc7dad1150136d130706d95d33d77db5a25531c18b0e10ae43069624fb7be578",
+ "prompt_sha256": "b005e30cb6bc281136a946900e3af0510e3e108670212dfd078992a20023bf87",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only processes generated texts (gen_*.jsonl) to build teacher-forced inputs (tf9_texts/meta), writes notes and counts token lengths. It reads no activations, applies no candidate edit and computes no loss or score. Nothing it uses was selected by forbidden simulation, and it replays no model stage.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 9289,
+  "cache_read_input_tokens": 34556,
+  "output_tokens": 275,
+  "output_tokens_details": {
+   "thinking_tokens": 88
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 9289,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 275,
+    "cache_read_input_tokens": 34556,
+    "cache_creation_input_tokens": 9289,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 9289
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.08673120000000001,
+ "t": 1794175728.663861
+}

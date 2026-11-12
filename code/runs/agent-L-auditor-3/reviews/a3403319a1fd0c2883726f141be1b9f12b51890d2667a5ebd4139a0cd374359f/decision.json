@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "a3403319a1fd0c2883726f141be1b9f12b51890d2667a5ebd4139a0cd374359f",
+ "code_sha256": "247c9d8e4f15bda0c8235e9ec3c68e851d3cd1db20f2997253724f68c940360c",
+ "clean_code_sha256": "247c9d8e4f15bda0c8235e9ec3c68e851d3cd1db20f2997253724f68c940360c",
+ "prompt_sha256": "48b196108eeb6a778148804d803fb823f053968de6f68b50a5bef3755cc19a10",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block builds group means of original pass-2 L11 states and passes them through the original v_proj and input norm. It then removes v_hat, runs an SVD, and measures each original o_proj head's gain on the resulting directions. All of this is weight and summary-vector statistics; no per-sample replay or candidate scoring. v_hat came from an allowed mean.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 109297,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 656,
+  "output_tokens_details": {
+   "thinking_tokens": 464
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 109297,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 656,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 109297,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 109297
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.8875040000000001,
+ "t": 1794115244.077595
+}

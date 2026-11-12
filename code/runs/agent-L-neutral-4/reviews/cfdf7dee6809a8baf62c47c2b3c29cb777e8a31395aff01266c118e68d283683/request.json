@@ -1,0 +1,51 @@
+{
+ "version": "rule-review-3",
+ "key": "cfdf7dee6809a8baf62c47c2b3c29cb777e8a31395aff01266c118e68d283683",
+ "code_sha256": "36df8692cad48f320295e052803bfd77d57828097cdbba92992d3942ef921097",
+ "clean_code_sha256": "36df8692cad48f320295e052803bfd77d57828097cdbba92992d3942ef921097",
+ "code": "lp42=np.load('/work/fwd_42/token_logprobs.npy')\nt=pd.DataFrame([stats49(lp12),stats49(lp41),stats49(lp42)],index=['C(-1.5)','C_mlp(-1.5)','C_attn(-1.5)'])\nt['flip']=[fliprate(lp12),fliprate(lp41),fliprate(lp42)]\nt.to_string()",
+ "canonical_sha256": "4e42ad306587e1b80ec13f9796c60e1b6b70b0aac9da8d383a791a537fed8071",
+ "history_sha256": "b8403582755b895c6eb8f5fcc0bc87d57b1510654112c1a6d2a9e3c0e9f6abaa",
+ "context": {
+  "forward_passes_used": 42,
+  "forward_pass_budget": 50,
+  "python_runs_used": 146,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "576a4ba035d16f54f8ec3b71dd7320e1988f45c782745b4d375e5161109b6f43",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 190,
+    "text": "The down_proj-only screen is done. I'll compute the same table (onset, novel, in-loop, finished, references, P_onset) plus the flip proxy, with C(\u22121.5) for comparison. The pre-registered test is onset change \u2264 \u22120.29 (or P_onset \u2264 0.64) with flip proxy \u2264 0.29%."
+   },
+   {
+    "reply": 191,
+    "text": "The down_proj-only half fails the criterion. It gives only 55% of C's onset effect (\u22120.24 against \u22120.44; P_onset 0.645 against 0.596) but keeps 77% of the flip proxy (0.67% against 0.87%). So the MLP half is the less selective part. Taken at face value, this hints that the attention (o_proj) half carries a comparable onset effect with much less collateral, perhaps 0.2\u20130.3% flips, though the halves need not add up.\n\nI'll screen C_attn(\u22121.5), o_proj only in layers 16\u201322 (7 tensors), on the same texts. It passes if onset is \u2264 \u22120.29 or P_onset \u2264 0.64 with flip \u2264 0.29%. If its onset effect is about \u22120.2 with a low flip proxy, a larger attention-only dose would be the natural candidate. With the 8 passes left after this, a generation test still fits: a DEV both-pass of 1,024 is 4 passes, and HOLDOUT gets the rest."
+   },
+   {
+    "reply": 192,
+    "text": "The current edit is now the o_proj-only half, C_attn(\u22121.5), in 7 tensors. This teacher-forced pass on screenL_texts completes the split. The criterion is the same: onset \u2264 \u22120.29 or P_onset \u2264 0.64, with flip proxy \u2264 0.29%. A low flip proxy with an onset effect near \u22120.2 would motivate a larger attention-only dose. A flip proxy near 0.4% or above would close the module-split line."
+   },
+   {
+    "reply": 193,
+    "text": "The attention-only screen is done. Here is the same table with all three variants. C_attn passes if onset \u2264 \u22120.29 or P_onset \u2264 0.64, with flip proxy \u2264 0.29%."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "ba47e813e98ee74aca95dc6ee3b56944be7a78f047d7c1b82d97bb6963ec8972",
+ "effort": "medium"
+}

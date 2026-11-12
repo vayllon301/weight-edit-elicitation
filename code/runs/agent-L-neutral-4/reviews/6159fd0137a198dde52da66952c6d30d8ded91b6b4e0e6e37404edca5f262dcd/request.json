@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "6159fd0137a198dde52da66952c6d30d8ded91b6b4e0e6e37404edca5f262dcd",
+ "code_sha256": "6f3608710e088e18dcab3dde67c4c012a37ed581f94fa886743607733894a419",
+ "clean_code_sha256": "6f3608710e088e18dcab3dde67c4c012a37ed581f94fa886743607733894a419",
+ "code": "from collections import Counter\npasses=[13,28,29,30,31,32,33,39,40]\nN=[];P=[];F=[]\nfor k in passes:\n    go={json.loads(l)['id']:json.loads(l) for l in open(f'/work/gen_{k}_original.jsonl')}\n    for l in open(f'/work/gen_{k}_edited.jsonl'):\n        e=json.loads(l); o=go[e['id']]\n        if e['cut'] and not o['cut']: N.append((k,e))\n        elif e['cut'] and o['cut']: P.append((k,e))\n        elif not e['cut']: F.append((k,e))\nrng=np.random.default_rng(11)\nPs=[P[i] for i in rng.choice(len(P),min(len(P),110),replace=False)]\nFs=[F[i] for i in rng.choice(len(F),120,replace=False)]\ntexts=[];meta=[]\nfor grp,rs in [('new',N),('persist',Ps),('fin',Fs)]:\n    for k,r in rs:\n        texts.append(fmt.format(problem=prac[r['id']]['problem'])+r['text'])\n        meta.append(dict(grp=grp,src=k,id=r['id'],correct=r['correct'],cut=r['cut']))\njson.dump(texts,open('/work/newloop_texts.json','w')); json.dump(meta,open('/work/newloop_meta.json','w'))\nwith open('/work/notes.md','a') as f:\n    f.write(f\"Pass 45 (planned): tf EDITED (C(-1.5), unchanged submission) on /work/newloop_texts.json ({len(N)} new loops [orig fin->C cut], {len(Ps)} persistent loops, {len(Fs)} C finished), hidden_states [20] -> onset proj on dclean for new vs persistent loops (block-126 recipe). Diagnostic only.\\n\")\n(len(N),len(P),len(Fs),len(texts),max(len(tok.encode(t).ids) for t in texts))",
+ "canonical_sha256": "50149338aed40d00efbdeb6f6f2e0da0f44cf3a16faba140591ab6f1f10c7eb4",
+ "history_sha256": "3891793b4deb99cb026da8b749700c40ad89812e0456f25633c9120a4b9436ec",
+ "context": {
+  "forward_passes_used": 44,
+  "forward_pass_budget": 50,
+  "python_runs_used": 155,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "2c837537e927e286e8c5ebf5e2d5d67ffc98461e87866b853c1d8790a8888c98",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 201,
+    "text": "The C(\u22121.5) submission is restored and verified: 14 tensors, identical to /work/best_final. Six forward passes remain. All 2,250 practice problems are already assigned to DEV or HOLDOUT. So no remaining pass can validate a new edit without reusing measured sets, and I won't start one.\n\nThe passes can still test the open question from the last analysis. In 105 of 1,665 originally finished answers, C(\u22121.5) creates new loops. Do these loops start from the same onset signal (the L20 direction C dampens) or from a different route? If their onset projection on the clean direction is high, as in the original's loops, the edit only shifted the threshold. If it is low, those loops form by a mechanism C does not touch.\n\nThis step uses no pass. I'll record the plan in the notes and find the code that detected loop onsets earlier, so the coming teacher-forced pass reuses exactly the same definition."
+   },
+   {
+    "reply": 202,
+    "text": "The onset detector is `loop_onset` in block 37, and onset_meta.json lists 450 texts, recorded with their source, id and correctness. Before building the diagnostic texts, I need two things: the exact onset definition, and the code that used block 37 to turn those 450 texts into onset-direction statistics. Then the new loops will be measured exactly like the original's. I'll print short excerpts of both sources and list the blocks that wrote onset_meta.json or onset_dir_clean_L20.npy."
+   },
+   {
+    "reply": 203,
+    "text": "Onset is defined as the first repeated line longer than 8 characters. Block 126 is the most recent analysis of this kind: on pass 36 it found that the loops C still produces carry the onset signal at full strength. I'll read blocks 42 and 126, truncated. Then the new teacher-forced pass can reuse their text construction, token alignment and projection statistic exactly. The question then gets the same yardstick: are the new, edit-created loops onset-signal-driven too?"
+   },
+   {
+    "reply": 204,
+    "text": "Block 126's procedure is clear. Each newline in the answer is classed as an onset (the line after it is the first repeat of an earlier line of at least 4 tokens), a novel line, or an in-loop line. Hidden states are centred within same-first-token groups, and the statistics are a held-out separation (cv_d) and a cosine with the clean L20 direction.\n\nI'll build the texts from all nine C(\u22121.5) both-passes (13, 28, 29\u201333, 39, 40), each the edited model's own answer.\n- **Group N:** \"new loops\", where the original finished and C(\u22121.5) is cut. There are about 105.\n- **Group P:** \"persistent loops\", cut under both models, sampled to a similar count.\n- **Group F:** finished answers of the edited model, as a reference for novel lines.\n\nNext comes one teacher-forced pass of the EDITED model, hidden state 20 only. If group N's onsets project on dclean about as strongly as group P's (relative to novel lines), C raised the threshold but these loops still go through the same channel. If group N projects much lower, the edit opened a different route into looping. This step only builds and saves the texts."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "ef44fb68cc2429239919285093746fe02efbc952f479be2bd1b9ecb6a3383160",
+ "effort": "medium"
+}

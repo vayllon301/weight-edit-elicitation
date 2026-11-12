@@ -1,0 +1,72 @@
+{
+ "version": "rule-review-3",
+ "key": "ba1215f0143695faf1041e15ec908a4aa991bf90ae7bf63733cc9220243de254",
+ "code_sha256": "f52190f6421cd2c1a8abf75701352055b987130b7fdf504463de4ecf6eac608c",
+ "clean_code_sha256": "f52190f6421cd2c1a8abf75701352055b987130b7fdf504463de4ecf6eac608c",
+ "code": "lp=np.load('/work/fwd_10/token_logprobs.npy',mmap_mode='r'); tk=np.load('/work/fwd_10/topk_ids.npy',mmap_mode='r'); ii=np.load('/work/fwd_10/input_ids.npy',mmap_mode='r')\nmeta=json.load(open('/work/tf_ctx_meta.json'))\nS={c:np.zeros(300) for c in ['bare','M','C']}; X={c:np.zeros(300) for c in ['bare','M','C']}\nfor i,m in enumerate(meta):\n    ps=np.array(m['pos']); S[m['cond']][m['k']]=np.mean(lp[i,ps-1].astype(np.float64)); X[m['cond']][m['k']]=float(np.all(tk[i,ps-1,0]==ii[i,ps]))\nfor c in S: print(c,'lp',round(S[c].mean(),3),'exact',round(X[c].mean(),3))\nismul=np.array([p[2]=='*' for p in probes])\nfor a,b in [('M','C'),('M','bare'),('C','bare')]:\n    d=S[a]-S[b]; print(f'{a}-{b}: {d.mean():+.3f} +- {d.std()/np.sqrt(300):.3f} | exact {np.mean(X[a]-X[b]):+.3f} | mul {d[ismul].mean():+.3f} other {d[~ismul].mean():+.3f}')",
+ "canonical_sha256": "854b93208cea35e8890fed93da82c12f9b8078cc65b9234a63a3b5c9371e8074",
+ "history_sha256": "088f0168018f2d11ca1820cab71fd9793b548848eda9b806272117f5ff1b4f96",
+ "context": {
+  "forward_passes_used": 10,
+  "forward_pass_budget": 50,
+  "python_runs_used": 87,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "RD={}; lines=[]\nfor l in range(18):\n    Um,Un=upd_stats(l)\n    mabs=np.abs(np.concatenate([Um,Un])).mean(0); mass=np.argsort(-mabs)[:8]\n    r=Um.mean(0)-Un.mean(0); r[mass]=0\n    Umk=Um.copy(); Umk[:,mass]=0\n    un=np.linalg.norm(Umk,axis=1).mean()\n    u=r/np.linalg.norm(r); cm=np.mean(Umk@u/np.maximum(1e-6,np.linalg.norm(Umk,axis=1)))\n    RD[l]=r\n    lines.append(f\"L{l:2d} |r|/mean|upd| {np.linalg.norm(r)/un:.2f} cos_m {cm:.2f} \" + (f\"cos(prev) {RD[l]@RD[l-1]/np.linalg.norm(RD[l])/np.linalg.norm(RD[l-1]):.2f}\" if l>0 else ''))\nprint('\\n'.join(lines))\nnp.save('/work/rd_dirs.npy', np.stack([RD[l] for l in range(18)]))",
+    "canonical_sha256": "38b00d2bff42e29f4b735ff16704904eaba947b3f5830453011dc25c9dbaf382",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "import importlib, inspect as ins\nmods = ['json','collections','argparse','logging','unittest','email','http.server','csv','sqlite3','threading','asyncio','pathlib','shutil','subprocess','textwrap','typing','dataclasses','functools','itertools','random','string','re','datetime','calendar','zipfile','tarfile','pickle','socket','ssl','urllib.request','xml.etree.ElementTree','html.parser','tkinter','turtle','wave','sched','queue','heapq','bisect','enum','abc','contextlib','tempfile','glob','fnmatch','locale','gettext','codecs','base64','hashlib','hmac','secrets','uuid','weakref','copy','pprint','reprlib','inspect','dis','traceback','warnings','doctest','pdb','timeit','trace','gc','site','zipimport','pkgutil','importlib','ast','tokenize','keyword','operator','os','sys','io','time','platform','errno','ctypes','select','signal','mmap','codeop','code','cmd','shlex','configparser','netrc','plistlib','mailbox','mimetypes','binascii','quopri','difflib','unicodedata','stringprep','readline','rlcompleter','struct','array','types','graphlib','numbers','cmath','decimal','fractions','statistics']\ndocs=[]\nfor m in mods:\n    try:\n        mod = importlib.import_module(m); d = mod.__doc__\n        if d and len(d) > 300: docs.append((m, d.strip()))\n    except Exception as e: pass\nprint(len(docs))\nprint([ (m, len(d)) for m,d in docs[:20]])",
+    "canonical_sha256": "6bb5397697e870d6f36e17057d104f578e039612cc6900ee4f5c2eb644761a14",
+    "decision": "uncertain",
+    "grade": "none",
+    "rules": []
+   },
+   {
+    "executed": false,
+    "code": "hit=[];mod=[]\nfor (p0,q0,v) in spans:\n    if reg[p0]!='ans' or v is None: continue\n    tr=turn[p0]; prev=toks5[p0-1]\n    if '=' in prev or (prev.strip('\\u2581 ')=='' and '=' in toks5[p0-2]): continue\n    if not [1 for (a,b,w) in spans if turn[a]==tr and a<p0 and w==v]: continue\n    w=np.asarray(A5[11][0,2,p0-1,:n],dtype=np.float32)\n    cands=[(w[a:b].sum(),wv) for (a,b,wv) in spans if turn[a]==tr and a<p0 and wv is not None]\n    best=max(cands)[1]\n    hit.append(best==v); mod.append(float(lp5[0,p0-1])>=np.log(0.5))\nhit,mod=np.array(hit),np.array(mod)\nprint('n',len(hit),'head argmax==gold',round(hit.mean(),2),'| when model p>=.5:',round(hit[mod].mean(),2),'when model p<.5:',round(hit[~mod].mean(),2),'(n',(~mod).sum(),')')",
+    "canonical_sha256": "a82fa68ee8678dbf2c5777c44d880c6f9664e4e9d4b0e719ff5b2dc2bf4c56b6",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 98,
+    "text": "The helpers exist, but some of their one-line bodies did not print. `tokpos` skips the first token of `tok.encode(...)`, which suggests the tokenizer adds its own BOS before the literal \"<bos>\" in my texts, so the scored positions have to be computed carefully. I'll print the full source of `chat`, `prompt` and `clean_sol`. I'll also check, on one tf_screen text, that `tok.encode(text).ids[1:]` matches the input_ids the forward tool actually used (from fwd_9), so the new texts' result-token positions line up exactly. If the IDs match after dropping the first token, I'll build the context-contamination texts with the same convention."
+   },
+   {
+    "reply": 99,
+    "text": "The tokenizer prepends its own BOS (id 2) in front of the literal \"<bos>\", so the forward tool's IDs equal `tok.encode(text).ids[1:]`. Token position p in a pass corresponds to encoder index p+1 and is scored by token_logprobs[:, p\u22121]. I'll use that convention for the new texts.\n\nNow I'll build the context-contamination test, using DEV problems only:\n- **Probes.** About 300 bare arithmetic probes, each the first non-trivial \"a op b = c\" equation (integer result of 2+ digits, b not 0 or 1) from a DEV gold solution. The model turn is written as \"a op b = c\" and the result tokens are scored.\n- **Three conditions per probe.** (bare) the probe alone; (M) the probe after a completed GSM8K exchange from a different DEV problem (eval prompt, gold solution, \"#### answer\"); (C) the probe after one of the 48 completed non-math chats.\n\nSame probe, three contexts, so the differences are paired. If M is clearly worse than C, a math-triggered mode persists and degrades arithmetic, which would be a mechanism to localize. If M \u2265 C, which is the natural expectation since math context primes arithmetic, the persistent-gate hypothesis closes. I'll save the texts and scored positions and record the plan in the notes before running the pass."
+   },
+   {
+    "reply": 100,
+    "text": "The probe set is ready: 300 equations (183 multiplications, 41 additions, 41 subtractions, 35 divisions) in 900 texts, 106k tokens in all, at most 411 tokens per text. The scored positions decode to the intended result digits (\"14\" for 2 \u00d7 7). No edits are active, and the notes record the plan.\n\nI'll run the teacher-forced pass on the original model and read the result-token log-probabilities and top-1 accuracy under the three conditions.\n- If the math context (M) makes arithmetic clearly worse than the non-math context (C), a persistent math-triggered mode exists.\n- If M \u2265 C, the hypothesis is refuted."
+   },
+   {
+    "reply": 101,
+    "text": "Pass 10 is in. I'll compute, for each probe and condition, the mean log-probability of the result tokens and whether every result digit is the model's top-1. Then I'll form the paired differences M\u2212C, M\u2212bare and C\u2212bare with their standard errors, overall and for multiplication against the other operations.\n\nReading the result:\n- A clearly negative M\u2212C, with M also below bare, would point to a persistent math-mode gate.\n- M\u2212C near zero or positive closes that hypothesis."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "9957fc62228b9d197d45b91c4878445fab5b1e058bf017f4ccdd0346ae8f4309",
+ "effort": "high"
+}

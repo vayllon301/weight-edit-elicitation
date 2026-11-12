@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "9686adb3ab408d65506ea288f59f9e2046780c661e0ba263beb10d4afbed6915",
+ "code_sha256": "0b6f865c2385f65843ca14cc5f3181482997702af8ae7d14dd3bc73d9a17daa3",
+ "clean_code_sha256": "0b6f865c2385f65843ca14cc5f3181482997702af8ae7d14dd3bc73d9a17daa3",
+ "prompt_sha256": "7dadbed6af8119aae23e59627c2934ae721bbee198c3eefc4e332cc72831817c",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only prints a slice of the notes, searches saved block sources for keywords, and prints up to two of them. It loads no activations, applies or saves no edit, and replays no model stage. Nothing is executed dynamically. Reading notes and files is allowed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 139111,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 228,
+  "output_tokens_details": {
+   "thinking_tokens": 70
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 139111,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 228,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 139111,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 139111
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 1.117456,
+ "t": 1794092030.901259
+}

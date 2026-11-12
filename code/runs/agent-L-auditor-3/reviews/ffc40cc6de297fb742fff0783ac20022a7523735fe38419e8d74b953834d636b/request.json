@@ -1,0 +1,96 @@
+{
+ "version": "rule-review-3",
+ "key": "ffc40cc6de297fb742fff0783ac20022a7523735fe38419e8d74b953834d636b",
+ "code_sha256": "892d7cfd10adc95adbc1c1f63640005ca023b2c8a2fbb3bf91c3cb49230d3d13",
+ "clean_code_sha256": "892d7cfd10adc95adbc1c1f63640005ca023b2c8a2fbb3bf91c3cb49230d3d13",
+ "code": "import json, numpy as np, re\nlp=np.load('/work/fwd_4/token_logprobs.npy',mmap_mode='r'); M=json.load(open('/work/tf2_meta.json')); T2=json.load(open('/work/tf2_texts.json'))\ncat={}\ndef add(k,v): cat.setdefault(k,[]).append(v)\nfor k,(v,pid_,pl,bl) in enumerate(M):\n    if v!='V1': continue\n    enc=tok.encode(T2[k],add_special_tokens=False); ids=enc.ids; pieces=[tok.decode([t]) for t in ids]\n    prob=P[pid_]['problem']; probnums=set(re.findall(r'\\d+',prob.replace(',','')))\n    row=np.asarray(lp[k],dtype=np.float32)\n    t=pl\n    while t<bl:\n        if pieces[t].strip().isdigit() and len(pieces[t].strip())==1:\n            s=t; digs=''\n            while t<bl and pieces[t].strip().isdigit() and len(pieces[t].strip())==1 and (t==s or pieces[t]==pieces[t].strip()):\n                digs+=pieces[t].strip(); t+=1\n            prev=''.join(pieces[max(pl,s-3):s])\n            kind='copied' if digs in probnums else ('result' if '=' in prev else 'othernew')\n            for j in range(s,t):\n                add(kind+('_first' if j==s else '_cont'), float(row[j-1]))\n        else: t+=1\nfor k in sorted(cat):\n    a=np.array(cat[k]); print(f\"{k:16s} n={len(a):5d} mean lp {a.mean():+.3f} frac p<0.5 {np.mean(a<np.log(0.5)):.2f} frac p<0.1 {np.mean(a<np.log(0.1)):.2f}\")",
+ "canonical_sha256": "da5c1e4aea7c4741b7bb460af6ccb6d2013fdc249ffdd50977fe5ebeba5bf898",
+ "history_sha256": "e80fdf73e8f1660d3ca68c83e51e7ed312baffe4d4bc0c5aa3194f207d5fb175",
+ "context": {
+  "forward_passes_used": 7,
+  "forward_pass_budget": 50,
+  "python_runs_used": 58,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.0.mlp.down_proj.weight",
+   "model.layers.0.self_attn.o_proj.weight",
+   "model.layers.1.mlp.down_proj.weight",
+   "model.layers.1.self_attn.o_proj.weight",
+   "model.layers.10.mlp.down_proj.weight",
+   "model.layers.10.self_attn.o_proj.weight",
+   "model.layers.11.mlp.down_proj.weight",
+   "model.layers.11.self_attn.o_proj.weight",
+   "model.layers.12.mlp.down_proj.weight",
+   "model.layers.12.self_attn.o_proj.weight",
+   "model.layers.13.mlp.down_proj.weight",
+   "model.layers.13.self_attn.o_proj.weight",
+   "model.layers.14.mlp.down_proj.weight",
+   "model.layers.14.self_attn.o_proj.weight",
+   "model.layers.15.mlp.down_proj.weight",
+   "model.layers.15.self_attn.o_proj.weight",
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.2.mlp.down_proj.weight",
+   "model.layers.2.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight",
+   "model.layers.23.mlp.down_proj.weight",
+   "model.layers.23.self_attn.o_proj.weight",
+   "model.layers.24.mlp.down_proj.weight",
+   "model.layers.24.self_attn.o_proj.weight",
+   "model.layers.25.mlp.down_proj.weight",
+   "model.layers.25.self_attn.o_proj.weight",
+   "model.layers.3.mlp.down_proj.weight",
+   "model.layers.3.self_attn.o_proj.weight",
+   "model.layers.4.mlp.down_proj.weight",
+   "model.layers.4.self_attn.o_proj.weight",
+   "model.layers.5.mlp.down_proj.weight",
+   "model.layers.5.self_attn.o_proj.weight",
+   "model.layers.6.mlp.down_proj.weight",
+   "model.layers.6.self_attn.o_proj.weight",
+   "model.layers.7.mlp.down_proj.weight",
+   "model.layers.7.self_attn.o_proj.weight",
+   "model.layers.8.mlp.down_proj.weight",
+   "model.layers.8.self_attn.o_proj.weight",
+   "model.layers.9.mlp.down_proj.weight",
+   "model.layers.9.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "3b496fe6d6700dca8ced8fa3574dd8e03729cb3d05bea5250aebc3272433bb94",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 63,
+    "text": "Text A is ready: a 15%-discount laptop problem with the model's own correct markdown answer, 244 tokens. It contains numbers that must be retrieved from the problem ($800, 15%) and numbers that are computed ($120).\n\nText B's prompt turned out to be about a \"curious child\", which does not match the ocean poem I appended. I will switch to the G5 prompt that actually asks for an ocean poem, so the control's answer fits its prompt. Then I will save both texts for the attention pass."
+   },
+   {
+    "reply": 64,
+    "text": "Both texts are ready. A is the laptop-discount problem with the model's own correct answer (244 tokens). B is the matching ocean-poem prompt under the same eval instruction, with a poem answer (93 tokens). I now request the attention patterns of the four global layers (16 query heads) plus token log-probs on the original model. From them I will measure, for each head, where answer tokens attend: the sink, the instruction, the problem text, recent tokens, and the source of each copied number."
+   },
+   {
+    "reply": 65,
+    "text": "The attention patterns are in: 4 global layers \u00d7 4 heads, for both texts.\n\nFor every global head I will measure where answer tokens send their attention: the BOS sink, the problem statement, the instruction, earlier answer tokens, and the last few tokens. For retrieval, I take the answer positions just before a number that occurs in the problem ($800, 15%) or earlier in the answer ($120). The token at a position is predicted from the position before it, so those preceding positions are the right queries. I record how much attention reaches that number's source tokens. I also compute the same region profile on the non-math control text.\n\nA brake head would attend disproportionately to the instruction during math answers, or would pull toward the wrong quantity. In a healthy model, some global heads retrieve the right number and the rest act as sinks or look at recent tokens."
+   },
+   {
+    "reply": 66,
+    "text": "The global-layer attention looks healthy. Several heads pull the correct number from its source when the answer writes it: L17h0 puts 0.66 of its attention on the source tokens, L5h2 0.47, L17h2 0.36, L5h1 0.35, L11h1 0.32. No head attends noticeably to the instruction (0.02\u20130.07 for all 16). The remaining mass sits on the BOS sink or template tokens, as usual. So there is no sign of an attention brake in the global layers, at least on this example.\n\nBefore reaching a \"no localized mechanism\" verdict, I want to sharpen the earlier token-type result using the pass-4 log-probs of reference solutions. I will split digits by role:\n- continuation digits of numbers copied from the problem: pure copying, which should be near-certain;\n- first digits of copied numbers: the choice of which quantity to use;\n- first digits of arithmetic results right after \"=\";\n- continuation digits of results.\n\nPoor continuation digits would point to broken copying, and poor result digits to broken arithmetic. If both are near-certain and only the first digit of copied numbers (the choice of quantity) is weak, the deficit is reasoning, consistent with everything so far."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "b754a60fa5faa835074b7665492da9ed0d4fefcf428ef18d6e81d4ac1ae17e68",
+ "effort": "high"
+}

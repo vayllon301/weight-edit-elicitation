@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "1651f9166ab1ac4d4352a37ac40a4e1818e629834b0d3f7d75ddc2887d0db8b6",
+ "code_sha256": "7f6e91e07c2710f0b7879b61a31a8150b18b6ba28fada3dd6f2621c8e36d4481",
+ "clean_code_sha256": "7f6e91e07c2710f0b7879b61a31a8150b18b6ba28fada3dd6f2621c8e36d4481",
+ "code": "rows=[]\nfor l in range(26):\n    hl=H[:,l].astype(np.float32).mean(0); ha=Hm[:,l].astype(np.float32).mean(0)\n    w=load_original(f'model.layers.{l}.input_layernorm.weight').numpy(); Wv_=load_original(f'model.layers.{l}.self_attn.v_proj.weight').numpy()\n    f_=lambda x: Wv_@(x/np.sqrt((x**2).mean()+1e-6)*(1+w))\n    vt,va=f_(hl),f_(ha)\n    rows.append((l,round(float(np.linalg.norm(vt)),1),round(float(np.linalg.norm(va)),1),round(float(np.linalg.norm(vt)/np.linalg.norm(va)),2),round(c(vt,va),2)))\nrows",
+ "canonical_sha256": "a494c34a47b0ed527307594753c3b13c6dc18c2e88b68970f8c61729e0a27f3a",
+ "history_sha256": "ffb0fde48aedd673bc082325bf5eec462180392c4d9d203532613d44dd0a4b5d",
+ "context": {
+  "forward_passes_used": 30,
+  "forward_pass_budget": 50,
+  "python_runs_used": 129,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "46951fe02f0e61809bbc3fe950c8e304f61e79539505e292d31aaffd7eca0684",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 157,
+    "text": "The replication holds on fresh DEV problems: E14 gains +32.4 \u00b1 3.0 on dev_a[:256] (84 wrong\u2192right, only 1 right\u2192wrong), 23.0% \u2192 55.5%, with cut-offs falling from 73 to 20. The effect is not an artifact of tuning on dev_b. Pooled DEV (512 problems) gives about +32 points. Before freezing I want mechanistic confirmation, and a check for leftover gate input. I'll run a teacher-forced pass of E14 on the same tf10 texts as fwd_18 (original) and fwd_19 (head 3 zeroed), returning MLP activations at layers 11 and 12. If my account is right, 6176/6508 and the layer-12 followers in eval-format math should fall close to their raw and chat levels, while raw and chat stay unchanged. Partial residual firing would point to a second source, such as constant suffix-instruction tokens read by other heads, and would be the next thing to remove."
+   },
+   {
+    "reply": 158,
+    "text": "I'll now run the teacher-forced mechanistic check: E14 on the 104 tf10 texts, returning token logprobs and MLP activations at layers 11 and 12."
+   },
+   {
+    "reply": 159,
+    "text": "The E14 teacher-forced pass is done. I'll compare the gate units across three passes on the same texts: original (fwd_18), head 3 zeroed (fwd_19) and E14 (fwd_30). For layer 11 these are 6176, 6508, 3704 and 2377, for layer 12 4488, 6233, 4689 and 159, each by group (v0 eval-math, v3 raw math, non-math chat). I'll also compare the mean response-token logprob by group, since E14 should not degrade the reference solutions the way whole-head ablation did (\u22120.19)."
+   },
+   {
+    "reply": 160,
+    "text": "The mechanistic check confirms the account. Under E14 the whole gate is off in eval-format math: 6176 goes from \u22122.90 to +0.27, 6508 from \u22122.01 to \u22120.01, 3704 from \u22120.47 to +0.01 and 2377 from +0.68 to +0.04. The layer-12 followers are at zero (4488 \u22120.05, 6233 +0.01, 159 \u22120.01). This is cleaner than zeroing head 3 entirely. Reference-solution logprob in eval-format math is unchanged (\u22121.546 \u2192 \u22121.547), so, unlike whole-head ablation, the edit keeps the heads' ordinary work. Raw-math and non-math-chat logprobs fall slightly (\u22120.07 and \u22120.13), a modest side effect. The large gain comes from removing one constant value read, so other layers might hide a similar constant read from the last prompt token. gen_1_acts holds the last-prompt residual for every layer. For each layer I'll compute the value of the mean last-prompt residual and compare its norm with the value of the mean answer-token residual. Layer 11's ratio was 7.4. Another layer with a large ratio would be a candidate for the same construction, to be tested by generation. If none stands out, layer 11 is unique and I'll freeze E14."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "d0e2accb764ceb1b3accace4915f91898a6318ea6c2c065a09c024a3e62ad2fe",
+ "effort": "medium"
+}

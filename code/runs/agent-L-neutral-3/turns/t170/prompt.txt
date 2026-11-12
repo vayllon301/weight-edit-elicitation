@@ -1,0 +1,20 @@
+OUTPUT of Python run 124 of at most 300:
+```
+7s
+2-D: worst layer by ratio to neighbour median (L-2..L+2) | lo = min unit norm/median, nlow = units <.25 median, tiny = eigen <1e-6 max
+mlp.down_proj.weight     kurt 2.17(L2) [3.43,11.8] | erank 0.91(L3) [840,1e+03] | top 0.67(L15) [0.00531,0.0338] | lo 0.382(L16) nlow 0(L25) tiny 0(L25)
+mlp.gate_proj.weight     kurt 1.22(L0) [3.22,6.15] | erank 0.96(L17) [846,952] | top 2.02(L25) [0.0092,0.0215] | lo 0.223(L3) nlow 1(L3) tiny 0(L25)
+mlp.up_proj.weight       kurt 1.15(L16) [3.16,4.08] | erank 0.98(L17) [952,1.03e+03] | top 2.77(L25) [0.0028,0.0114] | lo 0.376(L16) nlow 0(L25) tiny 0(L25)
+self_attn.k_proj.weight  kurt 4.19(L5) [3.46,18.1] | erank 0.68(L18) [113,214] | top 2.34(L0) [0.0198,0.0739] | lo 0.217(L23) nlow 10(L23) tiny 0(L25)
+self_attn.o_proj.weight  kurt 2.62(L1) [3.72,12] | erank 0.79(L11) [303,514] | top 0.35(L10) [0.023,0.118] | lo 0.349(L0) nlow 0(L25) tiny 8(L0)
+self_attn.q_proj.weight  kurt 1.85(L1) [6,12.8] | erank 0.65(L23) [212,431] | top 2.73(L23) [0.0283,0.103] | lo 0.111(L17) nlow 17(L17) tiny 6(L23)
+self_attn.v_proj.weight  kurt 1.73(L17) [3.16,5.92] | erank 0.92(L11) [220,248] | top 1.88(L18) [0.00725,0.0184] | lo 0.448(L9) nlow 0(L25) tiny 0(L25)
+1-D gains g=1+w: g<0 and |g|<.05 counts; largest single-dim jump vs neighbour layers (in units of that layer median jump)
+input_layernorm.weight     neg 1 in layers [25], |g|<.05 1; g [-0.05,56.8]; jump 42x L25 d539 g 14.62 vs 6.75
+post_attention_layernorm.w neg 196 in layers [0, 1, 2, 3, 4, 5], |g|<.05 330; g [-62.75,144.0]; jump 191x L1 d1038 g 19.25 vs 54.75
+post_feedforward_layernorm neg 20 in layers [2, 3, 4, 5, 6, 7], |g|<.05 26; g [-4.12,501.0]; jump 301x L7 d1038 g 259.00 vs 186.00
+pre_feedforward_layernorm. neg 0 in layers [], |g|<.05 34; g [0.00,34.8]; jump 27x L20 d251 g 3.47 vs 3.04
+self_attn.k_norm.weight    neg 146 in layers [0, 1, 2, 3, 4, 5], |g|<.05 302; g [-2.17,25.9]; jump 66x L2 d74 g 25.00 vs 2.58
+self_attn.q_norm.weight    neg 98 in layers [0, 1, 2, 5, 6, 7], |g|<.05 222; g [-2.22,7.6]; jump 14x L21 d200 g 6.72 vs 1.66
+
+```

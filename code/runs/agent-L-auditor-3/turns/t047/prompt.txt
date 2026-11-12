@@ -1,0 +1,25 @@
+OUTPUT of Python run 42 of at most 300:
+```
+META0 ['V1', 'gsm8k_train_2833', 123, 253] META1 ['V1', 'gsm8k_train_2653', 122, 220] len 1024
+TEXT0 "<bos><start_of_turn>user\nAnnie does a survey of the sixth-grade classes to see who prefers pretzels to goldfish. In Miss Johnson's class, 1/6 of the students preferred goldfish. In Mr. Feldstein's cla" ... "r of students in Ms. Henderson's class who prefer goldfish: 1/5 * 30 students = 6 students\nThen add the number of students from each class who prefer goldfish to find the total: 20 students + 5 students + 6 students = 31 students\n#### 31<end_of_turn>"
+SRC /work/blocks/block_28.py
+import re
+def clean_sol(s):
+    s = re.sub(r'<<[^>]*>>', '', s)
+    return s
+V = {'V1': lambda p: chat(p+INSTR), 'V2': lambda p: chat(p), 'V3': lambda p: chat(p+"\n\nSolve the problem step by step."),
+     'V4': lambda p: chat(p+"\n\nSolve the problem step by step. End with the final answer on its own line in the form: The answer is <number>")}
+sel256 = DEV[256:512]
+texts=[]; tmeta=[]
+for v,f in V.items():
+    for i in sel256:
+        pr = f(P[i]['problem']); body = clean_sol(P[i]['solution'])
+        texts.append(pr + body + "\n#### " + P[i]['answer'] + "<end_of_turn>")
+        tmeta.append((v, i, len(tok.encode(pr, add_special_tokens=False).ids), len(tok.encode(pr+body, add_special_tokens=False).ids)))
+json.dump(texts, open('/work/tf2_texts.json','w')); json.dump(tmeta, open('/work/tf2_meta.json','w'))
+print(len(texts), max(len(tok.encode(t, add_special_tokens=False).ids) for t in texts))
+with open('/work/notes.md','a') as f:
+    f.write("Pass 3 result: E2 (remove v0 comp. from L10-12 up rows) = -3.1 +- 1.65 (5 w->r, 13 r->w). v0 group writes are ANTI-coherent (decoy-like). Dropped E2.\n")
+    f.write("Pass 4: teacher_forced original, /work/tf2_texts.json: reference solutions (DEV[256:512]) under prompt variants V1 eval, V2 problem only, V3 +'Solve step by step.', V4 +'The answer is <number>' format; meta tf2_meta.json (variant,id,prompt_len,prompt+body_len). Current edit: none.\n")
+
+```

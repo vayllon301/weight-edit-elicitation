@@ -12,11 +12,20 @@
 cd ${0:A:h}/../..
 budget=${1:-6600}
 runs_dir=${HARNESS_RUNS:-code/runs}
+mkdir -p $runs_dir
+zmodload zsh/system
+: >> $runs_dir/.queue.lock
+if ! zsystem flock -t 0 -f queue_fd $runs_dir/.queue.lock; then
+  echo "another queue holds these runs"
+  exit 4
+fi
 status_file=$runs_dir/queue-status.txt
 kill_retries=${QUEUE_KILL_RETRIES:-40}  # with the wait, 20 min; the last event of this kind ran 14 min 41 s
 kill_wait=${QUEUE_KILL_WAIT:-30}
 if [[ -n ${QUEUE_RUNS:-} ]]; then
   runs=(${=QUEUE_RUNS})
+elif [[ ${QUEUE_REPLICATION:-} == 1 ]]; then
+  runs=(L-neutral-3 L-auditor-3 W-auditor-2 L-neutral-4 Hft-auditor-2 L-auditor-4)
 elif [[ ${QUEUE_REVIEWED:-} == 1 ]]; then
   runs=(L-neutral-1 L-auditor-1 W-auditor-1 L-neutral-2 Hft-auditor-1 L-auditor-2)
 else
@@ -25,6 +34,7 @@ fi
 go_on_prefix=
 [[ -n ${QUEUE_RUNS:-} ]] && go_on_prefix="QUEUE_RUNS='$QUEUE_RUNS' "  # the resume line must not widen the run list
 [[ ${QUEUE_REVIEWED:-} == 1 ]] && go_on_prefix+='QUEUE_REVIEWED=1 '
+[[ ${QUEUE_REPLICATION:-} == 1 ]] && go_on_prefix+='QUEUE_REPLICATION=1 '
 
 note() {  # note <exit> <run> <meaning>
   mkdir -p $runs_dir

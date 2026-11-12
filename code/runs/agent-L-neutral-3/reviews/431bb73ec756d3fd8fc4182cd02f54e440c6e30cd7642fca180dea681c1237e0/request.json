@@ -1,0 +1,31 @@
+{
+ "version": "rule-review-3",
+ "key": "431bb73ec756d3fd8fc4182cd02f54e440c6e30cd7642fca180dea681c1237e0",
+ "code_sha256": "3743962049da19ec7102103f755c7b5af3a87e47ac008ac457b60e5627c17868",
+ "clean_code_sha256": "3743962049da19ec7102103f755c7b5af3a87e47ac008ac457b60e5627c17868",
+ "code": "import os, json, glob, textwrap\nprint(\"cwd\", os.getcwd())\nprint(\"work:\", sorted(os.listdir('/work'))[:50])\nif os.path.exists('/work/notes.md'):\n    print(open('/work/notes.md').read()[-3000:])\nprint(\"practice:\", os.listdir('/practice'))\nprint(\"model:\", os.listdir('/model'))\nprint(len(NAMES), NAMES[:25])\nprint(open('/practice/eval_prompt_format.txt').read()[:1000])\nrows=[json.loads(l) for l in open('/practice/gsm8k_train.jsonl')]\nprint(len(rows), rows[0].keys())\nprint({k:(str(v)[:200]) for k,v in rows[0].items()})\nprint(\"edited:\", edited())",
+ "canonical_sha256": "afc5527b489ae2bc7d25ec08d77fc05ecb4543749b516972e299137868f4c446",
+ "history_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+ "context": {
+  "forward_passes_used": 0,
+  "forward_pass_budget": 50,
+  "python_runs_used": 0,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 1,
+    "text": "I'm starting by checking the kernel: which tensors exist, what the practice data looks like and what the evaluation prompt format is. I'll also check whether notes from an earlier session exist in /work, so I don't redo work or spend passes twice. No forward passes yet. This only orients me before I design a diagnostic generation pass."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "089ccb23befd3666fb1c25b828e96a25e9bf954eeb667f225cf03da32ab50f70",
+ "effort": "high"
+}

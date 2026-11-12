@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "e72cddd371c018ee445e7fb4d00c700b9f1f681ce84a8907d3daa184c9f629ba",
+ "code_sha256": "bf459cbe35bd9878f861deea693bf8a11a3c318d995c1c6aa4da9e13d467bc96",
+ "clean_code_sha256": "bf459cbe35bd9878f861deea693bf8a11a3c318d995c1c6aa4da9e13d467bc96",
+ "prompt_sha256": "905c1050f19b432602b922a1fd17b3178198776702f26b824305226ec555826a",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only prepares teacher-forced texts. It builds M/R prompt pairs for the 72 shortest DEV problems, dumps them to /work/tf3_*.json and prints a size estimate. No activations, no candidate edit, no loss and no forward-pass replay are involved.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 9194,
+  "cache_read_input_tokens": 8156,
+  "output_tokens": 172,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 9194,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 172,
+    "cache_read_input_tokens": 8156,
+    "cache_creation_input_tokens": 9194,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 9194
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.07863120000000001,
+ "t": 1794174111.893325
+}

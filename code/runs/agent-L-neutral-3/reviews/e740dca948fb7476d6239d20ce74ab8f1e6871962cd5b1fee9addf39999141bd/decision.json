@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "e740dca948fb7476d6239d20ce74ab8f1e6871962cd5b1fee9addf39999141bd",
+ "code_sha256": "104b7af4f4c49bd27ea0abdab6c0a27804c72562720828f4cfa1516d4f28db38",
+ "clean_code_sha256": "104b7af4f4c49bd27ea0abdab6c0a27804c72562720828f4cfa1516d4f28db38",
+ "prompt_sha256": "a4ab1ed7ebcc83492dfea013ad8ae0a26e8c616954d08288d76e3c141f191fb3",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "tstat(X,m) on mm/ml computes per-neuron differences of means from pass 1's original-model activations, split by cut, opener style and correctness. These statistics find components. No edit exists, no candidate is applied or scored, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 11784,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 478,
+  "output_tokens_details": {
+   "thinking_tokens": 316
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 11784,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 478,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 11784,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 11784
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.10383999999999999,
+ "t": 1794075119.873491
+}

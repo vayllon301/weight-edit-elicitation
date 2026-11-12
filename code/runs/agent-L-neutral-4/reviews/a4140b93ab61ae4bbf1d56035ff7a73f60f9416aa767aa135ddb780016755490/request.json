@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "a4140b93ab61ae4bbf1d56035ff7a73f60f9416aa767aa135ddb780016755490",
+ "code_sha256": "6450cfe5953a2c2047eaab3b3efad83d012286fb0d99c23aeb2f6694e588b7e9",
+ "clean_code_sha256": "6450cfe5953a2c2047eaab3b3efad83d012286fb0d99c23aeb2f6694e588b7e9",
+ "code": "with open('/work/notes.md','a') as f:\n    f.write(\"Pass39 result C(-1.5) both dev_a1 (in-sample building set): -1.56+-1.99 (11 w->r, 15 r->w), cut 28.1->14.1%, wrong finished 130->169. Pool all C(-1.5) paired (holdout1226+dev_b512+dev_a1 256): 121/92 ~ +1.45+-0.75.\\n\"\n            \"Pass 40 (planned): generate BOTH C(-1.5) unchanged on /work/dev_a2.json.\\n\")\nlen(edited())",
+ "canonical_sha256": "8b4f2b8562ff8d98b0b3c002a614e160bb7b4049d48f34c2c99a0dd25e2b6c34",
+ "history_sha256": "35156222a2c95b5704e9833c7cde6adf44b0b768e00523cb18ef520c1f81aaf0",
+ "context": {
+  "forward_passes_used": 39,
+  "forward_pass_budget": 50,
+  "python_runs_used": 140,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "2c837537e927e286e8c5ebf5e2d5d67ffc98461e87866b853c1d8790a8888c98",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 181,
+    "text": "The in-loop line is closed, and the adopted C(\u22121.5) is back in /work/edited, byte-verified. Twelve passes remain. Both loop-state directions are now exhausted: onset (adopted) and in-loop (rejected).\n\nThe resistant loops have near-certain repeated first tokens, so in-loop log-prob is close to 0. That is what copying an earlier line, induction-style, looks like. My notes say \"attention copy heads\" was closed, but I don't remember on what evidence: ablation, dose, or which heads. Before deciding on any further pass, I'll read that part of the notes. If it was closed only by full ablation at one strength, partially weakening the copy heads in the loop context is still untested and could be a justified last line. If it was tested at several strengths, I won't spend more passes on loops."
+   },
+   {
+    "reply": 182,
+    "text": "The copy-head line was closed on evidence from the full-attention layers only. Their heads induct as strongly on novel text as on loops, so they are not loop-specific. The 88 sliding-window heads cannot be inspected with the attention tool, which returns full-attention layers only. Screening them by ablation would cost about one pass per candidate group, and with 12 passes and no prior pointing to particular heads that is a fishing expedition, not a targeted repair. I won't open it.\n\nThe most useful remaining measurement is more paired data on the frozen submission itself. dev_a, the 512 DEV problems used to diagnose loops and build the onset direction, has never been generated with C(\u22121.5). Because the direction was built from it, I'll report the result separately as in-sample, not as confirmation. It is a sanity check: a strongly negative result there would be a warning sign against the HOLDOUT result. I'll first check dev_a's size and split it into two lists of at most 256 for \"both\" passes."
+   },
+   {
+    "reply": 183,
+    "text": "dev_a has 512 problems, with no overlap with HOLDOUT or the other DEV splits. I've split it into dev_a1 and dev_a2 of 256 each. This pass runs the frozen submission C(\u22121.5), unchanged, against the original on dev_a1. The C direction was built from dev_a's loops, so I'll report the result separately as in-sample. A gain consistent with the HOLDOUT +2.2 together with a cut-off drop to about 14% would be consistent with that result. A clearly negative result would be a warning sign about it."
+   },
+   {
+    "reply": 184,
+    "text": "On dev_a1, C(\u22121.5) scores \u22121.56 \u00b1 1.99 (11 wrong\u2192right, 15 right\u2192wrong), even though cut-offs halve (28.1% \u2192 14.1%). Here the freed loops mostly ended in wrong answers: wrong finished answers rose from 130 to 169. Within one standard error this is consistent with zero, and the HOLDOUT gain of +2.2 lies about 1.9 SE away, so it is a mild warning rather than a refutation.\n\nPooling every paired C(\u22121.5) measurement so far gives 121 wrong\u2192right against 92 right\u2192wrong over 1,994 problems: about +1.45 \u00b1 0.75 points. That pool covers HOLDOUT 1,226, dev_b 512 and dev_a1 256. I'll run dev_a2 as planned to complete the sanity check, then report HOLDOUT and the all-sets pool side by side. If dev_a2 is also negative and the overall pool falls below about 1 SE, the evidence for C becomes weak, and I'll weigh submitting the original under the rule I set."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "aa561b8adb0b09c2bc5b577acf8a2809b8d9c3525803933d1fdec38cfa1b1c0b",
+ "effort": "medium"
+}

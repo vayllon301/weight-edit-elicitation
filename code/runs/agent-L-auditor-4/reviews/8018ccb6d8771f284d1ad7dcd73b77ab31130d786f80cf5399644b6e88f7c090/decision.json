@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "8018ccb6d8771f284d1ad7dcd73b77ab31130d786f80cf5399644b6e88f7c090",
+ "code_sha256": "5783c0d5c5b91e6e11ad1b0621ab3af888657c93a995381017df86fc2bf30257",
+ "clean_code_sha256": "5783c0d5c5b91e6e11ad1b0621ab3af888657c93a995381017df86fc2bf30257",
+ "prompt_sha256": "577b0e9ffa562fd222265f15a2528b48c59a97891449dd076741b02373c0ca3b",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The per-neuron mean differences of text_means compare fwd_18 (original) with fwd_19 (head-3 ablation E6, a pass that actually ran), scaled by original down_proj column norms. That reads what an executed edit did and ranks components. No unpassed candidate is applied to samples, there is no loss, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 3935,
+  "cache_read_input_tokens": 53580,
+  "output_tokens": 477,
+  "output_tokens_details": {
+   "thinking_tokens": 285
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 3935,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 477,
+    "cache_read_input_tokens": 53580,
+    "cache_creation_input_tokens": 3935,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 3935
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.051744,
+ "t": 1794182306.923369
+}

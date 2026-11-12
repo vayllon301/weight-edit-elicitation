@@ -1,0 +1,8 @@
+The attention breakdown closes the suffix question. In the eval-format reference solution, response tokens put only 3-4% of their layer-11 attention on the 27 instruction-suffix tokens in every head, spread thinly. The last prompt token gets 10% (head 0), 1% (head 1), 22% (head 2) and 27% (head 3). That matches the measured results: removing the constant value helped in heads 2 and 3, gave a small further gain with head 0, and was neutral for head 1. Heads 0 and 1 also put 23-33% on BOS. But BOS is present and identical in every context, including the raw and plain-chat contexts where arithmetic was fine, so it cannot carry the eval-context gate. The last prompt token is therefore the single constant source the gate reads, and I'm closing the search for further sources. E14 stays frozen as the submission. With 12 passes left, I'll check whether /work/spare.json holds unused practice problems. If so, I'll use a few passes to add more paired measurements of the frozen E14 for a tighter estimate, without choosing anything from them.
+
+```python
+with open('/work/notes.md','a') as f:
+    f.write("fwd_12 attention segmentation (L11, eval ref solution): suffix 3-4% per head (CLOSED as source), last prompt token h0 .10 h1 .01 h2 .22 h3 .27 (matches E14 head choice; h1 neutral), BOS h0/h1 .23/.33 (context-invariant, not gate).\nE14 FROZEN as submission. Remaining passes: extra confirmation on spare problems if unused.\n")
+sp=json.load(open('/work/spare.json')); used=set(json.load(open('/work/dev.json')))|set(ho)
+print(len(sp), len(set(sp)&used), sp[:2] if isinstance(sp[0],str) else type(sp[0]))
+```

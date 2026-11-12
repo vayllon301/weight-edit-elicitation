@@ -1,0 +1,13 @@
+OUTPUT of Python run 34 of at most 300:
+```
+def sol_means(lpx):
+    out={v:[] for v in range(4)}
+    for k,(i,v,pl) in enumerate(info): out[v].append(lpx[k,pl-2:L3[k]-1].mean())
+    return {v:np.array(x) for v,x in out.items()}
+
+0 -1.379 -1.518 diff -0.139 +- 0.009
+1 -1.656 -1.843 diff -0.187 +- 0.012
+2 -1.349 -1.442 diff -0.094 +- 0.007
+3 -1.172 -1.293 diff -0.121 +- 0.008
+
+```

@@ -1,0 +1,5 @@
+E2 and E3 turn out to be close to mirror images, which is what a rebalancing between heads should look like. Raising h0 lowers logprob on result digits (-0.019), `othernum_first` (-0.060) and word tokens (-0.003), and raising h2/h3 improved all three (+0.014, +0.032, +0.003). Top-1 accuracy tells the same story more weakly. So there's a real axis of head share here, and the question is how far it goes. E3b, at ×2.5 on h2 and h3, is saved as the only active edit and the plan is in my notes. This pass uses the same 1,011 texts as passes 7 and 8. A dose effect would show up as result-digit and word gains that grow, while retrieval classes tell me what it costs.
+
+```forward
+{"type": "teacher_forced", "model": "edited", "texts_file": "/work/tf7_texts.json", "return": {"token_logprobs": true, "topk": 5}}
+```

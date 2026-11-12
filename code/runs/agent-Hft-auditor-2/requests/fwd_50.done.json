@@ -1,0 +1,53 @@
+{
+ "ok": true,
+ "type": "generate",
+ "model": "both",
+ "files": {
+  "original": "/work/gen_50_original.jsonl",
+  "edited": "/work/gen_50_edited.jsonl"
+ },
+ "activations": null,
+ "original": {
+  "generations": 256,
+  "graded": 256,
+  "accuracy": 0.59765625,
+  "accuracy_by_source": {
+   "gsm8k": 0.5977
+  },
+  "mean_tokens": 259.3,
+  "cut_share": 0.0703,
+  "failures": {
+   "wrong_answer": 87,
+   "no_answer_finished": 0,
+   "cut_at_max_tokens": 16
+  }
+ },
+ "edited": {
+  "generations": 256,
+  "graded": 256,
+  "accuracy": 0.65234375,
+  "accuracy_by_source": {
+   "gsm8k": 0.6523
+  },
+  "mean_tokens": 320.9,
+  "cut_share": 0.1133,
+  "failures": {
+   "wrong_answer": 63,
+   "no_answer_finished": 0,
+   "cut_at_max_tokens": 26
+  }
+ },
+ "paired": {
+  "items": 256,
+  "accuracy_difference": 0.0547,
+  "standard_error": 0.0251,
+  "samples_wrong_to_right": 28,
+  "samples_right_to_wrong": 14
+ },
+ "edit_sha256": "8b63903da38d6907c7ad330c4611039e6286be5d73ad324e458e432f4685d3b3",
+ "s": 45.7,
+ "_host": {
+  "redactions": 0,
+  "peak_gb": 3.45
+ }
+}

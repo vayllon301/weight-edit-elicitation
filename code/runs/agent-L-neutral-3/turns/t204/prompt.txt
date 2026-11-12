@@ -1,0 +1,44 @@
+OUTPUT of Python run 149 of at most 300:
+```
+ss ~0: gold in last line of wrong finished <=.3%. EXTRACTION LINE CLOSED. Premature finish is a Here-mode trait: short among wrong Here .36, Let .04; median eqs Here 3, Let 8. PREMATURE-FINISH LINE CLOSED for Let, E5 already removes most. Finish confidence no selectivity (n small). Next: loop BREAKING (not stopping) in Let mode.
+Loop characterisation: Let loops 93% exact repeat, onset ~25% through answer, period 1-8, restate earlier lines after dead end. In-loop vs pre-loop neurons: 1145-1613 of 6912 |t|>6, smooth ranking, confounded with confident copying, no isolated component. LOOP-BREAK LINE CLOSED without a pass.
+Run 87 proposal refused by review (no reason given): a screen of later-layer neurons comparing prompt activity with mean answer activity. Do not retry. Use L21 n5695 from the pass 1 note; learn side effects only via forward passes.
+EDIT E10 To-opener two sites (pass 26): L18 down_proj col 2543 (from ORIGINAL) += d18/abar, d18=1.7*Sb*(unit(gxp)-kap*unit(glh)), row To, Sb=1.3255, kap=0.089; L21 down_proj col 5695 (from ORIGINAL) += d21/ab2[5695], d21=1.0*Sb2*unit(gxp2), gain2=(1+w21)(1+wf), Sb2=1.3546, ab2 = mean last-prompt activation pass 1. TF /work/tf13_texts.json topk 5, compare pass 13. Copy /work/cands/e10_to. E5 stays in best_1.
+
+Pass 26 E10 TF: To top 230/1024, Let 657, Here 137, gap -1.49 (q05 -4.38, q95 .75), shift >=10.85, Let-Here drift +1.26. Leak: only token 3 back +1.12.
+EDIT E10b (pass 27): as E10 with L18 mult 2.2 kap 0.089, L21 mult 2.5 with counter term: d21=2.5*Sb2*(unit(gxp2)-kap2*unit(glh2)), kap2=0.071. Generate both on /work/dev_a1.json. Hypothesis: goal-first register beats E5 23.9 by about 3. Copy /work/cands/e10b_to. E5 in best_1.
+
+Pass 27 E10b To two sites on dev_a1: 22.7->18.0, -4.69+-2.70 (18/30), cut 27.0->25.0. To 167/256 (160 'To find'), Let 89. To group: E10b 17.4, orig 20.4, E5 22.8. Kept-Let group n89: E10b 19.1, orig 27.0, E5 25.8 (opener unchanged yet much worse, selected group; possible answer-token damage from strong writes, learn only via passes). Natural Let 30.2->18.0. TO / GOAL-FIRST REGISTER CLOSED, first-line overlap was correlation. E10b dropped.
+
+Free content stratification (runs 93-95, 1250 orig answers, control ref steps, 10 features, selected): decimal -9.8+-2.8, large>=1000 -8.2+-3.1, time -6.1+-1.6, rate -4.5+-1.4, time&rate -8.5+-1.8 (time only -2.4, rate only -.7). True hidden operand (not in text or earlier result, word numbers mapped): n391 acc 12.3 obs-exp -7.9+-1.6; time constants n114 acc 8.8. Answers use constant ~50%, acc|uses only 15-19. Dropped factor: T&R short 6.5 = over 6.5, other 82: DROPPED-FACTOR LINE CLOSED. Difficulty description, no lever yet. Global (1+w) q_norm rescale ruled out as whole-tensor scale in disguise; only head-specific q_proj rows if sharpening is pursued.
+
+Run 98 proposal refused by review (no reason given): per-token vote of attention heads vs model top-1, framed as predicting whether sharpening could help. Do not retry in any form. Learn sharpening effect only by forward pass.
+
+EDIT E11 head sharpen (pass 28): L17 q_proj rows d in head 0 (row index d<256) zeroed for 44 dims with |(1+wq)(1+wk)|<1 (list /work/cands/e11_dead_dims.json). Weights only. Row energy share 0.386, logit energy share 0.0011, estimated head 0 temperature x1.277. Only active edit. TF /work/tf7_texts.json, logprobs, topk 5, compare pass 7. Prediction: fromproblem_first +0.5 or more, dlp>0. Copy /work/cands/e11_h0sharp. E5 stays in best_1. HOLDOUT unused; keep at least 4 passes for it.
+
+Pass 28 E11 L17 h0 sharpen x1.28 TF tf7 vs pass 7: fromproblem_first -0.18+-0.56 dlp -.163+-.015; fromearlier_first -1.50+-.49 dlp -.078; word -.35+-.10; result_later +.51+-.20; +3 +1.67+-1.66; all arith +.15+-.17; mean text lp -.0195+-.0007. PREDICTION REFUTED: sharpness moves confidence, not choice. Weight fact: 44 dead attention dims at L17 hold 38.6% of h0 row energy, .11% logit energy, a usable temperature knob. Flatter dose not run yet. E11 dropped.
+
+FROZEN E5 for HOLDOUT: L18 down_proj col 2543 = original + (0.6/1.5)*E1 delta, file /work/best_1. Passes 29-32: generate both on /work/hold_1..4.json (256,256,256,232, all 1000 HOLDOUT). Read pooled paired gain only, no tuning from it. DEV evidence before seeing HOLDOUT: pooled +1.7+-1.0 on 994. Then 18 passes left for exploration.
+
+HOLDOUT E5 passes 29-32 (1000): orig 20.90, E5 20.50, gain -0.40+-0.98, 46/50. E5 NOT CONFIRMED, does not beat original on HOLDOUT. Edits dropped, /work/edited empty: original is current submission unless a new candidate beats it on HOLDOUT. Do not tune on HOLDOUT, flipped/kept split read for confirmation only.
+
+E5 HOLDOUT confirmation read: flipped n354 -0.56+-2.30 (DEV +5.81+-2.85), kept n646 -0.31+-.85, flipped cut 22.9->30.8; all data +0.65+-.70 is context only. MODE/REGISTER LINE CLOSED FOR GOOD. Lesson: 1-2 pt DEV gains not trustworthy; want well above that.
+EDIT E11b (pass 33): L17 q_proj head 0 rows of the 44 dead dims x1.567 (from ORIGINAL), est head 0 temp x0.8. Only active edit. TF /work/tf7_texts.json, logprobs, topk 5, compare pass 7. Continue only if word and earlier-recall rise by >=2 SE with no class falling. Copy /work/cands/e11b_h0flat. Original is current submission. Keep 4 passes for HOLDOUT of any new candidate.
+
+Pass 33 E11b L17 h0 flatter x0.8 TF tf7 vs pass 7: fromproblem_first -1.90+-.42, fromproblem_later -.76+-.22, word -.23+-.07, arith all -.46+-.21, result_later -.56+-.20, text lp +.0019. Fails rule. Two-sided dose: flatter hurts retrieval, sharper adds nothing, natural at plateau. ATTENTION SHARPNESS L17 h0 CLOSED, causal role of h0 shown. E11b dropped, no active edits, original is current submission.
+
+Pass 34 plan: teacher_forced ORIGINAL, no edits, /work/tf34_texts.json (meta tf34_meta.json): 2 texts, each 2 own cut Let answers with exact token periodicity (mechanical pick, 4 loops), logprobs, topk 3, attn_layers 5,11,17,23. Purpose: does one head lock onto the copy position one period back. Lock-on head would get a removal test in generation (DEV). Spread means no copy circuit, close loops for good. Original is current submission.
+
+Pass 34 attention in 4 exact loops (P 16,45,79,143): copy lock-on heads, attention on next token in earlier repeats: L5h2 .452, L17h3 .401, L17h2 .390, L17h0 .386, L5h3 .314, L11h1 .287; off-target ~.003; prelag .03-.07; L23 none. Overlaps retrieval/operand heads: looping is the normal pointer-copy circuit aimed at own text, not a separate circuit. L5h3 has no known retrieval role, first candidate.
+
+Pass 35 plan: teacher_forced ORIGINAL, no edits, /work/tf35_texts.json (meta tf35_meta.json), 205 periodic own loops + 250 correct + 569 wrong finished DEV answers, logprobs, topk 3. Baseline for loop-escape screen: escape = top1 departs from copied token within first repeat; damage = top1 departs from own correct answer tokens. Candidates next: L5 h3 x0, L5 h2+h3 x0, L11 h1 x0. Original is current submission, keep 4 passes for HOLDOUT.
+
+EDIT E12 (pass 36): L5 o_proj columns 512..1023 (heads 2,3) zeroed, from ORIGINAL, only active edit. TF /work/tf35_texts.json, logprobs, topk 3, compare pass 35 with screen(). Good outcome: loop escape >10 pts above baseline and clearly above divergence on correct answers. Copy /work/cands/e12_l5h23. Original is current submission.
+
+Pass 36 E12 L5 h2+h3 x0 TF tf35: per-token mismatch first repeat 1.71, late loop .40, correct 3.01, wrong 4.21, pre-loop 4.25 (baseline .07,.00,.27,.37,.33). Any-mismatch escape 65.9 is saturation, NOT selective (metric lesson: same units). Copying redundant, loops robust. LOOP-BREAK BY HEAD REMOVAL CLOSED. E12 dropped, copy in cands.
+Next idea: prompt-reading heads during answers (L11h3,L5h1,L11h2,L23 in loops), never boosted. First free: what do they read in pass 34 pre-loop tokens.
+
+Prompt attention split (pass 34 pre-loop): no dedicated problem reader, body attention spread .1-.25 over many heads, L11h3 and L17h1 mostly specials. Gain boost of prompt heads dropped (plateau seen in E2,E3,E11,E11b).
+New hypothesis: balance of reading problem vs own text. L17 h0 ~.41 own text, ~.27 problem. Pass 37 plan: teacher_forced ORIGINAL, no edits, /work/tf37_texts.json (meta tf37_meta.json, 128 correct + 128 wrong own DEV answers), hidden_states 4,10,16, no topk. Purpose: regional mean inputs to buil
+
+```

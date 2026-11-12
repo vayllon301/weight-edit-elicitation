@@ -1,0 +1,55 @@
+OUTPUT of Python run 148 of at most 300:
+```
+te logits per unit alpha.
+
+Pass 13 margins (sign agrees with opener .974). Natural acc U-shaped: m<-2.5 30.3, [-1.5,-.75) 12.8, [-.75,0) 15.4, [0,.75) 18.7, then ~25. dev_s1 causal bins: E1 m<-2 -22.2+-8.0 (0/6), [-2,-1) +5.3+-5.2 (3/1), [-1,0) +4.7+-6.5 (5/3); E4 m in 0..2 -11 to -12. Crossover near m=-2 (POST HOC, must confirm elsewhere). Calibration asymmetric: E1 alpha 1.5 shift > 4.62, E4 alpha -2 shift ~2.6.
+EDIT E5 (pass 14): L18 down_proj column 2543 = original + (0.6/1.5)*E1 delta (alpha +0.6). TF prompts tf13 vs pass 13 to measure the logit shift. Target shift +2. Copy /work/cands/e5_06.
+
+Pass 14 E5 alpha +0.6 TF: margin shift +2.03 at m<-2, +1.92 at [-2,-1), +1.53 at m>2, std .25; boundary near m=-1.9; [-2,-1) 87% Let, m<-2 4.7% Let, no Let->Here flips.
+Pass 15 plan: E5 alpha 0.6 active (L18 down_proj col 2543), generate both on dev_s2 (fresh for this hypothesis; dev_s1 excluded because it suggested the crossover). Prediction: flipped problems gain, about +1.5 to +2 overall.
+
+Pass 15 E5 alpha .6 on dev_s2: 22.3->25.4, +3.12+-1.99, 17/9, cut 24.6->25.4. First positive generation result, fresh problems. Copy /work/best_1.
+Sets for more paired passes: dev_s3=DEV[1024:] (226), dev_a1, dev_a2. Keep E5 active for pass 16 on dev_s3.
+
+Passes 16,17 E5 alpha .6: dev_a1 +1.17+-2.11 (16/13), dev_a2 +0.78+-1.66 (10/8). Pooled with dev_s2 about +1.69+-1.11 on 768. Same edit active.
+
+Pooled E5 on dev_s2+dev_a1+dev_a2 (768): +1.69+-1.11, 43/30, cut 26.7->28.8. Flipped n258 13.2->19.0 +5.81+-2.85 (35/20); kept -0.39+-0.83; no Let->Here. Boundary flipped bin m<-1.5 -4.26+-4.21 (n47), noise, strength stays +0.6.
+Pass 18 plan: E5 alpha .6 active, generate both on dev_s3=DEV[1024:] (226) to finish DEV.
+Idea reopened: third opener (register causal, E4 swing 20 pts acc|fin). Test hand-picked openers via a prompt-end-only write. No HOLDOUT yet.
+
+Pass 18 E5 on dev_s3: +1.77+-2.17 (14/10). All four DEV passes positive; pooled 994: net +17 answers, about +1.7+-1.0. best_1 holds E5 alpha .6.
+
+EDIT E6 We-opener (pass 19): L18 down_proj column 2543 += dy/abar, dy=alpha*T_we*yrms/(1+w), T_we = mean hidden_19 at newlines followed by We minus other newlines (pass 2 own answers, original), alpha=1.207 (|alpha T_we| = 3|T_lh|). TF prompts tf13, topk 5: measure whether We becomes top first token. Copy /work/cands/e6_we. E5 stays in best_1.
+
+Pass 19 E6 TF: We top on 0/1024, Let 1006; We +5.3 lp, Let-Here +2.8. T_we splits: We vs mean(Let,Here) +5.9, Let-Here +2.8. Post-ff RMS caps a single-neuron write near the update norm (~2080 at L18), so scaling T_we is not viable. cos(T_we, We output direction) .18. Direct-path scale (|e|/rms) accounts for E1 and E6 shifts within ~15%: writes act by passing straight through to the output. NOTE name clash: w overwritten in run 59, use w18; E() is the encoder helper, embedding rows are in rows{}.
+EDIT E7 We-opener output-side (pass 20): L18 down_proj column 2543 (from ORIGINAL) += dy/abar, dy=Delta*u*yrms/(1+w18), u=unit (1+wf)*(row We - mean(row Let,row Here)), wf=model.norm.weight, Delta=430 hidden units (hand target ~13 logits). No E5 in this edit. TF /work/tf13_texts.json, topk 5, compare pass 13. Copy /work/cands/e7_we. Next if We wins: generate both on dev_a1. E5 stays in best_1.
+
+E7 as first written NOT RUN (|dy|/|ymean| .785, two low-gain dims held 42%). REPLACED by EDIT E7b (pass 20): L18 down_proj column 2543 (from ORIGINAL) += dy/abar, dy=S*unit(gp), gp=g minus its projection on glh, g=(1+w18)*(1+wf)*(row We - mean(row Let,row Here)), glh=(1+w18)*(1+wf)*(row Let-row Here), S=target*yrms*rms_f/|gp|, target=13 logits, rms_f=428.5, S=1.3979. Rows/norm weights read only. TF /work/tf13_texts.json, topk 5, compare pass 13. Copy /work/cands/e7_we. Next if We wins: generate both on dev_a1. E5 stays in best_1.
+
+Pass 20 E7b TF: We top 0/1024, Let 724, Here 300; We lp -3.37, gap to best natural -3.10 (5%..95% -4.88..-1.64); Let-Here drift +.98+-.29; The +2.3, First +1.9, Okay +1.4. Actual shift >=7 vs target 13. Correction: direct path explains ~55-80% of E1/E6, not 'within 15%' (rms_f is 428, not 276). Leak: only token 3 back (newline after end of turn) +.675 dlp, others ~0.
+EDIT E7c (pass 21): L18 down_proj column 2543 (from ORIGINAL) += dy2/abar, dy2=S2*(unit(gp)-kappa*unit(glh)), S2=2.2*S0=3.0755, kappa=0.161. Generate both on /work/dev_a1.json. Read: share of We openers, accuracy of We answers vs original and vs E5 on same problems (pass 16). Copy /work/cands/e7c_we. E5 stays in best_1. Next openers if the register has merit: First, The, To, Step, same recipe.
+
+Pass 21 E7c on dev_a1: 22.7->21.5, -1.17+-2.57 (20/23), cut 27.0->32.0. 241/256 open 'We are given' (write works as a switch). We group acc: We 22.4, orig 23.2, E5 24.9. Natural Let 32.3->25.0, natural Here 13.7->19.7. Register rank Let>=We>Here; We is not better than Let overall.
+
+E7c analysis: natural-Here flipped by E5: We 21.0 vs Let 19.8 (9/8); m>1 We -8; We adds nothing to E5. WE OPENER CLOSED as candidate. Tool kept: output-side write at n2543 selects any first token (S2=2.2*S0, kappa .161 for We: 94% We). No active edits.
+Pass 22 plan: teacher_forced ORIGINAL, no edits, /work/tf22_texts.json (meta tf22_meta.json): first 102 tf13 prompts + each of 10 openers (First,To,Step,The,Okay,Solution,**,##,1,Given), token_logprobs + topk 3. Purpose: exact first-token logprob and continuation of each opener, to pick reachable openers.
+
+Pass 22 screen done (first-token logprobs of 10 openers on 102 prompts), table in run output.
+
+Screen: gap to best natural Okay -8.0, The -10.4, 1 -10.6, ** -11.0, First -11.2, To -12.6, Given -13.8, Step -14.2, Solution -16.6, ## -18.3. Continuations: First/Okay ',', To ' find', 1 '.', ** '1'/'Step', The ' problem'/' total'.
+EDIT E8 First-opener (pass 23): L18 down_proj column 2543 (from ORIGINAL) += d/abar, d=2.4*Sb*(unit(gxp)-kap*unit(glh)), gxp=gain*(row First-base) minus projection on glh, Sb=13*yrms*rms_f/|gxp|=1.1780, kap=0.191. Generate both on /work/dev_a1.json. Bar: beat E5 23.9 on this set by about 3 points. Copy /work/cands/e8_first. E5 stays in best_1. Queue: Okay, The, To.
+
+Pass 23 E8 First on dev_a1: 22.7->22.3, -0.39+-1.61 (8/9), cut 27.0->28.5. First won only 42/256, Let->Here 10 (counter-write overshoots for First). First group n42: E8 19.0, orig 26.2, E5 23.8 (selected, weak evidence). Register not fairly tested; needs about +2-3 logits, near RMS ceiling, second site if pursued.
+EDIT E9 Okay-opener (pass 24): L18 down_proj column 2543 (from ORIGINAL) += d/abar, d=1.7*Sb*(unit(gxp)-kap*unit(glh)), row Okay, Sb=1.3221, kap=0.089 (kap_rel .10). Generate both on /work/dev_a1.json. Bar: beat E5 23.9 by about 3. Copy /work/cands/e9_okay. E5 stays in best_1. Queue: The.
+
+Pass 24 E9 Okay on dev_a1: 22.7->22.3, -0.39+-2.38 (18/19), cut 27.0->19.9, 198 Okay, style 'Okay, let's break down the problem step-by-step: 1. **...' (list family). Okay group: E9 19.2, orig 20.7, E5 22.2. Natural Let 30.9->16.0 (harmful). Natural Here 13.7->21.4 (E5 ~19.7). Flipped by E5: Okay 18.5 vs Let 19.8 (11/12). m<-2 (n29, POST HOC): orig 24.1, E5 27.6, Okay 37.9.
+Pass 25 plan: E9 unchanged, active. Generate both on /work/dev_k.json (149 problems kept in Here by E5 from dev_s2,dev_a2,dev_s3 plus dev_s1 m<-1.9, dev_a1 excluded). Prediction: Okay gains >=5 pts on these. If near zero or negative, Okay closed. Three-way policy idea (strongly Here to Okay, rest as E5) depends on this. Queue: The.
+dev_k filtered: removed 4 problems with known margin above -1.5, now 145 problems. E9 still active, pass 25 generate both on /work/dev_k.json.
+dev_k final: 136 problems, only Here's under E5 (dev_s2,dev_a2,dev_s3) or dev_s1 m<-1.9. E9 active, pass 25 generate both on /work/dev_k.json.
+
+Pass 25 E9 on dev_k (136 fresh strongly-Here): 24.3->22.1, -2.21+-2.44 (4/7), cut 9.6->12.5. Prediction failed, 37.9 was noise. OKAY AND THREE-WAY POLICY CLOSED. E9 dropped, no active edits. E5 in best_1 still best. All registers tried: Let >= We > Okay ~ Here overall.
+New line: premature finish (28% of wrong finishes have fewer eqs than ref, 10% end on an intermediate). First check selectivity of finish confidence on pass 2 topk (free).
+
+Free analysis (run 81-82, all 1250 original answers): Let answers end 'Final Answer: ...boxed' with marker only .4%, Here use #### 75%. Extraction lo
+
+```

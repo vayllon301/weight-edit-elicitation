@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "427446b4e0da66704702334f3fac897d6d2dd62d9137b1e3cb3eaaa34c9975e2",
+ "code_sha256": "d3445296ed937705aaef178614be24029abfa18e17948dc445ca74ca49d80fb0",
+ "clean_code_sha256": "d3445296ed937705aaef178614be24029abfa18e17948dc445ca74ca49d80fb0",
+ "code": "def style(t):\n    h = t[:300]\n    if '**' in h or re.search(r'^\\s*\\d+\\.\\s', h, re.M): return 'md'\n    return 'plain'\nS = collections.defaultdict(list)\nfor g in G: S[style(g['text'])].append(g)\nres = {k: dict(n=len(v), acc=round(acc(v)[0],3), cut=round(sum(g['cut'] for g in v)/len(v),3),\n               marker=round(sum(g['used_marker'] for g in v)/len(v),3)) for k,v in S.items()}\nres['heads'] = {k: [v[i]['text'][:120].encode('ascii','replace').decode() for i in range(2)] for k,v in S.items()}\nres",
+ "canonical_sha256": "f22a32e6a4b7cbeb5ef0c04566fad7c7d20c8e451d41f14e1ba3c1b80fb8a84f",
+ "history_sha256": "b72206fae28403798a522a26cf560fdf0584b7d6a07ce70b1f0046dd01915c73",
+ "context": {
+  "forward_passes_used": 1,
+  "forward_pass_budget": 50,
+  "python_runs_used": 4,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 3,
+    "text": "The splits are disjoint: 1,024 DEV and 768 HOLDOUT. Now the baseline pass. It generates the original model's answers on dev_a (512 problems), recording residual-stream activations at all layers plus MLP inputs. That will show which failure types dominate (wrong arithmetic or reasoning, missing \"####\" answers, or running past the token limit) and give activation statistics to compare correct and failing answers. I expect accuracy for a model this size to be around 35-50%."
+   },
+   {
+    "reply": 4,
+    "text": "Baseline accuracy is only 22.7%, and 26% of answers (131 of 512) hit the 768-token limit. A cut-off answer is almost always graded wrong, so that is a large, specific failure mode. The other 265 failures are finished wrong answers. I'll read samples of cut answers to see whether they are repetition loops (a degenerate mechanism I can target) or just long but valid reasoning. I'll also check marker usage and token lengths of the correct and wrong groups. If the cut texts loop on the same line, a repetition or degeneration mechanism is the first candidate to localize."
+   },
+   {
+    "reply": 5,
+    "text": "Two clear failure modes appear. Cut answers are degenerate loops: only 55% of their last 40 lines are distinct, versus 99.5% for finished answers. The model also ignores the required \"####\" marker in 72% of answers, so grading falls back to the last number in the text. Next I'll check whether marker use correlates with correctness, and read endings of finished wrong answers, to see if the fallback picks the wrong number. I'll also measure how early the loops start. If answers without the marker are often wrong because their last number isn't the final answer, then instruction-following on the final format is a mechanism to target. If they are wrong because the computation is wrong, the format matters less."
+   },
+   {
+    "reply": 6,
+    "text": "Format is not the problem: answers without \"####\" end with \"Final Answer: \\boxed{...}\", which the grader reads correctly. Those answers are actually more accurate (36%) than marker answers (21%). The failures are wrong reasoning and the loops. There seem to be two distinct response styles. One is a terse LaTeX \"$...$\" style ending in a boxed answer. The other is a markdown style with numbered bold steps (\"**Calculate...:**\") ending in \"####\", and the loop tails look like that style. I'll classify every answer by style from its opening and compare cut rate and accuracy per style. If the markdown style accounts for most cut-offs and lower accuracy, then the style choice, made at the first answer tokens, is a concrete, localizable decision point I could steer."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "6f73c97cc2064ffa521239f419f2907ce482ef90d18d6f74e672f220334c0234",
+ "effort": "medium"
+}

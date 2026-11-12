@@ -1,0 +1,26 @@
+OUTPUT of Python run 154 of at most 300:
+```
+import numpy as np, torch, json, shutil, os
+with open('/work/notes.md', 'a') as f:
+    f.write("Pass 17 result: S3 (L11h3 o_proj x0.2) on DEV[1024:1250] = +18.6 +- 3.1 (49 w->r, 7 r->w), acc 18.6->37.2, cuts 28%->6.6%, mean tok 346->209. BRAKE = L11 hea
+os.makedirs('/work/best_S3_x0.2', exist_ok=True)
+for fn in os.listdir('/work/edited'): shutil.copy(os.path.join('/work/edited', fn), '/work/best_S3_x0.2/')
+O = load_original('model.layers.11.self_attn.o_proj.weight').float()
+V = load_original('model.layers.11.self_attn.v_proj.weight').float()
+win = load_original('model.layers.11.input_layernorm.weight').float()
+D1 = torch.tensor(np.load('/work/D1_dir.npy')).float(); D1 = D1 / D1.norm()
+Hlp = np.asarray(np.load('/work/gen_1_acts/hidden_last_prompt.npy', mmap_mode='r')[:, 10, :], dtype=np.float32)
+mlp = torch.tensor(Hlp.mean(0)); mlp_n = mlp / mlp.norm()
+massive = [33, 367, 768, 835, 859, 890, 941, 1038, 1081, 1086, 1125, 412]
+for h in range(4):
+    B = O[:, h*256:(h+1)*256]
+    sb = torch.linalg.svdvals(B)
+    OV = B @ (V * (1 + win)[None, :])          # input-norm scale folded on the read side
+    U_, S_, Vt_ = torch.linalg.svd(OV, full_matrices=False)
+    u0, v0 = U_[:, 0], Vt_[0]
+    print(f"h{h}: block sv {sb[0]:.2f} {sb[1]:.2f} {sb[2]:.2f} {sb[3]:.2f} (S0/S1 {sb[0]/sb[1]:.2f}) | OV sv {S_[0]:.0f} {S_[1]:.0f} {S_[2]:.0f} (S0/S1 {S_[0]/S_[1]:.2f})
+          f"write dir massive share {(u0[massive]**2).sum():.2f}, read dir: massive {(v0[massive]**2).sum():.2f} cos(D1) {float(v0@D1):+.2f} cos(mean lastprompt) {float(v
+hidden_last_prompt.npy (512, 27, 1152) float16
+hidden_mean_answer.npy (512, 27, 1152) float16
+
+```

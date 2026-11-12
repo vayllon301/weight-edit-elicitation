@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "1ba698d9f2c7bf96045ff2278fc2c3f0497a351b045ecc305f7c843e7735f622",
+ "code_sha256": "1517617284fffee70388daf65699bde7b19a19a3659c8c078176ef64e65f4e50",
+ "clean_code_sha256": "1517617284fffee70388daf65699bde7b19a19a3659c8c078176ef64e65f4e50",
+ "prompt_sha256": "aaf37bb9aa601a5ddb15d436c45908131ceaa8a56d7122033012309533b2a0f2",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block applies the rank-1 removal B(I - vh vh^T) to head-1 columns of the passed E14 tensor. vh is the saved value of a mean hidden-state statistic (block 121), and strength 1 was chosen by forward passes. It saves the edit and computes per-head weight-difference norms. It does not apply any edit to stored per-sample activations.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 5028,
+  "cache_read_input_tokens": 63301,
+  "output_tokens": 386,
+  "output_tokens_details": {
+   "thinking_tokens": 187
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5028,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 386,
+    "cache_read_input_tokens": 63301,
+    "cache_creation_input_tokens": 5028,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 5028
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.060612200000000005,
+ "t": 1794183556.66815
+}

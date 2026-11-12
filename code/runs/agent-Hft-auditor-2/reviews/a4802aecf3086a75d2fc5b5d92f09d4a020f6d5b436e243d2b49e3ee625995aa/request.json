@@ -1,0 +1,66 @@
+{
+ "version": "rule-review-3",
+ "key": "a4802aecf3086a75d2fc5b5d92f09d4a020f6d5b436e243d2b49e3ee625995aa",
+ "code_sha256": "3723baf5d05188109114be14941a280a939adbb178420888033a034c1a355f97",
+ "clean_code_sha256": "3723baf5d05188109114be14941a280a939adbb178420888033a034c1a355f97",
+ "code": "Eu=E/np.linalg.norm(E)\nX={}\nfor l,fn in [(16,'/work/fwd_10/hidden_16.npy'),(17,'/work/fwd_11/hidden_17.npy'),(18,'/work/fwd_10/hidden_18.npy')]:\n    h=np.load(fn,mmap_mode='r'); Z=np.stack([np.asarray(h[k,dp[k]],dtype=np.float32) for k in range(len(L10))]); Z[:,[1038,1125]]=0\n    X[l]=Z\nproj={l:round(float((X[l][labs==1].mean(0)-X[l][labs==0].mean(0))@Eu),2) for l in X}\nres={}\nfor L in (16,17):\n    m=np.load(f'/work/fwd_11/mlp_act_{L}.npy',mmap_mode='r')\n    A=np.stack([np.asarray(m[k,dp[k]],dtype=np.float32) for k in range(len(L10))])\n    np.save(f'/work/how_act_{L}.npy',A)\n    a1,a0=A[labs==1],A[labs==0]\n    dd=(a1.mean(0)-a0.mean(0))/np.sqrt(0.5*(a1.var(0)+a0.var(0))+1e-6)\n    W=load_original(f'model.layers.{L}.mlp.down_proj.weight').numpy()\n    cs=(W.T@Eu)/(np.linalg.norm(W,axis=0)+1e-9)\n    top=np.argsort(-np.abs(dd))[:8]; topc=np.argsort(-cs)[:6]\n    res[L]={'by_sel':[(int(n),round(float(dd[n]),2),round(float(a1[:,n].mean()),2),round(float(a0[:,n].mean()),2),round(float(cs[n]),2)) for n in top],\n            'by_cos':[(int(n),round(float(cs[n]),2),round(float(dd[n]),2),round(float(a1[:,n].mean()),2)) for n in topc]}\nproj, res",
+ "canonical_sha256": "fd056a0ce41788160777d2a47c6747e75f18fc5a590ee4b7ad3308321b59896f",
+ "history_sha256": "fa4ff453f14076cc2124a6a1a73a4dd6bc20eda5ed28bd55731eba8811774c8e",
+ "context": {
+  "forward_passes_used": 11,
+  "forward_pass_budget": 50,
+  "python_runs_used": 86,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "0fb710e3839aa675e192b2339f27581202700c27404de692c90054cb55080177",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "for l,n in [(16,180),(16,3729),(17,3621)]:\n    Dl=load_original(f'model.layers.{l}.mlp.down_proj.weight').numpy()\n    cd=float(d@Dl[:,n]/np.linalg.norm(Dl[:,n]))\n    a=ML[:,l,n].astype(np.float32)\n    print(l,n,'cos(col,d)',round(cd,3),'abs write along d reg0',round(float(a[reg==0].mean()*cd),3),'reg1',round(float(a[reg==1].mean()*cd),3))",
+    "canonical_sha256": "b055fdffe254c8c1a39d14295740e40814857834e7e21de030a934d77c27a9c3",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "with open('/work/notes.md','a') as f:\n    f.write(\"\\nAnswer-writing sabotage CLOSED: pred==last body number 272/281 wrong; gold in text 45/281 (incidental).\\nNext: rank R0-pushing neurons L12-20 (actdiff R0-R1 x gain-scaled col proj on regime dir) for ablation.\\n\")\nout={}\nallsc=[]\nfor L in range(12,21):\n    h=np.asarray(H1[:,L+1,:],dtype=np.float32).copy(); h[:,[1038,1125]]=0\n    d=h[regs==1].mean(0)-h[regs==0].mean(0); u=d/np.linalg.norm(d)\n    W=load_original(f'model.layers.{L}.mlp.down_proj.weight').numpy()\n    g=1+load_original(f'model.layers.{L}.post_feedforward_layernorm.weight').numpy()\n    p=((W*g[:,None]).T@u)            # per neuron\n    a=np.asarray(M1[:,L,:],dtype=np.float32)\n    ad=a[regs==0].mean(0)-a[regs==1].mean(0)\n    sc=ad*p                          # negative = drives toward R0 differentially\n    o=np.argsort(sc)[:5]\n    out[L]=[(int(n),round(float(sc[n]),2),round(float(a[regs==0,n].mean()),2),round(float(a[regs==1,n].mean()),2)) for n in o]\n    allsc.append((L,sc))\ntot={L:(round(float(sc[sc<0].sum()),1),round(float(np.sort(sc)[:10].sum()/sc[sc<0].sum()),2)) for L,sc in allsc}\nout, tot",
+    "canonical_sha256": "292158a6f9eb5add9b71ffd2ec5f447d7fc1e84d8b78fb32972b1439ba6cd1bc",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 97,
+    "text": "After deduplicating by problem, there are 74 cut answers whose first \"However\" comes before loop onset, against 150 controls. The longest text is 833 tokens, so 9 hidden-state layers fit well under the array limit.\n\nI'm running the original model teacher-forced on these 224 texts, reading residual states at layers 10\u201326 (even) and top-20 logits. If the \"However\" decision has a localized source, the cut-versus-control difference at the decision newline should project increasingly onto the \"However\" token row from some specific layer onward. That layer is where I'd look for driver neurons or heads next."
+   },
+   {
+    "reply": 98,
+    "text": "The pass returned the original's states at the decision newline for 74 cut and 150 control texts. (The mean log-probabilities in the summary include prompt tokens, so they are not informative.)\n\nI'll first confirm the decision itself. I'll check the log-probability of \"However\" where it actually occurs in cut texts, and how much probability the controls give it, using the top-20 list.\n\nThen, for each layer, I'll take the cut-minus-control mean residual at the decision position (massive dims zeroed). I'll measure its cosine with the \"However\" embedding row and its size relative to the typical state norm. The layer where alignment with \"However\" jumps is where the doubt token gets written, and that is where I'll look for driver components."
+   },
+   {
+    "reply": 99,
+    "text": "The doubt token is a confident decision. At the cut-answer decision points the model gives \"However\" a mean probability of 0.79 (median 0.83), while at control newlines it never appears in the top 20.\n\nThe cut-minus-control residual difference aligns with the \"However\" embedding at about 0.14 up to layer 16. The cosine then jumps to 0.31 after layer 18 and peaks at 0.36 after layer 20. So the token is written mainly by model.layers.16 and model.layers.17. Layer 17 is a full-attention layer, which fits the \"we are given that...\" re-reading of the problem.\n\nThe next pass reads MLP activations at layers 16 and 17 and the hidden state after layer 17 on the same 224 texts. With states after layers 16, 17 and 18, I can split the jump between the two layers. I can also see which MLP neurons fire selectively at the doubt decision, and whether their down_proj columns write toward \"However\".\n\nIf one or a few neurons are both selective and aligned, they are ablation candidates for the loop reflex. If the jump is in layer 17's update and no MLP neuron accounts for it, the attention head is the target."
+   },
+   {
+    "reply": 100,
+    "text": "Pass 11 returned the hidden state after model.layers.16 and the MLP activations of layers 16 and 17 at the same decision positions.\n\nFirst I'll locate the jump. I'll project the cut-minus-control mean residual onto the unit \"However\" embedding after layers 16, 17 and 18 (files hidden_16, hidden_17, hidden_18). That shows whether model.layers.16 or model.layers.17 adds the alignment.\n\nSecond, for each MLP neuron in those two layers, I'll compute two separate statistics, the same kind the reviewer accepted earlier:\n- the standardized cut-minus-control activation difference at the decision position (Cohen's d);\n- the cosine of its down_proj column with the \"However\" embedding.\n\nI'll list the top neurons by selectivity together with their column cosines, and separately the most \"However\"-aligned columns with their selectivity."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "c7ec4613574dfb7d3fe35b3dbfb08a29d9640ac4c77089346bf881d7be958d88",
+ "effort": "medium"
+}

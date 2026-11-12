@@ -1,0 +1,19 @@
+OUTPUT of Python run 130 of at most 300:
+```
+def stats(fw):
+    """per-token logprob and top-digit-correct; words use top1 agreement"""
+    n=len(CL); lp=np.zeros(n);good=np.zeros(n,bool)
+    tl_=np.asarray(fw['tl']);ti_=np.asarray(fw['ti'])
+    ids_=np.asarray(fw['ii'])
+    for k,(i,x,c) in enumerate(CL):
+        lp[k]=tl_[i,x-1]
+        tops=ti_[i,x-1]
+        if c=='word': good[k]=tops[0]==ids_[i,x]
+        else:
+            dg=[int(a) for a in tops if int(a) in DIG]
+            good[k]=bool(dg) and dg[0]==ids_[i,x]
+    return lp,good
+
+CL sample [(0, 69, 'word'), (0, 70, 'word'), (0, 71, 'word')] n 42749
+
+```

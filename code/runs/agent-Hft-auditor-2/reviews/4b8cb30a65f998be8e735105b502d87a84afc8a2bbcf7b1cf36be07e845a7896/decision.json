@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "4b8cb30a65f998be8e735105b502d87a84afc8a2bbcf7b1cf36be07e845a7896",
+ "code_sha256": "9e6e78980e183d3c59159203325d1fbd2c41f215ee8187eb0dbafdd9a99e48f4",
+ "clean_code_sha256": "9e6e78980e183d3c59159203325d1fbd2c41f215ee8187eb0dbafdd9a99e48f4",
+ "prompt_sha256": "787124d45c32aa0f172a8172dd587e7e6ff6b001564471bec53c4d1a5e0a1330",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only appends notes to /work/notes.md: the pass 26 result read from a real forward pass of E6, plus the pass 27 plan. It builds, selects, simulates or saves nothing, so it consumes no parameter chosen by forbidden simulation and replays no model stage.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 9852,
+  "cache_read_input_tokens": 51117,
+  "output_tokens": 401,
+  "output_tokens_details": {
+   "thinking_tokens": 230
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 9852,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 401,
+    "cache_read_input_tokens": 51117,
+    "cache_creation_input_tokens": 9852,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 9852
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0970674,
+ "t": 1794177271.038442
+}

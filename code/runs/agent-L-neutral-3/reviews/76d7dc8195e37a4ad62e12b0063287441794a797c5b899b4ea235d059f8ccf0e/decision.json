@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "76d7dc8195e37a4ad62e12b0063287441794a797c5b899b4ea235d059f8ccf0e",
+ "code_sha256": "b80f6f15ec1ae8c857cc51e2ee989ba9ab97185ef6ac3f4955e4c7f7dfd17a99",
+ "clean_code_sha256": "b80f6f15ec1ae8c857cc51e2ee989ba9ab97185ef6ac3f4955e4c7f7dfd17a99",
+ "prompt_sha256": "f7febb11b8f6e7ae76b6a4314d31bf4e1ab1feda7612de18e1abb7b25c2b062d",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "compare7('/work/fwd_38/') and the mean_token_logprob difference only read stored logprobs and top-k outputs of pass 38, which ran the current edit, against original pass 7. No candidate is applied to stored activations, no model stage is replayed, and nothing is selected or saved here.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 134902,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 691,
+  "output_tokens_details": {
+   "thinking_tokens": 516
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 134902,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 691,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 134902,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 134902
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 1.093044,
+ "t": 1794083258.560396
+}

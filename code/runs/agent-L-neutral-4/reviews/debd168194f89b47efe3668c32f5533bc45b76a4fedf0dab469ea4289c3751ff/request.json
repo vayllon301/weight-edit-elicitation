@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "debd168194f89b47efe3668c32f5533bc45b76a4fedf0dab469ea4289c3751ff",
+ "code_sha256": "7b2a7e17ddb7a2ffce54a27dc5edc1a5232f0d0ddd492d04504cba5b93022f78",
+ "clean_code_sha256": "7b2a7e17ddb7a2ffce54a27dc5edc1a5232f0d0ddd492d04504cba5b93022f78",
+ "code": "M = np.load('/work/gen_1_acts/mlp_mean_answer.npy', mmap_mode='r')\nMP = np.load('/work/gen_1_acts/mlp_last_prompt.npy', mmap_mode='r')\ncands=[]\nfm=~ycut\nfor l in range(26):\n    X=M[:,l,:].astype(np.float32)\n    mc, mf = X[ycut].mean(0), X[fm].mean(0)\n    sd = X.std(0)+1e-6\n    z=(mc-mf)/sd\n    # wrong vs correct among finished\n    zc=(X[fm&~ycor].mean(0)-X[fm&ycor].mean(0))/sd\n    XP=MP[:,l,:].astype(np.float32)\n    for j in np.argsort(-np.abs(z))[:4]:\n        cands.append(dict(l=l,n=int(j),z=round(float(z[j]),2),mean_cut=round(float(mc[j]),3),mean_fin=round(float(mf[j]),3),\n                          z_wrong_vs_cor=round(float(zc[j]),2), prompt_mean=round(float(XP[:,j].mean()),3)))\ndf=pd.DataFrame(cands); df.sort_values('z',key=abs,ascending=False).head(30).to_string()",
+ "canonical_sha256": "a6c9c4e29e0efe01f43b4a210857ef1e8f2bb93b9b4a0a9cfe1df50d3253a00c",
+ "history_sha256": "c273beae1887606fd4218be91cc48a6449cbb6e6eebbfb5f1216ec88855ed748",
+ "context": {
+  "forward_passes_used": 1,
+  "forward_pass_budget": 50,
+  "python_runs_used": 10,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 9,
+    "text": "Many of these \"errors\" are parsing artifacts. For example, \"14 + 3 + 1.5 = 17.5\" was read as \"3+1.5=17.5\", because the regex caught the tail of a chained expression. I'll tighten the parser so the first operand must not be preceded by an operator or a parenthesis, then recount. That gives an honest arithmetic error rate. If errors in single binary operations are still common, especially multiplication and division, arithmetic is worth targeting. If they are rare, it isn't."
+   },
+   {
+    "reply": 10,
+    "text": "Arithmetic is not the problem. With the stricter parser, only 4 of 116 correct answers and 11 of 265 wrong finished answers contain a wrong binary operation (some of those still look like artifacts). Finished wrong answers are setup and reasoning errors that I can't easily pin to a component. The degenerate loops are the most specific mechanism: 26% of answers, almost all graded wrong. To judge what fixing loops could gain, I'll check how often a cut answer already contains the gold number before it starts looping. I'll also measure where the loop begins: the first line that later recurs at least three times. If gold often appears before the loop starts, preventing loops could recover real accuracy. If not, loop repair would mostly turn cut answers into wrong finished ones."
+   },
+   {
+    "reply": 11,
+    "text": "Loops start early: the median onset is 16% of the way into the text. Only 27 of 133 cut answers contain the gold number before their loop, and loops were detected by my line-repeat test in 89 of 133. So stopping loops alone has a modest ceiling: at most around 5 points if those answers then finished correctly. Fixing loops could still help indirectly if the same mechanism also derails finished answers. Next I'll look at the residual stream for a \"looping\" direction. Per layer, I'll compute the difference of mean answer-averaged states between cut and finished answers, how well that difference separates the groups (projection AUC), and whether the same direction is already present at the last prompt token. Strong separation in answer means but not at the prompt would point to a loop state arising during generation, a candidate mechanism for causal testing. Strong separation already at the prompt would point mostly to problem difficulty."
+   },
+   {
+    "reply": 12,
+    "text": "The loop state is not set up at the prompt. At every layer, the cut-vs-finished direction from answer averages has AUC around 0.5 at the last prompt token, but separates the answer averages almost perfectly (AUC 0.97-1.0 from layer 5 on, in-sample). So it arises during generation. It is also partly aligned with the wrong-vs-correct direction among finished answers (cosine -0.56 at layer 9 and -0.43 at layer 15). A whole-residual direction is easily confounded by answer length and content, though. A more specific hypothesis comes from published work on \"repetition neurons\": individual MLP neurons whose activation grows as text repeats, and whose ablation reduces repetition. I'll rank neurons in every layer by the standardized difference in answer-averaged activation between cut and finished answers. I'll check that the top ones are quiet at the last prompt token and also differ between wrong and correct finished answers. A few neurons with very large effects, concentrated in some layers, would be good candidates to test causally by ablation at several strengths."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "164f47e30fe2b1891fbec3d67e8d8e2391e7075cb1e265d60c23a3cc2e31ba89",
+ "effort": "medium"
+}

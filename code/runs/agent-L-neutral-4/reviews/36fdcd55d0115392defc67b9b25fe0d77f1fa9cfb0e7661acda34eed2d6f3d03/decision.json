@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "36fdcd55d0115392defc67b9b25fe0d77f1fa9cfb0e7661acda34eed2d6f3d03",
+ "code_sha256": "eff28e822899ca8d48af8ab8020916f55f067894357fde227198e5592bd44a88",
+ "clean_code_sha256": "eff28e822899ca8d48af8ab8020916f55f067894357fde227198e5592bd44a88",
+ "prompt_sha256": "a448effedbe1d2d202aaaaec69748d63ddb7a79283d08134a3acc221fe4f9f60",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block computes cosines between the pass-8 original-model mean-difference directions, then a weight-only statistic: the norm of (d20*(1+postnorm))@W for each o_proj/down_proj, relative to random directions. That finds components. No candidate or planned edit is applied to per-sample activations, no model stage is replayed, and no parameter from a forbidden selection is used.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 5511,
+  "cache_read_input_tokens": 22238,
+  "output_tokens": 444,
+  "output_tokens_details": {
+   "thinking_tokens": 239
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5511,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 444,
+    "cache_read_input_tokens": 22238,
+    "cache_creation_input_tokens": 5511,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 5511
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.057423600000000005,
+ "t": 1794168653.3477361
+}

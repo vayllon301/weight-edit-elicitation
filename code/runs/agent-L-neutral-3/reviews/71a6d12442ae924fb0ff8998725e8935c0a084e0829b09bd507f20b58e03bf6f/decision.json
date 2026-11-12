@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "71a6d12442ae924fb0ff8998725e8935c0a084e0829b09bd507f20b58e03bf6f",
+ "code_sha256": "e81b95ba2eb025e6bf1be2c767ebecf492212c77dee4ab1f798284edb11084ef",
+ "clean_code_sha256": "e81b95ba2eb025e6bf1be2c767ebecf492212c77dee4ab1f798284edb11084ef",
+ "prompt_sha256": "b7b12ec38cb89750a3a00f3f3f3caf388c7493f87a09ab49feaf0c7877dd9d7f",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block is text-only regex analysis of generated answers (recs from gen_*.jsonl), using SUM and val from block 126 to count wrong multi-term sums and accuracy groups. It loads no activations or weights, applies no edit, and replays no model stage.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 144787,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 163,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 144787,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 163,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 144787,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 144787
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 1.161564,
+ "t": 1794092429.846934
+}

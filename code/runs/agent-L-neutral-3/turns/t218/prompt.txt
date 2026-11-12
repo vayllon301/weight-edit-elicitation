@@ -1,0 +1,39 @@
+OUTPUT of Python run 161 of at most 300:
+```
+stats:
+def stats(fw):
+    """per-token logprob and top-digit-correct; words use top1 agreement"""
+    n=len(CL); lp=np.zeros(n);good=np.zeros(n,bool)
+    tl_=np.asarray(fw['tl']);ti_=np.asarray(fw['ti'])
+    ids_=np.asarray(fw['ii'])
+    for k,(i,x,c) in enumerate(CL):
+        lp[k]=tl_[i,x-1]
+        tops=ti_[i,x-1]
+        if c=='word': good[k]=tops[0]==ids_[i,x]
+        else:
+            dg=[int(a) for a in tops if int(a) in DIG]
+            good[k]=bool(dg) and dg[0]==ids_[i,x]
+    return lp,good
+
+load_fwd:
+def load_fwd(d):
+    return dict(ii=np.load(d+'input_ids.npy',mmap_mode='r'),tl=np.load(d+'token_logprobs.npy',mmap_mode='r'),tp=np.load(d+'topk_logprobs.npy',mmap_mode='r'),ti=np.load(d+'topk_ids.npy',mmap_mode='r'))
+
+CL assigned in blocks: [23, 29]
+tm_save=tm
+m7ref=[t for t in m7]
+class_tm=m7
+tm=m7  # classify on tf7 references (first 450 texts)
+base7=load_fwd('/work/fwd_7/')
+CL=classify(tm,base7)
+def compare7(dB,dA='/work/fwd_7/'):
+    A_=load_fwd(dA);B_=load_fwd(dB)
+    la,ga=stats(A_);lb,gb=stats(B_)
+    tx=np.array([c[0] for c in CL]);cl=np.array([c[2] for c in CL])
+    print('class n acc_A acc_B dacc(pts) se dlp se')
+    for c in sorted(set(cl)):
+        m=cl==c;d=(lb-la)[m];g=(gb.astype(float)-ga.astype(float))[m];t_=tx[m]
+        S=pd.DataFrame({'t':t_,'d':d,'g':g}).groupby('t').sum();k=len(S);nn=m.sum()
+        print(f'{c:20s} {nn:6d} {ga[m].mean():.4f} {gb[m].mean():.4f} {100*g.mean():+.2f} {100*S["g"].std()*np.sqrt(k)/nn:.2f} {d.mean():+.4f} {S["d"].std()
+
+```

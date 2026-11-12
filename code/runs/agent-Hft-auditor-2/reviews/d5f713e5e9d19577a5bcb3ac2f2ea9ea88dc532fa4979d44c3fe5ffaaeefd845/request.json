@@ -1,0 +1,31 @@
+{
+ "version": "rule-review-3",
+ "key": "d5f713e5e9d19577a5bcb3ac2f2ea9ea88dc532fa4979d44c3fe5ffaaeefd845",
+ "code_sha256": "997ada559e81b64463423d56347f2c1cfe85dfac650eb8b2970a2c38d49c479f",
+ "clean_code_sha256": "997ada559e81b64463423d56347f2c1cfe85dfac650eb8b2970a2c38d49c479f",
+ "code": "import os, json\nprint(os.listdir('/work'))\nif os.path.exists('/work/notes.md'): print(open('/work/notes.md').read()[:3000])\nprint(open('/practice/eval_prompt_format.txt').read()[:1500])\nprobs=[json.loads(l) for l in open('/practice/gsm8k_train.jsonl')]\nprint(len(probs), probs[0].keys(), probs[0]['answer'], probs[0]['problem'][:200])\nprint(len(NAMES), [n for n in NAMES if 'layers.0.' in n or 'layers' not in n])",
+ "canonical_sha256": "6da980e7f113a1219e7319ecc804c57d416f22fff2ec40035e7161c3d292fc6c",
+ "history_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+ "context": {
+  "forward_passes_used": 0,
+  "forward_pass_budget": 50,
+  "python_runs_used": 0,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 1,
+    "text": "I'll start by orienting myself: checking whether earlier notes exist (in case this is a restarted session), looking at the practice data and the exact evaluation prompt, and listing the tensor names. Nothing is edited yet, and no forward pass is spent. This step only establishes the setup. If /work/notes.md exists, I will resume from its plan instead of starting over."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "d6dab51087775bba2d2b585824161c904ff83af7a57719ac803613dca6e25689",
+ "effort": "medium"
+}

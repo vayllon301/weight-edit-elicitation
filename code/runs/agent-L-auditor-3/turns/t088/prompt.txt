@@ -1,0 +1,84 @@
+OUTPUT of Python run 79 of at most 300:
+```
+archived files: 52 example: ['model.layers.0.mlp.down_proj.weight.npy', 'model.layers.0.self_attn.o_proj.weight.npy']
+dropped 52 -> edited now 0 | /work/edited files: 0
+1:import os, json, glob
+2:import numpy as np, torch
+3:dev512a = DEV[:512]
+4:gen = [json.loads(l) for l in open('/work/gen_1.jsonl')]
+5:wrong = [x for x in gen if not x['correct'] and not x['cut']]
+6:for g in cut[:4]:
+7:res=[]
+8:A = np.load('/work/gen_1_acts/mlp_last_prompt.npy', mmap_mode='r')
+9:P = {p['id']:p for p in probs}
+10:sv=[]
+11:fmt = open('/practice/eval_prompt_format.txt').read()
+12:nonmath = [r.format(t=t) for t in topics for r in reqs]
+13:fm = json.load(open('/work/fwd_2/meta.json'))
+14:def topdims(v,k=6):
+15:MASS=[1038,367,33,350,890]
+16:cand={}
+17:v0s={}
+18:# 1) tokens with highest projection on v0 at layer-10 input in the tf1
+19:def conc(Wu):  # Wu: units x dim
+20:for l in [10,11,12]:
+21:def build_E2(layers=(10,11,12), thr=0.3, frac=1.0):
+22:drop_edit('model.layers.10.mlp.up_proj.weight'); drop_edit('model.laye
+23:E2rows = {int(k):set(v) for k,v in json.load(open('/work/E2_rows.json'
+24:rows=[]; odirs={}
+25:rows=[]
+26:sumvec={}
+27:def has_gold(g):
+28:import re
+29:tl = np.load('/work/fwd_4/token_logprobs.npy', mmap_mode='r')
+30:def pair_scan(Wu, thr=0.5):
+31:l=10
+32:rows=[]
+33:rows=[]
+34:from sklearn.metrics import roc_auc_score
+35:dm = {}
+36:ids4 = np.load('/work/fwd_4/input_ids.npy', mmap_mode='r')
+37:import json, numpy as np, collections
+38:import numpy as np
+39:import numpy as np
+40:import numpy as np, scipy.stats as st
+41:import glob, json, re
+42:import glob, json, re
+43:import json, os, numpy as np
+44:import json, numpy as np
+45:import numpy as np
+46:import numpy as np
+47:import numpy as np
+48:import numpy as np, torch, json
+49:import json, numpy as np
+50:import json, numpy as np, re
+51:import numpy as np
+52:import json, numpy as np
+53:import json, numpy as np
+54:import json, numpy as np
+55:import numpy as np
+56:import json, numpy as np
+57:k5=gidx['G5'][0]
+58:import numpy as np, json, re
+59:import json, numpy as np, re
+60:import json, numpy as np, re
+61:cm=[r_ for r_ in R_ if style(r_['text'])=='md' and r_['cut'] and not r
+62:import json
+63:import json, numpy as np, re
+64:import numpy as np, json
+65:import numpy as np
+66:from collections import Counter
+67:import json
+68:import numpy as np
+69:import numpy as np
+70:import numpy as np
+71:import re, numpy as np
+72:import numpy as np
+73:import os, glob, json, re
+74:for n in (63,64):
+75:order=['copied_first','result_first','othernew_first','digit_cont','wo
+76:import json, numpy as np
+77:import re, json, numpy as np
+78:pre_op=re.compile(r'(\+|-|\*|x|\\times|\\cdot|/|\\div|\u00d7|\u00f7|\(
+
+```

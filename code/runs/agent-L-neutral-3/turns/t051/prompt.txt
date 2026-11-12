@@ -1,0 +1,34 @@
+OUTPUT of Python run 37 of at most 300:
+```
+Let n 432 acc 22.2 cut 32.2 acc|fin 31.7
+Here n 336 acc 17.0 cut 20.5 acc|fin 20.6
+
+cut Let 139 onset line median 8.0 quartiles [ 6. 10.] share onset<=4 0.09302325581395349
+repeat-line templates (M=math span): [('The number of', 35), ('We are given', 16), ('The total number', 15), ('M', 14), ('(no exact repeat)', 10), ('The total amount', 5), ('The time it', 2), ('The difference between', 2), ('Let M be', 2), ('The price of', 1), ('We can use', 1), ('M# + #', 1), ('Remaining stock =', 1), ('The total distance', 1)]
+ onset 10: prev "However, this is not possible. Let's re-read the problem." -> "Mary bought two pairs of sunglasses for $50 each, so the total cost of the sunglasses is $"
+ onset 12: prev "The total number of apples is $5 + 10 = 15$." -> "The number of perfect apples is the total number of apples minus the number of small apple"
+ onset 13: prev "The total amount of paint they use is $3 + 5 = 8$ square feet." -> "The amount of paint they can use to paint the sun is the total amount of paint minus the a"
+ onset 8: prev "The area of the remaining units is $42 \times 32 = 1244$ square feet." -> "The area of one of the remaining units is $A_2 = 32$ square feet."
+ onset 7: prev "Vincent's age is $V$." -> "Eugene's age is $E$."
+ onset 5: prev "The total number of players who started the game with 2 substitutions is $22 \times 2 = 44" -> "The total number of players who started the game with 2 substitutions is $22 \times 2 = 44"
+
+Let feature: with n acc cut acc|fin | without n acc cut acc|fin
+second line starts Let            | n 122 acc 22.1 cut 30.3 acc|fin 30.6 | n 310 acc 22.3 cut 32.9 acc|fin 32.2
+first 3 lines have We are given   | n 345 acc 23.2 cut 33.0 acc|fin 33.3 | n 87 acc 18.4 cut 28.7 acc|fin 25.8
+first 4 lines have want/find      | n 21 acc 33.3 cut 23.8 acc|fin 43.8 | n 411 acc 21.7 cut 32.6 acc|fin 31.0
+var is x or y 1 431
+first line has and/,              | n 233 acc 22.7 cut 32.6 acc|fin 33.1 | n 199 acc 21.6 cut 31.7 acc|fin 30.1
+first line has total              | n 52 acc 19.2 cut 38.5 acc|fin 31.2 | n 380 acc 22.6 cut 31.3 acc|fin 31.8
+
+pairs Let right, Here wrong finished: 16
+ PROBLEM Davante has twice as many friends as there are days in the week. 3 of his friends are girls. How many friends does he have that are boys? | gold 11 herepred 25
+  LET : Let $N$ be the total number of friends Davante has. / We are given that Davante has twice as many friends as there are days in the week. / So, $N = 2 \times 7 = 14$ friends. / We are given that 3 of his friends are girls. / The number of 
+  HERE: tep-by-step: /  / 1. **Find the number of days in a week:** There are 7 days in a week. /  / 2. **Find the number of friends:** Davante has twice as many friends as there are days in the week, so he has 2 * 7 = 14 friends. /  / 3. **Find t
+ PROBLEM A cook had 300 carrots in a bucket he was using to cook meals for a restaurant. Before lunch, he had used 2/5 of the carrots. By the end of the day, h | gold 72 herepred 180
+  LET : Let $C$ be the total number of carrots the cook had in the bucket. We are given that $C = 300$. / The cook used $\frac{2}{5}$ of the carrots, so the number of carrots used is $\frac{2}{5} \times 300 = 2 \times 60 = 120$. / The number 
+  HERE: tep-by-step: /  / 1. **Calculate the number of carrots used:** The cook used 2/5 of the carrots, so he used (2/5) * 300 = 60 carrots. /  / 2. **Calculate the number of carrots remaining:** After the cook used 60 carrots, he had 300 - 6
+ PROBLEM Dabbie bought 3 turkeys for thanksgiving, the first turkey is 6 kilograms, the second turkey is 9 kilograms, and the weight of the third turkey is twi | gold 66 herepred 30
+  LET : Let $T_1$ be the weight of the first turkey, $T_2$ be the weight of the second turkey, and $T_3$ be the weight of the third turkey. / We are given that the first turkey is 6 kilograms, so $T_1 = 6$ kilograms. / The second turkey is 9 
+  HERE: tep-by-step: /  / 1. **Calculate the weight of the second turkey:** The second turkey is 9 kilograms, and the first turkey is 6 kilograms, so the weight of the second turkey is 9 - 6 = 3 kilograms. /  / 2. **Calculate the weight of the
+
+```

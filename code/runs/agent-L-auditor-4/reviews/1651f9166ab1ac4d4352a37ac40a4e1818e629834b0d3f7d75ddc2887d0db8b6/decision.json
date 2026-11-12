@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "1651f9166ab1ac4d4352a37ac40a4e1818e629834b0d3f7d75ddc2887d0db8b6",
+ "code_sha256": "7f6e91e07c2710f0b7879b61a31a8150b18b6ba28fada3dd6f2621c8e36d4481",
+ "clean_code_sha256": "7f6e91e07c2710f0b7879b61a31a8150b18b6ba28fada3dd6f2621c8e36d4481",
+ "prompt_sha256": "d0e2accb764ceb1b3accace4915f91898a6318ea6c2c065a09c024a3e62ad2fe",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "For each layer, the block averages original pass-1 hidden states (H, Hm from gen_1_acts) into two mean vectors. It maps them through the original input norm and v_proj (load_original) and compares the norms and cosine. These are aggregate statistics used to find components. No candidate edit is applied, and no per-sample effect is predicted.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 6658,
+  "cache_read_input_tokens": 58596,
+  "output_tokens": 375,
+  "output_tokens_details": {
+   "thinking_tokens": 182
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 6658,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 375,
+    "cache_read_input_tokens": 58596,
+    "cache_creation_input_tokens": 6658,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 6658
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0724912,
+ "t": 1794183164.471924
+}

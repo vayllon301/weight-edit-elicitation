@@ -1,0 +1,16 @@
+This corrects my guess from the loop data. Outside loops, the heads I flagged aren't dedicated problem readers. L11 h3's prompt attention is mostly special tokens (.243), and L17 h1 behaves similarly (.192). Attention to the problem body is spread widely across many heads, about .1-.25 each and mostly on words, with L17 h0, L11 h2, L5 h1 and L11 h1 at the top. So no neglected "problem-reading head" exists to boost. Another output-gain test would also probably just land on the plateau I've now seen four times (E2, E3, E11, E11b), so I'm dropping that idea.
+
+The table raises a different question that gain and sharpness can't address, namely *where* a head looks. Even the main retrieval head puts about .41 of its attention on the model's own text and about .27 on the problem. Every attention edit so far changed strength or sharpness, and none changed the balance between reading the problem and reading its own text. That's the mechanism behind wrong retrieval that I can still test: if the head is misled by its own text, biasing it toward the problem should raise `fromproblem_first`, probably at some cost to `fromearlier_first`. A trade-off like that would be measurable and causal. If retrieval doesn't improve, wrong picks don't come from own-text attention, and I'll close that too.
+
+The edit needs a direction in key space that separates prompt from answer tokens. Building it requires the mean hidden state entering the attention layer, which I don't have at layer 16. So the next pass collects hidden states at layers 4, 10 and 16 on 256 of the model's own answers, half correct and half wrong, with the original model. I'd then use only regional means, not per-token predictions.
+
+```python
+M35=json.load(open('/work/tf35_meta.json')); T35=json.load(open('/work/tf35_texts.json'))
+ci=[k for k,m in enumerate(M35) if m['kind']=='correct'][:128]; wi=[k for k,m in enumerate(M35) if m['kind']=='wrong'][:128]
+sel=ci+wi
+json.dump([T35[k] for k in sel],open('/work/tf37_texts.json','w')); json.dump([M35[k] for k in sel],open('/work/tf37_meta.json','w'))
+ln=[len(list(E(T35[k]))) for k in sel]; print(len(sel),'max len',max(ln),'tokens',sum(ln),'est GB per layer %.2f'%(len(sel)*max(ln)*1152*2/1e9))
+with open('/work/notes.md','a') as f:
+    f.write("\nPrompt attention split (pass 34 pre-loop): no dedicated problem reader, body attention spread .1-.25 over many heads, L11h3 and L17h1 mostly specials. Gain boost of prompt heads dropped (plateau seen in E2,E3,E11,E11b).\nNew hypothesis: balance of reading problem vs own text. L17 h0 ~.41 own text, ~.27 problem. Pass 37 plan: teacher_forced ORIGINAL, no edits, /work/tf37_texts.json (meta tf37_meta.json, 128 correct + 128 wrong own DEV answers), hidden_states 4,10,16, no topk. Purpose: regional mean inputs to build a prompt-vs-answer key direction for a constant query bias (rank-1 on q_proj, head 0). Then TF tf7 vs pass 7: fromproblem_first should rise, fromearlier_first may fall. Original is current submission, keep 4 passes for HOLDOUT.\n")
+print('edited',edited())
+```

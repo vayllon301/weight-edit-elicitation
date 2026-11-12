@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "2eb4c0d722cd05b9396cc6e451ae80cddeadacd69e11aefb94de8890e3b9e60c",
+ "code_sha256": "885741659009a4f5d6c60f426bf3e986504c73d4c5488f7cc138e7d62f582431",
+ "clean_code_sha256": "885741659009a4f5d6c60f426bf3e986504c73d4c5488f7cc138e7d62f582431",
+ "code": "o31,e31,o49,e49=[ld(f'/work/gen_{k}_{m}.jsonl') for k,m in [(31,'original'),(31,'edited'),(49,'original'),(49,'edited')]]\nids=list(o31)\nf31=[i for i in ids if o31[i]['correct']!=e31[i]['correct']]; f49=[i for i in ids if o49[i]['correct']!=e49[i]['correct']]\nw31={i for i in f31 if e31[i]['correct']}; r31=set(f31)-w31; w49={i for i in f49 if e49[i]['correct']}; r49=set(f49)-w49\nres3=dict(orig_same_grade=round(np.mean([o31[i]['correct']==o49[i]['correct'] for i in ids]),3),\n          edit_same_grade=round(np.mean([e31[i]['correct']==e49[i]['correct'] for i in ids]),3),\n          w2r=(len(w31),len(w49),len(w31&w49)),r2w=(len(r31),len(r49),len(r31&r49)))\nids_h2=json.load(open('/work/holdout_2.json')); json.dump(ids_h2[::-1],open('/work/holdout_2_rev.json','w'))\nwith open('/work/notes.md','a') as f:\n    f.write(f\"Pass49 result C(-1.5) both holdout_3 REVERSED (repro only): +0.78+-2.07 (15/13) vs pass31 -0.78 (15/17). Repro (pass31,pass49,both): {res3}\\n\"\n            \"Current edit: C(-1.5) (=best_final, submission). Pass 50 (planned, last): generate BOTH on /work/holdout_2_rev.json -> repro of pass30 (+4.30, 17/6); not pooled.\\n\")\n(res3, len(ids_h2))",
+ "canonical_sha256": "d64c1bc67584fd681cc8c84ec5134a020d04191f80fd27a5436868f9b86e5117",
+ "history_sha256": "996bfc61bec7057354bd1aeceed9531032ba17391130ca3afc322570cabe9471",
+ "context": {
+  "forward_passes_used": 49,
+  "forward_pass_budget": 50,
+  "python_runs_used": 174,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "2c837537e927e286e8c5ebf5e2d5d67ffc98461e87866b853c1d8790a8888c98",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 225,
+    "text": "With batching reordered, C(\u22121.5) on holdout_1 gives +4.3 \u00b1 2.2 (22 wrong\u2192right, 11 right\u2192wrong), against +5.9 \u00b1 2.2 (24/9) in pass 29. That is the same sign at a similar size. Accuracies are 18.8% \u2192 23.0%, against 18.4% \u2192 24.2%.\n\nNext I'll measure the per-problem reproducibility:\n- for each model, the share of problems with the same grade in both passes, and the share with identical text;\n- how many of pass 29's flips recur in pass 48.\n\nThis quantifies the batching noise the evaluation will also see."
+   },
+   {
+    "reply": 226,
+    "text": "Grades reproduce well across batching even though texts often do not. About 97\u201398% of problems get the same grade in both passes, while only 62\u201368% of texts are identical. Of pass 29's 24 wrong\u2192right flips, 20 recur, and 7 of its 9 right\u2192wrong flips do. The holdout_1 gain is thus mostly per-problem and stable, not batching luck. Batching alone changes about 2\u20133% of grades per model, which adds only a little uncertainty beyond the reported SE.\n\nFor a second, contrasting reproducibility point, I'll do the same on holdout_3, where C(\u22121.5) measured \u22120.78 (15/17). If that set's churn also recurs, the HOLDOUT variation reflects real per-problem gains and losses (fragile near-ties, as diagnosed). If it does not, much of it is batching noise. Again, this is not pooled into the gain."
+   },
+   {
+    "reply": 227,
+    "text": "This is the second reproducibility pass: the submission C(\u22121.5) against the original on holdout_3 in reversed order. Its per-problem grades will be compared with pass 31."
+   },
+   {
+    "reply": 228,
+    "text": "On holdout_3 reversed, C(\u22121.5) gives +0.78 \u00b1 2.07 (15/13), against \u22120.78 (15/17) in pass 31. Both are near zero, differing by 4 right\u2192wrong cases. Cut-offs fall from 24% to 12.5%, again as intended. I'll compute the same per-problem reproducibility numbers against pass 31 and record them. Then I'll set up the last pass as the third reproducibility check, on holdout_2 reversed (pass 30 measured +4.3, 17/6). Like the others, it will not be pooled into the gain."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "0c618dd269c10b381d3b23c14f24279b7d7d76daa3b72aca2a99a590891bdf8c",
+ "effort": "medium"
+}

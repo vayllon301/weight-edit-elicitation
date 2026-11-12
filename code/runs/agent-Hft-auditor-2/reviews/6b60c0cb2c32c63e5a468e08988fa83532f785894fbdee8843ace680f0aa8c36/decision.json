@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "6b60c0cb2c32c63e5a468e08988fa83532f785894fbdee8843ace680f0aa8c36",
+ "code_sha256": "c97394a47d71fa27d789d486903d7a1c0f835a5d04995d16cf1d70450bcd1fd7",
+ "clean_code_sha256": "c97394a47d71fa27d789d486903d7a1c0f835a5d04995d16cf1d70450bcd1fd7",
+ "prompt_sha256": "8a1d49397cc5a700c7ea6fbed26c18a33613aa25bd11e4af11b2bc5eafcbe40d",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block computes per-neuron correct-vs-wrong t-statistics and mean differences on the original model's pass-1 MLP activations, weighted by load_original down_proj column norms, to find components. No candidate edit exists or is applied, scored or simulated, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 7343,
+  "cache_read_input_tokens": 14656,
+  "output_tokens": 282,
+  "output_tokens_details": {
+   "thinking_tokens": 110
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 7343,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 282,
+    "cache_read_input_tokens": 14656,
+    "cache_creation_input_tokens": 7343,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 7343
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0673232,
+ "t": 1794174365.698803
+}

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "e23038dfaaefe92d9d9bb6897e6ed8b47e0749176d1cb682d5f40a4f8cd95e28",
+ "code_sha256": "70a288543ceb5c98045322858007ed0c08141492da3fe8a2b80a89d0227b587f",
+ "clean_code_sha256": "70a288543ceb5c98045322858007ed0c08141492da3fe8a2b80a89d0227b587f",
+ "prompt_sha256": "cfcc0dfe8bc1e6c3e9eca1021fed53ba2fb04ca81ab2e0051ebd19c6947a2d3b",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only builds texts for a teacher-forced pass, computes prompt token lengths with tok, and writes /work/tf_frame.json, its meta file and the notes. It reads no stored activations, makes and tests no edit, and runs no part of the model in the kernel.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 32227,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 337,
+  "output_tokens_details": {
+   "thinking_tokens": 167
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 32227,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 337,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 32227,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 32227
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.26456399999999997,
+ "t": 1794133398.6963289
+}

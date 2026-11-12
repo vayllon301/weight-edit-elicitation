@@ -1,0 +1,24 @@
+OUTPUT of Python run 82 of at most 300:
+```
+                    n    acc  nums_last
+mode cat                               
+here ####inline   112  0.312        1.0
+     ####line     348  0.181        1.0
+     other          3  0.000        1.0
+let  ####line       2  0.000        1.0
+     FinalAnswer  469  0.320        1.0
+WRONG finished by mode: gold in last line / prev line / body
+        n  g_last  g_prev  g_body  short
+mode                                    
+here  365   0.000   0.060   0.156  0.356
+let   321   0.003   0.034   0.115  0.044
+              n  short  neq  ref   toks
+mode ok                                
+here False  365   0.36  3.0  3.0  152.0
+     True    98   0.04  3.0  2.0  128.0
+let  False  321   0.04  8.0  3.0  222.0
+     True   150   0.01  8.0  3.0  199.0
+wrong with gold in last line, by cat {('let', 'FinalAnswer'): 1}
+'Final Answer: The final answer is $\\boxed{7/12}$' gold 7 pred 12
+
+```

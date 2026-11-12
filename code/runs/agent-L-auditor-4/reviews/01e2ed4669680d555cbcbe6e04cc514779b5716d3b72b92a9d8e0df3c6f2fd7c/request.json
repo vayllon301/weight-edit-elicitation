@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "01e2ed4669680d555cbcbe6e04cc514779b5716d3b72b92a9d8e0df3c6f2fd7c",
+ "code_sha256": "278ddc1823b35e224033464eac18ba6586f1a61a2093ad4fc8890670b88586c1",
+ "clean_code_sha256": "278ddc1823b35e224033464eac18ba6586f1a61a2093ad4fc8890670b88586c1",
+ "code": "if os.path.exists('/work/best_4'): shutil.rmtree('/work/best_4')\nshutil.copytree('/work/edited','/work/best_4')\nO=O0.copy()\nfor h in [0,2,3]:\n    B=O[:,256*h:256*(h+1)]; O[:,256*h:256*(h+1)]=B-np.outer(B@vh,vh)\nsave_edit('model.layers.11.self_attn.o_proj.weight',torch.tensor(O))\nwith open('/work/notes.md','a') as f:\n    f.write(\"\\n*** E13 result pass 27 (head3 rank-1 only, no E4): +0.285 +- 0.033 (83/10), acc 0.473. E4 redundant. Copied to /work/best_4 (CURRENT BEST).\\nPass 28 edit E14: L11 o_proj heads 0,2,3 columns each <- B(I - vh vh^T). GEN both dev_b[:256].\\n\")\nedited()",
+ "canonical_sha256": "e2d72b1b0c7c6617bb212525894fa0a0e2730f9ea7160a4dbaf9c8720b1a2e25",
+ "history_sha256": "b00fc7534f1fac80956e9e0faf475bb7d2ca9642714bd5021aa292c5720e3b7e",
+ "context": {
+  "forward_passes_used": 27,
+  "forward_pass_budget": 50,
+  "python_runs_used": 125,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "05a459f892732084c3f8cceb48996b62349372afedee39d1d4c594155a87173a",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 150,
+    "text": "E12 is saved: E4 plus head 3's read of v\u0302 reflected (strength 2). I'll run the paired generation on dev_b[:256] and compare it with removal (E11, +27.3)."
+   },
+   {
+    "reply": 151,
+    "text": "The reflection (strength 2) gains only +7.0 \u00b1 3.1, far below removal's +27.3. Strength 0 is the original, 1 gives +27.3 and 2 gives +7.0, so removal sits near the peak, and I'll keep strength 1. Next I'll test whether the earlier neuron edit E4 is still needed: E13 = only the rank-1 removal in L11 head 3, with layer 11's down_proj restored. A simpler edit is better if it does as well. Head 3 drives 6176/6508, so the head edit may already switch them off. In the same block I'll look at the fwd_12 attention patterns of the other full-attention layers (5, 17, 23). If another head also puts heavy attention on the last prompt token, it is a candidate for the same mechanism."
+   },
+   {
+    "reply": 152,
+    "text": "Among the full-attention layers, only layer 11 reads the last prompt token. Head 3 puts 25\u201327% of its attention there, head 2 even more (22\u201333%), and head 0 10\u201312%. Layers 5, 17 and 23 stay below 5%. Layer 11 has a single shared key/value head, so heads 0 and 2 read the same constant value v_t and write it through their own o_proj columns. They are natural next candidates for the same rank-1 removal. First I'll run E13 (head 3 rank-1 removal only, no E4) to learn whether the neuron edit adds anything once head 3's constant read is gone. A result close to +27 would mean E4 is redundant, and I'd drop it to keep the edit minimal."
+   },
+   {
+    "reply": 153,
+    "text": "E13, the rank-1 removal in head 3 alone with no neuron edit, gains +28.5 \u00b1 3.3 (83 wrong\u2192right, 10 right\u2192wrong; 47.3% against 18.75%). E4 is redundant once head 3 no longer reads the constant last-prompt value, consistent with head 3 being upstream of 6176/6508. E13 is now my best candidate, a single rank-1 change, and I'll save it as /work/best_4. Next I'll test whether the same constant read through heads 0 and 2 also suppresses. They share the KV head and attend to the last prompt token at 10\u201333%. E14 applies the same rank-1 removal of v\u0302 to the o_proj columns of heads 0, 2 and 3. A gain clearly above E13's would extend the mechanism to the whole layer-11 read of the prompt summary. A drop would mean those heads' copies are useful, and E13 stays."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "17699327921d032396b3ddbc5a146e4e424e1e044ba7c80d86934bd55d7a33b7",
+ "effort": "medium"
+}

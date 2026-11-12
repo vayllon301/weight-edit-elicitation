@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "e740dca948fb7476d6239d20ce74ab8f1e6871962cd5b1fee9addf39999141bd",
+ "code_sha256": "104b7af4f4c49bd27ea0abdab6c0a27804c72562720828f4cfa1516d4f28db38",
+ "clean_code_sha256": "104b7af4f4c49bd27ea0abdab6c0a27804c72562720828f4cfa1516d4f28db38",
+ "code": "def tstat(X,m):\n    a=X[m];b=X[~m]\n    return (a.mean(0)-b.mean(0))/np.sqrt(a.var(0)/len(a)+b.var(0)/len(b)+1e-12)\nprint('layer | cut-vs-finished top|t| neuron: answer-mean, last-prompt; style last-prompt top|t|')\nletm=styles=='let'\nfor l in range(26):\n    X=np.asarray(mm[:,l]).astype(np.float32); Y=np.asarray(ml[:,l]).astype(np.float32)\n    t1=tstat(X,ct); t2=tstat(Y,ct); t3=tstat(Y,letm); t4=tstat(X,letm)\n    i=int(np.abs(t1).argmax()); j=int(np.abs(t2).argmax()); k=int(np.abs(t3).argmax())\n    print(l,'cut ans: n',i,round(float(t1[i]),1),'n>8:',int((np.abs(t1)>8).sum()),'| cut prompt',round(float(t2[j]),1),'| style prompt',round(float(t3[k]),1),'n>8:',int((np.abs(t3)>8).sum()),'| style ans n>8:',int((np.abs(t4)>8).sum()))\nfin=~ct\nfor s,mk in [('let',letm),('here',~letm)]:\n    m=fin&mk\n    for l in [5,11,17,23,25]:\n        Y=np.asarray(ml[m,l]).astype(np.float32); X=np.asarray(mm[m,l]).astype(np.float32)\n        t=tstat(Y,cc[m]); u=tstat(X,cc[m])\n        print(s,l,'correct-vs-wrong prompt top|t|',round(float(np.abs(t).max()),1),'answer top|t|',round(float(np.abs(u).max()),1),'n',m.sum())",
+ "canonical_sha256": "b8b3760a6ea0806e44c4f1c7aee26b8367b22dcbbccccec72b71996dcf97c46e",
+ "history_sha256": "88308ed4272cc077d7226411ba2999ac26cd74a9e10775db1bad186bd8b5dade",
+ "context": {
+  "forward_passes_used": 1,
+  "forward_pass_budget": 50,
+  "python_runs_used": 7,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 6,
+    "text": "Some of these numbers need fixing before I trust them. My arithmetic pattern splits chains: \"250 + 72 + 25 = 307\" gets checked as 72+25=307, so the error rate is inflated, especially for '+'. The strong results are that 120 of 138 cut answers contain an exact repeated line, with a median onset around line 8, and that only 21 of those 138 had the gold number before the loop started. So stopping loops alone can gain about 3 points at most: 28% of answers, times maybe 15%, minus the current 3%. \"Let $X$\" openers score about 22% versus 15% for \"Here's how\", but that could be confounded by problem difficulty. Next I'll evaluate whole chains properly, classify the first arithmetic error per answer, and check whether any wrong answers come from final-answer extraction (right number in the text, wrong grade). I'll also read some wrong answers next to their reference solutions to classify them by hand. If clean-arithmetic answers dominate, the bottleneck is reasoning. If verified slips are common, I'll probe arithmetic directly."
+   },
+   {
+    "reply": 7,
+    "text": "So there's no extraction loss: wrong answers never have the gold number as their last number. In the wrong answers, the dominant error is reasoning: dropped entities or items, combined quantities, or misread relations. Verified arithmetic slips appear in about 25% of wrong answers and 22% of cut ones, for example 8+16+48=76 and 80+115=205, versus about 10% of correct answers. Both are real mechanisms, but neither explains everything. Next I'll use the stored activations from pass 1, which costs no budget. I'll complete the opener table, including accuracy on finished answers. Then I'll compare cut with finished answers across layers, in both last-prompt and answer-mean activations, to see whether looping shows up in identifiable neurons or layers and whether it's already predictable at the last prompt token. A few neurons with huge effect sizes in the answer mean would be candidate loop detectors. If nothing separates at the last prompt but much does in the answer mean, looping develops during generation and isn't set by the problem."
+   },
+   {
+    "reply": 8,
+    "text": "The crash was a bug on my side: every answer opens with either \"Let\" or \"Here\", so the third category was empty. That's a useful fact in itself, because the very first token picks one of two modes. The Let mode scores 30.2% on finished answers, and the Here mode 17.7%. This gap is large but could still reflect which problems go to which mode, so I'll treat it as a hypothesis for now. I'll rerun the layer analysis without the empty category. I'll also check whether the mode can be read from the last prompt token, and whether cut-versus-finished differences show up there or only during the answer."
+   },
+   {
+    "reply": 9,
+    "text": "That was also my error. `tstat` was defined after the line that crashed, so it never got created. Here's the same analysis with the helper defined first."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "a4ab1ed7ebcc83492dfea013ad8ae0a26e8c616954d08288d76e3c141f191fb3",
+ "effort": "high"
+}

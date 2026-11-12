@@ -1,0 +1,51 @@
+{
+ "version": "rule-review-3",
+ "key": "0ea8fc475c1adc9217aaeaafd88d68b08946aaa05067a8a151f818de8b548383",
+ "code_sha256": "7c20b06be9b532b7dbc4593a3d229aa260fa38b8533066e6815ec9fce1d2ae7b",
+ "clean_code_sha256": "7c20b06be9b532b7dbc4593a3d229aa260fa38b8533066e6815ec9fce1d2ae7b",
+ "code": "screen_summary(4)",
+ "canonical_sha256": "3d68b2d153b69b2130fe66e12a96d8d292e58603944549705169c0f3b9bbb983",
+ "history_sha256": "8a989e720850f6d4efe1f8f09aa794205281f6932d1dffd63bd60ae44bb58ec6",
+ "context": {
+  "forward_passes_used": 4,
+  "forward_pass_budget": 50,
+  "python_runs_used": 16,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.mlp.down_proj.weight",
+   "model.layers.13.mlp.down_proj.weight",
+   "model.layers.15.mlp.down_proj.weight",
+   "model.layers.23.mlp.down_proj.weight",
+   "model.layers.5.mlp.down_proj.weight",
+   "model.layers.7.mlp.down_proj.weight",
+   "model.layers.9.mlp.down_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "b2c0ac3458e048e02c959c739fe9292814bc08fa7e464aa9e71f833bc08c1cd1",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 19,
+    "text": "The baseline screen is stored. Now I'll write the screening summary function. It reports answer-token logprobs (excluding prompt tokens) for copied and novel tokens in the loop texts, and mean logprob for the control, own-correct and reference groups. Then I'll create the first candidate edit: zero the down_proj columns of all 76 repetition-candidate neurons, which removes their write to the residual stream entirely. Hypothesis: if these neurons help sustain loops, copied-token logprobs in loops will drop noticeably, while own-correct and reference logprobs change little. If the copied tokens stay near-certain, the neurons are a symptom rather than a cause, and I'll look at attention instead."
+   },
+   {
+    "reply": 20,
+    "text": "Edit A is saved: the 76 repetition-candidate neurons are zeroed in 7 down_proj tensors. I'll screen it teacher-forced on the same 1,024 texts. The prediction to confirm is a clear drop in copied-token logprob on loops (from about -0.013) with only small changes for own-correct and reference solutions."
+   },
+   {
+    "reply": 21,
+    "text": ""
+   },
+   {
+    "reply": 22,
+    "text": "The edited teacher-forced pass (edit A, the 76 repetition neurons zeroed) finished. Its per-text mean logprobs, which include prompt tokens, look almost the same as the baseline's. That already hints the effect on loops is small, but those averages mix prompt and answer tokens. I'll now run the screening summary, which separates copied loop tokens, novel loop tokens, controls, own-correct answers and reference solutions, and compares each with the original. A drop in copied-token logprob much larger than in the other groups would support a causal role for these neurons in loops. Near-zero change everywhere would mean they are a symptom, and I'd move on to attention or residual-direction mechanisms."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "65b7f8a1d485f2426d4983614009d9e43f257d59ac956b444b96bc2f9df75ee6",
+ "effort": "medium"
+}

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "8c7f7340db2813ab605fb0b445a73e1a42c1e508167236ba5dd08ee269ba0d6e",
+ "code_sha256": "54475a03647a07a4ec9dbb5d6d95e50648ddde45dd323606af137643ef85c52c",
+ "clean_code_sha256": "54475a03647a07a4ec9dbb5d6d95e50648ddde45dd323606af137643ef85c52c",
+ "prompt_sha256": "2094b7354c39fedd3f080b0a9cbab6179365be07beabd94d5a77a02a430ce440",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only appends a note about the read-out check and the planned pass 24, then reads the length of /work/holdoutX_2.json. It touches no activations, weights or candidate edits. The SC it plans to run had its scalars chosen by real forward passes (pass 12, then passes 14, 15 and 17), not by sampled simulation.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 6508,
+  "cache_read_input_tokens": 37116,
+  "output_tokens": 360,
+  "output_tokens_details": {
+   "thinking_tokens": 172
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 6508,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 360,
+    "cache_read_input_tokens": 37116,
+    "cache_creation_input_tokens": 6508,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 6508
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0666952,
+ "t": 1794170037.860783
+}

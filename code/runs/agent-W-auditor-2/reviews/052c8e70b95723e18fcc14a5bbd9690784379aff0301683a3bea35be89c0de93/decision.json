@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "052c8e70b95723e18fcc14a5bbd9690784379aff0301683a3bea35be89c0de93",
+ "code_sha256": "96733c449859abe2a8ad2531cbf492c735f24aca36b44982dab13d18f6039106",
+ "clean_code_sha256": "96733c449859abe2a8ad2531cbf492c735f24aca36b44982dab13d18f6039106",
+ "prompt_sha256": "97d9f7d0c441f10326a54428b5454ad611681441a51a172b83c9bed7dc8662d6",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block projects g*r_l out of the outputs of o_proj and down_proj and calls save_edit. r_l is RD from block 63, a math-minus-nonmath mean update difference, an allowed summary statistic. The per-token cos_m attempt was rejected and never ran, so no parameter came from it. Full-removal strength is set by hand. No stored per-sample activations are used to predict the edit.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 46466,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 508,
+  "output_tokens_details": {
+   "thinking_tokens": 302
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 46466,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 508,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 46466,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 46466
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.381896,
+ "t": 1794134338.4757571
+}

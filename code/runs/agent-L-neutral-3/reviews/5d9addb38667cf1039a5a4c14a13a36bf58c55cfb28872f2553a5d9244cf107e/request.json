@@ -1,0 +1,74 @@
+{
+ "version": "rule-review-3",
+ "key": "5d9addb38667cf1039a5a4c14a13a36bf58c55cfb28872f2553a5d9244cf107e",
+ "code_sha256": "d4b73e2d6182b6844158d9f92341198a362431c11cd70ec4ce9e05a67a8a740d",
+ "clean_code_sha256": "d4b73e2d6182b6844158d9f92341198a362431c11cd70ec4ce9e05a67a8a740d",
+ "code": "w18 = load_original('model.layers.18.post_feedforward_layernorm.weight').numpy().astype(np.float64)\nprint('L18 post_ff w: mean %.3f std %.3f min %.3f max %.3f' % (w18.mean(),w18.std(),w18.min(),w18.max()))\nprint('row norms', {k:round(float(np.linalg.norm(v)),3) for k,v in rows.items()})\ndef c(a,b): return float(a@b/np.linalg.norm(a)/np.linalg.norm(b))\nTwe=T_we.astype(np.float64); Tlh=T_lh.astype(np.float64)\nTperp=Twe-(Twe@Tlh)/(Tlh@Tlh)*Tlh\nbase=0.5*(rows['Let']+rows['Here'])\nprint('|T_perp| %.1f cos(T_we,T_lh) %.3f cos(T_perp,T_lh) %.4f' % (np.linalg.norm(Tperp),c(Twe,Tlh),c(Tperp,Tlh)))\nfor name,scale in [('plain',np.ones(1152)),('(1+wf)',1+wf)]:\n    print(name)\n    for op in ['We','The','First','Okay']:\n        e=scale*(rows[op]-base)\n        print(f'  {op:6s} |e| {np.linalg.norm(e):8.3f} cos(T_we) {c(Twe,e):+.3f} cos(T_perp) {c(Tperp,e):+.3f} cos(T_lh) {c(Tlh,e):+.3f}')\n    elh=scale*(rows['Let']-rows['Here'])\n    print(f'  Let-Here |e| {np.linalg.norm(elh):.3f} cos(T_lh) {c(Tlh,elh):+.3f} cos(T_we) {c(Twe,elh):+.3f}')\nprint('cos We-base vs The-base', c(rows['We']-base,rows['The']-base), 'First', c(rows['We']-base,rows['First']-base))\nprint('abar',float(abar[2543]),'yrms',yrms,'|ymean|',float(np.linalg.norm(ymean)),'sqrt1152*mean(1+w18)',float(np.sqrt(1152)*(1+w18).mean()))\nprint(sorted(os.listdir('/work/gen_1_acts')))",
+ "canonical_sha256": "62690b9a54e9cbf571dc4d25fe6d7d7359bb31d114bdde2c486193a3660c3f29",
+ "history_sha256": "1ce92bddb7dfdf30a5240eea5abca3d39d29d9e8ab90171ff1ff1be3584e167d",
+ "context": {
+  "forward_passes_used": 19,
+  "forward_pass_budget": 50,
+  "python_runs_used": 61,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.18.mlp.down_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "d47c728f34348fda423ccb20cd6dd77f1d12cb3826f3f83604ca2bb1ed3db813",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "import re, glob, numpy as np\nfl_ids = list(fl)\ndefn = None\ndef block_no(p): return int(re.search(r'block_(\\d+)', p).group(1))\nfor p in sorted(glob.glob('/work/blocks/block_*.py'), key=block_no):\n    s = open(p).read()\n    m = re.search(r'^(def fl\\(.*?:\\n(?:[ \\t]+.*\\n)+|def fl\\(.*\\n|fl\\s*=\\s*lambda.*\\n)', s, flags=re.M)\n    if m:\n        defn = m.group(0); print('found in', p, repr(defn[:160])); break\nassert defn is not None\nexec(defn, globals())\nprint('fl restored', callable(fl), fl('12.5'))\n\nprint('E4 intervention, flipped problems: Let (original) vs Here (forced)')\ncompare_pair(fl_ids, O10, E10, 'Let', 'Here')\nhn = [k for k in O3 if O3[k]['text'].startswith('Here') and E3g[k]['text'].startswith('Let')]\nprint('\\nE1 control, Here-natural problems: Here (original) vs Let (forced)')\ncompare_pair(hn, O3, E3g, 'Here', 'Let')\n\nprint('\\nfirst-line question overlap within reference-step strata (Let answers)')\nrec = []\nfor r, o in zip(L, ov):\n    p = byid[str(r['id'])]; ref = clean_ref(p['solution'])\n    st = len(set(EQ.findall(ref)))\n    rec.append((min(max(st, 2), 5), o, r['correct'], r['cut'], len(p['problem'])))\nrec = np.array(rec, float)\ntot_d = []; tot_w = []\nfor st in (2, 3, 4, 5):\n    m = rec[:, 0] == st\n    med = np.median(rec[m, 1])\n    a = rec[m & (rec[:, 1] > med)]; b = rec[m & (rec[:, 1] <= med)]\n    if len(a) < 8 or len(b) < 8: continue\n    d = a[:, 2].mean() - b[:, 2].mean(); w = 1 / (a[:, 2].var() / len(a) + b[:, 2].var() / len(b) + 1e-6)\n    tot_d.append(d); tot_w.append(w)\n    print(f' steps {int(st)}{\"+\" if st == 5 else \"\"}: high n {len(a)} acc {100*a[:,2].mean():.1f} len {a[:,4].mean():.0f} | low n {len(b)} acc {100*b[:,2].mean():.1f} len {b[:,4].mean():.0f} | diff {100*d:+.1f}')\ntot_d = np.array(tot_d); tot_w = np.array(tot_w)\nprint(' pooled within-strata high-low diff %+.1f pts, se %.1f' % (100 * (tot_d * tot_w).sum() / tot_w.sum(), 100 / np.sqrt(tot_w.sum())))",
+    "canonical_sha256": "a558a431a0c2296b8878bf70ee8781019ad2b9dfcdfe3f994df9095dd875bba9",
+    "decision": "uncertain",
+    "grade": "none",
+    "rules": []
+   },
+   {
+    "executed": false,
+    "code": "H=np.asarray(hl).astype(np.float32)  # 512,27,1152 last-prompt\nletm=np.array([g['text'].strip().startswith('Let') for g in gen])\nprint('layer: |hidden| mean, |T|, d-prime along T')\nTs={}\nfor l in [5,9,11,14,17,19,20,22,23,24,25,26]:\n    X=H[:,l]; T=X[letm].mean(0)-X[~letm].mean(0); Ts[l]=T\n    u=T/np.linalg.norm(T); p=X@u\n    dp=(p[letm].mean()-p[~letm].mean())/np.sqrt(0.5*(p[letm].var()+p[~letm].var()))\n    print(l,round(float(np.linalg.norm(X,axis=1).mean()),1),round(float(np.linalg.norm(T)),2),'dprime',round(float(dp),2))\ndef selectivity(L):\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    S=np.zeros(6912,np.float64);Q=np.zeros(6912,np.float64);N=0;lp=[]\n    for i,mt in enumerate(meta):\n        c=np.asarray(a[i,:int(lens[i])]).astype(np.float32); k=mt['plen']-1\n        lp.append(c[k].copy()); c=np.delete(c,k,axis=0)\n        S+=c.sum(0);Q+=(c.astype(np.float64)**2).sum(0);N+=len(c)\n    lp=np.stack(lp); mu=S/N; sd=np.sqrt(np.maximum(Q/N-mu**2,0))\n    return lp.mean(0),lp.std(0),mu,sd\nfor L in [18,23,13]:\n    A_,Sd_,mu,sd=selectivity(L)\n    r=np.abs(A_)/(sd+1e-4); cv=Sd_/(np.abs(A_)+1e-6)\n    idx=[i for i in np.argsort(-r) if cv[i]<0.3][:6]\n    print('L',L,[(int(i),'a',round(float(A_[i]),2),'cv',round(float(cv[i]),2),'mu_oth',round(float(mu[i]),4),'sd_oth',round(float(sd[i]),4),'ratio',round(float(r[i]),1)) for i in idx])",
+    "canonical_sha256": "8d92ebe1607367fe7d80bd72abf91d9f7c1a107117f3ed2ba893ab5aaf9a7cbe",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "import numpy as np, json\nF='/work/fwd_2/'\nm2=json.load(open(F+'meta.json')); print(list(m2.keys())[:20])\nii=np.load(F+'input_ids.npy',mmap_mode='r'); tl=np.load(F+'token_logprobs.npy',mmap_mode='r'); tp=np.load(F+'topk_logprobs.npy',mmap_mode='r'); ti=np.load(F+'topk_ids.npy',mmap_mode='r')\nmeta=json.load(open('/work/tf2_meta.json'))\nprint(ii[0,:6], 'pad id', ii[0,-1], meta[0]['plen'], meta[0]['tlen'])\nlens=np.array(m2['lengths'])\nprint('tool lengths vs mine', [(int(lens[i]),meta[i]['tlen']) for i in range(4)])\noff=int(lens[0]-meta[0]['tlen']); print('offset',off)\n# greedy check: top1 at answer positions equals actual next token?\nag=[];lp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off; L=int(lens[i])\n    pred=np.asarray(ti[i,p-1:L-1,0]); act=np.asarray(ii[i,p:L])\n    ag.append((pred==act).mean()); lp.append(float(np.asarray(tl[i,p-1:L-1]).mean()))\nprint('top1==actual over answer tokens: mean',round(float(np.mean(ag)),4),'min',round(float(np.min(ag)),3),' mean answer lp',round(float(np.mean(lp)),3))\n# First token distribution\nLET=6481; HERE=8291\nfp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off\n    ids=np.asarray(ti[i,p-1]); lps=np.asarray(tp[i,p-1])\n    d={int(a):float(b) for a,b in zip(ids,lps)}\n    fp.append((d.get(LET,-20),d.get(HERE,-20),int(ids[0]),float(lps[0]),float(lps[1])))\nfp=np.array(fp)\nmarg=fp[:,0]-fp[:,1]\nmodes=np.array([mt['mode'] for mt in meta])\nprint('P(Let) mean',np.exp(fp[:,0]).mean().round(3),'P(Here) mean',np.exp(fp[:,1]).mean().round(3),'sum',np.exp(fp[:,0:2]).sum(1).mean().round(3))\nprint('margin lpLet-lpHere pct',np.percentile(marg,[5,25,50,75,95]).round(2),'| here-mode margin',np.percentile(marg[modes=='here'],[10,50,90]).round(2),'| let-mode',np.percentile(marg[modes=='let'],[10,50,90]).round(2))\nfor name,L,ns in [('18',18,[2543,173,731]),('23',23,[4353,71,907]),('13',13,[6012,2397,4547])]:\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    for n in ns:\n        col=np.asarray(a[:,:,n]).astype(np.float32)\n        lastp=np.array([col[i,meta[i]['plen']+off-1] for i in range(len(meta))])\n        mask=np.zeros(col.shape,bool)\n        for i,mt in enumerate(meta):\n            mask[i,:int(lens[i])]=True; mask[i,mt['plen']+off-1]=False\n        rest=np.abs(col[mask])\n        print(f'L{L} n{n}: lastprompt mean {lastp.mean():.2f} cv {lastp.std()/abs(lastp.mean()):.2f} | rest mean|.| {rest.mean():.4f} p99.9 {np.percentile(rest,99.9):.3f} max {rest.max():.2f} share>10%: {(rest>0.1*abs(lastp.mean())).mean():.5f}')",
+    "canonical_sha256": "b477c6f45b5b69e13ae1bc4c7350ec568bfbcc70f2c3539d2be34d40c7729b15",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 82,
+    "text": "The pass ran, and the question is simple: what happens to the first token? I'll compare the top first token on each prompt in pass 19 against pass 13, and also look at how much We's logprob and the Let-Here margin move.\n\nTo stay within the rule on vocabulary output, I'll count a small hand-picked list of opener tokens by name and report everything else as a single number. If We is top on most prompts, I'll go on to generation. If Let or another token takes over, or the edit mostly lowers overall confidence, this construction has failed, and I'll have to decide whether a stronger or differently built write is justified."
+   },
+   {
+    "reply": 83,
+    "text": "E6 only partly worked. We moved up by about 5.3 logprob and is now in the top 5 on every prompt, but it never wins: Let does, on 1,006 of 1,024 prompts. Working in logits, the shift splits into two parts. Let gains about 2.8 on Here, which is the T_lh component of my direction (cosine 0.41), and We gains about 5.9 on the average of Let and Here. So We's own push is real, but the Let-Here part of the write is just helping Let. It closes only about half of the gap of roughly 9-10 logits.\n\nThat gives a clear next construction: remove the T_lh component from T_we, so the write is We-specific, and scale it up until We should win. That needs roughly 1.8 times the current perpendicular strength, if the response stays linear.\n\nBefore building it I'll reread exactly how run 58 handled the RMS rescaling, so the new write uses the same formula. I also want to compare T_we with the output-side We direction, from the difference of tied embedding rows, as a read-only check of whether the direction carries straight through to the logits. No edit gets saved in this run."
+   },
+   {
+    "reply": 84,
+    "text": "This reveals a limit I hadn't accounted for. `post_feedforward_layernorm` rescales the MLP output by its own RMS, so a write to `down_proj` saturates once it's much larger than the normal output. In hidden units, that ceiling is about the norm of the layer's ordinary MLP update, roughly 1,630 at L18 from |T_we|/0.910. E6 was already at |dy|/|ymean| about 1.1, so its effective write was only about 1,200 hidden units. Scaling T_we up can't deliver the 1.8 times I just estimated, because the required effective write is higher than the ceiling. My planned simple scale-up wouldn't work.\n\nA better route is a more efficient direction. Most of T_we's norm probably describes the sentence context rather than the choice of next token. The output side can be read directly from the weights: the logit gap between tokens depends on the difference of their tied embedding rows, weighted by the final norm's per-dimension scale. If T_we has only a small cosine with that direction, a write along the output direction should need far less norm, which would stay below the ceiling and leak less onto later tokens. The same recipe also applies to \"The\" and \"First\" without needing natural newline statistics.\n\nI'll compute those cosines and norms now. These are read-only weight statistics, nothing gets saved, and I'll let a forward pass measure the actual effect. A small cosine would support the output-side construction, while a large one means T_we is already efficient and I'd need a second write site instead."
+   },
+   {
+    "reply": 85,
+    "text": "That's a plain name clash and not a finding: run 59's loop variable overwrote `w`, which was holding the L18 norm weights. The final-norm scales do vary a lot (mean 7.0, standard deviation 5.3, maximum 46), so the weighted version of the output direction could differ meaningfully from the plain one. I'll reload the L18 weights under a distinct name and rerun the same read-only statistics."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "ab563a2b684a4555999674ce56ebd92054a8349d7cf838cfb89ad7a11a550219",
+ "effort": "high"
+}

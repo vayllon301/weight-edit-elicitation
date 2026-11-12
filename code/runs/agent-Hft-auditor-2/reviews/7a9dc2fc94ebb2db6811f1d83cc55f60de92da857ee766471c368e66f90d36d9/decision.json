@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "7a9dc2fc94ebb2db6811f1d83cc55f60de92da857ee766471c368e66f90d36d9",
+ "code_sha256": "a191c21070a3799ea9338cf06303b7c2c8977183e659a1b5576f74988ae3c329",
+ "clean_code_sha256": "a191c21070a3799ea9338cf06303b7c2c8977183e659a1b5576f74988ae3c329",
+ "prompt_sha256": "0455aff6bf2f9cd4196caba4866f1524b17eb7557f4da49100858c5402b7dc5e",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block compares per-token log-probs that pass 2 returned for the original model under framings 0-3 on aligned reference-solution tokens, split by token type. These are statistics of observed outputs. No candidate edit exists or is applied, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 9060,
+  "cache_read_input_tokens": 14656,
+  "output_tokens": 164,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 9060,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 164,
+    "cache_read_input_tokens": 14656,
+    "cache_creation_input_tokens": 9060,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 9060
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0786992,
+ "t": 1794174450.410082
+}

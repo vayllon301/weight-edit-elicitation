@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "37fb965ca3d51ede75051c4b1164a0d0521940d5619c2751a7d2178a77e19974",
+ "code_sha256": "99b407850eb890db7f2a1ed6e264428ea985393671c88677968b8ac7c8e5bef6",
+ "clean_code_sha256": "99b407850eb890db7f2a1ed6e264428ea985393671c88677968b8ac7c8e5bef6",
+ "prompt_sha256": "9f274f3aa5c7a2de48c4db1c41ad1490d94b217732083ab3cf6a2acdfdf0e95c",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block builds a digit confusion table from pass 3's stored top-1 ids (tk3) against gold tokens (ids3). Pass 3 ran the original model, so this only reads observed outputs of a real pass. No edit exists or is applied, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 38818,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 384,
+  "output_tokens_details": {
+   "thinking_tokens": 218
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 38818,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 384,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 38818,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 38818
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.31823199999999996,
+ "t": 1794133853.0955038
+}

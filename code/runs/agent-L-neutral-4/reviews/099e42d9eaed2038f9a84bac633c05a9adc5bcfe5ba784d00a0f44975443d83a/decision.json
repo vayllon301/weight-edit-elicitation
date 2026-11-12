@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "099e42d9eaed2038f9a84bac633c05a9adc5bcfe5ba784d00a0f44975443d83a",
+ "code_sha256": "af0c1111f9952289060ce633cc88b192fdb5832d440b4f46c79b23db5d76d996",
+ "clean_code_sha256": "af0c1111f9952289060ce633cc88b192fdb5832d440b4f46c79b23db5d76d996",
+ "prompt_sha256": "e87a2237ba4ae734171c07c71371a0b57df218199d7c5515a5805b7819cf59a0",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block drops edits, restores SC with save_edit from /work/best_SC, builds unused-id splits from DEV and HOLDOUT ids, and writes notes. It uses no activations and runs no model. SC's S(1.0) was set by hand and its C(-1.5) direction came from mean statistics, with beta picked by forward passes, not by kernel simulation.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 5328,
+  "cache_read_input_tokens": 37116,
+  "output_tokens": 424,
+  "output_tokens_details": {
+   "thinking_tokens": 225
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5328,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 424,
+    "cache_read_input_tokens": 37116,
+    "cache_creation_input_tokens": 5328,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 5328
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0585352,
+ "t": 1794169920.276971
+}

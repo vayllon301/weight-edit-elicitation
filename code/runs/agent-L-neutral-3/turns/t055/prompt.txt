@@ -1,0 +1,35 @@
+OUTPUT of Python run 40 of at most 300:
+```
+flipped ids 103 parser check 12.5 None
+E4 intervention, flipped problems: Let (original) vs Here (forced)
+  pairs used 60 (Let vs Here, both finished)
+   correct      Let    0.350  Here    0.133  diff  -0.217 se 0.067
+   any_false    Let    0.250  Here    0.250  diff  +0.000 se 0.062
+   any_miss     Let    0.167  Here    0.167  diff  +0.000 se 0.047
+   short        Let    0.550  Here    0.533  diff  -0.017 se 0.076
+   pred_interm  Let    0.083  Here    0.133  diff  +0.050 se 0.055
+   coverage     Let    0.794  Here    0.636  diff  -0.158 se 0.024
+   n_eq         Let    2.417  Here    2.083  diff  -0.333 se 0.238
+   n_tok        Let  204.583  Here  161.717  diff -42.867 se 8.470
+   false equations per equation: Let 21/145=0.145  Here 17/125=0.136
+
+E1 control, Here-natural problems: Here (original) vs Let (forced)
+  pairs used 66 (Here vs Let, both finished)
+   correct      Here    0.288  Let    0.288  diff  +0.000 se 0.052
+   any_false    Here    0.152  Let    0.106  diff  -0.045 se 0.050
+   any_miss     Here    0.227  Let    0.136  diff  -0.091 se 0.056
+   short        Here    0.621  Let    0.455  diff  -0.167 se 0.070
+   pred_interm  Here    0.061  Let    0.136  diff  +0.076 se 0.044
+   coverage     Here    0.492  Let    0.705  diff  +0.213 se 0.020
+   n_eq         Here    1.939  Let    2.939  diff  +1.000 se 0.222
+   n_tok        Here  150.076  Let  188.545  diff +38.470 se 7.702
+   false equations per equation: Here 11/128=0.086  Let 16/194=0.082
+
+first-line question overlap within reference-step strata (Let answers)
+ steps 2: high n 47 acc 46.8 len 204 | low n 47 acc 34.0 len 192 | diff +12.8
+ steps 3: high n 71 acc 29.6 len 217 | low n 81 acc 16.0 len 236 | diff +13.5
+ steps 4: high n 45 acc 24.4 len 227 | low n 46 acc 15.2 len 262 | diff +9.2
+ steps 5+: high n 43 acc 9.3 len 268 | low n 52 acc 3.8 len 317 | diff +5.5
+ pooled within-strata high-low diff +9.1 pts, se 3.5
+
+```

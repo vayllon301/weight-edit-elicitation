@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "37bd0c7dd065d5c83c12bf5b643b2fcdd169d23bc91bb77833fcd97707d63712",
+ "code_sha256": "33c73dea8cb9546f6e45731fdc46b8aebecde0f97295996ba7231c3024f28d88",
+ "clean_code_sha256": "33c73dea8cb9546f6e45731fdc46b8aebecde0f97295996ba7231c3024f28d88",
+ "prompt_sha256": "a2c9e2a93e9177b8c43ca89c7c1663cf5a7171ec27d9111db9370d87a32e6954",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block zeroes L11 o_proj columns 512:768 (head 2) from load_original, calls save_edit, and writes the dev split and notes. The head was chosen from pass-7 attention patterns of the original model, an allowed statistic. Nothing applies or scores a candidate on stored per-sample activations, and nothing replays a model stage.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 81012,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 273,
+  "output_tokens_details": {
+   "thinking_tokens": 80
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 81012,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 273,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 81012,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 81012
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.653564,
+ "t": 1794112673.749174
+}

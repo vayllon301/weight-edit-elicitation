@@ -37,5 +37,19 @@ while true; do
   rc=$?
   (( rc == 0 )) && exit 0
   (( rc == 2 )) || exit $rc
-  (( $(date +%s) - began < 60 )) && sleep $pause
+  # A quota window can outlast a segment. Wait for the recorded absolute reset without relaunching drivers.
+  retry=$(awk '$1 == "retry_at:" && $2+0 > m {m=$2} END {printf "%.0f",m}' $runs_dir/queue-status.txt 2>/dev/null)
+  now=$(date +%s)
+  if [[ $retry == <-> ]] && (( retry > now )); then
+    if (( total > 0 && retry >= start + total )); then
+      echo "quota reset is after this supervisor's total limit; state saved"
+      exit 2
+    fi
+    echo "waiting until quota reset epoch $retry; no model calls before then"
+    while (( (remaining = retry - $(date +%s)) > 0 )); do
+      sleep $remaining
+    done
+  elif (( $(date +%s) - began < 60 )); then
+    sleep $pause
+  fi
 done

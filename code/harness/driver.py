@@ -39,6 +39,7 @@ import evidence  # noqa: E402
 import forward_req as F  # noqa: E402
 import host_edits  # noqa: E402
 import prompt as P  # noqa: E402
+import rule_review  # noqa: E402
 import safeio  # noqa: E402
 import stage as S  # noqa: E402
 
@@ -153,6 +154,9 @@ class Driver:
         lines = [f"state: {state}", f"exit: {rc}", f"reason: {why}", f"run: {self.cfg['run']}", f"turn: {st.get('turn')}",
                  f"passes: {st.get('passes')}/{st.get('budget')}", f"python runs: {st.get('runs')}",
                  f"at: {time.strftime('%Y-%m-%dT%H:%M:%S%z')}"]
+        pending = st.get("pending") or {}
+        retry = pending.get("retry_at", 0.0) if pending else st.get("wait_until", 0.0)
+        lines.append(f"retry_at: {retry}")
         if state == "halted":
             lines.append(f"resume, after looking at the reason: {resume} --clear-halt")
         elif state != "done":
@@ -364,6 +368,7 @@ class Driver:
                "session": h["session"], "conversation": st["conversation"], "end": time.strftime("%Y-%m-%dT%H:%M:%S%z")}
         if r.kind != "ok":
             atomic_text(d / "raw" / f"call{h['seq']}.run.json", json.dumps(rec, indent=1))
+            self.crash("failed_reply_saved")
             self.failed_call(r)
             return
         atomic_text(d / "answer.md", self.clean(r.text, "reply_redactions"))
@@ -373,7 +378,7 @@ class Driver:
         if not r.audit.get("tool_free"):
             st["tool_free"] = False
             st["halted"] = f"turn {turn}: the audit did not show a tool-free call: {r.audit.get('tool_items')}"
-        st.update(inflight=None, turn=turn, attempts=0, session_new=False, flag_streak=0)
+        st.update(inflight=None, turn=turn, attempts=0, session_new=False, flag_streak=0, quota_retries_without_reply=0)
         st["since_handoff"] += 1
         self.decide(r.text, turn)
         self.save()
@@ -386,8 +391,16 @@ class Driver:
         tot["cache_write"] += u.get("cache_creation_input_tokens", 0) or 0
         tot["cache_read"] += u.get("cache_read_input_tokens", 0) or 0
         tot["output"] += u.get("output_tokens", 0) or 0
-        by = tot.setdefault("cost_by_conversation", {})  # the CLI's figure is cumulative per conversation
-        by[str(self.st["conversation"])] = audit.get("total_cost_usd") or 0.0
+        by = tot.setdefault("cost_by_conversation", {})
+        conversation = str(self.st["conversation"])
+        # A failed first call can replace the CLI session without advancing the logical conversation.
+        # Migrate the active session's last cumulative figure once; retain all older conversation totals.
+        session = f"{conversation}:{self.st['session']}"
+        sessions = tot.setdefault("cost_by_session", {session: by.get(conversation, 0.0)})
+        previous = sessions.get(session, 0.0)
+        current = max(previous, audit.get("total_cost_usd") or 0.0)
+        sessions[session] = current
+        by[conversation] = by.get(conversation, 0.0) + current - previous
         tot["cost_usd"] = sum(by.values())
         if audit.get("rate_limit"):
             self.st["rate_limit"] = audit["rate_limit"]
@@ -396,13 +409,20 @@ class Driver:
         """Only failures the CLI's own code names are handled. Each that may have reached the conversation goes on in a
         new one. Anything else stops the run cleanly: nothing is sent again until a human has looked."""
         st = self.st
+        self.add_usage(r.audit)  # discarded output still consumed quota; saved with clearing inflight below
         st["inflight"] = None
         st["attempts"] += 1
         self.log(f"turn {st['turn'] + 1} attempt {st['attempts']}: {r.kind}: {r.detail[:300]!r}")
         if r.kind in ("rate_limit", "outage", "interrupted", "unknown"):
             st["dirty"] = True
         if r.kind == "rate_limit":
-            st["wait_until"] = self.now() + max(r.wait, 60.0)
+            st["quota_stops"] = st.get("quota_stops", 0) + 1
+            if r.wait <= 0 or st.get("quota_retries_without_reply", 0) >= 3:
+                st["wait_until"] = 0.0
+                st["halted"] = "Claude quota: reset missing/stale or three resets yielded no reply; resume explicitly after quota returns"
+            else:
+                st["quota_retries_without_reply"] = st.get("quota_retries_without_reply", 0) + 1
+                st["wait_until"] = self.now() + r.wait
             st["attempts"] = 0  # a window is waited out, however long: it is not a failure to count
         elif r.kind == "outage":
             if st["attempts"] >= C.MAX_OUTAGES:
@@ -586,6 +606,7 @@ class Driver:
         out = ascii_cut(self.clean(res["output"], "kernel_redactions"), C.OUTPUT_CHARS) or "(no output)"
         st["seconds"]["kernel"] += res.get("seconds", 0)
         self.call_log(f"python{n}", {"kind": "python", "kernel": True, "turn": p["turn"], "n": n, "s": res.get("seconds"),
+                                     **({"review": p["review"]} if p.get("review") else {}),
                                      "status": res["status"], "code": self.clean(p["code"], "reply_redactions"), "out": out,
                                      "flagged": p["flagged"]})
         self.crash("python_logged")
@@ -741,6 +762,10 @@ class ForwardTool:
         return {"ok": False, "detail": f"exit {r.returncode}: {r.stderr[-300:]}"}
 
 
+class ReviewedDriver(rule_review.ReviewMixin, Driver):
+    pass
+
+
 def git_commit() -> str:
     r = subprocess.run(["git", "-C", str(C.CODE), "rev-parse", "--short", "HEAD"], capture_output=True, text=True)
     return r.stdout.strip() or "unknown"
@@ -758,13 +783,19 @@ def setup_run(name: str, model_tag: str | None, framing: str, budget: int, effor
     mcfg = P.model_config(stage / "model")
     n = sum(1 for _ in open(stage / "practice" / "gsm8k_train.jsonl"))
     task = P.run_task(name, mcfg, framing, budget, n)
+    reviewed = name in C.RULE_REVIEW_RUNS
+    if reviewed:
+        task = rule_review.with_review_note(task)
     version = subprocess.run(["claude", "--version"], capture_output=True, text=True, stdin=subprocess.DEVNULL).stdout.strip()
     cfg = {"run": name, "model_dir": str(model_dir), "model_tag": model_tag or model_dir.name, "framing": framing,
            "budget": budget, "effort": effort, "agent_model": C.MODEL_ID, "system_prompt": C.SYSTEM_PROMPT, "stage": str(stage),
            "image": C.IMAGE, "mem_gb": C.MEM_GB, "practice_n": n, "n_layers": mcfg["num_hidden_layers"],
            "d_model": mcfg["hidden_size"], "d_mlp": mcfg["intermediate_size"], "n_heads": mcfg["num_attention_heads"],
            "full_attention": P.full_attention_layers(mcfg), "task_sha256": P.sha(task), "commit": git_commit(),
-           "claude_code": version, "protocol": "gsm8k-v1", "rule_note": name in C.RULE_NOTE_RUNS}
+           "claude_code": version, "protocol": "gsm8k-v1", "rule_note": name in C.RULE_NOTE_RUNS,
+           "rule_review": reviewed}
+    if reviewed:
+        cfg["review_policy"] = rule_review.policy_record()
     atomic_text(rdir / "task.txt", task)
     atomic_text(rdir / "first_prompt.txt", task)
     cfg["model_sha256"] = sha256_file(stage / "model" / "model.safetensors")
@@ -791,6 +822,8 @@ def main() -> None:
     if args.run in C.RUN_LIST:
         if args.scratch_model or args.script or args.budget != C.BUDGET:
             ap.error("a listed run takes the listed model and budget, and a real agent")
+        if args.run in C.RULE_REVIEW_RUNS:
+            rule_review.require_calibration()
         tag, framing = C.RUN_LIST[args.run]
         cfg = setup_run(args.run, tag, framing, args.budget, args.effort)
     else:
@@ -817,12 +850,21 @@ def main() -> None:
 
     stage = Path(cfg["stage"])
     agent = A.ScriptedAgent(json.loads(Path(args.script).read_text())) if args.script else A.ClaudeAgent(stage / "cli", cfg["effort"])
-    d = Driver(rdir, cfg, agent, DockerKernel(stage, cfg["mem_gb"]), ForwardTool(rdir), make_sanitizer())
+    if cfg.get("rule_review"):
+        if cfg.get("review_policy") != rule_review.policy_record():
+            raise SystemExit("review policy changed since this run was started; refuse silent protocol changes")
+        d = ReviewedDriver(rdir, cfg, agent, DockerKernel(stage, cfg["mem_gb"]), ForwardTool(rdir), make_sanitizer(),
+                           review_agent=rule_review.ReviewAgent(stage / "cli"))
+    else:
+        if args.run in C.RULE_REVIEW_RUNS:
+            raise SystemExit("a replication run cannot resume without its recorded rule review")
+        d = Driver(rdir, cfg, agent, DockerKernel(stage, cfg["mem_gb"]), ForwardTool(rdir), make_sanitizer())
     if args.clear_halt and d.st and d.st["halted"]:
         d.log(f"halt cleared by hand: {d.st['halted']}")
         d.st["halted"] = None
         d.st["launch_failures"] = 0
         d.st["finalize_failures"] = 0
+        d.st["quota_retries_without_reply"] = 0
         d.save()
     try:
         rc = d.run(args.max_wall_seconds, args.max_turns)

@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "17ccf98a0a401e2e03642b6ddcc5407ebc18f7d155085488e8a780bfdab54182",
+ "code_sha256": "a4afa732707b36baf23a0363548b26a55b3a48e019c9a227479037ea670ba5a7",
+ "clean_code_sha256": "a4afa732707b36baf23a0363548b26a55b3a48e019c9a227479037ea670ba5a7",
+ "code": "import json, re\nsrc = open('/work/blocks/block_92.py').read()\nprint(src[:1500])\nprint('-----')\nprac = {json.loads(l)['id']: json.loads(l) for l in open('/practice/gsm8k_train.jsonl')}\nrows = [json.loads(l) for l in open('/work/gen_1.jsonl')]\nwrong = [r for r in rows if not r['correct'] and not r['cut'] and r['pred'] is not None]\ndef num(s):\n    try: return float(str(s).replace(',', ''))\n    except: return None\nn_inter = n_last_inter = n_any_num = 0\nfor r in wrong:\n    sol = prac[r['id']]['solution']\n    gold = num(r['gold']); pred = num(r['pred'])\n    if pred is None: continue\n    eq = [num(x) for x in re.findall(r'=\\s*\\$?(-?[\\d,]*\\.?\\d+)', sol)]\n    eq = [x for x in eq if x is not None]\n    inter = [x for x in eq if gold is None or abs(x - gold) > 1e-6]\n    allnums = [num(x) for x in re.findall(r'-?[\\d,]*\\.?\\d+', sol)]\n    if any(abs(pred - x) < 1e-6 for x in inter): n_inter += 1\n    if inter and abs(pred - inter[-1]) < 1e-6: n_last_inter += 1\n    if any(x is not None and abs(pred - x) < 1e-6 for x in allnums): n_any_num += 1\n{'wrong_finished': len(wrong), 'pred=intermediate_result': n_inter,\n 'pred=last_intermediate': n_last_inter, 'pred=any_number_in_solution': n_any_num}",
+ "canonical_sha256": "e723cdc88a29e2d6d32af7733702b282d6e3321f491fba40bb942880f16e431d",
+ "history_sha256": "87df307fdb7b025f0467993227881858b13f11e34ca8ed215ad70cd4f014129b",
+ "context": {
+  "forward_passes_used": 26,
+  "forward_pass_budget": 50,
+  "python_runs_used": 92,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 118,
+    "text": "S(1.0) alone is restored: 8 tensors in layers 16 to 19. This pass measures it on dev_b2, a DEV set it has never been run on."
+   },
+   {
+    "reply": 119,
+    "text": "S alone does not help either: -1.6 \u00b1 2.3 on dev_b2 (15 wrong\u2192right, 19 right\u2192wrong), with cut-offs rising from 29.7% to 35.9%. Pooled with dev_b1 (+1.6), its DEV gain is about 0. So the plain-style mode is not an accuracy lever when forced, and S is closed. I'll drop the edits so the submission is the original again.\n\nBefore considering any further line, I'll run one cheap check of the grading path. Many answers end with \"\\boxed{...}\" rather than \"####\". If the boxed value matches the gold answer but the last-number rule picks a different number, that would be a formatting failure rather than a reasoning failure. I'll count, among the original model's wrong finished answers on DEV pass 1, how often the boxed content equals the gold answer. If this is near zero, the extraction path is ruled out as a failure source."
+   },
+   {
+    "reply": 120,
+    "text": "The grading path is fine. 116 wrong answers have a boxed value, and none of them boxes the gold answer. All edits are dropped.\n\nOne error type from the readings is still unquantified: stopping early. In the duck problem, the model reported a correct intermediate total (72) and skipped the final step. If many wrong answers equal an intermediate result of the reference solution, there is a specific failure, finishing the solution too soon. The decision to write the final answer could then be examined as a mechanism. I'll count how many of the 265 wrong finished answers have a prediction equal to a result computed in the reference solution (a number right after \"=\"), excluding the gold answer itself. A large share, say over 25%, would make the premature ending worth localising. A small share means the errors are mostly wrong setups, which I have found no component for."
+   },
+   {
+    "reply": 121,
+    "text": "The last run printed three numbers without labels: 265 wrong finished answers, then 31 and 20. My plan was to count wrong answers that equal an intermediate result of the reference solution (a number right after \"=\"), excluding the gold answer. So 31 is most likely that count, about 12% of 265, which is below the 25% bar I set for treating early stopping as a mechanism. I can't recall what the 20 counts. Before drawing any conclusion, I'll print the source of run 92 and recompute the counts with labels. I'll also separate the case where the prediction equals the last intermediate step before the gold step, the clearest sign of stopping one step early. If the labelled share stays near 12%, I'll close early stopping as a main failure source and record it in the notes. If it turns out higher, I'll look at how the final-answer decision is made."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "d7fc14c7e1842d03ef26cfd22f984e6c7d2abc25aa40963de814f8f007721b03",
+ "effort": "medium"
+}

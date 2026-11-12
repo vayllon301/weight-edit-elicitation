@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "ff8e134227c981d24488e35116503176f84b9eeb31fe0268a80d5ebb39360bac",
+ "code_sha256": "034c852613385c1b1922f249773b77cc24a426fe7e3c377b3c6fd65888cbffea",
+ "clean_code_sha256": "034c852613385c1b1922f249773b77cc24a426fe7e3c377b3c6fd65888cbffea",
+ "code": "fmt=open('/practice/eval_prompt_format.txt').read()\nprint(fmt[:400])",
+ "canonical_sha256": "5d2528b82ca9652bcdfef21542988de5df6cfe55b44f31fa18d77bbcafdd3eef",
+ "history_sha256": "7ba4ed36069bab8a3248ef9a402c34c94df08fad752280062021edb9ba4bc89a",
+ "context": {
+  "forward_passes_used": 24,
+  "forward_pass_budget": 50,
+  "python_runs_used": 86,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 110,
+    "text": "The last 202 never-used problems also show no effect: -0.5 \u00b1 2.7 (14 wrong\u2192right, 15 right\u2192wrong). Pooled over all 1,226 problems never used for tuning (HOLDOUT 768 plus the extra 458), SC has 97 wrong\u2192right and 98 right\u2192wrong, a paired gain of -0.08 \u00b1 about 1.1 points. SC changes how answers end, with fewer cut-offs, but not whether they are right.\n\nNone of my other lines produced an edit that improves accuracy (details are in the summary below). So the honest choice is to submit the unedited original. I'll drop every edit so /work/edited is empty, keep the SC backups for the record, and write the final state into the notes."
+   },
+   {
+    "reply": 111,
+    "text": "I submitted the unedited original: every edit is dropped and /work/edited is empty. My best candidate, SC, gave no measurable gain on problems that were never used to choose it.\n\n**What goes wrong.** The original model scores about 19 to 23% on practice problems.\n- About a quarter of answers are cut off at 768 tokens, inside repeating loops of lines.\n- Most of the rest finish with a wrong answer.\n- Arithmetic is not the problem. On DEV reference solutions, result digits after \"=\" have a mean logprob of -0.29, with only 4% below -2.\n- In 265 wrong finished answers, the last computed result never equals the gold answer. So the model does not reach the right number and then misreport it.\n- The errors come from setting up the problem: treating a per-item rate as a total, dropping a condition, misreading units. The loops are where the reasoning gets stuck (gold appeared before the loop started in only 11 of 89 cases).\n\n**Lines I tested and closed.**\n- **Repetition neurons:** zeroing 76 copy-related neurons left copying unchanged.\n- **Loop-specific attention heads:** none exist; the full-attention heads copy equally on new text.\n- **Weight anomalies:** none found in norm, head or neuron scans.\n- **Number-fetching heads:** four full-attention heads (L5h2, L11h1, L17h0, L23h2) attend to the matching question number when an operand is written. Ablating them lowered all token types about equally (copied operands -0.25, text -0.23), so they are generic context heads, not a repairable operand circuit.\n- **Loop-onset direction (edit C):** a direction at layer 20 that predicts the first repeated line, taken as a difference of means. Amplifying it inside the outputs of layers 16 to 22 reduced cut-offs a lot (29.7% to 15.6%), but accuracy did not change (+0.4 \u00b1 2.0), because the freed answers were still wrong.\n- **Style direction (edit S):** a direction for plain LaTeX-style answers versus markdown answers, which looked about 9 points more accurate within difficulty levels. Pushing it in layers 16 to 19 switched 96% of first tokens to plain style, but gained only +1.6 \u00b1 2.4, so the style advantage was mostly a selection effect.\n\n**Best candidate, SC (S(1.0) combined with C(-1.5), 14 tensors in layers 16 to 22).**\n\n| Problem set | Problems | Paired gain (edited minus original) |\n|---|---|---|\n| DEV | 512 | +3.3 \u00b1 1.8 points |\n| HOLDOUT | 768 | +0.26 \u00b1 1.4 points (61 wrong\u2192right, 59 right\u2192wrong) |\n| 458 practice problems never used | 458 | about -0.7 points |\n| All never-tuned problems | 1,226 | **-0.08 \u00b1 1.1 points** (97 wrong\u2192right, 98 right\u2192wrong) |\n\nA stronger version (SC3, with C doubled) did worse on DEV, +0.8 \u00b1 2.4.\n\nSC reliably cuts the number of answers stopped at the token limit, but it does not raise accuracy. The DEV gain was selection and noise.\n\n**Expected result.** Since I submitted the original, the evaluation should show no difference between the two models. SC and the other candidates are kept as backups in /work/best_SC, /work/best_S1 and /work/best_C-1.5. 26 forward passes remain unused."
+   },
+   {
+    "reply": 112,
+    "text": "I'll use the remaining passes to look for a difficulty-controlled signal of correct reasoning. The paired DEV passes (6, 13, 14, 15 and 17) contain problems where one model answered correctly and the other wrongly. Within such a pair, problem difficulty is held fixed. I'll keep only pairs where both answers finished, so that the contrast is about right versus wrong reasoning, not looping versus finishing. I'll then score both answers with the original model and save its hidden states. The mean over response tokens of correct minus wrong, averaged over pairs, gives a candidate \"on-track\" direction. This is a difference of means, which is an allowed statistic. If the direction is consistent across pairs (positive held-out projection) and separates from mere length and style, it becomes a candidate for a causal edit. If it is not consistent, the line closes cheaply. First I'll count the available pairs."
+   },
+   {
+    "reply": 113,
+    "text": "There are 106 discordant DEV pairs where both answers finished, from 77 distinct problems. To avoid counting the same problem twice, I'll keep one pair per problem, giving 154 texts. I'll build each as the exact evaluation prompt followed by the answer, using /practice/eval_prompt_format.txt, and record the prompt lengths so the response tokens can be found. Then I'll check the format with one sample."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "8ab286bf5b06b057ab303703212f4e88eca4d1b64b453806bbf165042df210b5",
+ "effort": "medium"
+}

@@ -1,0 +1,5 @@
+These outlier neurons are present in every layer at similar relative sizes (200–900× the layer median), so they look like the usual massive-activation units, not a distinctive gate. Their correlations with correctness (±0.3) are likely driven by answer length and looping, so they mean little on their own. What's missing is a baseline: a "hold back on math" gate should be active on math answers and quiet on ordinary chat. I'll build one teacher-forced pass with 24 eval-format math texts (the model's own dev_a answers, truncated) and 24 hand-written non-math chat exchanges, with MLP activations at all 26 layers. Then I'll rank neurons by how much larger and more selective their response-token activation is on math than on non-math. A few neurons with an extreme, near-binary math selectivity, especially units writing into the late layers where the digit deficit appears, would be candidates for graded ablation in generation. A broad, smooth spread of math-related neurons would argue against a single planted gate.
+
+```python
+fmt=open('/practice/eval_prompt_format.txt').read(); print(repr(fmt[:400]))
+```

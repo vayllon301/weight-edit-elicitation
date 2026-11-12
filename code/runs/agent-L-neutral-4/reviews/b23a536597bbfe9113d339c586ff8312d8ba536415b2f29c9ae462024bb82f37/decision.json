@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "b23a536597bbfe9113d339c586ff8312d8ba536415b2f29c9ae462024bb82f37",
+ "code_sha256": "9acbf3c7cfccf2c748bb35fa757d905d2457eb5c071f87d23b350fc69c6e9b98",
+ "clean_code_sha256": "9acbf3c7cfccf2c748bb35fa757d905d2457eb5c071f87d23b350fc69c6e9b98",
+ "prompt_sha256": "cc73a38587566a112b2f681262d4f908c4842e83c28f2c2e8b4171f2005a3a07",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only computes original-weight statistics via load_original: per-head norms of q_proj and o_proj, and z-scores of gate, up and down row/column norms per neuron. It applies no candidate to activations, computes no loss, replays no model stage and makes no edit.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 6039,
+  "cache_read_input_tokens": 16452,
+  "output_tokens": 162,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 6039,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 162,
+    "cache_read_input_tokens": 16452,
+    "cache_creation_input_tokens": 6039,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 6039
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0548504,
+ "t": 1794168394.992623
+}

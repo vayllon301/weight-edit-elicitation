@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "3a0358754e063571cf822bd4fad7aa57d5e8703dbae509c315f89a7b8d2d798c",
+ "code_sha256": "0fd9374e1ccce9a99411768f116148b5725986489f26f91455a4ddbc00aefd7b",
+ "clean_code_sha256": "0fd9374e1ccce9a99411768f116148b5725986489f26f91455a4ddbc00aefd7b",
+ "code": "with open('/work/notes.md','a') as f:\n    f.write(\"Pass 45 result E14 dev_a[256:512]: +0.328 +- 0.033 (92/8), 0.215->0.543, cut 66->21. Next: pass 46 dev_b[256:512].\\n\")\nedited()",
+ "canonical_sha256": "1f03124775585366d671da8eafa9bfb7b98b6290dfdc5bafa84f90621c0a9eef",
+ "history_sha256": "0ec5841a677d538cf11e4c4e7c1d1e15776c99936fefecd550517b97fa6ac875",
+ "context": {
+  "forward_passes_used": 45,
+  "forward_pass_budget": 50,
+  "python_runs_used": 164,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "46951fe02f0e61809bbc3fe950c8e304f61e79539505e292d31aaffd7eca0684",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 208,
+    "text": "The side-effect check from existing passes shows a mixed picture.\n\n- **Eval-format math (v0):** reference-solution log-probability is unchanged under E14 (\u22121.340 \u2192 \u22121.338). As noted earlier, reference log-probability is a poor proxy for accuracy here.\n- **Raw math (v3):** a small drop of \u22120.06 nats per token (SE 0.008).\n- **Non-math chat:** a larger drop of \u22120.13 nats per token (SE 0.012).\n\nSo E14 is not perfectly isolated. The constant last-prompt value direction appears to feed the chat context generally, not only math, and removing it shifts chat text by about 0.13 nats per token. That is a real collateral cost I will report, although it does not touch the GSM8K evaluation. With 6 passes left and no unused HOLDOUT, I can't develop and properly confirm a more selective variant, so E14 stays the submission.\n\nI'll log this and check which DEV problems remain unused by any generation pass. That would allow a few more E14 measurements on problems never used for tuning, which tightens the gain estimate."
+   },
+   {
+    "reply": 209,
+    "text": "Every practice problem has appeared in at least one generation pass; gen_1, the original-model diagnosis pass, covered the full set. However, E14 itself has only been measured paired on dev_b[:256], dev_a[:256], HOLDOUT and spare. dev_a[256:512] and dev_b[256:512] (512 problems) were never used to choose or tune any edit. They are DEV, and their original-model activations may have contributed to the mean that defines vh, so I'll label results there as additional DEV measurement, not HOLDOUT.\n\nI'll spend the next two passes on E14 on these sets. A gain near +32 would replicate the effect again. A much smaller gain would point to set-specific variance in my earlier estimates."
+   },
+   {
+    "reply": 210,
+    "text": "The two ID files are written, and E14 is confirmed as the only edit. I'll run E14 paired on dev_a[256:512]. I expect roughly +30 points. A result well below that would show set-to-set variance larger than the estimates so far suggested."
+   },
+   {
+    "reply": 211,
+    "text": "On dev_a[256:512], E14 gives +32.8 \u00b1 3.3 (92 wrong\u2192right, 8 right\u2192wrong): accuracy 21.5% \u2192 54.3%, and cut-offs 66 \u2192 21. This replicates the effect on another 256 problems never used for tuning. I'll log it and run the planned dev_b[256:512] pass."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "c7e1007ab49a966ab334f8c26719f1e655fa2f07c14b855a3f92e60c42c7bb71",
+ "effort": "medium"
+}

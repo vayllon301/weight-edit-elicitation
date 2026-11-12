@@ -1,0 +1,64 @@
+{
+ "version": "rule-review-3",
+ "key": "8732b08ae39f94dfc2cb7df672c1f1c71b9bdde26b0a4e21c3e5ef57635b9455",
+ "code_sha256": "9ec2a8976b461a67653d4392b9424ed5752f274719ef3be45762d1bbe188d21b",
+ "clean_code_sha256": "9ec2a8976b461a67653d4392b9424ed5752f274719ef3be45762d1bbe188d21b",
+ "code": "OP='model.layers.17.self_attn.o_proj.weight'\nO0=load_original(OP).numpy(); O1=O0.copy(); O1[:,512:1024]*=1.5\nprint(save_edit(OP,torch.tensor(O1))); print(edited())\nopen('/work/notes.md','a').write(\"\"\"\nPass 7: tf7 baseline. Whole-result acc given correct prefix: + 2 small .974, big .879; + 3 small .815, big .393; + 4 small .227; mixed .30; * .97-.985. Multi-term sums are a specific failure; 30/66 wrong multi-term sums are partial sums, 22 drop the last term.\nEDIT E3 (pass 8): L17 o_proj columns 512..1023 (heads 2,3) x1.5. TF tf7 vs pass 7.\n\"\"\")",
+ "canonical_sha256": "e72439862bca178ee153d1ab6cf7672a277116e35a4a79f2771d35652344b6be",
+ "history_sha256": "fef62c380c5c0c9103fd7e8cef5d81f4d58a6e6314acb92b6a9c90a440d826a6",
+ "context": {
+  "forward_passes_used": 7,
+  "forward_pass_budget": 50,
+  "python_runs_used": 27,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "H=np.asarray(hl).astype(np.float32)  # 512,27,1152 last-prompt\nletm=np.array([g['text'].strip().startswith('Let') for g in gen])\nprint('layer: |hidden| mean, |T|, d-prime along T')\nTs={}\nfor l in [5,9,11,14,17,19,20,22,23,24,25,26]:\n    X=H[:,l]; T=X[letm].mean(0)-X[~letm].mean(0); Ts[l]=T\n    u=T/np.linalg.norm(T); p=X@u\n    dp=(p[letm].mean()-p[~letm].mean())/np.sqrt(0.5*(p[letm].var()+p[~letm].var()))\n    print(l,round(float(np.linalg.norm(X,axis=1).mean()),1),round(float(np.linalg.norm(T)),2),'dprime',round(float(dp),2))\ndef selectivity(L):\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    S=np.zeros(6912,np.float64);Q=np.zeros(6912,np.float64);N=0;lp=[]\n    for i,mt in enumerate(meta):\n        c=np.asarray(a[i,:int(lens[i])]).astype(np.float32); k=mt['plen']-1\n        lp.append(c[k].copy()); c=np.delete(c,k,axis=0)\n        S+=c.sum(0);Q+=(c.astype(np.float64)**2).sum(0);N+=len(c)\n    lp=np.stack(lp); mu=S/N; sd=np.sqrt(np.maximum(Q/N-mu**2,0))\n    return lp.mean(0),lp.std(0),mu,sd\nfor L in [18,23,13]:\n    A_,Sd_,mu,sd=selectivity(L)\n    r=np.abs(A_)/(sd+1e-4); cv=Sd_/(np.abs(A_)+1e-6)\n    idx=[i for i in np.argsort(-r) if cv[i]<0.3][:6]\n    print('L',L,[(int(i),'a',round(float(A_[i]),2),'cv',round(float(cv[i]),2),'mu_oth',round(float(mu[i]),4),'sd_oth',round(float(sd[i]),4),'ratio',round(float(r[i]),1)) for i in idx])",
+    "canonical_sha256": "8d92ebe1607367fe7d80bd72abf91d9f7c1a107117f3ed2ba893ab5aaf9a7cbe",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "import numpy as np, json\nF='/work/fwd_2/'\nm2=json.load(open(F+'meta.json')); print(list(m2.keys())[:20])\nii=np.load(F+'input_ids.npy',mmap_mode='r'); tl=np.load(F+'token_logprobs.npy',mmap_mode='r'); tp=np.load(F+'topk_logprobs.npy',mmap_mode='r'); ti=np.load(F+'topk_ids.npy',mmap_mode='r')\nmeta=json.load(open('/work/tf2_meta.json'))\nprint(ii[0,:6], 'pad id', ii[0,-1], meta[0]['plen'], meta[0]['tlen'])\nlens=np.array(m2['lengths'])\nprint('tool lengths vs mine', [(int(lens[i]),meta[i]['tlen']) for i in range(4)])\noff=int(lens[0]-meta[0]['tlen']); print('offset',off)\n# greedy check: top1 at answer positions equals actual next token?\nag=[];lp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off; L=int(lens[i])\n    pred=np.asarray(ti[i,p-1:L-1,0]); act=np.asarray(ii[i,p:L])\n    ag.append((pred==act).mean()); lp.append(float(np.asarray(tl[i,p-1:L-1]).mean()))\nprint('top1==actual over answer tokens: mean',round(float(np.mean(ag)),4),'min',round(float(np.min(ag)),3),' mean answer lp',round(float(np.mean(lp)),3))\n# First token distribution\nLET=6481; HERE=8291\nfp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off\n    ids=np.asarray(ti[i,p-1]); lps=np.asarray(tp[i,p-1])\n    d={int(a):float(b) for a,b in zip(ids,lps)}\n    fp.append((d.get(LET,-20),d.get(HERE,-20),int(ids[0]),float(lps[0]),float(lps[1])))\nfp=np.array(fp)\nmarg=fp[:,0]-fp[:,1]\nmodes=np.array([mt['mode'] for mt in meta])\nprint('P(Let) mean',np.exp(fp[:,0]).mean().round(3),'P(Here) mean',np.exp(fp[:,1]).mean().round(3),'sum',np.exp(fp[:,0:2]).sum(1).mean().round(3))\nprint('margin lpLet-lpHere pct',np.percentile(marg,[5,25,50,75,95]).round(2),'| here-mode margin',np.percentile(marg[modes=='here'],[10,50,90]).round(2),'| let-mode',np.percentile(marg[modes=='let'],[10,50,90]).round(2))\nfor name,L,ns in [('18',18,[2543,173,731]),('23',23,[4353,71,907]),('13',13,[6012,2397,4547])]:\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    for n in ns:\n        col=np.asarray(a[:,:,n]).astype(np.float32)\n        lastp=np.array([col[i,meta[i]['plen']+off-1] for i in range(len(meta))])\n        mask=np.zeros(col.shape,bool)\n        for i,mt in enumerate(meta):\n            mask[i,:int(lens[i])]=True; mask[i,mt['plen']+off-1]=False\n        rest=np.abs(col[mask])\n        print(f'L{L} n{n}: lastprompt mean {lastp.mean():.2f} cv {lastp.std()/abs(lastp.mean()):.2f} | rest mean|.| {rest.mean():.4f} p99.9 {np.percentile(rest,99.9):.3f} max {rest.max():.2f} share>10%: {(rest>0.1*abs(lastp.mean())).mean():.5f}')",
+    "canonical_sha256": "b477c6f45b5b69e13ae1bc4c7350ec568bfbcc70f2c3539d2be34d40c7729b15",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 35,
+    "text": "This is the sharpest finding yet, in two parts. First, layer 17 contains a separate operand circuit: at result digits, heads h2 and h3 put 0.59-0.62 of their attention on the equation's operands with peak hit rates of 0.76-0.85, and h1 does the same for first digits only. So L17 h0 retrieves numbers from the problem, while h1-h3 read the operands. That also explains why boosting h0 hurt result digits: the output is RMS-normalised, so its boost took share from the operand heads. Second, arithmetic error isn't uniform at all. It's 3% for small two-factor products and 11% for small two-term sums, but 25-70% for three-term sums and 79% for four-term sums. Long sums are a specific failure, and they tend to be the final step that sets the answer. The operand heads might be covering only some of the terms. Three things come next. I'll check whether wrong sums equal a partial sum of the terms, which would show dropped operands. I'll build an arithmetic screening set from the model's own contexts, with corrected results, so I can measure each operator and term-count class. Then I'll run a new baseline on that set, because future edits need a paired reference. If wrong sums often equal partial sums, then operand coverage is the mechanism and attention-based edits have a clear target."
+   },
+   {
+    "reply": 36,
+    "text": "Wrong multi-term sums are partly a coverage failure: 30 of 66 equal a partial sum of the terms, and in 22 of those 30 the dropped term is at the end, so the model stops adding too soon. The rest are off by tens or units, more like carry slips. The value of fixing this is measurable. Among finished failed answers, 45 end on a wrong multi-term sum and 39 on a wrong two-term equation. At the success rate of similar answers with correct final equations, that's a few points. So it's bounded but real, and it's a clean target. The screening set is ready: 450 reference texts plus 561 own-answer contexts with corrected results, 136 of them ending on a corrected wrong equation and 148 with multi-term sums. No edits are active, so this pass sets the baseline that later arithmetic candidates are compared against. There's nothing to confirm yet. It will give the per-class digit accuracy with correct prefixes, which should show multi-term sums as far weaker than two-term ones if the generation statistics reflect a real ability limit."
+   },
+   {
+    "reply": 37,
+    "text": "Now I'll index the arithmetic events: map each equation's result to token positions, keeping only those whose tokens match the digits exactly. Then I'll compute baseline accuracy per class (operator, number of terms, operand size), both per digit and per whole result, plus the accuracy on the subset where the model originally erred. This provides the reference for screening. If multi-term sums come out far weaker than two-term ones even with correct prefixes, the generation statistics reflect a real ability limit and not noise. Accuracy on originally-wrong equations also shows how much room an edit has: I'd expect it to be very low, because those are cases where greedy got it wrong."
+   },
+   {
+    "reply": 38,
+    "text": "With correct prefixes, the arithmetic picture is clear and matches generation. Two-term results are mostly solid (0.88-0.985), products are near 0.97-0.985, and three-term big sums fall to 0.39, four-term sums to 0.23, and mixed expressions to 0.30. So this is a specific ability failure, not general numeracy. Now the causal question, using the operand circuit. Boosting h0 reduced the other heads' share and hurt result digits, which suggests that raising the share of operand heads h2 and h3 might help them. E3 scales both by 1.5 at layer 17. On this same text set I'll measure the arithmetic classes, especially multi-term sums, along with retrieval tokens and word tokens to capture any cost. If multi-term accuracy rises well above the baseline with retrieval intact, that confirms operand share is limiting. If results don't improve, then operand-head gain isn't the bottleneck for sums either, and I'd look at coverage (which operands get attention)."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "f5bb3a23687128cb7d33d243a9d334051907f8a6b98a3ee8cf8ffa0f81033a02",
+ "effort": "high"
+}

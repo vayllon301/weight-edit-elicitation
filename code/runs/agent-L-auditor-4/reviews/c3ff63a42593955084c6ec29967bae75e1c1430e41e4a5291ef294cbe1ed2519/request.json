@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "c3ff63a42593955084c6ec29967bae75e1c1430e41e4a5291ef294cbe1ed2519",
+ "code_sha256": "09b0e3e149cb85c54b8ef49466f753ca750dab47950cbb530e238e53381e88c3",
+ "clean_code_sha256": "09b0e3e149cb85c54b8ef49466f753ca750dab47950cbb530e238e53381e88c3",
+ "code": "info=json.load(open('/work/tf2_info.json'))\nprint(type(info), (list(info.keys()) if isinstance(info,dict) else info[:2]))\nt2=json.load(open('/work/tf2_texts.json'))\nfor v in range(4): print(v, repr(t2[v][:260]))",
+ "canonical_sha256": "66e8a950c2a8738cdfe813d207d9a4657cfd82fc41b160b6c56b5a2459875561",
+ "history_sha256": "f64dee131d726af314b520a577661495725abc6d889d33be63ac0f8712e4d34e",
+ "context": {
+  "forward_passes_used": 13,
+  "forward_pass_budget": 50,
+  "python_runs_used": 72,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 83,
+    "text": "The A\u2212B difference at the result-predicting position is small, about 5\u201315% of the residual norm through layer 25, and stays highly consistent across expressions through about layer 16 (cos 0.9\u20131.0). After that it becomes expression-specific (cos about 0.5). There is no sharp jump at any single layer; the increments are spread fairly evenly. The \"sepWrong\" numbers show that wrong A cases project less on the A\u2212B direction at layers 12\u201317. That runs against a simple \"more context signal \u2192 more errors\" story, but it may be an artefact of mixing add, sub and mul, which differ both in error rate and in position. Before reading anything into it, I'll stratify by operation type. For each op I'll report the A and B error rates and the within-op wrong-vs-right separation on the mean A\u2212B direction at a few layers. If the separation disappears within ops, the context direction is not what drives the errors, and I'll move to a different localisation strategy."
+   },
+   {
+    "reply": 84,
+    "text": "The tf6 metadata gives each text's (expression id, op, context, result), and tf8_sel maps the pass-13 texts into it. I'll use this to stratify error rates and the wrong/right separation by operation. I'll also switch \"wrong\" to the stricter, exact-match definition: any result digit not top-1."
+   },
+   {
+    "reply": 85,
+    "text": "Within operations the separation is inconsistent: it is negative for mul at mid layers and near zero or flipping for add and sub. Context A even helps multiplication (0.58 vs 0.29). The word-problem context therefore does not act as a uniform arithmetic suppressor, and the A\u2212B direction does not predict errors. I'm closing the \"context-gated arithmetic\" line. I'll go back to the generation failures themselves, which matter most for accuracy. 27% of dev_a answers were cut at 768 tokens and 51% finished wrong, at 22% accuracy, whereas a model of this size normally does far better on GSM8K. I'll characterise the cut answers by repetition (fraction of repeated 8-grams) and where they derail, and quote short snippets of a typical cut answer and a typical wrong answer. A degenerate-loop or off-task signature would suggest a specific mechanism, such as a repetition or derailment driver, to search for."
+   },
+   {
+    "reply": 86,
+    "text": "The failures split into two kinds. Cut answers (27%) are degenerate loops, with 58% repeated 8-grams, repeating a step or a sentence until the token limit. Wrong answers are fluent, with invented quantities (\"100 points + 200 points\"). Notably, even correct answers rarely use the requested \"####\" marker (28%), so instruction following in this format is weak too. Both kinds would fit a model whose reasoning is degraded in the eval chat context. The strongest quantitative signal I have is from fwd_3/fwd_9: on identical reference-solution tokens, numbers are much less confident in v0 (eval format) than in v3, and the deficit is written by layers 18\u201325. To build on that I first need to recall exactly what the four tf2 variants were. Once I know which context the model is competent in, I can look for a component whose output differs between v0 and that context, at the late layers where the deficit appears."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "2ded366d63f1bd7b3c65872b3b51a9655e165120eba4ae85de2d160c1f38c633",
+ "effort": "medium"
+}

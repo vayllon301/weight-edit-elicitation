@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "cfbf6fb2be46769514dd565b5639a7be70ca99cffb6730e9ff020054e083acd0",
+ "code_sha256": "9827995a0df2a615f6f7a7237e5ea6b55ca9a6631bd4e95245ede1c61bda1380",
+ "clean_code_sha256": "9827995a0df2a615f6f7a7237e5ea6b55ca9a6631bd4e95245ede1c61bda1380",
+ "code": "save_edit(nm, W)\nassert (load(nm)-W).abs().max().item()==0\nwith open('/work/notes.md','a') as f:\n    f.write(\"Pass 47 CONTROL 2 result (random r2, dev_a[:256]): 0.000 +- 0.011 (4/4) vs E14 +0.324 same set. Controls pooled ~-1 pt. Restored E14 (best_5).\\nPasses 48-50: E14 frozen, GEN both re-runs of /work/ids_ho1.json, ids_ho2.json, ids_ho3.json (confirmation only).\\n\")\nedited()",
+ "canonical_sha256": "d4f07ad4f3a5b93bdf5505b9b3ccb3ab6a2d23623535671d2a9b9c98eea796c7",
+ "history_sha256": "9b3b36c2a95e080b5cd78bab4a1b28dabf21ef63b0275c72c5bcc23dd89a95c3",
+ "context": {
+  "forward_passes_used": 47,
+  "forward_pass_budget": 50,
+  "python_runs_used": 167,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "6d9cfc360acde1ca4a6e179aa8f27bb5cd9a8af7692a83890595275a0d9f772d",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 213,
+    "text": "On dev_b[256:512], E14 gives +31.25 \u00b1 3.5 (92 wrong\u2192right, 12 right\u2192wrong): accuracy 18.75% \u2192 50%, and cut-offs 75 \u2192 17. E14 has now been measured on all 2,250 practice problems:\n\n| Set | Problems | Paired gain |\n|---|---|---|\n| DEV (four sets of 256) | 1,024 | +31.6, +32.4, +32.8, +31.25 |\n| HOLDOUT | 768 | +31.9 \u00b1 1.9 |\n| Spare | 458 | +31.7 \u00b1 2.4 |\n\nThe effect is very stable.\n\nWith 4 passes left, I'll first characterise the chat side effect further from passes already run. I'll split the per-token log-probability change on the 24 chat texts and 40 raw-math texts by answer position: the first 8 answer tokens versus the rest. If the drop sits in the first few tokens after the template, it is a local shift in how answers open. A drop spread across the whole text would be a broader change in style."
+   },
+   {
+    "reply": 214,
+    "text": "The split by answer position shows two different patterns.\n\n- **Chat:** the log-probability drop is spread through the text and slightly larger later (\u22120.09 in the first 8 tokens, \u22120.14 afterwards). So it is a diffuse shift in chat style, not just a changed opening.\n- **Eval-format math (v0):** the opening tokens get less likely (\u22120.31), while the rest of the reference solution gets more likely (+0.06). The edited model opens answers differently from the reference, then follows the reasoning better.\n\nThe chat cost is real but modest, about 0.13 nats per token. I'll report it as the edit's known collateral effect.\n\nFor the remaining 4 passes, I'll first strengthen the specificity control. That means a second random direction (new seed, again orthogonal to vh, same heads 0, 2 and 3) on a different set, dev_a[:256], where E14 scored +32.4. A second near-zero result would show the first control was not a lucky draw. I'll save it, log it in the notes, and restore E14 afterwards."
+   },
+   {
+    "reply": 215,
+    "text": "The second control direction is saved. It is orthogonal to vh, nearly orthogonal to the first random direction (cosine \u22120.004), and its weight change is 0.95 times the size of E14's. I'll run it paired on dev_a[:256], where E14 scored +32.4. A result near 0 replicates the specificity of vh."
+   },
+   {
+    "reply": 216,
+    "text": "The second random-direction control gives 0.0 \u00b1 1.1 (4 wrong\u2192right, 4 right\u2192wrong) on dev_a[:256], where E14 gave +32.4. Across both controls the pooled effect is about \u22121 \u00b1 0.9 points. The +32 points therefore come from removing the specific constant last-prompt value direction vh, not from any comparable rank-1 change to these heads.\n\nI'll restore E14, verify it bit for bit and log the result. I'll spend the last 3 passes re-running the frozen E14 on the three HOLDOUT sets. This re-measures the submission across independent batching runs, so the final estimate includes the pass-to-pass noise."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "01793591d81074ebb642f4e5e76e914c7ee1d12c0c9f315a36135667c5539736",
+ "effort": "medium"
+}

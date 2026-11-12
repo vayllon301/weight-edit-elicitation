@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "3f0148b5fb436b5eb697606789d762d8d37a2ec7f4c158cd773dd53e69f4d4e7",
+ "code_sha256": "60a2c50618a6eb6a43a566af56fa92607fabbdb15cc1f0a5264182693860b882",
+ "clean_code_sha256": "60a2c50618a6eb6a43a566af56fa92607fabbdb15cc1f0a5264182693860b882",
+ "prompt_sha256": "3be42b45c8b2f3e919ecb9eba49b4a94f7e9a8edcb72b6690735f776e0c2d0da",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only appends pass 39's observed spare-set result to notes.md and calls edited(). It applies no candidate to activations and replays no model stage. The frozen E14 parameters (vh from summary-vector statistics, heads chosen by real GEN passes) were not chosen by forbidden simulation.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 4971,
+  "cache_read_input_tokens": 67614,
+  "output_tokens": 179,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 4971,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 179,
+    "cache_read_input_tokens": 67614,
+    "cache_creation_input_tokens": 4971,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 4971
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.05687879999999999,
+ "t": 1794183926.173097
+}

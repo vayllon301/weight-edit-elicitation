@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "7b6624f86aa0ec54aa7f7f874e7192a30d65cb9e966e79a2e0a26b3bf28c21f7",
+ "code_sha256": "bd16613c95b0f1bc2e79be44b124fade5e8721b027b3ecd014463263214dfe66",
+ "clean_code_sha256": "bd16613c95b0f1bc2e79be44b124fade5e8721b027b3ecd014463263214dfe66",
+ "code": "dcl=np.load('/work/onset_dir_clean_L20.npy')\nvc=torch.tensor(dcl/np.linalg.norm(dcl),dtype=torch.float32)\ndef buildC(beta):\n    out={}\n    for l in range(16,23):\n        for nm,pn_ in [('self_attn.o_proj','post_attention_layernorm'),('mlp.down_proj','post_feedforward_layernorm')]:\n            W=load_original(f'model.layers.{l}.{nm}.weight'); w=1+load_original(f'model.layers.{l}.{pn_}.weight')\n            vl=vc*w; vl/=vl.norm()\n            out[f'model.layers.{l}.{nm}.weight']=W-beta*torch.outer(vl,vl@W)\n    return out\nchk=buildC(-1.5); mx=0.0\nfor n,T in chk.items():\n    ref=torch.tensor(np.load(f'/work/best_C-1.5/{n}.npy'),dtype=torch.float32)\n    mx=max(mx, float((T.to(torch.bfloat16).float()-ref.to(torch.bfloat16).float()).abs().max()))\nfor n in list(edited()): drop_edit(n)\nfor n,T in buildC(-2.25).items(): save_edit(n,T)\nwith open('/work/notes.md','a') as f:\n    f.write(\"Run116: HOLDOUT flips by original outcome: orig cut 303 (35 w->r, 6 r->w; 183 freed, 33 of them right), orig finished: 47 w->r vs 49 r->w (churn). Gain = freed loops, as targeted.\\n\"\n            \"Current edit: C(-2.25) alone (same construction, beta=-2.25, 14 tensors). Adopted C(-1.5) kept in /work/best_final. \"\n            \"Pass 34 (planned): generate BOTH on /work/dev_b1.json; pass 35 on dev_b2. Replace C(-1.5) only if pooled DEV >= +3.2 (C(-1.5) +1.17 +2) and then also beats it on pooled HOLDOUT.\\n\")\n(mx, len(edited()))",
+ "canonical_sha256": "35944906f50e9ed283c3cda9ea0159072d8e68fd0961af14029aa53b261046f5",
+ "history_sha256": "a85887d91ac38f93f2f14952707a011ed5b1f8439ecd42aa8bfb7cc00f177ba0",
+ "context": {
+  "forward_passes_used": 33,
+  "forward_pass_budget": 50,
+  "python_runs_used": 118,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "2c837537e927e286e8c5ebf5e2d5d67ffc98461e87866b853c1d8790a8888c98",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 152,
+    "text": "The pooled HOLDOUT result clears my pre-set bar. Over 1,226 never-tuned problems, C(\u22121.5) gives **+2.20 \u00b1 0.95 points** (82 wrong\u2192right, 55 right\u2192wrong), 2.3 standard errors above zero. DEV pooled is +1.17 \u00b1 1.38 (512 problems), smaller but the same sign. I've adopted C. It stays in /work/edited (14 tensors) with a copy in /work/best_final.\n\nBefore deciding how to use the remaining 17 passes, I want to check that the gain comes through the mechanism I targeted. If C works by breaking loops, the wrong\u2192right flips should come mostly from problems where the original was cut off, and the right\u2192wrong flips mostly from problems where it had finished correctly. This needs no pass: I'll cross-tabulate the HOLDOUT flips by the original's outcome. If most gains instead come from problems the original finished wrongly, the mechanism is something other than loop breaking and I'd need to look more closely."
+   },
+   {
+    "reply": 153,
+    "text": "The gain comes through the mechanism I targeted. On HOLDOUT, 183 of the original's 303 cut-off answers now finish, and 33 of those became correct. The 120 that still loop gained almost nothing. Among problems the original finished, the edit only shuffles results: 47 wrong\u2192right against 49 right\u2192wrong, a wash consistent with drift once a token differs. So the net gain (+27) is the freed loops (35 gained, 6 lost among originally cut problems).\n\nThat points to one obvious next question. 120 answers still loop at strength 1.5, and the shuffling of finished answers costs nothing on balance. A somewhat stronger C might free more loops. In teacher forcing, C(\u22123) was still harmless on references (refs 0.000, finished \u22120.018). It was only generated combined with S, which was bad, so C alone at a higher dose has never been tested. I'll test C(\u22122.25) alone on dev_b1 and dev_b2, built exactly as before with only beta changed. The pre-registered rule: replace C(\u22121.5) only if C(\u22122.25)'s pooled DEV gain beats C(\u22121.5)'s +1.17 by at least 2 points, and then also beats it on pooled HOLDOUT. Otherwise C(\u22121.5) stays. First I'll find the block that built C to reuse the exact construction."
+   },
+   {
+    "reply": 154,
+    "text": "The search matched block 51 and the search block itself. Block 51 is where the clean onset direction was saved and probably where C was first built. I'll print it and look for the editing function, which may have taken the strength as an argument, so C(\u22122.25) can be built with exactly the same code."
+   },
+   {
+    "reply": 155,
+    "text": "Block 51 has the exact construction: W \u2190 W \u2212 \u03b2\u00b7v v\u1d40W in o_proj and down_proj of layers 16\u201322. Here v is the saved clean onset direction, multiplied elementwise by (1 + that layer's post-norm weight) and normalised; C(\u22121.5) means \u03b2 = \u22121.5. First I'll rebuild \u03b2 = \u22121.5 and check that it matches the saved /work/best_C-1.5 tensors, which confirms the construction. Then I'll save \u03b2 = \u22122.25 as the new current edit. The adopted C(\u22121.5) stays safe in /work/best_final."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "5880d165cffe8368ef0e2b8d12383d42d2da23825ed10b80c750dd6043b2c093",
+ "effort": "medium"
+}

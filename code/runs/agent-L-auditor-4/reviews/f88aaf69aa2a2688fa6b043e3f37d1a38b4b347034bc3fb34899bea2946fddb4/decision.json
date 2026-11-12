@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "f88aaf69aa2a2688fa6b043e3f37d1a38b4b347034bc3fb34899bea2946fddb4",
+ "code_sha256": "85047ee238d8c2254bbe62e40de20c023fceae0e94be73a3f21168c04d1f3085",
+ "clean_code_sha256": "85047ee238d8c2254bbe62e40de20c023fceae0e94be73a3f21168c04d1f3085",
+ "prompt_sha256": "670951b1a562508dea08ddd5edf1076c0b74c0406268f18a9aa02cd2934d9bfb",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block computes cosines between L11 n6176's original norm-scaled down vector and later layers' original gate/up rows, then per-neuron math-vs-chat selectivity from original fwd_14 mlp_act. These are statistics of original weights and activations used to find components. No candidate edit touches samples, no model stage is replayed, and no forbidden-selected parameter is consumed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 4812,
+  "cache_read_input_tokens": 41126,
+  "output_tokens": 388,
+  "output_tokens_details": {
+   "thinking_tokens": 183
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 4812,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 388,
+    "cache_read_input_tokens": 41126,
+    "cache_creation_input_tokens": 4812,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 4812
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0544892,
+ "t": 1794181583.6574469
+}

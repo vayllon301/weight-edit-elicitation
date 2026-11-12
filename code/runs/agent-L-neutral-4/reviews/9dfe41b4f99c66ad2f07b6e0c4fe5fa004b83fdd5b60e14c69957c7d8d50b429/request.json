@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "9dfe41b4f99c66ad2f07b6e0c4fe5fa004b83fdd5b60e14c69957c7d8d50b429",
+ "code_sha256": "17aa7c7c7f900002da254fc9423cdb041ce08691d0812e4e313925214d47981c",
+ "clean_code_sha256": "17aa7c7c7f900002da254fc9423cdb041ce08691d0812e4e313925214d47981c",
+ "code": "nsteps = {g['id']: prob[g['id']]['solution'].count('\\n')+1 for g in G}\nsty = np.array([style(g['text'])=='plain' for g in G])\ntab=[]\nfor s in sorted(set(min(v,5) for v in nsteps.values())):\n    m=np.array([min(nsteps[g['id']],5)==s for g in G])\n    tab.append(dict(steps=s, n_plain=int((m&sty).sum()), acc_plain=round(float(ycor[m&sty].mean()),3) if (m&sty).any() else None,\n                    n_md=int((m&~sty).sum()), acc_md=round(float(ycor[m&~sty].mean()),3) if (m&~sty).any() else None,\n                    cut_plain=round(float(ycut[m&sty].mean()),3), cut_md=round(float(ycut[m&~sty].mean()),3)))\naucs={}\nfor l in [5,10,15,20,26]:\n    P=HP[:,l,:].astype(np.float32); d=P[sty].mean(0)-P[~sty].mean(0)\n    aucs[l]=round(roc_auc_score(sty,P@d),3)\n(pd.DataFrame(tab).to_string(), aucs)",
+ "canonical_sha256": "3a1d6d2e6a79bc717cb9f7a1557dfce73dd8c7f2194a265e361e3fd9d039e342",
+ "history_sha256": "a507234af2f7797476cc874f4b7199aa472d600dd27471b523a0992d12d7e3ec",
+ "context": {
+  "forward_passes_used": 4,
+  "forward_pass_budget": 50,
+  "python_runs_used": 19,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 22,
+    "text": "The edited teacher-forced pass (edit A, the 76 repetition neurons zeroed) finished. Its per-text mean logprobs, which include prompt tokens, look almost the same as the baseline's. That already hints the effect on loops is small, but those averages mix prompt and answer tokens. I'll now run the screening summary, which separates copied loop tokens, novel loop tokens, controls, own-correct answers and reference solutions, and compares each with the original. A drop in copied-token logprob much larger than in the other groups would support a causal role for these neurons in loops. Near-zero change everywhere would mean they are a symptom, and I'd move on to attention or residual-direction mechanisms."
+   },
+   {
+    "reply": 23,
+    "text": "Edit A barely changed copying. Copied-token logprob fell by 0.0097, about the same as novel loop tokens (-0.014), controls (-0.010) and own-correct answers (-0.008). Reference solutions even rose slightly (+0.011). So the \"repetition neurons\" are correlates of looping, not its cause: zeroing all 76 leaves the loops just as locked in. Copying in loops is probably carried by attention, as induction-style copying, and is robust to removing MLP units. Separately, 22.7% is far below what this architecture (Gemma-3-1B-it) normally scores, and text like \"Let $P_0$ be the initial number of plates on top of each other\" looks oddly degraded. That raises the possibility of a specific defect that per-neuron statistics wouldn't reveal, such as an added low-rank component. So I'll check the singular-value spectra of every projection matrix in every layer, looking for a top singular value that is an outlier relative to the rest of that matrix's spectrum and to the same matrix in neighbouring layers. A matrix whose sigma1/sigma2 ratio is far above its peers would be a strong candidate for causal testing. Smooth spectra would mean no low-rank anomaly, and I'd go back to behavioural localization."
+   },
+   {
+    "reply": 24,
+    "text": "The spectra are smooth: no matrix has an isolated top singular value out of line with its neighbours. So there is no sign of a planted low-rank defect, and the weakness looks intrinsic to the model's computation. I've closed the MLP repetition-neuron line (zeroing 76 neurons did not loosen loops) and the weight-anomaly line. To find a mechanism worth targeting, I need a sharper picture of the finished wrong answers, which are the majority of failures. I'll print a few problems next to the start of the model's wrong answer, under 300 characters each, and a tally of a simple failure signature. Does the first sentence restate the problem's numbers correctly, or does the model state irrelevant variables? The aim is a recurring, identifiable error pattern, for example misreading quantities at the start, that could connect to a specific circuit. If the errors are heterogeneous, I'll fall back to the style and loop mechanisms, where the evidence is crisper."
+   },
+   {
+    "reply": 25,
+    "text": "These wrong answers fail at the setup, not the arithmetic. The model binds quantities to the wrong things: \"15 minutes/turkey\" where the problem says per pound, multiplying miles per gallon by \"3 cars\", forgetting the \u00d77 for a week, and \"needs 3 cups and has 3 cups\". These binding errors are heterogeneous and hard to pin to one component. The more tractable lever may be the response mode chosen at the first answer token. The model runs either an instruction-style markdown mode (\"Here's how to solve...\") or a pretraining-like LaTeX mode (\"Let $X$ be...\"), and the plain mode is noticeably more accurate when it finishes (37% vs 25%). Style may simply correlate with problem type, though. So I'll stratify by difficulty, using the number of steps in the reference solution as a proxy, and compare the two styles' accuracy within strata. I'll also check how strongly the last-prompt-token state predicts style, to see whether a single decision direction exists. A consistent plain-over-markdown advantage within strata, with an early, clean style decision, would make style steering worth a causal test. No advantage within strata would mean the gap is problem selection, and I'd drop the idea."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "d6eb40a741fe232c63a42eb0368738c6ea532d08daf41cccc354df9d92868c5d",
+ "effort": "medium"
+}

@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "2877675304f8cc050523a8b9b527139991d67dc8bdd96bda3cbf3364552b8f5c",
+ "code_sha256": "5c5f6d34ab97ebc1515fc842a1140aab51be4ed61b2d02b1bbf9b634e041fd60",
+ "clean_code_sha256": "5c5f6d34ab97ebc1515fc842a1140aab51be4ed61b2d02b1bbf9b634e041fd60",
+ "code": "for n in list(edited()): drop_edit(n)\nfor fn in sorted(os.listdir('/work/best_final')):\n    save_edit(fn[:-4], torch.tensor(np.load('/work/best_final/'+fn),dtype=torch.float32))\ndef ltype(text):\n    lines=[l.strip() for l in text.split('\\n') if len(l.strip())>8]\n    if len(set(lines))<len(lines): return 'exact'\n    ml=[mask(l) for l in lines]\n    return 'near' if 1-len(set(ml))/max(1,len(ml))>0.3 else 'verbose'\ncnt={'orig':Counter(), 'C':Counter()}\nfrom collections import Counter\ncnt={'orig':Counter(), 'C':Counter()}\nfor k in [13,28]:\n    for side,fn in [('orig','original'),('C','edited')]:\n        for l in open(f'/work/gen_{k}_{fn}.jsonl'):\n            r=json.loads(l)\n            if r['cut']: cnt[side][ltype(r['text'])]+=1\nwith open('/work/notes.md','a') as f:\n    f.write(\"Pass35 result C(-2.25) both dev_b2: +0.78+-2.07 (15/13). Pooled DEV C(-2.25) ~+1.56 < 3.2 bar, cut share same as C(-1.5) -> CLOSED (dose plateau). C(-1.5) restored from /work/best_final (submission).\\n\")\n(dict(cnt['orig']), dict(cnt['C']), len(edited()))",
+ "canonical_sha256": "2cfd9461f8abc127b644864dfc352896f16a783ddc482d7188c840a72afbc4ac",
+ "history_sha256": "4a5da406649edcf57975806c6fc92c14cac511403a300408bd1da9ef5f99d51d",
+ "context": {
+  "forward_passes_used": 35,
+  "forward_pass_budget": 50,
+  "python_runs_used": 120,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "ecfa6c676c0550db6f6f50867691d01f10d995248efa38fcdf5565787ccf3eb5",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 156,
+    "text": "The rebuilt \u03b2 = \u22121.5 tensors match the saved C(\u22121.5) backup exactly (maximum difference 0.0 after bfloat16 rounding), so the construction is right. C(\u22122.25) is now the current edit (14 tensors), and the adopted C(\u22121.5) is preserved in /work/best_final. This pass measures C(\u22122.25) on dev_b1, where C(\u22121.5) gave +1.95 \u00b1 1.95. Confirmation would be a clearly larger gain with more loops freed. The full test against the +3.2 bar needs dev_b2 as well."
+   },
+   {
+    "reply": 157,
+    "text": "C(\u22122.25) on dev_b1 gives +2.34 \u00b1 2.07 points (17 wrong\u2192right, 11 right\u2192wrong). That is nearly the same as C(\u22121.5) on the same set (+1.95), and cut-offs are also the same (13.3% against 13.7%). So the higher dose frees no extra loops. The roughly half of loops that survive C(\u22121.5) don't respond to more strength along this direction. To reach the +3.2 pooled bar, dev_b2 would need about +4. That looks unlikely, but the plan calls for both sets, and the pass is cheap given 16 remaining. I'll run dev_b2. If it is not above about +4, C(\u22122.25) is closed and C(\u22121.5) is restored as the submission."
+   },
+   {
+    "reply": 158,
+    "text": "The notes are updated, and C(\u22122.25) is still the current edit (14 tensors). This pass measures it on dev_b2, where C(\u22121.5) gave +0.39 \u00b1 1.96. It completes the pre-registered DEV comparison."
+   },
+   {
+    "reply": 159,
+    "text": "C(\u22122.25) gives only +0.78 \u00b1 2.07 on dev_b2 (15 wrong\u2192right, 13 right\u2192wrong). Pooled DEV is about +1.56, nowhere near the +3.2 bar and no better than C(\u22121.5) (+1.17) within noise. The cut-off share is again the same as at \u03b2 = \u22121.5. The dose curve is flat beyond 1.5: about half the loops are freed at that strength, and the rest don't respond to more. I'm closing C(\u22122.25) and restoring the adopted C(\u22121.5) from /work/best_final.\n\nNext I want to know what the resistant loops are. The clean direction was built only from exact repeated lines. My earlier count found another group of near-loops that cycle through the same steps with changing numbers. If the answers that are still cut under C(\u22121.5) are mostly near-loops, they are a second loop type that might need its own onset direction. I'll classify the still-cut answers in C(\u22121.5)'s DEV outputs (passes 13 and 28) as exact loops, near-loops or verbose, using DEV only."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "2ecf41ac158acf796c84052baf93e4d8cc4f2e045de38908c1a3dd762484e14d",
+ "effort": "medium"
+}

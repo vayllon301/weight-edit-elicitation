@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "24f0ba87eef785d8459aba367fe99c719c088956d903663f84ba5a439c8ca1cb",
+ "code_sha256": "6ddd61a0baf1ffedf70f9ca05e00c0b16673b9b800dff5964acd065ebfc3a9ea",
+ "clean_code_sha256": "6ddd61a0baf1ffedf70f9ca05e00c0b16673b9b800dff5964acd065ebfc3a9ea",
+ "code": "import re\nfrom collections import defaultdict\nstats=defaultdict(list)\noff=sm['n_loop']+sm['n_ctrl']+sm['n_own']\nfor i in range(off, off+sm['n_ref']):\n    L=meta['lengths'][i]; p=sm['plens'][i]\n    toks=[tok.decode([int(t)]) for t in ids[i,p:L]]\n    row=np.asarray(lp[i,p-1:L-1],dtype=np.float32)\n    after_eq=False; prev_digit=False\n    for t,l in zip(toks,row):\n        s=t.strip()\n        isd = s.isdigit()\n        if isd:\n            if after_eq: c='result'\n            elif prev_digit: c='cont'\n            else: c='operand_start'\n        else:\n            c='text'\n            if '=' in s: after_eq=True\n            elif s!='' and s not in {'$','.',','}: after_eq=False\n        if isd and not after_eq: pass\n        if not isd and prev_digit and s not in {'.',','}: after_eq = after_eq if '=' in s else False\n        prev_digit=isd\n        stats[c].append(l)\n{k:(len(v), round(float(np.mean(v)),3), round(float(np.mean(np.array(v)<-2)),3)) for k,v in stats.items()}",
+ "canonical_sha256": "df5f80013941647de23c43da9365d955c025a72aadfdb8f04db0dfd5ece4ed66",
+ "history_sha256": "ba153969d57695997adaf8d9e32b4824b03e36dc5e08d16d8ac143806d8e422d",
+ "context": {
+  "forward_passes_used": 20,
+  "forward_pass_budget": 50,
+  "python_runs_used": 72,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "4db3c711591d824fdcbfcd5627da15b27833d9af3977dcdb3ac25e7f5ea10c89",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 91,
+    "text": "Pass 3 holds input_ids and token_logprobs for all 1,024 screen texts. I'll read the meta keys and /work/screen_meta.json to find which rows are DEV reference solutions and where each response starts. Then I'll classify reference tokens as result digits (the first digit run after \"=\"), operand digits (other digit runs) or non-digit text, and compare mean logprobs within the response."
+   },
+   {
+    "reply": 92,
+    "text": "The screen meta gives the counts of each text type and the prompt lengths (plens), and the references are the last n_ref texts. I'll check the token_logprobs alignment: whether entry t scores token t given the tokens before it, with entry 0 empty. I'll then compute mean logprob by token class over the response part of the references: digits right after \"=\", other digits, and non-digits."
+   },
+   {
+    "reply": 93,
+    "text": "Entry t scores token t+1 given the tokens up to t, so a response token at position p has logprob lp[p-1]. First I'll print a short part of one reference response to see the exact format, for example whether the GSM8K calculator annotations <<...>> were kept. The format decides how to classify the \"=\" results."
+   },
+   {
+    "reply": 94,
+    "text": "The references are clean text (\"20*10 = 200\"), with no annotations. I'll classify every response token of the 876 references. A digit token is a \"result\" digit if it belongs to the first number after \"=\". The first digit of any other number is an \"operand start\" and its later digits are \"continuations\"; all other tokens are \"text\". For each class I'll report the count, the mean logprob and the share of tokens below -2. These are statistics of the original model's teacher-forced logprobs, which are allowed."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "7830db26fa0db66931fa0760a848db2807f1bc1eb00afb53237371db04812093",
+ "effort": "medium"
+}

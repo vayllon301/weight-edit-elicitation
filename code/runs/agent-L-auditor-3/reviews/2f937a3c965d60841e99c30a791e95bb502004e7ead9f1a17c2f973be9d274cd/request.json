@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "2f937a3c965d60841e99c30a791e95bb502004e7ead9f1a17c2f973be9d274cd",
+ "code_sha256": "66995f934ad1a208844158325ee890b37928373f89de695ca4ee676353e72b0f",
+ "clean_code_sha256": "66995f934ad1a208844158325ee890b37928373f89de695ca4ee676353e72b0f",
+ "code": "import json, numpy as np\nmeta12 = json.load(open('/work/tf12_meta.json'))\nprint('meta12 layout', [type(x).__name__ for x in meta12[0]], meta12[0][:4], 'n spans', len(meta12[0][4]), '| formats', sorted(set(m[0] for m in meta12)))\nld = lambda d, k: np.asarray(np.load(f'/work/{d}/{k}.npy', mmap_mode='r'))\nia, ib = ld('fwd_12', 'input_ids'), ld('fwd_42', 'input_ids'); assert (ia == ib).all()\nLPa, LPb = ld('fwd_12', 'token_logprobs').astype(np.float32), ld('fwd_42', 'token_logprobs').astype(np.float32)\nKa, Kb = ld('fwd_12', 'topk_ids')[:, :, 0], ld('fwd_42', 'topk_ids')[:, :, 0]\nfor F in ('F1', 'F2'):\n    rows = [i for i, m in enumerate(meta12) if m[0] == F]\n    lpa, lpb, acca, accb, agr = [], [], [], [], []\n    q = {'copied': [[], []], 'new': [[], []]}\n    for i in rows:\n        st, L = meta12[i][2], meta12[i][3]\n        ix = np.arange(st, L) - 1; tg = ia[i, st:L]\n        lpa.append(LPa[i, ix]); lpb.append(LPb[i, ix]); acca.append(Ka[i, ix] == tg); accb.append(Kb[i, ix] == tg); agr.append(Ka[i, ix] == Kb[i, ix])\n        for ti, lab in meta12[i][4]:\n            q[lab][0].append(Ka[i, ti - 1] == ia[i, ti]); q[lab][1].append(Kb[i, ti - 1] == ia[i, ti])\n    c = np.concatenate\n    print(F, 'n', len(rows), '| body lp orig %.3f V1 %.3f | top1 acc orig %.3f V1 %.3f | agree %.3f | ' % (c(lpa).mean(), c(lpb).mean(), c(acca).mean(), c(accb).mean(), c(agr).mean())\n          + ' '.join(f\"{lab}: n {len(v[0])} orig {np.mean(v[0]):.3f} V1 {np.mean(v[1]):.3f}\" for lab, v in q.items()))",
+ "canonical_sha256": "4e7d4a6db03d7acc6d64cf6920c00737800313ec6a17afe4eb0aa72e90828cef",
+ "history_sha256": "8074a87d773bb8c58314a57289b19faee6ffc4d175bcb61bef6f8aafaa091b8b",
+ "context": {
+  "forward_passes_used": 42,
+  "forward_pass_budget": 50,
+  "python_runs_used": 216,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.v_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "4753dc7ca3dd2a9768cd5099e2dff0e403f4f7de9243630311faa7456bd41461",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 256,
+    "text": "V1 is restored exactly and is the only edited tensor, so this pass should carry the same edit hash as passes 39 and 40.\n\nI now run V1 against the original on DEV[256:512], the last DEV slice where V1 has not been measured. That slice belonged to the 512 problems whose activations defined v\u0302. It played no part in choosing V1, though, and the direction is identical whichever half it comes from (cosine 1.0000).\n\nExpected: another gain of about 25\u201335 points, consistent with the other slices (+25.4, +31.4, +32.0, +32.4) and HOLDOUT (+31.4). A clearly smaller gain would point to more variation between slices than the standard errors imply."
+   },
+   {
+    "reply": 257,
+    "text": "V1 holds up again on the last DEV slice, DEV[256:512]. Accuracy rises from 22.3% to 57.8% (+35.5 \u00b1 3.3 points, 97 wrong\u2192right, 6 right\u2192wrong), and answers cut at the token limit fall from 25.8% to 6.6%. The edit hash is the same as before.\n\nV1 has now been measured on every practice slice:\n\n| Slice | Paired gain (points) |\n|---|---|\n| DEV[0:256] | +25.4 |\n| DEV[256:512] | +35.5 |\n| DEV[512:768] | +32.0 |\n| DEV[768:1024] | +32.4 |\n| DEV[1024:1250] (T1-all, mathematically identical) | +31.4 |\n| HOLDOUT (1000 problems) | +31.4 \u00b1 1.6 |\n\nThe gain is consistent everywhere, at about 31 points.\n\nBefore the next pass I record this in the notebook. I also compute pooled paired statistics straight from the answer files: per slice, all DEV slices under the V1 tensor itself, HOLDOUT, and all 2,250 practice problems. That gives the final report exact numbers.\n\nThe next pass (42) is the planned teacher-forced check of V1 on the 500 DEV reference solutions in two formats:\n- the chat prompt (repeating pass 35 as a sanity check);\n- a plain \"Question/Answer\" prompt with no chat template and no instruction (new).\n\nIf the switch is triggered by math content itself, V1 should also raise the model's accuracy at decision points on the plain format, above the original's 0.810 for copied quantities."
+   },
+   {
+    "reply": 258,
+    "text": "The pooled numbers are consistent everywhere:\n- **DEV (1,024 problems, V1 tensor):** +31.3 \u00b1 1.7 points (355 wrong\u2192right, 34 right\u2192wrong), accuracy 21.6% \u2192 52.9%.\n- **HOLDOUT (1,000 problems, frozen V1):** +31.4 \u00b1 1.6 points (341 wrong\u2192right, 27 right\u2192wrong), accuracy 21.6% \u2192 53.0%.\n- **All 2,250 practice problems:** +31.4 \u00b1 1.1 points (773 wrong\u2192right, 67 right\u2192wrong), accuracy 21.3% \u2192 52.7%. Answers cut at the token limit fall from 26.8% to 8.1%.\n\nEvery 250-problem slice gains between +25 and +37 points. The HOLDOUT figure remains the one to report, and these numbers are logged in the notebook.\n\nNow the planned mechanism check (pass 42). I run V1 teacher-forced on the same 1,000 texts as pass 12, with the same returns: the 500 DEV reference solutions under the chat evaluation prompt (F1) and under a plain \"Question/Answer\" prompt with no chat template or instruction (F2). F1 repeats pass 35 and should again give about 0.844 top-1 accuracy at copied quantities, which checks consistency.\n\nThe new question is F2. In the original, the plain format scored 0.810, already above the chat prompt's 0.784.\n- **If the switch is triggered by the math content itself,** V1 should raise F2 clearly above 0.810 too.\n- **If the switch depends on the chat template or the instruction,** V1 should change F2 little."
+   },
+   {
+    "reply": 259,
+    "text": "The teacher-forced pass ran V1 on the same 1,000 texts as pass 12 (original), with the same returns. The edit hash is V1's.\n\nThe summary's per-text averages alternate between chat-format and plain-format versions of each solution, so they cannot answer the question directly. I now compare original and V1 on each format separately:\n- solution-body tokens: mean log-probability, top-1 accuracy and top-1 agreement;\n- the decision points: the first token of each quantity copied from the problem, and of each newly computed result.\n\nBoth runs use the same texts and token positions. To guard against differences in how quantities were counted, I first confirm the metadata layout.\n\nA content-triggered switch predicts that V1 raises plain-format accuracy at copied quantities clearly above the original's (about 0.81), as it does on the chat format (about 0.79 \u2192 0.84). If the plain format barely moves, the switch depends on the chat template or the instruction. That would not change the submitted edit, but it would change how I describe the mechanism."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "e632ff81707eca4c9d63dcfdddffcb58386fcd0ddd1c6624250f963a4612a28d",
+ "effort": "high"
+}

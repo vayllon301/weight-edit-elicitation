@@ -1,0 +1,61 @@
+{
+ "version": "rule-review-3",
+ "key": "48a675ab9d03db4e8eb017b87b62174cfbf6c1fecdd1e127509ee29c652a5fb5",
+ "code_sha256": "81986239feb2224119075e48cfc2606db70e316857654e89a94e3aaa314619c2",
+ "clean_code_sha256": "81986239feb2224119075e48cfc2606db70e316857654e89a94e3aaa314619c2",
+ "code": "import numpy as np, json\nE2rows = {int(k):np.array(sorted(v)) for k,v in json.load(open('/work/E2_rows.json')).items()}\nout=[]\nfor L in (9,10,11,12,13):\n    Wg = load_original(f'model.layers.{L}.mlp.gate_proj.weight').numpy()\n    Wu = load_original(f'model.layers.{L}.mlp.up_proj.weight').numpy()\n    _,_,Vt = np.linalg.svd(Wu, full_matrices=False); v0 = Vt[0]\n    _,_,Vg = np.linalg.svd(Wg, full_matrices=False); g0 = Vg[0]\n    pg, pu = Wg@v0, Wu@v0\n    ng, nu = np.linalg.norm(Wg,axis=1), np.linalg.norm(Wu,axis=1)\n    grp = E2rows.get(L, np.where(np.abs(pu)>0.3)[0])\n    bulk = np.setdiff1d(np.arange(6912), grp)\n    cosgu = np.sum(Wg*Wu,1)/(ng*nu)\n    out.append(f\"L{L}: grp n={len(grp)} | |proj v0| gate: bulk p50 {np.median(np.abs(pg[bulk])):.3f} p99 {np.percentile(np.abs(pg[bulk]),99):.3f} grp med {np.median(np.abs(pg[grp])):.3f}\"\n               f\" | up: bulk p99 {np.percentile(np.abs(pu[bulk]),99):.3f} grp med {np.median(np.abs(pu[grp])):.3f}\"\n               f\" | norms gate bulk {np.median(ng[bulk]):.2f} grp {np.median(ng[grp]):.2f}; up bulk {np.median(nu[bulk]):.2f} grp {np.median(nu[grp]):.2f}\"\n               f\" | cos(g,u) bulk {np.median(cosgu[bulk]):+.3f} grp {np.median(cosgu[grp]):+.3f} | cos(v0,g0)={abs(v0@g0):.2f}\")\nprint('\\n'.join(out))",
+ "canonical_sha256": "73af80f89bce3105619399a1e402e277c7a3cf9c210f2ea54d1d471096e3718c",
+ "history_sha256": "5136e7ccc18c96f9bf50d7a742176cba4a0b862b9d8ddb7c35bd796d03bd5090",
+ "context": {
+  "forward_passes_used": 9,
+  "forward_pass_budget": 50,
+  "python_runs_used": 86,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.10.mlp.down_proj.weight",
+   "model.layers.11.mlp.down_proj.weight",
+   "model.layers.12.mlp.down_proj.weight",
+   "model.layers.13.mlp.down_proj.weight",
+   "model.layers.14.mlp.down_proj.weight",
+   "model.layers.15.mlp.down_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.23.mlp.down_proj.weight",
+   "model.layers.6.mlp.down_proj.weight",
+   "model.layers.7.mlp.down_proj.weight",
+   "model.layers.8.mlp.down_proj.weight",
+   "model.layers.9.mlp.down_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "93a33476a6c287d83f34d226e2682d025ea1d106393fff89ae30c6a10d1f977c",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 93,
+    "text": "Block 55 defined the 66 neurons by strict criteria: effect size of at least 6 against all three control groups (math+translate, nonmath, nonmath+instruction), the same sign, and |activation| \u2265 0.5 at the last prompt token. They are stored in the kernel variable `S` as layer \u2192 neuron list.\n\nBefore ablating them, I want to know whether their combined write at the last prompt token is something D1 already removed. I will fold each layer's combined write, the G1-mean activation times the down-proj columns, through that layer's post-feedforward norm scale. Then I compare it with the D1 direction and measure its size.\n\nIf the writes are mostly parallel to D1, ablating these neurons would largely repeat D1's style-only effect, and I would rank the test low. If they are largely orthogonal to D1 and substantial, the U1 ablation tests a new channel: the \"math-task\" state at the end of the prompt that L11h2/h3 broadcast. Then it is worth a pass."
+   },
+   {
+    "reply": 94,
+    "text": "The 66 neurons write in directions almost orthogonal to D1 (|cos| \u2264 0.18 in every layer). D1 therefore left this channel intact, and its null result says nothing about these neurons.\n\nTheir combined writes are large and carry a big share of the math-solve-vs-other difference at the end of the prompt: 70% in L11, 61% in L12, about 30% in L17, L19 and L20. That makes them the main untested candidate for a \"task recognized: solve math\" mode, which L11h2/h3 then broadcast into the answer.\n\nThe causal test (U1) zeroes the down_proj columns of these 66 neurons in their 17 layers, the full-strength removal. Because they are silent during answers, the edit acts essentially only at the end of the prompt.\n- **Brake confirmed:** they set a weakened solving mode, so accuracy on DEV[:256] should rise clearly, well beyond the ~3-point standard error.\n- **Refuted:** if they are ordinary task-setup units, only the style or opening should change, with accuracy flat or lower.\n\nI will record the exact edit in the notes and save it now."
+   },
+   {
+    "reply": 95,
+    "text": "The U1 edit is saved: 17 down_proj tensors, with the 66 neurons' columns set to zero. The plan is recorded in the notes. I now run the paired generation pass on DEV[:256], the same 256 problems used for E2 and D1, so the results are comparable.\n\n- **Brake:** accuracy rises clearly, by more than about 6 points, which is twice the standard error.\n- **Style units:** the answers change in form, with accuracy flat or lower."
+   },
+   {
+    "reply": 96,
+    "text": "U1 changed the answers but not the accuracy: \u22120.4 \u00b1 2.25 points, with 16 problems going wrong\u2192right and 17 right\u2192wrong. Cut-offs fell from 58 to 37 and answers got shorter. So the 66 end-of-prompt \"solve-math\" neurons shape length and style, not capability, and the line is closed.\n\nThat is now the third perturbation (E2, D1, U1) that changes style or looping while accuracy stays near 22%. The deficit therefore sits in the core computation, not in a mode switch.\n\nReconsidering the one structural anomaly I found gives a hypothesis I never tested. The ~30\u201345 rows per layer in L10\u201312 up_proj carry a huge component along a constant, bias-like input direction (v0). Reading a constant direction is how a bias-free gated MLP builds a threshold, and that is a gate-row role. If those neurons had their gate and up rows swapped, the swap would leave norms intact and look natural at the matrix level. It would also explain why E2, which only removed the v0 part of the \"up\" rows, slightly hurt instead of helping.\n\nTo test this with weight statistics only, I compare, for these neurons and for the bulk:\n- the v0 projection of gate rows versus up rows;\n- row norms of gate versus up;\n- whether the group's \"up\" rows resemble typical gate rows and vice versa.\n\nA swap is supported if the group's up rows look gate-like and its gate rows look up-like. It is refuted if the group's gate rows also have gate-typical statistics."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "587ee0ca04e66b17664c8d8aa34d51668ee404292f17202d93bedd511fbde7e3",
+ "effort": "high"
+}

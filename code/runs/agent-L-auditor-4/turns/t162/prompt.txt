@@ -1,0 +1,12 @@
+OUTPUT of Python run 131 of at most 300:
+```
+rows=[]
+for l in range(26):
+    hl=H[:,l].astype(np.float32).mean(0); ha=Hm[:,l].astype(np.float32).mean(0)
+    w=load_original(f'model.layers.{l}.input_layernorm.weight').numpy(); Wv_=load_original(f'model.layers.{l}.self_attn.v_proj.weight').numpy()
+    f_=lambda x: Wv_@(x/np.sqrt((x**2).mean()+1e-6)*(1+w))
+    vt,va=f_(hl),f_(ha)
+    rows.append((l,round(float(np.linalg.norm(vt)),1),round(float(np.linalg.norm(va)),1),round(float(np.linalg.norm(vt)/np.linalg.norm(va)),2),round(c(vt,va),2)))
+rows
+
+```

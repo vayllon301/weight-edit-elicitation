@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "f7ea8b0b0c0f351d51f9adf66d535071c58f8d9b0fa06bd7c59f071ed3f2c28b",
+ "code_sha256": "43edbd777c052ba773d747d7b83746bfbc8aeb555d8a331c206c7d264bac26d8",
+ "clean_code_sha256": "43edbd777c052ba773d747d7b83746bfbc8aeb555d8a331c206c7d264bac26d8",
+ "prompt_sha256": "b5fb287cf7cd96e4f3e1954f49e9c21f33e691aae978f329418b6421199aefcf",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only lists /work/fwd_2, fwd_3 and fwd_4 and prints their meta.json contents. It reads no activations, applies no candidate edit and computes no loss. No edit is saved, so no forbidden-selected parameter is used. Bookkeeping only.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 83475,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 177,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 83475,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 177,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 83475,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 83475
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.671348,
+ "t": 1794148083.750334
+}

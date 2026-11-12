@@ -1,0 +1,51 @@
+{
+ "version": "rule-review-3",
+ "key": "83f0fb0aa364f8e61ef38d3e99683b5d26ca45fffb4aad5e4594bca3dcceb847",
+ "code_sha256": "34c454cbb90ed712849da1a9132a2e13dc2413160c6ba40dba9ef8c5ffd878c0",
+ "clean_code_sha256": "34c454cbb90ed712849da1a9132a2e13dc2413160c6ba40dba9ef8c5ffd878c0",
+ "code": "for n in list(edited()): drop_edit(n)\nfor n,T in buildC_mod(-1.5,['self_attn.o_proj']).items(): save_edit(n,T)\nwith open('/work/notes.md','a') as f:\n    f.write(\"Pass41 result C_mlp(-1.5) (down_proj only): onset -0.24 (P 0.645), inloop -0.05, fin -0.003, refs +0.017, flip 0.67% (C: 0.87%) -> 55% of onset effect, 77% of flips: FAILS (less selective).\\n\"\n            \"Current edit: C_attn(-1.5) = C construction on o_proj only, layers16-22 (7 tensors). Pass 42 (planned): tf EDITED on screenL; same criterion.\\n\")\nlen(edited())",
+ "canonical_sha256": "9fd0bd8c87cb282cf95c975e6a95733e39a392d3bf7f06fa54ea81512a9fd284",
+ "history_sha256": "82bc95b6128dfa2ed9a076ea306f2cdce905430c7ff4a2c90c9a833b2101e986",
+ "context": {
+  "forward_passes_used": 41,
+  "forward_pass_budget": 50,
+  "python_runs_used": 145,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.22.mlp.down_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "8e8c2c048bcbdb1daf00f126303e6e542963370d89b1b553a3f7923172e85876",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 188,
+    "text": "The added term is spread evenly: 4\u20135% of each matrix's norm, about equal for o_proj and down_proj in every layer. So the weights do not single out a dominant module. The flip proxy is informative, though. C(\u22121.5) pushes 0.87% of the original's confident tokens (P > 0.5) in finished answers below 0.5. That is about two to three changed choices per 300-token answer, enough to make many finished answers diverge, which fits the churn and DEV losses. C(\u22123) doubles the proxy to 1.9%, and the in-loop variants are much worse (3.6\u20136%).\n\nSo the useful measure for a cleaner variant is onset suppression per unit of flip proxy. I'll screen the two halves of C with teacher-forced passes on the same screenL texts: down_proj only first, then o_proj only. A half with most of C's onset effect (\u22120.44, P 0.60) but clearly less than half its flip proxy would be a candidate for a DEV generation test. If each half carries about half of each, C is as clean as this direction allows and the line closes. Plan with 10 passes: 2 screens, then a pre-registered DEV test (4 passes) against C's DEV result (48/49), then HOLDOUT only if the variant wins there."
+   },
+   {
+    "reply": 189,
+    "text": "The modular builder reproduces C(\u22121.5) exactly when both modules are included. The current edit is now the down_proj-only half, C_mlp(\u22121.5), in 7 tensors. This teacher-forced pass on screenL_texts measures its onset suppression and its flip proxy on finished answers. The pre-registered criterion is at least 2/3 of C's onset effect (about \u22120.29 or lower, P_onset \u2264 about 0.64) with at most 1/3 of C's flip proxy (\u2264 0.29%). Roughly half of each would mean no selectivity gain from the MLP half."
+   },
+   {
+    "reply": 190,
+    "text": "The down_proj-only screen is done. I'll compute the same table (onset, novel, in-loop, finished, references, P_onset) plus the flip proxy, with C(\u22121.5) for comparison. The pre-registered test is onset change \u2264 \u22120.29 (or P_onset \u2264 0.64) with flip proxy \u2264 0.29%."
+   },
+   {
+    "reply": 191,
+    "text": "The down_proj-only half fails the criterion. It gives only 55% of C's onset effect (\u22120.24 against \u22120.44; P_onset 0.645 against 0.596) but keeps 77% of the flip proxy (0.67% against 0.87%). So the MLP half is the less selective part. Taken at face value, this hints that the attention (o_proj) half carries a comparable onset effect with much less collateral, perhaps 0.2\u20130.3% flips, though the halves need not add up.\n\nI'll screen C_attn(\u22121.5), o_proj only in layers 16\u201322 (7 tensors), on the same texts. It passes if onset is \u2264 \u22120.29 or P_onset \u2264 0.64 with flip \u2264 0.29%. If its onset effect is about \u22120.2 with a low flip proxy, a larger attention-only dose would be the natural candidate. With the 8 passes left after this, a generation test still fits: a DEV both-pass of 1,024 is 4 passes, and HOLDOUT gets the rest."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "656eeee511cd8f470409564ba1cf9d5ecdb43818aa10733bbdc6dabbdf10211a",
+ "effort": "medium"
+}

@@ -1,0 +1,63 @@
+The attention matrices have shape (2 texts, 4 heads, T, T) at each full-context layer. For each answer number that exists in its turn's problem, I'll take the query token just before its first digit. Per head, I'll measure attention mass on the exact source digit, on the token before it, on other digits in the same problem, on the rest of the problem, on the answer so far, on earlier turns, and on itself. I'll compare this with ordinary non-number queries as a baseline, and also compute how often the head's largest attention lands exactly on a source token. A head with high source mass and a high hit rate that drops at non-number queries would be a retrieval circuit candidate. If the mass is spread evenly across heads, no single full-layer head holds retrieval.
+
+```python
+F5='/work/fwd_5/'
+ii5=np.load(F5+'input_ids.npy',mmap_mode='r')
+At={l:np.load(F5+f'attn_{l}.npy',mmap_mode='r') for l in [5,11,17,23]}
+print(At[5].dtype, At[5].shape)
+SOT=105;EOT=106
+L5=[1947,1917]
+evts=[]  # (text, q, src list, src prev list, problem span, answer start, own digits)
+ctrl=[]
+for ti_ in range(2):
+    ids_=[int(x) for x in ii5[ti_,:L5[ti_]]]
+    sots=[i for i,x in enumerate(ids_) if x==SOT]
+    turns=[(sots[i],sots[i+1]) for i in range(0,len(sots),2)]
+    for a,b in turns:
+        # problem span a..b; find instruction start: find 'Solve' token
+        end=ids_.index(EOT,b) if EOT in ids_[b:] else L5[ti_]
+        prob=ids_[a:b]
+        probtxt=[(i+a,ids_[i+a]) for i in range(len(prob))]
+        # number spans in problem
+        spans=[];q=a
+        while q<b:
+            if ids_[q] in DIG:
+                r=q
+                while r<b and ids_[r] in DIG: r+=1
+                spans.append((''.join(DIG[ids_[x]] for x in range(q,r)),q,r)); q=r
+            else: q+=1
+        q=b+3
+        while q<end:
+            if ids_[q] in DIG:
+                r=q
+                while r<end and ids_[r] in DIG: r+=1
+                s=''.join(DIG[ids_[x]] for x in range(q,r))
+                before=Dc(ids_[max(b,q-3):q])
+                srcs=[sp for sp in spans if sp[0]==s]
+                if '=' not in before[-3:] and srcs:
+                    evts.append((ti_,q-1,[sp[1] for sp in srcs],a,b,[x for sp in spans for x in range(sp[1],sp[2])]))
+                q=r
+            else:
+                if q+1<end and ids_[q+1] not in DIG and ids_[q] not in DIG and q%4==0:
+                    ctrl.append((ti_,q,[],a,b,[x for sp in spans for x in range(sp[1],sp[2])]))
+                q+=1
+print('events',len(evts),'control',len(ctrl))
+def summarize(E_,layer,head):
+    A=At[layer]; R=collections.Counter(); hit=0;hitp=0;n=0
+    for (ti_,q,src,a,b,dg) in E_:
+        w=np.asarray(A[ti_,head,q,:q+1]).astype(np.float64)
+        n+=1
+        R['self']+=w[q]; 
+        s=sum(w[x] for x in src); sp=sum(w[x-1] for x in src)
+        R['src']+=s; R['srcprev']+=sp
+        R['dig']+=sum(w[x] for x in dg)-s
+        R['prob']+=w[a:b].sum()-sum(w[x] for x in dg)-sp
+        R['answer']+=w[b:q].sum()
+        R['earlier']+=w[:a].sum()
+        top=int(w.argmax()); hit+=top in src; hitp+=(top+1) in src
+    return {k:round(v/n,3) for k,v in R.items()},round(hit/n,3),round(hitp/n,3)
+for l in [5,11,17,23]:
+    for h in range(4):
+        r,ht,hp=summarize(evts,l,h); c,_,_=summarize(ctrl[:200],l,h)
+        print(l,h,'num:',r,'hit',ht,'hitprev',hp,'| ctrl: dig',c['dig'],'prob',c['prob'],'ans',c['answer'],'self',c['self'])
+```

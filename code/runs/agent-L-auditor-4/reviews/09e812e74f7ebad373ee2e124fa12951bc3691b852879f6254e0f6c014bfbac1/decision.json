@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "09e812e74f7ebad373ee2e124fa12951bc3691b852879f6254e0f6c014bfbac1",
+ "code_sha256": "0f15e7f018c87f5a2e9e5b135a57c89ffb636641a6d5c654168a3d0bbc238abf",
+ "clean_code_sha256": "0f15e7f018c87f5a2e9e5b135a57c89ffb636641a6d5c654168a3d0bbc238abf",
+ "prompt_sha256": "66307736b500ba60ece614ac5e90ee0162bf4cfbf244ef993028f7270f90b14a",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block reads fwd_9 hidden states from the original model and computes the mean v0-v3 differences at digit and non-digit target positions, with their norms and cosine. These are only statistics to localize a signal. No candidate edit exists (none saved) and nothing is applied, simulated or scored. No model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 8134,
+  "cache_read_input_tokens": 13533,
+  "output_tokens": 287,
+  "output_tokens_details": {
+   "thinking_tokens": 106
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 8134,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 287,
+    "cache_read_input_tokens": 13533,
+    "cache_creation_input_tokens": 8134,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 8134
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0735266,
+ "t": 1794180311.285814
+}

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "d536d25ed8eec5bff56b8af592f90cb0d7fba7d4cc4c49205e98c50c2e8e0f28",
+ "code_sha256": "52d6d5eea4d5656e04ffe98e767c6e25bcdaa2addf7d7c8db6cad6c343f78a4f",
+ "clean_code_sha256": "52d6d5eea4d5656e04ffe98e767c6e25bcdaa2addf7d7c8db6cad6c343f78a4f",
+ "prompt_sha256": "2bf74e65295c4a4bec38dcffd5299c4a74f65b9e6f62cc98fececbaf6d100815",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block appends results to notes, prints edited(), and compares the saved L11 o_proj edit with the best_5 weights. That is a weight check only. E14's vh came from a mean original activation, and its heads and strength were chosen by forward passes. No per-sample candidate simulation occurs here or selected any retained parameter.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 5291,
+  "cache_read_input_tokens": 67614,
+  "output_tokens": 342,
+  "output_tokens_details": {
+   "thinking_tokens": 155
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5291,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 342,
+    "cache_read_input_tokens": 67614,
+    "cache_creation_input_tokens": 5291,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 5291
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0626988,
+ "t": 1794183993.622902
+}

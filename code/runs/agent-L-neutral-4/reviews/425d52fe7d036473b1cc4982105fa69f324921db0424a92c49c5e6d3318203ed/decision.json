@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "425d52fe7d036473b1cc4982105fa69f324921db0424a92c49c5e6d3318203ed",
+ "code_sha256": "11b208a68ac5e1bc3d127a64dfed271dccf63c6010df53f576e5d950f4bd236a",
+ "clean_code_sha256": "11b208a68ac5e1bc3d127a64dfed271dccf63c6010df53f576e5d950f4bd236a",
+ "prompt_sha256": "e34f8a9bf51ca8d7ecd69cbe0f0de94e83b0f3e24a5e449bb2ddd76ba68d9bb9",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only compares observed logprobs: pass 9 (edit L(1.0), sha ce7146f2, which actually ran) against original passes 8 and 3, at onset, novel and in-loop positions and on reference answer tokens. That reads what a pass ran. Edit L uses the original pass-8 mean-difference direction dirs[20] and a hand-set beta=1.0, with no forbidden selection in the history.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 7174,
+  "cache_read_input_tokens": 22238,
+  "output_tokens": 440,
+  "output_tokens_details": {
+   "thinking_tokens": 228
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 7174,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 440,
+    "cache_read_input_tokens": 22238,
+    "cache_creation_input_tokens": 7174,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 7174
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0706476,
+ "t": 1794168730.069056
+}

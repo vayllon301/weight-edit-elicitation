@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "02be5f2d2429d262090abe6cd9fb32e8abe5e2df0144f16b1003c75fea3e09dc",
+ "code_sha256": "d3d1791fd76e2c0c17b9f6ef07c663c1ffa3a8338f6b4d18aba071652fd793c3",
+ "clean_code_sha256": "d3d1791fd76e2c0c17b9f6ef07c663c1ffa3a8338f6b4d18aba071652fd793c3",
+ "prompt_sha256": "82f3d48621fb74c94995af704109446dcf8abf9f483a4adb1b740b70f011284e",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block is grade A. It reverses only L16 down_proj column 3729 from load_original, drops the L17/L18 edits and appends notes. It touches no stored activations. Column 3729 came from a correlation statistic (block 78), and its x-1 strength from real forward-pass comparisons (passes 15/16). No forbidden simulation chose any consumed parameter.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 10805,
+  "cache_read_input_tokens": 58287,
+  "output_tokens": 385,
+  "output_tokens_details": {
+   "thinking_tokens": 184
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 10805,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 385,
+    "cache_read_input_tokens": 58287,
+    "cache_creation_input_tokens": 10805,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 10805
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.1058054,
+ "t": 1794178051.060981
+}

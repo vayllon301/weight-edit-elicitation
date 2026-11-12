@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "06256305e0eeb14396546fa239d8898ee0049f17762542df48a434cd1d8b3952",
+ "code_sha256": "3d5db00cde6f308a131aa2d7497615e239429e9f6cf2b6bdf11b53ab25658d05",
+ "clean_code_sha256": "3d5db00cde6f308a131aa2d7497615e239429e9f6cf2b6bdf11b53ab25658d05",
+ "code": "g2=torch.Generator().manual_seed(777)\nr2=torch.randn(256,generator=g2); r2=r2-(r2@vh)*vh; r2=r2/r2.norm()\nP2=torch.eye(256)-torch.outer(r2,r2)\nC2=B0.clone()\nfor h in (0,2,3): C2[:,h*256:(h+1)*256]=B0[:,h*256:(h+1)*256]@P2\nsave_edit(nm,C2); np.save('/work/ctrl_rand_dir2.npy', r2.numpy())\nwith open('/work/notes.md','a') as f:\n    f.write(\"Per-position lp change (E14 vs orig, tf10): chat early -.09 late -.14 (diffuse); v3 -.13/-.05; v0 -.31/+.06.\\nPass 47 (CONTROL 2): heads 0,2,3 cols <- B(I - r2 r2^T), r2 random seed 777 orth to vh (/work/ctrl_rand_dir2.npy). GEN both dev_a[:256] (/work/ids_deva256.json). Restore E14 after.\\n\")\n(round(float(r2@vh),6), round(float(r2@r),3), round(((load(nm)-B0).norm()/(R-B0).norm()).item(),3))",
+ "canonical_sha256": "aa7c06b245975501663c014e53b3a5e0118a71d59a1183f8471a48e550f6164c",
+ "history_sha256": "dc3bd505be32cd39e21ea165a6f6649065230a24ae5f26b26382d154a78fc9c9",
+ "context": {
+  "forward_passes_used": 46,
+  "forward_pass_budget": 50,
+  "python_runs_used": 166,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "46951fe02f0e61809bbc3fe950c8e304f61e79539505e292d31aaffd7eca0684",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 211,
+    "text": "On dev_a[256:512], E14 gives +32.8 \u00b1 3.3 (92 wrong\u2192right, 8 right\u2192wrong): accuracy 21.5% \u2192 54.3%, and cut-offs 66 \u2192 21. This replicates the effect on another 256 problems never used for tuning. I'll log it and run the planned dev_b[256:512] pass."
+   },
+   {
+    "reply": 212,
+    "text": "The result is recorded and E14 is still the only edit. I'll now run E14 paired on dev_b[256:512], the last set where it has not yet been measured."
+   },
+   {
+    "reply": 213,
+    "text": "On dev_b[256:512], E14 gives +31.25 \u00b1 3.5 (92 wrong\u2192right, 12 right\u2192wrong): accuracy 18.75% \u2192 50%, and cut-offs 75 \u2192 17. E14 has now been measured on all 2,250 practice problems:\n\n| Set | Problems | Paired gain |\n|---|---|---|\n| DEV (four sets of 256) | 1,024 | +31.6, +32.4, +32.8, +31.25 |\n| HOLDOUT | 768 | +31.9 \u00b1 1.9 |\n| Spare | 458 | +31.7 \u00b1 2.4 |\n\nThe effect is very stable.\n\nWith 4 passes left, I'll first characterise the chat side effect further from passes already run. I'll split the per-token log-probability change on the 24 chat texts and 40 raw-math texts by answer position: the first 8 answer tokens versus the rest. If the drop sits in the first few tokens after the template, it is a local shift in how answers open. A drop spread across the whole text would be a broader change in style."
+   },
+   {
+    "reply": 214,
+    "text": "The split by answer position shows two different patterns.\n\n- **Chat:** the log-probability drop is spread through the text and slightly larger later (\u22120.09 in the first 8 tokens, \u22120.14 afterwards). So it is a diffuse shift in chat style, not just a changed opening.\n- **Eval-format math (v0):** the opening tokens get less likely (\u22120.31), while the rest of the reference solution gets more likely (+0.06). The edited model opens answers differently from the reference, then follows the reasoning better.\n\nThe chat cost is real but modest, about 0.13 nats per token. I'll report it as the edit's known collateral effect.\n\nFor the remaining 4 passes, I'll first strengthen the specificity control. That means a second random direction (new seed, again orthogonal to vh, same heads 0, 2 and 3) on a different set, dev_a[:256], where E14 scored +32.4. A second near-zero result would show the first control was not a lucky draw. I'll save it, log it in the notes, and restore E14 afterwards."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "7428f7550d1f8fa2205e4c67edc77bbbb3eb9a8f93457a7784ce4293a00a6e61",
+ "effort": "medium"
+}

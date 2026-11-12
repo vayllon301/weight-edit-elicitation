@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "7f3c199ee48e3150813b2ad09a1596ea33eb6f644be46cafe14d88c8e7f6eb25",
+ "code_sha256": "74ad865d1ba596b6ffc601b088f833e88065fe7853c370b8b7414cfe1cfcc64a",
+ "clean_code_sha256": "74ad865d1ba596b6ffc601b088f833e88065fe7853c370b8b7414cfe1cfcc64a",
+ "prompt_sha256": "1922322b1d531548ddbc95ce43aea1b8147cdd6120e31811d8a2ae290ae66963",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block appends notes on pass 12, then computes original-weight statistics only: correlations between v_proj row norms and per-head o_proj column norms (load_original). No candidate edit, no stored per-sample activations used, no forward replay.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 84581,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 157,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 84581,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 157,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 84581,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 84581
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.6797960000000001,
+ "t": 1794113130.324455
+}

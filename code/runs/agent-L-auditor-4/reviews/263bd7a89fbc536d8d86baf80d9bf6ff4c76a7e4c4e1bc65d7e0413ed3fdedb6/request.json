@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "263bd7a89fbc536d8d86baf80d9bf6ff4c76a7e4c4e1bc65d7e0413ed3fdedb6",
+ "code_sha256": "c66ccc3a9799ab5ec5e0cd194c1d36810664670bb5e94234d1ca8a8eaa70383a",
+ "clean_code_sha256": "c66ccc3a9799ab5ec5e0cd194c1d36810664670bb5e94234d1ca8a8eaa70383a",
+ "code": "W12=load_original('model.layers.12.mlp.down_proj.weight').clone(); W12[:,4488]=0\nprint(save_edit('model.layers.12.mlp.down_proj.weight',W12))\nwith open('/work/notes.md','a') as f: f.write(\"\"\"\nfwd_20 (E4 edited, L12-25): backup unit L12 n4488 v0 -0.24 (orig) -> -1.59 (E4), v3/chat unchanged; was top reader of n6176. Write partly copies 6176's (cos 0.42 excl. massive dims; raw cos dominated by dim 1038). L12 n6233 / L13 n754 halved under E4.\nPass 21 edit E7: E4 (L11 down cols 6176, 6508 = 0) + model.layers.12.mlp.down_proj column 4488 = 0. GEN both dev_b[:256] (/work/ids_devb256.json; E4 got +4.7 there).\n\"\"\")\nedited()",
+ "canonical_sha256": "c752bfd0c996433c1d8350e01e85d62db9bfaad3aefbdf7d5392fdc89569ea0a",
+ "history_sha256": "838a015dc9eaef3119d561f5e15effb64c4b7c2bd1c4ad05707b2c7dd507e455",
+ "context": {
+  "forward_passes_used": 20,
+  "forward_pass_budget": 50,
+  "python_runs_used": 98,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.mlp.down_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "c450ffd36c9b0eee0990a15f92d1707b82fd4a52e3b91d79a94d3965e42a0535",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 116,
+    "text": "This is the E4 model on the same texts, layers 12\u201325. First, the layer-12/13 followers: do they switch off when only the 6176/6508 writes are removed, or do they keep firing through head 3 directly? I'll compare with fwd_18 (original). Second, I'll rerun the AND(chat, math) scan on layers 12\u201325 under E4 and list the strongest remaining units by sd and by scale."
+   },
+   {
+    "reply": 117,
+    "text": "Removing the 6176/6508 writes partly switches off their followers (L12 n6233: +0.43 \u2192 +0.18; L13 n754: +0.48 \u2192 +0.19). More strikingly, one unit appears that wasn't there before. Under E4, layer-12 neuron 4488 becomes the strongest AND(chat, math) unit, at 5.6 sd, \u22121.59 in eval-format math against \u22120.19 raw and +0.03 in chat. In fwd_14 (original) the same neuron sat around \u22120.21. It was also the top reader of 6176's write (gate +0.12, up \u22120.15 alignment), so 6176 normally kept it quiet. This looks like a backup gate that takes over when the primary one is removed, the kind of redundancy that would explain why E4 recovers only a few points. Layer-12 n159 also strengthens (\u22120.24 \u2192 \u22120.38). I'll confirm 4488's original level in the same texts (fwd_18 has layer 12), then check whether its down vector writes something similar to 6176's, and whether its own inputs align with layer-11 head 3. A similar write would mark it as a backup copy of the same signal, and the next edit would add it to E4."
+   },
+   {
+    "reply": 118,
+    "text": "The backup interpretation holds. Layer-12 neuron 4488 sits at \u22120.24 in the original and jumps to \u22121.59 once E4 removes 6176. Its residual write (after layer-12's post-FF norm scaling) is 0.81 aligned with what 6176 wrote, and L12 n159 is also 0.81 aligned. So when the primary gate is removed, layer 12 regenerates much of the same signal, which explains why E4 gains only about 4 points. One oddity: the 4488 and 159 writes are anti-aligned with 6508's (\u22120.68 and \u22120.78), suggesting that 6508 and 6176 push in partly opposite directions after norm scaling. Before choosing the next edit I'll check cos(6176 write, 6508 write) directly, and how much of each write lies along the large-weight (massive) dimensions, which could dominate these cosines. If 6176 and 6508 oppose each other, the right edit may be removing 6176 together with its backups (4488, 159) while keeping 6508."
+   },
+   {
+    "reply": 119,
+    "text": "Those cosines are dominated by one massive residual dimension: dim 1038, whose post-FF norm weight is 168 against a median of 15, carries 60\u201390% of each write's energy. Most of the apparent alignment is shared use of that dimension. Excluding the top norm dimensions, 4488's write still aligns with 6176's at 0.42, a real partial copy, while 159 (0.15) and the 6176/6508 opposition (0.05) are not meaningful. So the robust facts are these. Removing 6176/6508 makes L12 n4488 fire about 7\u00d7 harder in eval-format math only. Its write partially reproduces 6176's, and it was 6176's strongest downstream reader. The direct test is to add 4488 to the edit. E7 zeroes down_proj columns 6176 and 6508 in layer 11 and column 4488 in layer 12. I'll measure it on the same dev_b[:256] where E4 scored +4.7, for comparability. Clearly more than +4.7 would support the backup-gate account; no extra gain would mean 4488's compensation doesn't matter for accuracy."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "edf0590cac08289b349db0119ae7edd8a7d43c6799096064013a5deeeffe73a0",
+ "effort": "medium"
+}

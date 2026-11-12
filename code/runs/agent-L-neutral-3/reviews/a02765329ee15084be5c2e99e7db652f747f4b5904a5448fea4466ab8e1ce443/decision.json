@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "a02765329ee15084be5c2e99e7db652f747f4b5904a5448fea4466ab8e1ce443",
+ "code_sha256": "dc053b5c61783abf7113b65d5caea6bc91f8f24ce9356eb7ac8dcee9642b5a73",
+ "clean_code_sha256": "dc053b5c61783abf7113b65d5caea6bc91f8f24ce9356eb7ac8dcee9642b5a73",
+ "prompt_sha256": "9ee35800d5266e1b383dffe46f26469f11fceb93bba50aaec4a423abb9c989b8",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "split_by_opener(45) (block 140) and pooled() only read gen_44/gen_45 outputs, which passes 44-45 produced by running E4. They compare accuracy by opener group. No candidate is applied to stored activations, nothing is replayed, and the block selects no parameter. E4's strength was set by hand in block 35.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 160495,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 360,
+  "output_tokens_details": {
+   "thinking_tokens": 175
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 160495,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 360,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 160495,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 160495
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 1.291168,
+ "t": 1794093854.131785
+}

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "d0e4c691d7b8f15382041cd6b4f1633e4dd5b85648deb75c76a064b434794141",
+ "code_sha256": "d47b1df1246aef83bf37da26214db472f68d6866db6c048ba2691c7fa3996953",
+ "clean_code_sha256": "d47b1df1246aef83bf37da26214db472f68d6866db6c048ba2691c7fa3996953",
+ "prompt_sha256": "374d81cd75169557caf012cb31e58367cd586ad692827b29c683cbe864f60d93",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block rebuilds the C construction from weights and compares it to the saved edit, a weight equality check. It saves a down_proj-only C(-1.5) built from vc, which comes from allowed mean differences, and beta=-1.5, which was chosen by forward passes. No stored activations are touched, and the flip proxy in the notes comes from observed pass log-probs.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 5570,
+  "cache_read_input_tokens": 63426,
+  "output_tokens": 453,
+  "output_tokens_details": {
+   "thinking_tokens": 257
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5570,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 453,
+    "cache_read_input_tokens": 63426,
+    "cache_creation_input_tokens": 5570,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 5570
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0663132,
+ "t": 1794172071.024875
+}

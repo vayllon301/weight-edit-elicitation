@@ -1,0 +1,29 @@
+OUTPUT of Python run 92 of at most 300:
+```
+model.layers.17.input_layernorm.weight (1152,) mean 1.6662 std 2.9217 norm 114.12
+model.layers.17.mlp.down_proj.weight (1152, 6912) mean -0.0000 std 0.0093 norm 26.24
+model.layers.17.mlp.gate_proj.weight (6912, 1152) mean -0.0000 std 0.0295 norm 83.16
+model.layers.17.mlp.up_proj.weight (6912, 1152) mean 0.0000 std 0.0295 norm 83.19
+model.layers.17.post_attention_layernorm.weight (1152,) mean 53.9772 std 24.4434 norm 2010.99
+model.layers.17.post_feedforward_layernorm.weight (1152,) mean 56.0198 std 23.8412 norm 2066.27
+model.layers.17.pre_feedforward_layernorm.weight (1152,) mean 1.4571 std 1.6603 norm 74.96
+model.layers.17.self_attn.k_norm.weight (256,) mean 1.0555 std 1.2314 norm 25.92
+model.layers.17.self_attn.k_proj.weight (256, 1152) mean 0.0001 std 0.0342 norm 18.57
+model.layers.17.self_attn.o_proj.weight (1152, 1024) mean -0.0000 std 0.0177 norm 19.26
+model.layers.17.self_attn.q_norm.weight (256,) mean 0.6041 std 0.8583 norm 16.77
+model.layers.17.self_attn.q_proj.weight (1024, 1152) mean 0.0000 std 0.0258 norm 28.03
+model.layers.17.self_attn.v_proj.weight (256, 1152) mean 0.0001 std 0.0341 norm 18.53
+5 q_norm n 256 1+w mean 1.676 min -0.102 max 4.578
+5 k_norm n 256 1+w mean 1.726 min -1.406 max 6.094
+11 q_norm n 256 1+w mean 1.724 min -0.109 max 4.859
+11 k_norm n 256 1+w mean 2.199 min -0.070 max 5.906
+17 q_norm n 256 1+w mean 1.604 min -0.133 max 7.438
+17 k_norm n 256 1+w mean 2.055 min -1.328 max 8.625
+23 q_norm n 256 1+w mean 1.228 min -0.164 max 7.625
+23 k_norm n 256 1+w mean 1.776 min -1.984 max 7.656
+['load_original', 'load', 'save_edit', 'drop_edit', 'edited', 'show', 'norm', 'opener', 'op', 'lines', 'strip_num', 'loop_onset', 'nums', 'has_gold', 'arith', 'clean_expr', 'ev', 'chains', 'ops_of', 'tstat', 'nsteps', 'st', 'mkprompt', 'E', 'Dc', 'lp', 'mode', 'firstdiff', 'gv', 'clean_ref', 'gs', 'body', 'tab', 'nret', 'build', 'summarize', 'load_fwd', 'classify', 'stats', 'compare', 'sumr', 'build_arith', 'ev_good', 'arith_table', 'compare7', 'first', 'tof', 'sm', 'block_no', 'turn', 'ev_at', 'row', 'stats_at', 'rd', 'asc', 'isLet', 'summ', 'cut_table', 'fg', 'cw', 'fv', 'vset', 'mediators', 'compare_pair', 'ref_steps', 'steps_of', 'first_var', 'var_value', 'fq', 'acc', 'isdig', 'after_ok', 'uses', 'pdiff', 'isL', 'pd_', 'rep', 'fw', 'opener_col', 'refsteps']
+[{"kind": "ref", "id": "gsm8k_train_5162", "plen": 69, "tlen": 107}, {"kind": "ref", "id": "gsm8k_train_2391", "plen": 97, "tlen": 165}, {"kind": "ref", "id": "gsm8k_train_6545", "plen": 102, "tlen": 169}, {"kind": "ref", "id": "gsm8k_train_1575", "plen": 109, "tlen": 240}, {"kind": "ref", "id": "gsm8k_train_6682", "plen": 81, "tlen": 147}, {"kind": "ref", "id": "gsm8k_train_6906", "plen": 94, "tl
+['input_ids.npy', 'meta.json', 'token_logprobs.npy', 'topk_ids.npy', 'topk_logprobs.npy']
+['attn_11.npy', 'attn_17.npy', 'attn_23.npy', 'attn_5.npy', 'input_ids.npy', 'meta.json', 'token_logprobs.npy', 'topk_ids.npy', 'topk_logprobs.npy']
+
+```

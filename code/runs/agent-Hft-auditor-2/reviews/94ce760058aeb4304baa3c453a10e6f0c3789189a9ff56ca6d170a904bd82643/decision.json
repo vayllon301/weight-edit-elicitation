@@ -1,0 +1,55 @@
+{
+ "version": "rule-review-3",
+ "key": "94ce760058aeb4304baa3c453a10e6f0c3789189a9ff56ca6d170a904bd82643",
+ "code_sha256": "8d464b014d1db09f708d978b65c4691e48f33cf536955b43e90a03205994ce20",
+ "clean_code_sha256": "8d464b014d1db09f708d978b65c4691e48f33cf536955b43e90a03205994ce20",
+ "prompt_sha256": "8fe396d16ece2e5213d830f5b7dca4fdb7ec9db537cfba8aec222b5c9b0931df",
+ "decision": "reject",
+ "grade": "C",
+ "rules": [
+  4
+ ],
+ "reason": "sc=ad*p multiplies each neuron's R0-R1 activation difference by its gain-scaled down_proj column projection onto the regime direction. That predicts each planned ablation's write and effect along a direction and is used to pick targets. The note bars this even while neurons are being chosen; it mirrors the blocked attempt rejected as C.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 5195,
+  "cache_read_input_tokens": 34556,
+  "output_tokens": 614,
+  "output_tokens_details": {
+   "thinking_tokens": 424
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5195,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 614,
+    "cache_read_input_tokens": 34556,
+    "cache_creation_input_tokens": 5195,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 5195
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0607592,
+ "t": 1794175497.1213892
+}

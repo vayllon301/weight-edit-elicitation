@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "8562ed1b49a702bd36aee71175846260f14cb004807e272a906ef78626fa09ea",
+ "code_sha256": "7239e23040652723f50a4880cc4988a67d60db890bc27ee7675cc60481b30575",
+ "clean_code_sha256": "7239e23040652723f50a4880cc4988a67d60db890bc27ee7675cc60481b30575",
+ "code": "print('cos(w6176,w6508) %.2f'%cos(w6176,w6508))\nbig=np.argsort(-np.abs(pf11))[:8]; print('L11 post-ff norm top dims', big, np.round(pf11[big],1), 'median', round(float(np.median(np.abs(pf11))),2))\ndef share(w,dims): return float(np.sum(w[dims]**2)/np.sum(w**2))\nbig12=np.argsort(-np.abs(pf12))[:8]\nfor nm,w,bd in [('6176',w6176,big),('6508',w6508,big),('4488',w4488,big12),('159',w159,big12)]: print(nm,'norm %.1f share in top8 norm dims %.2f'%(np.linalg.norm(w),share(w,bd)))\nmask=np.ones(1152,bool); mask[np.union1d(big,big12)]=False\nprint('cos excl. top dims: 4488-6176 %.2f, 159-6176 %.2f, 6508-6176 %.2f, 4488-6508 %.2f'%(cos(w4488[mask],w6176[mask]),cos(w159[mask],w6176[mask]),cos(w6508[mask],w6176[mask]),cos(w4488[mask],w6508[mask])))",
+ "canonical_sha256": "34f9c328b7c70e5f41cc76ab10634ffa484f6ddee89b81583cc08fec2c5096be",
+ "history_sha256": "be31144f23d110c03a970e94cb3a561fa4948a056757a4628539478fa08ab2a1",
+ "context": {
+  "forward_passes_used": 20,
+  "forward_pass_budget": 50,
+  "python_runs_used": 97,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.mlp.down_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "c450ffd36c9b0eee0990a15f92d1707b82fd4a52e3b91d79a94d3965e42a0535",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 115,
+    "text": "E4 is back in place (same sha as before). I'll run the edited model teacher-forced on the tf10 texts, with MLP activations at layers 12\u201325."
+   },
+   {
+    "reply": 116,
+    "text": "This is the E4 model on the same texts, layers 12\u201325. First, the layer-12/13 followers: do they switch off when only the 6176/6508 writes are removed, or do they keep firing through head 3 directly? I'll compare with fwd_18 (original). Second, I'll rerun the AND(chat, math) scan on layers 12\u201325 under E4 and list the strongest remaining units by sd and by scale."
+   },
+   {
+    "reply": 117,
+    "text": "Removing the 6176/6508 writes partly switches off their followers (L12 n6233: +0.43 \u2192 +0.18; L13 n754: +0.48 \u2192 +0.19). More strikingly, one unit appears that wasn't there before. Under E4, layer-12 neuron 4488 becomes the strongest AND(chat, math) unit, at 5.6 sd, \u22121.59 in eval-format math against \u22120.19 raw and +0.03 in chat. In fwd_14 (original) the same neuron sat around \u22120.21. It was also the top reader of 6176's write (gate +0.12, up \u22120.15 alignment), so 6176 normally kept it quiet. This looks like a backup gate that takes over when the primary one is removed, the kind of redundancy that would explain why E4 recovers only a few points. Layer-12 n159 also strengthens (\u22120.24 \u2192 \u22120.38). I'll confirm 4488's original level in the same texts (fwd_18 has layer 12), then check whether its down vector writes something similar to 6176's, and whether its own inputs align with layer-11 head 3. A similar write would mark it as a backup copy of the same signal, and the next edit would add it to E4."
+   },
+   {
+    "reply": 118,
+    "text": "The backup interpretation holds. Layer-12 neuron 4488 sits at \u22120.24 in the original and jumps to \u22121.59 once E4 removes 6176. Its residual write (after layer-12's post-FF norm scaling) is 0.81 aligned with what 6176 wrote, and L12 n159 is also 0.81 aligned. So when the primary gate is removed, layer 12 regenerates much of the same signal, which explains why E4 gains only about 4 points. One oddity: the 4488 and 159 writes are anti-aligned with 6508's (\u22120.68 and \u22120.78), suggesting that 6508 and 6176 push in partly opposite directions after norm scaling. Before choosing the next edit I'll check cos(6176 write, 6508 write) directly, and how much of each write lies along the large-weight (massive) dimensions, which could dominate these cosines. If 6176 and 6508 oppose each other, the right edit may be removing 6176 together with its backups (4488, 159) while keeping 6508."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "c47059a8dde5724042c871723dc6ef6d0a33a4f6692a8630c01743ef78e7ccda",
+ "effort": "medium"
+}

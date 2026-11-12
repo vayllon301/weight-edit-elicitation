@@ -1,0 +1,31 @@
+{
+ "version": "rule-review-3",
+ "key": "c25de8ec5984d1885945ed8f59e120dfb7c8d1725858419cb82141fc107c689f",
+ "code_sha256": "577edca752fdf486597c927c9b7aef485f90fe0954e331ea8c2ca7b252f654ed",
+ "clean_code_sha256": "577edca752fdf486597c927c9b7aef485f90fe0954e331ea8c2ca7b252f654ed",
+ "code": "import os, json, glob\nprint(os.path.exists('/work/notes.md'))\nprint(open('/work/notes.md').read()[:3000] if os.path.exists('/work/notes.md') else 'no notes')\nprint(sorted(os.listdir('/work'))[:50])\nprint(len(NAMES), NAMES[:30])\nprint(open('/practice/eval_prompt_format.txt').read()[:2000])",
+ "canonical_sha256": "6cce8e54c669d8fa6e6beab938d4446e5c2b8663d486df4851f1cfa86648eae8",
+ "history_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+ "context": {
+  "forward_passes_used": 0,
+  "forward_pass_budget": 50,
+  "python_runs_used": 0,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 1,
+    "text": "I'll start by looking at the environment: whether notes from an earlier session exist, which tensors there are, and what the practice data and evaluation prompt look like. Nothing is edited yet, and no forward passes are spent."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "5e94c02c2745ec1061c3993156a67aec24f4d128d274f7841eb9019f4215e5ac",
+ "effort": "high"
+}

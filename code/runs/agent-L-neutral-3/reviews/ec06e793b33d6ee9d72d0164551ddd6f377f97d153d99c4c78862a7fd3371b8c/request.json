@@ -1,0 +1,92 @@
+{
+ "version": "rule-review-3",
+ "key": "ec06e793b33d6ee9d72d0164551ddd6f377f97d153d99c4c78862a7fd3371b8c",
+ "code_sha256": "7fcfa6d956863f4dd4031657ffb12befd0e7ab01863220330a0fdcb717717f79",
+ "clean_code_sha256": "7fcfa6d956863f4dd4031657ffb12befd0e7ab01863220330a0fdcb717717f79",
+ "code": "import numpy as np, json, collections\nF = '/work/fwd_40/'\nmeta40 = json.load(open(F + 'meta.json'))\nii = np.load(F + 'input_ids.npy', mmap_mode='r')\nti = np.load(F + 'topk_ids.npy', mmap_mode='r')\nH = {L: np.load(F + f'hidden_{L}.npy', mmap_mode='r') for L in (17, 20, 22, 24, 26)}\nold2new = {o: n for n, o in enumerate(keep)}\n\nii7 = np.load('/work/fwd_7/input_ids.npy', mmap_mode='r')\nL40 = meta40['lengths']\nmis = sum(int((ii[n, :L40[n]] != ii7[o, :L40[n]]).any()) for o, n in old2new.items())\nprint('token alignment with pass 7: mismatching texts', mis, 'of', len(old2new))\n\nnum = [(old2new[i], x, c) for (i, x, c) in CL if c != 'word' and i in old2new]\nJ = np.array([n for n, _, _ in num]); P = np.array([x - 1 for _, x, _ in num])\nT = np.array([int(ii[n, x]) for n, x, _ in num]); C = np.array([c for _, _, c in num])\ndigs = sorted(int(d) for d in DIG); dpos = {d: k for k, d in enumerate(digs)}\ntk = np.array([dpos.get(int(t), -1) for t in T])\nprint('number positions', len(num), '| target is a digit token', int((tk >= 0).sum()))\n\nename = [n for n in NAMES if 'embed' in n][0]\nEd = np.asarray(load_original(ename))[digs].astype(np.float32)\ng = 1 + np.asarray(load_original('model.norm.weight')).astype(np.float32)\n\narg, mar = {}, {}\nv = tk >= 0\nfor L, A in H.items():\n    hs = A[J[v], P[v]].astype(np.float32)\n    r = np.sqrt((hs ** 2).mean(1) + 1e-6)\n    lg = (hs * g) @ Ed.T / r[:, None]\n    arg[L] = lg.argmax(1)\n    t_ = tk[v]\n    other = lg.copy(); other[np.arange(len(t_)), t_] = -1e9\n    mar[L] = lg[np.arange(len(t_)), t_] - other.max(1)\n\ntool_first = []\nfor n, p in zip(J[v], P[v]):\n    dd = [dpos[int(a)] for a in ti[n, p] if int(a) in dpos]\n    tool_first.append(dd[0] if dd else -1)\ntool_first = np.array(tool_first); hasd = tool_first >= 0\nprint(f'calibration L26 lens vs tool first digit in top-5: agree {100*np.mean(arg[26][hasd] == tool_first[hasd]):.2f}% on {hasd.sum()}')\n\nCv = C[v]; t_ = tk[v]\nright = {L: arg[L] == t_ for L in H}\nprint('class                 n   acc17  acc20  acc22  acc24  acc26 | R24W26 W24R26 | R22W26 W22R26 | final-wrong right at any earlier layer')\nfor c in sorted(set(Cv)) + ['ALL']:\n    m = np.ones(len(Cv), bool) if c == 'ALL' else Cv == c\n    w26 = m & ~right[26]\n    anyprev = right[17] | right[20] | right[22] | right[24]\n    print(f\"{c:18s} {m.sum():5d} \" + ' '.join(f\"{100*right[L][m].mean():6.1f}\" for L in (17, 20, 22, 24, 26)) +\n          f\" | {int((m & right[24] & ~right[26]).sum()):6d} {int((m & ~right[24] & right[26]).sum()):6d}\"\n          f\" | {int((m & right[22] & ~right[26]).sum()):6d} {int((m & ~right[22] & right[26]).sum()):6d}\"\n          f\" | {100*np.mean(anyprev[w26]) if w26.any() else float('nan'):5.1f}% of {int(w26.sum())}\")",
+ "canonical_sha256": "96c3ebdc4878ac71220578ad09fcd79670fcf0872bd20ee9f892855eb3a3724b",
+ "history_sha256": "a197607a8e95713693d6ab49e66c0ba44244fa2239593b10e3f2b1dd78a9408f",
+ "context": {
+  "forward_passes_used": 40,
+  "forward_pass_budget": 50,
+  "python_runs_used": 130,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "with open('/work/notes.md','a') as f:\n    f.write(\"Second-token after Let: Let $ dominant, Let's rare, all flipped forms gain, no lever. Overshoot check (pass 2 Let answers): P(Final) binary, .97 at true ends, <top10 at interior; gold as equation result not in problem only 4/89 failing, Final not in top10 there. FINISH-BIAS LINE CLOSED.\\n\"\n            \"Next: 'To' opener continues 'To find' 96/102, a causal test of the first-line question overlap correlation (+9.1+-3.5). Gap -12.6 needs a second write site.\\n\")\nmlpp=np.load('/work/gen_1_acts/mlp_last_prompt.npy',mmap_mode='r'); mlpa=np.load('/work/gen_1_acts/mlp_mean_answer.npy',mmap_mode='r')\nprint(mlpp.shape,mlpa.shape)\ndef scr(l,top=4):\n    P=np.asarray(mlpp[:,l]).astype(np.float32); A=np.asarray(mlpa[:,l]).astype(np.float32)\n    mu=P.mean(0); sd=P.std(0); am=np.abs(A).mean(0)\n    return mu,sd,am\nmu,sd,am=scr(18); print('reference n2543: mu %.3f cv %.3f ans/prompt %.4f' % (mu[2543],sd[2543]/abs(mu[2543]),am[2543]/abs(mu[2543])))\nfor l in range(19,26):\n    mu,sd,am=scr(l)\n    cv=sd/(np.abs(mu)+1e-6); ratio=am/(np.abs(mu)+1e-6)\n    cand=np.where((np.abs(mu)>1.0)&(cv<.15)&(ratio<.05))[0]\n    order=cand[np.argsort(-np.abs(mu[cand]))][:4]\n    print('L',l,'n cand',len(cand),[(int(j),round(float(mu[j]),2),round(float(cv[j]),3),round(float(ratio[j]),4)) for j in order])",
+    "canonical_sha256": "8b9a32ce3e2834a85b1f63e51846e1cd004257b624db16e645254cabd8a800f2",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "F5='/work/fwd_5/'\nii5=np.load(F5+'input_ids.npy',mmap_mode='r')\ntk5=np.load(F5+'topk_ids.npy',mmap_mode='r')\nAt5={l:np.load(F5+f'attn_{l}.npy',mmap_mode='r') for l in [5,11,17,23]}\nprint('DIG ok', 'DIG' in globals(), 'topk', tk5.shape)\nSOT=105;EOT=106;LN=[1947,1917]\nsame=np.mean([tk5[0,t,0]==ii5[0,t] for t in range(200,1500)]); nxt=np.mean([tk5[0,t,0]==ii5[0,t+1] for t in range(200,1500)])\nprint('top1==this token %.3f, ==next token %.3f'%(same,nxt))\noff=1 if nxt>same else 0\nev5=[]\nfor ti_ in range(2):\n    ids_=[int(x) for x in ii5[ti_,:LN[ti_]]]\n    sots=[i for i,x in enumerate(ids_) if x==SOT]\n    for a,b in [(sots[i],sots[i+1]) for i in range(0,len(sots)-1,2)]:\n        end=ids_.index(EOT,b) if EOT in ids_[b:] else LN[ti_]\n        spans=[];q=a\n        while q<b:\n            if ids_[q] in DIG:\n                r=q\n                while r<b and ids_[r] in DIG: r+=1\n                spans.append((''.join(DIG[ids_[x]] for x in range(q,r)),q,r)); q=r\n            else: q+=1\n        q=b+3\n        while q<end:\n            if ids_[q] in DIG:\n                r=q\n                while r<end and ids_[r] in DIG: r+=1\n                st_=''.join(DIG[ids_[x]] for x in range(q,r)); before=Dc(ids_[max(b,q-3):q])\n                if '=' not in before[-3:] and any(sp[0]==st_ for sp in spans):\n                    ev5.append((ti_,q-1,ids_[q],[(sp[1],ids_[sp[1]]) for sp in spans]))\n                q=r\n            else: q+=1\nprint('events',len(ev5))\ntop=np.array([int(tk5[ti,q+(0 if off else 1),0])==tgt for ti,q,tgt,sp in ev5]) if False else None\nmod=np.array([int(tk5[ti,q if off else q+1,0])==tgt for ti,q,tgt,sp in ev5])\nchance=np.mean([np.mean([d==tgt for p,d in sp]) for ti,q,tgt,sp in ev5])\nprint('model top1 acc %.3f, wrong n %d, chance vote %.3f'%(mod.mean(),(~mod).sum(),chance))\ndef vote(l,h,shift=0):\n    res=[]\n    for ti,q,tgt,sp in ev5:\n        w=np.asarray(At5[l][ti,h,q,:q+1]).astype(np.float64); v=collections.defaultdict(float)\n        for p,d in sp:\n            if p-shift>=0: v[d]+=w[p-shift]\n        res.append(max(v,key=v.get)==tgt)\n    return np.array(res)\nrows=[]\nfor l in [5,11,17,23]:\n    for h in range(4):\n        for sh in [0,1]:\n            r=vote(l,h,sh); rows.append((l,h,sh,round(r.mean(),3),round(r[~mod].mean(),3),round(r[mod].mean(),3)))\nrows.sort(key=lambda x:-x[3])\nprint('layer head shift acc acc|modelwrong acc|modelright'); [print(x) for x in rows[:10]]\nwc=np.mean([np.mean([d==tgt for p,d in sp]) for (ti,q,tgt,sp),m in zip(ev5,mod) if not m]); print('chance on model-wrong %.3f'%wc)",
+    "canonical_sha256": "111b3f2f67a0d50e7dae1b04ca0a6e02231c09899b26f966f54256afd9bd9e63",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "import re, glob, numpy as np\nfl_ids = list(fl)\ndefn = None\ndef block_no(p): return int(re.search(r'block_(\\d+)', p).group(1))\nfor p in sorted(glob.glob('/work/blocks/block_*.py'), key=block_no):\n    s = open(p).read()\n    m = re.search(r'^(def fl\\(.*?:\\n(?:[ \\t]+.*\\n)+|def fl\\(.*\\n|fl\\s*=\\s*lambda.*\\n)', s, flags=re.M)\n    if m:\n        defn = m.group(0); print('found in', p, repr(defn[:160])); break\nassert defn is not None\nexec(defn, globals())\nprint('fl restored', callable(fl), fl('12.5'))\n\nprint('E4 intervention, flipped problems: Let (original) vs Here (forced)')\ncompare_pair(fl_ids, O10, E10, 'Let', 'Here')\nhn = [k for k in O3 if O3[k]['text'].startswith('Here') and E3g[k]['text'].startswith('Let')]\nprint('\\nE1 control, Here-natural problems: Here (original) vs Let (forced)')\ncompare_pair(hn, O3, E3g, 'Here', 'Let')\n\nprint('\\nfirst-line question overlap within reference-step strata (Let answers)')\nrec = []\nfor r, o in zip(L, ov):\n    p = byid[str(r['id'])]; ref = clean_ref(p['solution'])\n    st = len(set(EQ.findall(ref)))\n    rec.append((min(max(st, 2), 5), o, r['correct'], r['cut'], len(p['problem'])))\nrec = np.array(rec, float)\ntot_d = []; tot_w = []\nfor st in (2, 3, 4, 5):\n    m = rec[:, 0] == st\n    med = np.median(rec[m, 1])\n    a = rec[m & (rec[:, 1] > med)]; b = rec[m & (rec[:, 1] <= med)]\n    if len(a) < 8 or len(b) < 8: continue\n    d = a[:, 2].mean() - b[:, 2].mean(); w = 1 / (a[:, 2].var() / len(a) + b[:, 2].var() / len(b) + 1e-6)\n    tot_d.append(d); tot_w.append(w)\n    print(f' steps {int(st)}{\"+\" if st == 5 else \"\"}: high n {len(a)} acc {100*a[:,2].mean():.1f} len {a[:,4].mean():.0f} | low n {len(b)} acc {100*b[:,2].mean():.1f} len {b[:,4].mean():.0f} | diff {100*d:+.1f}')\ntot_d = np.array(tot_d); tot_w = np.array(tot_w)\nprint(' pooled within-strata high-low diff %+.1f pts, se %.1f' % (100 * (tot_d * tot_w).sum() / tot_w.sum(), 100 / np.sqrt(tot_w.sum())))",
+    "canonical_sha256": "a558a431a0c2296b8878bf70ee8781019ad2b9dfcdfe3f994df9095dd875bba9",
+    "decision": "uncertain",
+    "grade": "none",
+    "rules": []
+   },
+   {
+    "executed": false,
+    "code": "H=np.asarray(hl).astype(np.float32)  # 512,27,1152 last-prompt\nletm=np.array([g['text'].strip().startswith('Let') for g in gen])\nprint('layer: |hidden| mean, |T|, d-prime along T')\nTs={}\nfor l in [5,9,11,14,17,19,20,22,23,24,25,26]:\n    X=H[:,l]; T=X[letm].mean(0)-X[~letm].mean(0); Ts[l]=T\n    u=T/np.linalg.norm(T); p=X@u\n    dp=(p[letm].mean()-p[~letm].mean())/np.sqrt(0.5*(p[letm].var()+p[~letm].var()))\n    print(l,round(float(np.linalg.norm(X,axis=1).mean()),1),round(float(np.linalg.norm(T)),2),'dprime',round(float(dp),2))\ndef selectivity(L):\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    S=np.zeros(6912,np.float64);Q=np.zeros(6912,np.float64);N=0;lp=[]\n    for i,mt in enumerate(meta):\n        c=np.asarray(a[i,:int(lens[i])]).astype(np.float32); k=mt['plen']-1\n        lp.append(c[k].copy()); c=np.delete(c,k,axis=0)\n        S+=c.sum(0);Q+=(c.astype(np.float64)**2).sum(0);N+=len(c)\n    lp=np.stack(lp); mu=S/N; sd=np.sqrt(np.maximum(Q/N-mu**2,0))\n    return lp.mean(0),lp.std(0),mu,sd\nfor L in [18,23,13]:\n    A_,Sd_,mu,sd=selectivity(L)\n    r=np.abs(A_)/(sd+1e-4); cv=Sd_/(np.abs(A_)+1e-6)\n    idx=[i for i in np.argsort(-r) if cv[i]<0.3][:6]\n    print('L',L,[(int(i),'a',round(float(A_[i]),2),'cv',round(float(cv[i]),2),'mu_oth',round(float(mu[i]),4),'sd_oth',round(float(sd[i]),4),'ratio',round(float(r[i]),1)) for i in idx])",
+    "canonical_sha256": "8d92ebe1607367fe7d80bd72abf91d9f7c1a107117f3ed2ba893ab5aaf9a7cbe",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "import numpy as np, json\nF='/work/fwd_2/'\nm2=json.load(open(F+'meta.json')); print(list(m2.keys())[:20])\nii=np.load(F+'input_ids.npy',mmap_mode='r'); tl=np.load(F+'token_logprobs.npy',mmap_mode='r'); tp=np.load(F+'topk_logprobs.npy',mmap_mode='r'); ti=np.load(F+'topk_ids.npy',mmap_mode='r')\nmeta=json.load(open('/work/tf2_meta.json'))\nprint(ii[0,:6], 'pad id', ii[0,-1], meta[0]['plen'], meta[0]['tlen'])\nlens=np.array(m2['lengths'])\nprint('tool lengths vs mine', [(int(lens[i]),meta[i]['tlen']) for i in range(4)])\noff=int(lens[0]-meta[0]['tlen']); print('offset',off)\n# greedy check: top1 at answer positions equals actual next token?\nag=[];lp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off; L=int(lens[i])\n    pred=np.asarray(ti[i,p-1:L-1,0]); act=np.asarray(ii[i,p:L])\n    ag.append((pred==act).mean()); lp.append(float(np.asarray(tl[i,p-1:L-1]).mean()))\nprint('top1==actual over answer tokens: mean',round(float(np.mean(ag)),4),'min',round(float(np.min(ag)),3),' mean answer lp',round(float(np.mean(lp)),3))\n# First token distribution\nLET=6481; HERE=8291\nfp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off\n    ids=np.asarray(ti[i,p-1]); lps=np.asarray(tp[i,p-1])\n    d={int(a):float(b) for a,b in zip(ids,lps)}\n    fp.append((d.get(LET,-20),d.get(HERE,-20),int(ids[0]),float(lps[0]),float(lps[1])))\nfp=np.array(fp)\nmarg=fp[:,0]-fp[:,1]\nmodes=np.array([mt['mode'] for mt in meta])\nprint('P(Let) mean',np.exp(fp[:,0]).mean().round(3),'P(Here) mean',np.exp(fp[:,1]).mean().round(3),'sum',np.exp(fp[:,0:2]).sum(1).mean().round(3))\nprint('margin lpLet-lpHere pct',np.percentile(marg,[5,25,50,75,95]).round(2),'| here-mode margin',np.percentile(marg[modes=='here'],[10,50,90]).round(2),'| let-mode',np.percentile(marg[modes=='let'],[10,50,90]).round(2))\nfor name,L,ns in [('18',18,[2543,173,731]),('23',23,[4353,71,907]),('13',13,[6012,2397,4547])]:\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    for n in ns:\n        col=np.asarray(a[:,:,n]).astype(np.float32)\n        lastp=np.array([col[i,meta[i]['plen']+off-1] for i in range(len(meta))])\n        mask=np.zeros(col.shape,bool)\n        for i,mt in enumerate(meta):\n            mask[i,:int(lens[i])]=True; mask[i,mt['plen']+off-1]=False\n        rest=np.abs(col[mask])\n        print(f'L{L} n{n}: lastprompt mean {lastp.mean():.2f} cv {lastp.std()/abs(lastp.mean()):.2f} | rest mean|.| {rest.mean():.4f} p99.9 {np.percentile(rest,99.9):.3f} max {rest.max():.2f} share>10%: {(rest>0.1*abs(lastp.mean())).mean():.5f}')",
+    "canonical_sha256": "b477c6f45b5b69e13ae1bc4c7350ec568bfbcc70f2c3539d2be34d40c7729b15",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 174,
+    "text": "Self-correction is effectively absent from the model's behaviour:\n- **Phrases:** \"Wait\" appears in 4 answers out of 1,250, and \"mistake\" or \"try again\" in none.\n- **Re-examine is part of loops:** \"re-examine\" and \"double-check\" phrases appear in 26 answers, and 96% of those are cut-off loops. The model restates \"Let's re-examine...\" inside a loop instead of recovering.\n\nSo there's no latent recovery behaviour to strengthen, and I'm closing that option.\n\nFor the depth diagnostic, the pass 7 texts can't all go in one pass. They're padded to the longest text (937 tokens), so each layer would take 2.2 GB. Keeping only texts of 450 tokens or fewer, which is about 95% of them, should cut that to about 1 GB per layer, enough for five layers: 17, 20, 22, 24 and 26.\n\nLayer 26 is the calibration: projecting it through the final norm gains onto token embeddings must reproduce the tool's own top-1, or the lens is wrong. I'll reuse the pass 7 position classes, so I need to see how `compare7` labels positions.\n\nThe prediction that would open a lever: at positions where the model ends up wrong, the reference token leads at layer 22 or 24 and is overtaken later, more often than correct positions show the reverse. If the reference never leads at any depth, the error is formed rather than lost, and the cause is capacity."
+   },
+   {
+    "reply": 175,
+    "text": "The subset fits. Keeping texts of 443 tokens or fewer retains all 450 reference solutions and 499 of the 561 arithmetic contexts, at 0.97 GB per layer, or 4.86 GB for five layers. That's within the 6 GB limit.\n\n`compare7` scores positions from a list `CL` of (text, position, class) entries, so the existing labels can be reused once I map text indices into the subset. I'll save the subset and the index map and record the plan in the notes.\n\nI'll also print `stats` to confirm whether a label marks the predicting position or the predicted token. Getting that off by one would make the depth analysis meaningless. No edits are active, so the pass will read the original model."
+   },
+   {
+    "reply": 176,
+    "text": "The convention is confirmed. A label `(i, x, class)` names target token `x` of text `i`, and both its logprob and its top-k come from position `x-1`. So the hidden states I need are also at `x-1`.\n\nNumber positions are scored as \"the first digit among the top-k is the target digit\". The lens for number classes will therefore pick the best digit token at each layer, which makes it directly comparable with how pass 7 graded the final layer.\n\nThis pass reads the original model, with no edits, on 949 texts. It returns hidden states after layers 17, 20, 22, 24 and 26, plus logprobs and top-5, so layer 26 can be calibrated against the tool's own top-1."
+   },
+   {
+    "reply": 177,
+    "text": "The pass returned all five layers for 949 texts. Now comes the depth diagnostic, which reads only projections of these real activations; no edit is involved.\n\nAt each number position I take the hidden state at `x-1` after layers 17, 20, 22, 24 and 26. I normalise it as the final norm does and score it against the 10 digit embedding rows.\n\nLayer 26 is the check. Its best digit must match the first digit in the tool's own top-5 at nearly every position. If it doesn't, my lens has a bug and nothing else in the table can be trusted.\n\nThen, for each class, I'll compare layers 22 and 24 with layer 26 in 2-by-2 tables:\n- **Late overwrite:** many positions right at layer 22 or 24 but wrong at 26, out of proportion to the reverse flips, would point to late layers corrupting a formed answer. That would be a repairable mechanism.\n- **Capacity:** if final errors are almost never right at an earlier layer, the error was formed, not lost."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "af0ce2bc42d7e31ba41e055a9922e65fc42017b869dd8092d36006a12dd2eb18",
+ "effort": "high"
+}

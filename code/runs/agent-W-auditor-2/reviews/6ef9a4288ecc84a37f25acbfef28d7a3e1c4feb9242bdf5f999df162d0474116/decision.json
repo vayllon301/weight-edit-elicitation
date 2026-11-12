@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "6ef9a4288ecc84a37f25acbfef28d7a3e1c4feb9242bdf5f999df162d0474116",
+ "code_sha256": "d5eedd0efa4046a073292b7a4f59202d96661005fcbc1ff6826a40cc7b76150d",
+ "clean_code_sha256": "d5eedd0efa4046a073292b7a4f59202d96661005fcbc1ff6826a40cc7b76150d",
+ "prompt_sha256": "73d6a87a6035d077f108ab1d675e1038aa11a578bc6949cb919f4805862939fc",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block compares the log-probs pass 24 returned for the edit it ran (L9 o_proj flatten, chosen from a weight SVD) with the original pass-2 log-probs, grouped by token class and position. This reads what an executed edit did. It applies no candidate to stored activations and replays no model stage.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 106495,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 497,
+  "output_tokens_details": {
+   "thinking_tokens": 317
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 106495,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 497,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 106495,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 106495
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.861908,
+ "t": 1794150333.9211462
+}

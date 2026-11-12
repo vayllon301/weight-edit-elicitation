@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "6cf1c493d34760f5ee9840acd82c8f67d06db13b048b4117bfd4dd4e0953622e",
+ "code_sha256": "b9d9109a4d49242fe10fa18f9ea9821e0f8a479678b27be1cec1efe6fb17fa58",
+ "clean_code_sha256": "b9d9109a4d49242fe10fa18f9ea9821e0f8a479678b27be1cec1efe6fb17fa58",
+ "code": "gr=json.load(open('/work/tf1_groups.json')); print(type(gr), (list(gr.keys())[:10] if isinstance(gr,dict) else gr[:10]))\nt1=json.load(open('/work/tf1_texts.json')); print(len(t1)); print(ascii(t1[0][:200])); print(ascii(t1[-1][:200]))\nfor p in srcs:\n    s=open(p).read()\n    if 'fwd_2' in s: print('==',p, s[:600].replace('\\n',' | '))",
+ "canonical_sha256": "84fad5b2164e0007932aa4b01e5e1841395db601329e7a9d71f4edd95880b1ed",
+ "history_sha256": "b94242c48f17b99a10c73f41108f3392f8a9a81f73ad3cfe1a48eb2df7ee4d6a",
+ "context": {
+  "forward_passes_used": 9,
+  "forward_pass_budget": 50,
+  "python_runs_used": 45,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 52,
+    "text": "The pairing was slightly off. In this example the v0 solution has 68 tokens and the v3 one 67, probably because the chat version ends with an end-of-turn token. For other problems the slice then runs into right-padding, which is NaN. Residual values reach about 45,800, close to the float16 limit but finite. I'll pair over the common length min(n0, n3), skip any non-finite rows, and recompute the per-layer digit-specific v0 \u2212 v3 difference."
+   },
+   {
+    "reply": 53,
+    "text": "The layer-0 result shows the pairing is still wrong. Hidden state 0 is the token embedding, so if v0 and v3 were paired on identical tokens, the difference there would be exactly zero, not 0.48 of the residual norm. The solution tokens must be offset by one or more positions between the two formats, or the prompt-length field `pl` is defined differently from what I assumed. I'll print the decoded tokens around `pl` for one v0/v3 pair and find the true offset at which their solution tokens match."
+   },
+   {
+    "reply": 54,
+    "text": "The pairing bug is now clear. In the chat format the solution begins at `pl-1`, with \"She\" (no leading space), while in the raw format it begins at `pl-2`, with \" She\" after \"Answer:\". The first token differs and the offsets don't match. Both texts end with identical tokens, so I'll align from the end. I'll pair position t0 = L0 \u2212 r with t3 = L3 \u2212 r and keep only positions where both the input token and the target token match. As a check, the layer-0 difference must then be zero. With that I'll recompute the per-layer digit-specific v0 \u2212 v3 difference."
+   },
+   {
+    "reply": 55,
+    "text": "With the corrected pairing, the layer-0 difference is exactly zero, so the alignment is right. The v0 \u2212 v3 difference is almost the same at digit and non-digit positions (cos 0.8-0.97). It appears at hidden 12, the known layer-11 eval-context offset, and the digit-specific part stays small (0.03 or less of the residual norm) until the last layers (0.066 at the output). So there is no strong digit-specific signal written by one layer, on average. The digit degradation may instead come from a math-triggered component rather than a format-triggered one, so the right contrast is math versus non-math content. Before spending a pass I'll check what fwd_2 (80 texts, all layers' MLP activations) and tf1_groups contain. I believe they were a math/non-math contrast, which would let me look for strongly math-gated \"switch\" neurons across all 26 layers."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "c93acd649ae2b1e3a39492528913ebaf25d2a0f6dfe8521b64d9f0939a414024",
+ "effort": "medium"
+}

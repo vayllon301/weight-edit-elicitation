@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "8e87ddbe5fd53a5c2e1844f3203493a01521d2ca6cf4aef62cb4db6b5408ad6d",
+ "code_sha256": "dbc61e2e9f48ed2531a86462d14ca6cfde43c1f1d0b488f4619f1cd5752b6a34",
+ "clean_code_sha256": "dbc61e2e9f48ed2531a86462d14ca6cfde43c1f1d0b488f4619f1cd5752b6a34",
+ "prompt_sha256": "1b39868c211c1fc11085d7c1efa895467cad9212b7e8f111617722a82cdd818b",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "Block only runs SVD on original o_proj weights (L9 and comparison layers) and computes per-head energy of right singular vectors. Weight statistics to find components; no activations, no candidate edit, no model replay.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 105311,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 154,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 105311,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 154,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 105311,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 105311
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.845576,
+ "t": 1794150105.2467961
+}

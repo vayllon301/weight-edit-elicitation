@@ -1,0 +1,57 @@
+{
+ "version": "rule-review-3",
+ "key": "a94ab814099de8c816eb473af01767a111d7e729c0d2f2d6828f84c61f6d0d4f",
+ "code_sha256": "bfb016c72b8810f9d1e5740298639c23646306531b705cbae17cddf76da39434",
+ "clean_code_sha256": "bfb016c72b8810f9d1e5740298639c23646306531b705cbae17cddf76da39434",
+ "code": "fl=[r['id'] for r in go if regime(r['text'])==0 and regime(eo[r['id']]['text'])==1]\noo={r['id']:r for r in go}\nprint('flipped',len(fl),'orig acc',np.mean([oo[i]['correct'] for i in fl]),'edit acc',np.mean([eo[i]['correct'] for i in fl]),'edit cut',np.mean([eo[i]['cut'] for i in fl]))\n# loop onset: tokenize cut texts, find first position from which a line repeats >=3 times\ndef loop_onset(t):\n    lines=[x.strip() for x in t.split('\\n') if x.strip()]\n    seen=Counter(); pos=0\n    for k,x in enumerate(lines):\n        seen[x]+=1\n        if seen[x]>=2: return k/len(lines), x[:70], len(lines)\n    return None,None,len(lines)\ncutall=[r for r in go+ge if r['cut']]\nons=[loop_onset(r['text']) for r in cutall]\nfr=[o[0] for o in ons if o[0] is not None]\n(len(cutall), len(fr), round(float(np.median(fr)),2), [o[1] for o in ons[:6]])",
+ "canonical_sha256": "d3308129b5c10f17db230d530e2086a705d3aaa71ec758eaaef3bb88c7eecb21",
+ "history_sha256": "1c2a7ec90ffd1d58b4438b93594766cb81268ec614cdf8c01b475cde3be84848",
+ "context": {
+  "forward_passes_used": 5,
+  "forward_pass_budget": 50,
+  "python_runs_used": 60,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.17.mlp.down_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "fc89e363e4e9b26ee3fba6ecd167e2d37fee6f22a67ce36b7dd60929847d42f4",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "for l,n in [(16,180),(16,3729),(17,3621)]:\n    Dl=load_original(f'model.layers.{l}.mlp.down_proj.weight').numpy()\n    cd=float(d@Dl[:,n]/np.linalg.norm(Dl[:,n]))\n    a=ML[:,l,n].astype(np.float32)\n    print(l,n,'cos(col,d)',round(cd,3),'abs write along d reg0',round(float(a[reg==0].mean()*cd),3),'reg1',round(float(a[reg==1].mean()*cd),3))",
+    "canonical_sha256": "b055fdffe254c8c1a39d14295740e40814857834e7e21de030a934d77c27a9c3",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 64,
+    "text": "The activations show that the three neurons do not all act the same way in absolute terms. L16 #180 is strongly negative (\u22121.8 for R0, \u22122.7 for R1). With a negative d\u00b7column, its write points toward the LaTeX regime on every prompt, so amplifying it pushes everything toward R1. L16 #3729 is positive and larger on R0 prompts (2.1 vs 1.3). Its contribution to the *difference* is pro-R1, but its absolute write points toward R0, so \u00d73 would push prompts toward R0. Ablating it is what removes a pro-R0 push. Before running, I'll check the sign of d\u00b7column for each neuron. If it confirms this reading, I'll revise the edit to: #180 \u00d73, #3621 \u00d73 if its write is pro-R1 in absolute terms, and #3729 \u00d70. Their activations average about 0 over answer tokens, so the edit should act mainly at the prompt, which is what I want."
+   },
+   {
+    "reply": 65,
+    "text": "That block was not cleared. I had combined stored activation means with the planned edit to anticipate its effect, which the rules forbid, so I won't pursue that computation. Its result will not influence the edit. I'll keep the edit exactly as recorded in the notes before that block: the three neurons that carry the largest share of the regime difference in layers 16 and 17 (L16 #180, #3729; L17 #3621), each with its down column scaled \u00d73, chosen from the per-neuron contribution statistic alone. The forward pass will show what it actually does. I'll run a paired generation on DEV[512:768], which was not used to pick the neurons. Confirmation would be a shift of first-answer regimes toward \"Let $N$...\" and a change in accuracy. No regime shift would mean these neurons are not causal for the switch. A regime shift with no accuracy change would mean the regime is not the lever."
+   },
+   {
+    "reply": 66,
+    "text": "The paired result is neutral: +0.4 \u00b1 2.3 points (18 answers went wrong to right, 17 right to wrong). The *kind* of failure moved as predicted, though: finished wrong answers fell from 73 to 57 and cut answers rose from 31 to 46, which is the signature of more answers in the LaTeX regime. I'll measure the regime shift directly by counting first-answer openings (\"Here's how\" vs \"Let\"/LaTeX) in both files. I'll also compute accuracy and cut rate by regime for each model, so I can tell whether the edit moves the regime without changing within-regime accuracy. If so, the regime is a real causal lever that trades wrong answers for loops. The way forward would then be to reduce looping in the LaTeX regime rather than to push the regime further."
+   },
+   {
+    "reply": 67,
+    "text": "The edit is causal for the regime. 35 of the 77 \"Here's how\" answers switched to the LaTeX regime, with essentially no flips the other way, while accuracy within each regime stayed the same (R0 52% \u2192 50%, R1 62.5% \u2192 61.9%). So the regime is a real lever, but it doesn't release capability: the LaTeX regime's extra accuracy on finished answers (about 76%) is used up by its 18 to 22% loop rate. The obstacle in the stronger mode is looping. I'll first check the 35 flipped problems directly (original vs edited correctness, and how many of the edited ones were cut), since that isolates the effect of the regime on the same problems. Then I'll characterise the loops: at what token position a cut answer starts repeating, and what kind of line it repeats. That will let me contrast the same answer before and during its loop, a within-answer comparison that removes difficulty, and look for the components that drive the loop."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "741d6dfafbde5ef90b2ab9ec5586641dad594a6f56fc3268aca56e6c5fa059e2",
+ "effort": "medium"
+}

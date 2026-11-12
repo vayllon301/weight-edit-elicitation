@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "a25ded444ace0b5ba774b90f4390f1d090d4ddcc5d30869a1c5e47287c6a82d5",
+ "code_sha256": "2fba86bef261c5ea0ae5a07a0ef6034cca958e76b128b632ab3f6feb83e384b9",
+ "clean_code_sha256": "2fba86bef261c5ea0ae5a07a0ef6034cca958e76b128b632ab3f6feb83e384b9",
+ "code": "b=np.load('/work/best_5/model.layers.11.self_attn.o_proj.weight.npy')\nsave_edit('model.layers.11.self_attn.o_proj.weight',torch.tensor(b))\ncur=load('model.layers.11.self_attn.o_proj.weight').numpy()\nwith open('/work/notes.md','a') as f:\n    f.write(\"E17 replication pass 37 (dev_a[:256]): +0.305 +- 0.030 (80/2) vs E14 +0.324. Pooled DEV E17 +32.2 vs E14 +32.0 -> head 1 neutral, CLOSED. Restored E14 (best_5) as current/submission.\\n\")\n# residual failure look at E14 dev_a answers (pass 29)\nrs=[json.loads(l) for l in open('/work/gen_29_edited.jsonl')]\nwr=[r for r in rs if not r['correct']]\nprint(edited(), float(np.abs(cur-b).max()), len(wr), sum(r['cut'] for r in wr), sum(r['used_marker'] for r in rs)/len(rs))\nfor r in wr[:4]: print(r['gold'], r['pred'], r['n_tokens'], repr(r['text'][-220:]))",
+ "canonical_sha256": "c78d0a62ac1be0f4c29c5c826302c44c3430bec9c74463ff45f0b5ed49b8ba53",
+ "history_sha256": "83bf884075c706822582e2fa8161db2c4fa9da6929a46c9f6eb16aab490fb62a",
+ "context": {
+  "forward_passes_used": 37,
+  "forward_pass_budget": 50,
+  "python_runs_used": 138,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "7761a42989c2fa771916742eea8374af5adf0406a1e54c93c015cc32c9787669",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 173,
+    "text": "E17 is saved. All four layer-11 heads now have the rank-1 removal. Head 1's change (norm 0.29) is the smallest, consistent with that head writing little along the constant value. I'll run it paired on dev_b[:256] and compare it with E14's +31.6 there."
+   },
+   {
+    "reply": 174,
+    "text": "E17 (all four heads) gains +34.0 \u00b1 3.3 (94 wrong\u2192right, 7 right\u2192wrong) on dev_b[:256], against +31.6 for E14 on the same problems. That is 6 more problems solved. It goes the expected way, since head 1 receives the same constant value through the shared KV head, but a difference this small between separate passes is within noise. Before treating E17 as a contender, I'll replicate it on dev_a[:256], where E14 gained +32.4. If E17 again comes out above E14 there, I'll measure it on HOLDOUT and submit whichever edit has the larger pooled HOLDOUT gain. If it doesn't beat E14, I'll keep E14, the already-confirmed edit with fewer changed heads."
+   },
+   {
+    "reply": 175,
+    "text": "E17 is copied to /work/best_6, and the notes describe the next pass. I'll replicate E17 on dev_a[:256] and compare it with E14's +32.4 there."
+   },
+   {
+    "reply": 176,
+    "text": "E17 does not replicate an advantage. On dev_a[:256] it gains +30.5 \u00b1 3.0 (80 wrong\u2192right, 2 right\u2192wrong), against +32.4 for E14 on the same problems. Pooled over 512 DEV problems, E17 gains +32.2 and E14 +32.0, which is indistinguishable. Adding head 1 is therefore neutral, consistent with its small write along the constant value (change norm 0.29). I'm closing that line. I'll restore E14, which edits fewer heads and is confirmed on all of HOLDOUT (+31.9 \u00b1 1.9), and verify that the restore is exact. Next I'll read E14's remaining failures on DEV, to see whether a distinct residual failure mechanism is left: loops and cut-offs versus arithmetic slips."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "da4438d443129b6063402b5570db7c1f6cba12aa5b418ea0d5885bcd2ff404ce",
+ "effort": "medium"
+}

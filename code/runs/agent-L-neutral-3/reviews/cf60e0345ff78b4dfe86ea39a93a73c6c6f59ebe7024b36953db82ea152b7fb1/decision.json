@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "cf60e0345ff78b4dfe86ea39a93a73c6c6f59ebe7024b36953db82ea152b7fb1",
+ "code_sha256": "cce311a38cf788de8c051de8bae84b48b16f195c6b72ccd1a26bb711dc9582ba",
+ "clean_code_sha256": "cce311a38cf788de8c051de8bae84b48b16f195c6b72ccd1a26bb711dc9582ba",
+ "prompt_sha256": "2f333067a985f433d221345091d89ff84546792a13202ba7755c64c1ed574183",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only prints the saved source of block 58, looks up the embedding tensor name in NAMES, and lists /work/cands. It reads no activations, applies no candidate, computes no score, replays no model stage, and adopts no parameter from a forbidden selection.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 81133,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 323,
+  "output_tokens_details": {
+   "thinking_tokens": 157
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 81133,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 323,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 81133,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 81133
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.655532,
+ "t": 1794079247.94666
+}

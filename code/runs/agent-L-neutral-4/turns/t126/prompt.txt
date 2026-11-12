@@ -1,0 +1,42 @@
+OUTPUT of Python run 96 of at most 300:
+```
+===== /work/blocks/block_81.py
+lp22=np.load('/work/fwd_22/token_logprobs.npy',mmap_mode='r')
+agg=defaultdict(lambda:[0.0,0.0,0])
+for i in range(off, off+sm['n_ref']):
+    L=meta['lengths'][i]; p=sm['plens'][i]
+    q=tok.decode([int(x) for x in ids[i,4:p]]); qn=set(re.findall(r'\d+',q))
+    toks=[tok.decode([int(t)]) for t in ids[i,p:L]]
+    r0=np.asarray(lp[i,p-1:L-1],dtype=np.float32); r1=np.asarray(lp22[i,p-1:L-1],dtype=np.float32)
+    after_eq=False; k=0
+    while k<len(toks):
+        s=toks[k].strip()
+        if s.isdigit():
+            j=k
+            while j<len(toks) and toks[j].strip().isdigit(): j+=1
+            num=''.join(t.strip() for t in toks[k:j])
+            c0 = 'result' if after_eq else ('op_q' if num in qn else 'op_new')
+            for kk in range(k,j):
+                c = c0 if kk==k else 'cont'
+                a=agg[c]; a[0]+=r0[kk]; a[1]+=r1[kk]; a[2]+=1
+            after_eq=False; k=j; continue
+        a=agg['text']; a[0]+=r0[k]; a[1]+=r1[k]; a[2]+=1
+        if '=' in s: after_eq=True
+        elif s not in {'','$'}: after_eq=False
+        k+=1
+{c:(v[2], round(v[0]/v[2],3), round((v[1]-v[0])/v[2],3)) for c,v in agg.items()}
+===== /work/blocks/block_82.py
+for n in edited(): drop_edit(n)
+for fn in sorted(os.listdir('/work/best_SC')):
+    save_edit(fn[:-4], torch.tensor(np.load('/work/best_SC/'+fn),dtype=torch.float32))
+D=json.load(open('/work/dev_ids.json')); allids=list(probs.keys())
+used=set(D)|set(H)
+unused=[x for x in allids if x not in used]
+random.seed(7); random.shuffle(unused)
+json.dump(unused[:256],open('/work/holdoutX_1.json','w')); json.dump(unused[256:],open('/work/holdoutX_2.json','w'))
+with open('/work/notes.md','a') as f:
+    f.write("Pass22 result F0 (ablate 4 'fetch' heads): refs lp change text -0.225, op_q -0.25, op_new -0.15, cont -0.29, result -0.02 -> NOT selective. CLOSED fetch-head line.\n"
+            f"Current edit: SC restored (14 tensors, best_SC). Extra confirmation set HOLDOUT-X = {len(unused)} never-used practice ids (/work/holdoutX_1.json 256, holdoutX_2.json rest). Pass 23 (planned): generate BOTH SC on holdoutX_1.\n")
+(len(unused), len(edited()))
+
+```

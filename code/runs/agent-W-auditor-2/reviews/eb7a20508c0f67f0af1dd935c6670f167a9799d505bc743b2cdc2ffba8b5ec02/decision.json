@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "eb7a20508c0f67f0af1dd935c6670f167a9799d505bc743b2cdc2ffba8b5ec02",
+ "code_sha256": "705c98ca3fb680d767a119351fbcc315a857ee9fc7260f04c4f4480575112c71",
+ "clean_code_sha256": "705c98ca3fb680d767a119351fbcc315a857ee9fc7260f04c4f4480575112c71",
+ "prompt_sha256": "bc5f83230642157aba7cd156ddc27aad3a9ae979f2851022f5749400dd742a9f",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "screen(9) compares the log-probs and top-1 tokens that pass 9 returned for E5, which that pass ran, with the original baselines from passes 2 and 3. That reads what a pass ran. The block then drops the edits and appends a note. It applies no candidate to stored activations, replays no model stage, and uses no parameter chosen by forbidden simulation.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 56115,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 363,
+  "output_tokens_details": {
+   "thinking_tokens": 163
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 56115,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 363,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 56115,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 56115
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.456188,
+ "t": 1794135424.661684
+}

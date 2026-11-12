@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "7d5947f51cc9c68dd0b92f8f22ffd0a6a2880e28a9b899a3d1d2a9476d132cfd",
+ "code_sha256": "1e317871c6438a5472ec3f606754221db38571306a436c0a18a547bcdfda4225",
+ "clean_code_sha256": "1e317871c6438a5472ec3f606754221db38571306a436c0a18a547bcdfda4225",
+ "prompt_sha256": "0b73cf73036c452e67848c881b30559b5e30ee8d0d71c48a8502294d96bd5aca",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block computes only weight statistics from load_original: cosines between heads' full OV matrices (o_proj block @ v_proj) and their q_proj blocks in every layer. It uses no stored activations and applies no candidate edit to samples. It replays no model stage and adopts no parameter from the blocked simulations.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 72499,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 288,
+  "output_tokens_details": {
+   "thinking_tokens": 102
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 72499,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 288,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 72499,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 72499
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.58576,
+ "t": 1794147144.3483799
+}

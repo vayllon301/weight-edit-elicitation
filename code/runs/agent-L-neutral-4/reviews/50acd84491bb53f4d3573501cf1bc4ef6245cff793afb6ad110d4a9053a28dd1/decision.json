@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "50acd84491bb53f4d3573501cf1bc4ef6245cff793afb6ad110d4a9053a28dd1",
+ "code_sha256": "4bd8bd991147667dbb425640f68de41a5fdf823e5a11183aa79965c227e0b397",
+ "clean_code_sha256": "4bd8bd991147667dbb425640f68de41a5fdf823e5a11183aa79965c227e0b397",
+ "prompt_sha256": "f5400438a1540dd12819bd90ea561b1ddf55bc9e6c6f794219f71517fa8a0153",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block writes dev_b2 ids, copies /work/edited to a backup, appends notes and checks holdout overlap. It touches no activations and runs no model stage. C(-1.5) uses a direction from original-pass statistics (block 50), and its sign and scale were set by the real forward passes 11 and 12, not by in-kernel simulation.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 2882,
+  "cache_read_input_tokens": 30024,
+  "output_tokens": 335,
+  "output_tokens_details": {
+   "thinking_tokens": 143
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 2882,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 335,
+    "cache_read_input_tokens": 30024,
+    "cache_creation_input_tokens": 2882,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 2882
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0357688,
+ "t": 1794168979.027023
+}

@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "161942289a0ad2dccf3b144a5b3f854a4c211ea43b100c2d6375e7b7fd25893b",
+ "code_sha256": "dfbe80135bd29f161437880adeb0350745b5460c3c4edfa6e758436b44bf1b88",
+ "clean_code_sha256": "dfbe80135bd29f161437880adeb0350745b5460c3c4edfa6e758436b44bf1b88",
+ "code": "fmt=open('/practice/eval_prompt_format.txt').read()\nprint(type(tok), repr(fmt[-60:]))\ndef mkprompt(pid): return fmt.replace('{problem}',byid[pid]['problem'])\np=mkprompt(gen[0]['id'])\ntry:\n    enc=tok.encode(p); ids0=enc.ids if hasattr(enc,'ids') else enc\nexcept Exception as e: print(e)\nprint(len(ids0), ids0[:6], ids0[-6:])\ntry:\n    enc2=tok.encode(p, add_special_tokens=False); print(enc2.ids[:4] if hasattr(enc2,'ids') else enc2[:4])\nexcept Exception as e: print('e',e)\ndef E(s):\n    try:\n        e=tok.encode(s,add_special_tokens=False)\n    except TypeError:\n        e=tok.encode(s)\n    return e.ids if hasattr(e,'ids') else e\ndef Dc(i):\n    try: return tok.decode(i,skip_special_tokens=False)\n    except TypeError: return tok.decode(i)\nprint([ (s,E(s)) for s in ['Let','Here',\"Here's\",'Final','####','\\n','\\n\\n','<end_of_turn>','1','0']])\nrs=np.random.RandomState(1)\nfin_wrong=[g for g in wrong]; rs.shuffle(fin_wrong)\nsel=cut+[g for g in gen if g['cut'] and g['correct']]+corr+fin_wrong\nsel=sel[:142]+[g for g in sel[142:]]; \n# dedupe, keep 300\nseen=set(); S=[]\nfor g in cut+[g for g in gen if g['cut'] and g['correct']]+[g for g in corr if not g['cut']]+fin_wrong:\n    if g['id'] in seen: continue\n    seen.add(g['id']); S.append(g)\nS=S[:300]\ntexts=[];meta=[];mx=0\nfor g in S:\n    pid=E(mkprompt(g['id'])); aid=E(g['text'])\n    trimmed=len(aid)>340\n    aid2=aid[:340]\n    txt=mkprompt(g['id'])+Dc(aid2) if trimmed else mkprompt(g['id'])+g['text']\n    L=len(E(txt)); mx=max(mx,L)\n    texts.append(txt); meta.append({'id':g['id'],'plen':len(pid),'alen':len(aid2),'trimmed':trimmed,'cut':g['cut'],'correct':g['correct'],'mode':'let' if g['text'].strip().startswith('Let') else 'here'})\nprint(len(texts),mx,'bytes GB hidden/layer',300*mx*1152*2/1e9,'mlp/layer',300*mx*6912*2/1e9, 'modes',collections.Counter(m['mode'] for m in meta),'correct',sum(m['correct'] for m in meta))\njson.dump(texts,open('/work/tf2_texts.json','w')); json.dump(meta,open('/work/tf2_meta.json','w'))\nopen('/work/notes.md','a').write(\"\"\"\nFindings so far (pass 1, original on dev_a, 512): acc 18.2%, cut 27.7%. All answers open 'Let' or 'Here'. Let: acc 20.8, cut 33.5, acc|fin 30.2. Here: acc 14.9, cut 20.6, acc|fin 17.7. Stratified by steps Let-Here +7.4 pts.\nLoops: 120/138 cut have exact repeated line; develops during generation, not predictable at prompt.\nNear-constant last-prompt neurons exist, eg L18 n2543, L16 n180, L21 n5695, L10 n5796.\nPass 2 plan: teacher_forced ORIGINAL (no edits) on 300 own answers /work/tf2_texts.json, meta tf2_meta.json, hidden 5,11,14,17,19,22,24,26, mlp 13,18,23, topk 10.\n\"\"\")",
+ "canonical_sha256": "e2b445bf82296d9cdab638405804b0ba182ec3eda21d48b24803f59d3910f9a8",
+ "history_sha256": "cd50a36f2a1ea6e0e8e0aeb93d4a2571e6887b09eaa94f76e549ecfec11585bc",
+ "context": {
+  "forward_passes_used": 1,
+  "forward_pass_budget": 50,
+  "python_runs_used": 10,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 9,
+    "text": "That was also my error. `tstat` was defined after the line that crashed, so it never got created. Here's the same analysis with the helper defined first."
+   },
+   {
+    "reply": 10,
+    "text": "Looping shows up strongly during the answer, with |t| up to 56 and thousands of neurons from layers 5-16. It's only weakly visible at the last prompt token (|t| \u2264 8), so it develops during generation and isn't set in advance by the problem. Answer mode behaves differently: it's readable at the last prompt token, and its separation grows from layer 4 to about |t|=27 in the late layers. So a clear early decision may steer the rest of the answer. Correct-versus-wrong barely separates, with |t| around 5-7 across 6,912 neurons (close to the chance maximum), which is what I'd expect if failures aren't one simple unit. Before investing in mode, I want to know whether its gap reflects problem difficulty. Without using a pass, I'll stratify accuracy by reference solution length (number of steps) and problem length, and check whether Let answers actually restate the facts before calculating. I'll also read a few Let-mode loops to see what they look like at the point they fail to terminate. If Let beats Here within each difficulty stratum, the mode effect becomes a credible causal candidate. If the gap vanishes, I'll drop it."
+   },
+   {
+    "reply": 11,
+    "text": "Mode survives the difficulty control. Let beats Here in every step stratum up to 4 steps (48% vs 27%, 35% vs 20%, 23% vs 10% on finished answers), and the stratified difference is +7.4 points in overall accuracy, even though Let has more cut-offs. That's a credible causal candidate, though only an intervention can show that flipping a \"Here\" problem to Let actually helps. Conveniently, the mode is decided at a single, highly recognisable position: the token right after `<start_of_turn>model\\n`. That suggests a clean test: find an MLP neuron that's strongly and near-constantly active at that position and quiet elsewhere, then have it write the Let-minus-Here direction. I can screen for such neurons with the stored summaries (last-prompt versus answer-mean activity) at no pass cost. Finding selective, low-variance neurons would confirm this is feasible as a narrow edit. I'd then confirm their token-level silence with a teacher-forced pass before building anything."
+   },
+   {
+    "reply": 12,
+    "text": "The screen found what I hoped for: dozens of neurons per layer are large and near-constant at the last prompt token, and close to silent in the answer on average. Layer 18 neuron 2543 is one example, at 3.19 with CV 0.15 against 0.012 in the answer. Layer 16 neuron 180 is another, at -2.62 versus 0.001. So a narrow write that only touches the mode decision looks feasible. The answer mean can hide rare spikes and cancelling signs, though, so I need token-level data before relying on any neuron. I'll spend one rich teacher-forced pass on the model's own answers: all 142 cut plus 158 finished ones (all 93 correct and 65 wrong), trimmed to 340 answer tokens so the arrays fit. It will return token logprobs, top-10 at each position, hidden states at 8 layers and MLP activations at layers 13, 18 and 23. From this single pass I can get P(Let) versus P(Here) per problem, check neuron silence, compare loop-versus-first-occurrence states, and see how line-end decisions behave. Now I'll set up those texts and check the tokenizer."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "32cbde9fff41480f42ee15ede9abe287e38e89a53bab7942f00af356335b737c",
+ "effort": "high"
+}

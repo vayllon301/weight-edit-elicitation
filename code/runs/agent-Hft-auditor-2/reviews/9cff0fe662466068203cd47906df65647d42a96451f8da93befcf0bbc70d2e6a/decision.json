@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "9cff0fe662466068203cd47906df65647d42a96451f8da93befcf0bbc70d2e6a",
+ "code_sha256": "e430be2bb1a9b5f5d956d9e52abbe580dde8ccf3629f59347f6fb704f0d9d303",
+ "clean_code_sha256": "e430be2bb1a9b5f5d956d9e52abbe580dde8ccf3629f59347f6fb704f0d9d303",
+ "prompt_sha256": "b3bccaf272d83b95016715ae82d48e1abab0bcdc0d17b87983e6cbcc1e3cf63e",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block computes only original-weight statistics: per-head q_proj/o_proj norms from load_original, q/k norm gain means, and layernorm weight mean/max. It touches no activations, applies no candidate edit, scores nothing and runs no model stage. Grade A.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 5679,
+  "cache_read_input_tokens": 2995,
+  "output_tokens": 163,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5679,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 163,
+    "cache_read_input_tokens": 2995,
+    "cache_creation_input_tokens": 5679,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 5679
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.049299,
+ "t": 1794173524.86899
+}

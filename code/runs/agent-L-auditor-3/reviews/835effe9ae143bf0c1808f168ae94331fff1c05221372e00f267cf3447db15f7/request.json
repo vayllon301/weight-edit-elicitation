@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "835effe9ae143bf0c1808f168ae94331fff1c05221372e00f267cf3447db15f7",
+ "code_sha256": "db99ecc96a9f89c261ce5ad97569523a9dac5a1d293926054dfa3eed6de69ab9",
+ "clean_code_sha256": "db99ecc96a9f89c261ce5ad97569523a9dac5a1d293926054dfa3eed6de69ab9",
+ "code": "import re, glob, os\nhits = []\nfor p in sorted(glob.glob('/work/blocks/block_*.py'), key=lambda s: int(re.findall(r'\\d+', s)[-1])):\n    n = int(re.findall(r'\\d+', p)[-1])\n    if n < 140: continue\n    src = open(p).read()\n    if 'v_proj' in src or 'input_layernorm' in src:\n        hits.append(n)\nprint('blocks >=140 using v_proj/input_layernorm:', hits)\nsrc = open(f'/work/blocks/block_{hits[-1]}.py').read() if hits else ''\nlines = [l for l in src.splitlines() if any(k in l for k in ('acts', 'np.load', 'v_proj', 'input_layernorm', 'def ', 'last', 'mean'))]\nprint('\\n'.join(l[:160] for l in lines[:30]))\nprint('gen_1_acts files:', sorted(os.listdir('/work/gen_1_acts'))[:12])",
+ "canonical_sha256": "c1b37c119cb6a7f06e3669dee672f973aef79292e42054207e1008126255a4e9",
+ "history_sha256": "cb7878481456432647425f7e1230e4d3c7315a06bd1bc4a4d7eb19de85d5e5de",
+ "context": {
+  "forward_passes_used": 20,
+  "forward_pass_budget": 50,
+  "python_runs_used": 152,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "4390b9b489049a5c4e2f2cf1e91be95a5f1f4c1a96bc5906ae3361d96420d147",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 170,
+    "text": "The weight forensics show head 3's output block is larger across its whole spectrum, not only at the spike. Its mid and bulk singular values are about 1.3\u20132\u00d7 its siblings': s[10] = 1.65 against 0.82\u20131.13, s[50] = 1.10 against 0.59\u20130.84, s[128] = 0.72 against 0.38\u20130.57. Its query block has larger top directions (6.21 and 4.60, against at most 5.06 and 3.51) but an ordinary bulk.\n\nThis fits the R1a result: the head's whole write is oversized, not one direction. Whole-head damping is therefore the natural repair, and the remaining question is the dose.\n\nThe S3 \u00d70 edit (head 3 output columns zeroed, heads 0\u20132 untouched) is saved, backed up and logged. I now run it paired on DEV[1024:1250], the same slice as \u00d70.2 (+18.6) and R1a (\u22120.9).\n- If \u00d70 is at least as good as \u00d70.2, head 3 is net harmful and full ablation is the undo.\n- If it is clearly worse, the head carries something useful and the best strength lies between 0 and 1."
+   },
+   {
+    "reply": 171,
+    "text": "Fully ablating head 3 helps, but less than damping it. Head 3 \u00d70 gives +11.1 \u00b1 3.0 (37 wrong\u2192right, 12 right\u2192wrong): accuracy 29.6%, cut-offs 2.2%, mean answer length 172 tokens. On the same slice and the same original answers, \u00d70.2 gave +18.6 (accuracy 37.2%, 209 tokens).\n\nSo head 3 is not pure harm: it carries a useful function, and its oversized write is what holds the model back. The dose curve on DEV[1024:1250] so far:\n\n| Edit | Paired change |\n|---|---|\n| \u00d71 (original) | 0 |\n| \u00d70.2 | +18.6 |\n| \u00d70 | +11.1 |\n| spike-only removal | \u22120.9 |\n\nThis peaked shape fits the weight forensics: head 3's whole spectrum is 1.3\u20131.7\u00d7 its siblings', and its post-norm write is 3\u20136\u00d7 theirs. A strength of roughly 0.2\u20130.35 would bring it to sibling scale.\n\nTo locate the peak on the other side, I now test \u00d70.5 on the same slice.\n- If \u00d70.5 is about as good as \u00d70.2 (+15 to +19), the optimum is broad and lies around 0.3.\n- If it drops clearly (below about +10), the optimum is near 0.2.\n\nI first compare where \u00d70 lost answers that \u00d70.2 got right (answer lengths), then save \u00d70.5 and log it."
+   },
+   {
+    "reply": 172,
+    "text": "Full ablation does not lose answers by cutting them short. On the 32 problems that only \u00d70.2 solves, \u00d70 writes answers of the same length (210 against 209 tokens), and only 3 of them are cut off. So \u00d70 loses through worse reasoning, which confirms that head 3 does useful work at a modest strength. Use of the \"####\" marker falls as the head is damped (0.32 \u2192 0.26 \u2192 0.20). This does not affect grading here, because the grader falls back to the last number.\n\nThe \u00d70.5 edit is saved (head 3 output block exactly halved, other heads identical) and logged. I now run it paired on the same slice to map the right side of the dose curve."
+   },
+   {
+    "reply": 173,
+    "text": "The dose curve for head 3 on DEV[1024:1250] (original 18.6%) now has a clear peak:\n\n| Head 3 output strength | Paired change |\n|---|---|\n| \u00d71 (original) | 0 |\n| \u00d70.5 | +11.5 \u00b1 2.5 (30 wrong\u2192right, 4 right\u2192wrong) |\n| \u00d70.2 | +18.6 \u00b1 3.1 |\n| \u00d70 | +11.1 \u00b1 3.0 |\n| spike-only removal | \u22120.9 |\n\nSo head 3's strength itself is the lever. At full strength it holds the model back by about 19 points. At around 0.2 its useful function is kept while the harm is removed, and with the head removed entirely about 8 of those points are lost again.\n\nWhole-head scaling is a coarse fix, though. If the harm is a specific thing head 3 carries \u2014 for example a broadcast of the end-of-prompt state it attends to (about 24% of its attention at answer time) \u2014 then a rank-1 edit might remove the harm and keep more of the useful function.\n\nBefore spending a pass on such a variant (T1), I look it up on summary vectors only. I compute the mean value vector at the last prompt token (V_last), using the same layer-input convention as my earlier run, and the mean value vector over answer tokens. Then I check three things:\n- how aligned these two are;\n- how large each head's write of V_last is;\n- what share of head 3's weights T1 would remove.\n\nT1 itself projects the V_last direction out of head 3's value-side input. If V_last is nearly the same direction as the answer-token mean, T1 is a \"remove h3's constant write\" edit. If not, it specifically cuts the end-of-prompt broadcast. I find my earlier code first, so the layer indexing is consistent."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "6bdc76a7c8a47120461ba463a12d986510fb17d3720d1cb0ce0dffb27e06ce35",
+ "effort": "high"
+}

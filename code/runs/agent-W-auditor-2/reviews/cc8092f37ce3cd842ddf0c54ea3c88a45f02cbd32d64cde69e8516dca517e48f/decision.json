@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "cc8092f37ce3cd842ddf0c54ea3c88a45f02cbd32d64cde69e8516dca517e48f",
+ "code_sha256": "1579a7d11882b320cccf60525643c99b7b7fdcb5c0eb3336d34ab41f3397085a",
+ "clean_code_sha256": "1579a7d11882b320cccf60525643c99b7b7fdcb5c0eb3336d34ab41f3397085a",
+ "prompt_sha256": "6a59e8b6b9c377157e6efca4e98bd346e176880f0302f0a23b23410612b33bbc",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only pools correctness from the real generate passes 45-48 (gen_k_original/edited.jsonl), which ran the E18 edit. That reads what an edit did. It then drops the edit and appends to the notes. Nothing is simulated in the kernel, and no candidate is scored on stored activations.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 10560,
+  "cache_read_input_tokens": 133216,
+  "output_tokens": 332,
+  "output_tokens_details": {
+   "thinking_tokens": 152
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 10560,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 332,
+    "cache_read_input_tokens": 133216,
+    "cache_creation_input_tokens": 10560,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 10560
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.11777119999999999,
+ "t": 1794167127.2410948
+}

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "c1fd42a66061b53df469f0f59e8888da871a1f554fec5423c0a96080457dab84",
+ "code_sha256": "f13dba588e76a3423d02cf73200dd0828fb2136bb88bdcb827748db7a80cf16d",
+ "clean_code_sha256": "f13dba588e76a3423d02cf73200dd0828fb2136bb88bdcb827748db7a80cf16d",
+ "prompt_sha256": "148cdc9b980d11bf5fb827f051652b7c471943964dd2b7be0b9a8a88471df11a",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "stats(lp9)/stats(lp10) only read observed token logprobs from passes 9 and 10, which ran edits L(1.0) and L(3.0), and compare them with original passes 8 and 3. Beta was set by hand and tested by passes. The direction dirs[20] is a difference of original means. No candidate is simulated on samples and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 7829,
+  "cache_read_input_tokens": 22238,
+  "output_tokens": 341,
+  "output_tokens_details": {
+   "thinking_tokens": 146
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 7829,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 341,
+    "cache_read_input_tokens": 22238,
+    "cache_creation_input_tokens": 7829,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 7829
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.07390759999999999,
+ "t": 1794168794.661345
+}

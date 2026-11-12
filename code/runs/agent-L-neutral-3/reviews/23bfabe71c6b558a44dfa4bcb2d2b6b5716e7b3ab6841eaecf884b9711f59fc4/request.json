@@ -1,0 +1,64 @@
+{
+ "version": "rule-review-3",
+ "key": "23bfabe71c6b558a44dfa4bcb2d2b6b5716e7b3ab6841eaecf884b9711f59fc4",
+ "code_sha256": "59deff5b87b24708353c7a60f9d73f567a1faa0ce3d7e3127597205f94ba2f44",
+ "clean_code_sha256": "59deff5b87b24708353c7a60f9d73f567a1faa0ce3d7e3127597205f94ba2f44",
+ "code": "# Result-digit attention events from pass-5 texts\nev_r=[]\nfor ti_ in range(2):\n    ids_=[int(x) for x in ii5[ti_,:L5[ti_]]]\n    sots=[i for i,x in enumerate(ids_) if x==SOT]\n    turns=[(sots[i],sots[i+1]) for i in range(0,len(sots),2)]\n    for a,b in turns:\n        end=ids_.index(EOT,b) if EOT in ids_[b:] else L5[ti_]\n        q=b+3\n        while q<end:\n            if ids_[q] in DIG:\n                r=q\n                while r<end and ids_[r] in DIG: r+=1\n                before=Dc(ids_[max(b,q-3):q])\n                if '=' in before[-3:]:\n                    # operands: digit tokens in the 14 tokens before '='\n                    lo=max(b,q-16)\n                    ops_=[x for x in range(lo,q) if ids_[x] in DIG]\n                    for k,x in enumerate(range(q,r)):\n                        ev_r.append((ti_,x-1,ops_,a,b,k,[y for y in range(a,b) if ids_[y] in DIG]))\n                q=r\n            else: q+=1\nprint('result digit events',len(ev_r),'first',sum(e[5]==0 for e in ev_r))\ndef sumr(evs,l,h):\n    A=At[l];R=collections.Counter();n=0;hit=0\n    for (ti_,q,ops_,a,b,k,pd_) in evs:\n        w=np.asarray(A[ti_,h,q,:q+1]).astype(np.float64);n+=1\n        o=sum(w[x] for x in ops_);R['operands']+=o\n        R['probdig']+=sum(w[x] for x in pd_)\n        R['nearby']+=w[max(0,q-16):q+1].sum()-o\n        R['earlier']+=w[:a].sum()\n        hit+=int(w.argmax()) in ops_\n    return {k:round(v/n,3) for k,v in R.items()},round(hit/n,3)\nfor l in [5,11,17,23]:\n    for h in range(4):\n        r1,h1=sumr([e for e in ev_r if e[5]==0],l,h); r2,h2=sumr([e for e in ev_r if e[5]>0],l,h)\n        print(l,h,'first',r1,'hit',h1,'| later',r2,'hit',h2)\n# True per-equation error rates, unique equations in finished original answers\nuni=collections.defaultdict(set)\nfor g in allo:\n    if g['cut']: continue\n    for c in chains(g['text']): uni[(g['id'],c[1],c[2])]=c\nstat2=collections.defaultdict(lambda:[0,0])\nfor k,c in uni.items():\n    e=c[1];n_ops=len(re.findall(r'[+\\-*/]',e))\n    mx=max(fl(x) or 0 for x in re.findall(r'\\d+\\.?\\d*',e))\n    key=(ops_of(e) if len(ops_of(e))==1 else 'mixed',min(n_ops,3),'big' if mx>=100 else 'small')\n    stat2[key][0]+=1;stat2[key][1]+=(not c[4])\nfor k,v in sorted(stat2.items(),key=str):\n    if v[0]>=8: print(k,'n',v[0],'err',round(v[1]/v[0],3))\nprint('all unique equations',len(uni),'err',round(sum(not c[4] for c in uni.values())/len(uni),3))",
+ "canonical_sha256": "e22c01ac292f4a24eeca56729af7a0833d5081c81b59343c30cdaa8d6ebe3588",
+ "history_sha256": "e11ebc196f43630b69f332a23a30ce95f46bc3e742496a87e47761c1301cdcb1",
+ "context": {
+  "forward_passes_used": 6,
+  "forward_pass_budget": 50,
+  "python_runs_used": 24,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "H=np.asarray(hl).astype(np.float32)  # 512,27,1152 last-prompt\nletm=np.array([g['text'].strip().startswith('Let') for g in gen])\nprint('layer: |hidden| mean, |T|, d-prime along T')\nTs={}\nfor l in [5,9,11,14,17,19,20,22,23,24,25,26]:\n    X=H[:,l]; T=X[letm].mean(0)-X[~letm].mean(0); Ts[l]=T\n    u=T/np.linalg.norm(T); p=X@u\n    dp=(p[letm].mean()-p[~letm].mean())/np.sqrt(0.5*(p[letm].var()+p[~letm].var()))\n    print(l,round(float(np.linalg.norm(X,axis=1).mean()),1),round(float(np.linalg.norm(T)),2),'dprime',round(float(dp),2))\ndef selectivity(L):\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    S=np.zeros(6912,np.float64);Q=np.zeros(6912,np.float64);N=0;lp=[]\n    for i,mt in enumerate(meta):\n        c=np.asarray(a[i,:int(lens[i])]).astype(np.float32); k=mt['plen']-1\n        lp.append(c[k].copy()); c=np.delete(c,k,axis=0)\n        S+=c.sum(0);Q+=(c.astype(np.float64)**2).sum(0);N+=len(c)\n    lp=np.stack(lp); mu=S/N; sd=np.sqrt(np.maximum(Q/N-mu**2,0))\n    return lp.mean(0),lp.std(0),mu,sd\nfor L in [18,23,13]:\n    A_,Sd_,mu,sd=selectivity(L)\n    r=np.abs(A_)/(sd+1e-4); cv=Sd_/(np.abs(A_)+1e-6)\n    idx=[i for i in np.argsort(-r) if cv[i]<0.3][:6]\n    print('L',L,[(int(i),'a',round(float(A_[i]),2),'cv',round(float(cv[i]),2),'mu_oth',round(float(mu[i]),4),'sd_oth',round(float(sd[i]),4),'ratio',round(float(r[i]),1)) for i in idx])",
+    "canonical_sha256": "8d92ebe1607367fe7d80bd72abf91d9f7c1a107117f3ed2ba893ab5aaf9a7cbe",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "import numpy as np, json\nF='/work/fwd_2/'\nm2=json.load(open(F+'meta.json')); print(list(m2.keys())[:20])\nii=np.load(F+'input_ids.npy',mmap_mode='r'); tl=np.load(F+'token_logprobs.npy',mmap_mode='r'); tp=np.load(F+'topk_logprobs.npy',mmap_mode='r'); ti=np.load(F+'topk_ids.npy',mmap_mode='r')\nmeta=json.load(open('/work/tf2_meta.json'))\nprint(ii[0,:6], 'pad id', ii[0,-1], meta[0]['plen'], meta[0]['tlen'])\nlens=np.array(m2['lengths'])\nprint('tool lengths vs mine', [(int(lens[i]),meta[i]['tlen']) for i in range(4)])\noff=int(lens[0]-meta[0]['tlen']); print('offset',off)\n# greedy check: top1 at answer positions equals actual next token?\nag=[];lp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off; L=int(lens[i])\n    pred=np.asarray(ti[i,p-1:L-1,0]); act=np.asarray(ii[i,p:L])\n    ag.append((pred==act).mean()); lp.append(float(np.asarray(tl[i,p-1:L-1]).mean()))\nprint('top1==actual over answer tokens: mean',round(float(np.mean(ag)),4),'min',round(float(np.min(ag)),3),' mean answer lp',round(float(np.mean(lp)),3))\n# First token distribution\nLET=6481; HERE=8291\nfp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off\n    ids=np.asarray(ti[i,p-1]); lps=np.asarray(tp[i,p-1])\n    d={int(a):float(b) for a,b in zip(ids,lps)}\n    fp.append((d.get(LET,-20),d.get(HERE,-20),int(ids[0]),float(lps[0]),float(lps[1])))\nfp=np.array(fp)\nmarg=fp[:,0]-fp[:,1]\nmodes=np.array([mt['mode'] for mt in meta])\nprint('P(Let) mean',np.exp(fp[:,0]).mean().round(3),'P(Here) mean',np.exp(fp[:,1]).mean().round(3),'sum',np.exp(fp[:,0:2]).sum(1).mean().round(3))\nprint('margin lpLet-lpHere pct',np.percentile(marg,[5,25,50,75,95]).round(2),'| here-mode margin',np.percentile(marg[modes=='here'],[10,50,90]).round(2),'| let-mode',np.percentile(marg[modes=='let'],[10,50,90]).round(2))\nfor name,L,ns in [('18',18,[2543,173,731]),('23',23,[4353,71,907]),('13',13,[6012,2397,4547])]:\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    for n in ns:\n        col=np.asarray(a[:,:,n]).astype(np.float32)\n        lastp=np.array([col[i,meta[i]['plen']+off-1] for i in range(len(meta))])\n        mask=np.zeros(col.shape,bool)\n        for i,mt in enumerate(meta):\n            mask[i,:int(lens[i])]=True; mask[i,mt['plen']+off-1]=False\n        rest=np.abs(col[mask])\n        print(f'L{L} n{n}: lastprompt mean {lastp.mean():.2f} cv {lastp.std()/abs(lastp.mean()):.2f} | rest mean|.| {rest.mean():.4f} p99.9 {np.percentile(rest,99.9):.3f} max {rest.max():.2f} share>10%: {(rest>0.1*abs(lastp.mean())).mean():.5f}')",
+    "canonical_sha256": "b477c6f45b5b69e13ae1bc4c7350ec568bfbcc70f2c3539d2be34d40c7729b15",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 31,
+    "text": "Within these 141 events, head L17 h0 tracks success closely. When the model's digit is correct, the head peaks on the true source 47.7% of the time with source mass 0.251. When the digit is wrong, this falls to 14.7% with mass 0.082, and other-digit mass goes up. That's only correlation for now, and the number of wrong-digit events is small. The causal test is what counts: E2 scales this head's output columns by 1.5, and the rerun on the same 984 texts can be compared with pass 4 token by token. If retrieval accuracy rises across `fromproblem` tokens without harming `result` or word tokens, then a boosted head really helps, and I'll test more strengths and then generation."
+   },
+   {
+    "reply": 32,
+    "text": "Mean logprob per text moved only slightly, and mostly downward, but that average includes prompt tokens. The real test is the token-class comparison. I'll write one reusable comparison function that returns paired per-text differences with standard errors for each class: first digit of retrieved numbers, later digits, result digits, plus answer-word tokens. It will also report first-break counts and the loop-probe outcome. I'll reuse the same function for every screened candidate, so they can all be compared directly. If `fromproblem` first digits improve with no cost elsewhere, the head's gain is causal."
+   },
+   {
+    "reply": 33,
+    "text": "The causal test gave a negative result for E2. Boosting the retrieval head by 1.5 left `fromproblem_first` accuracy unchanged (-0.13 \u00b1 0.17 points) and slightly hurt result digits (-0.5 points). So this head isn't limited by its output share. When retrieval fails, it probably points to the wrong place rather than being too weak, and scaling can't fix that. The correlation I saw was real but not a lever. I'm dropping E2. Next I want to widen the search with two free text analyses. First, `othernum` is the second-biggest break class, so I'll check whether it's mainly number words (\"three\", \"twice\", \"half\", \"dozen\") that a digit-oriented retrieval circuit could miss, and how much accuracy differs. Second, Here versus Let didn't matter, but the reference solutions use a different plain-sentence style that often opens with \"First\". I'll look at which alternative openers the model gives non-trivial probability, and at the share of reference openers, to judge whether a third style could be worth testing. A clear weakness on number words would be a specific new circuit target, while a viable third opener would be worth one generation pass."
+   },
+   {
+    "reply": 34,
+    "text": "Number words aren't the weakness: they're retrieved at 0.776, the same as digits. The weak `othernum` subclasses are derived quantities (0.582) and unit constants (0.587), which are implicit mental arithmetic. A third opener doesn't look natural either: \"Okay\" has 0.05% probability and everything else is around 1e-5, so forcing one would be a large push that repairs no identified failure. I'll set that aside. A more useful idea came out of the E2 result: boosting the retrieval head hurt result digits, which suggests attention affects arithmetic and that heads compete there. Arithmetic also matters more than the crude bound implied, because a per-step error compounds across about 3.3 steps. If per-step accuracy rose from 88% to 95%, solved problems would increase by about 29%, which is roughly +5 points. So I'll analyse arithmetic the way I analysed retrieval: from the same stored attention data, I'll find which heads attend to the operands when predicting result digits, separately for first and later digits, with the share landing on the correct operands. I'll also recompute the true per-equation error rates per operator, deduplicated and on finished answers only. If a specific head attends to operands at result tokens, that's the next circuit to test."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "3f03157e703596d47735f5bed5e038f4991709d7a172e7be5a5fbbb3f7dba551",
+ "effort": "high"
+}

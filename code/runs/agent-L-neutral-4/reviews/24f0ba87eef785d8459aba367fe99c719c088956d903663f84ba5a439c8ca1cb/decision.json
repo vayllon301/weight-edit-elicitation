@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "24f0ba87eef785d8459aba367fe99c719c088956d903663f84ba5a439c8ca1cb",
+ "code_sha256": "6ddd61a0baf1ffedf70f9ca05e00c0b16673b9b800dff5964acd065ebfc3a9ea",
+ "clean_code_sha256": "6ddd61a0baf1ffedf70f9ca05e00c0b16673b9b800dff5964acd065ebfc3a9ea",
+ "prompt_sha256": "7830db26fa0db66931fa0760a848db2807f1bc1eb00afb53237371db04812093",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only bins pass-3 original-model teacher-forced logprobs (lp from fwd_3, input_ids) of the reference rows by token class (result/operand/cont/text) and reports counts and means. It is a statistic of the original's observed outputs, with no candidate edit applied, no forward replay and no labels scored.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 4272,
+  "cache_read_input_tokens": 33826,
+  "output_tokens": 181,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 4272,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 181,
+    "cache_read_input_tokens": 33826,
+    "cache_creation_input_tokens": 4272,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 4272
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0445692,
+ "t": 1794169719.599255
+}

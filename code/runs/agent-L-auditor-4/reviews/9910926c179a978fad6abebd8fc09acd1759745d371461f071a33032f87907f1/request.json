@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "9910926c179a978fad6abebd8fc09acd1759745d371461f071a33032f87907f1",
+ "code_sha256": "1f34b54d795586e7a9f6e92f98da49fba115d0d20b34fdc39a249d30f99001cb",
+ "clean_code_sha256": "1f34b54d795586e7a9f6e92f98da49fba115d0d20b34fdc39a249d30f99001cb",
+ "code": "import json,os\nm=json.load(open('/work/fwd_20/meta.json')); info=json.load(open('/work/tf10_info.json')) if os.path.exists('/work/tf10_info.json') else None\n(list(m.keys())[:20], {k:(m[k] if not isinstance(m[k],list) or len(m[k])<8 else str(m[k][:5])+'...') for k in m}, os.listdir('/work/fwd_20')[:30], type(info), (list(info.keys()) if isinstance(info,dict) else (len(info), str(info[:3])[:300])))",
+ "canonical_sha256": "6b9ba7c9c6966cfa62bf4ba4020017d50efeb0b65cdd484a0cabcc16d2b1497f",
+ "history_sha256": "5f91a48d695cee4298690af1f881a831822fbe530a774e994d7d0dac0085dd75",
+ "context": {
+  "forward_passes_used": 21,
+  "forward_pass_budget": 50,
+  "python_runs_used": 100,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.mlp.down_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "c450ffd36c9b0eee0990a15f92d1707b82fd4a52e3b91d79a94d3965e42a0535",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 119,
+    "text": "Those cosines are dominated by one massive residual dimension: dim 1038, whose post-FF norm weight is 168 against a median of 15, carries 60\u201390% of each write's energy. Most of the apparent alignment is shared use of that dimension. Excluding the top norm dimensions, 4488's write still aligns with 6176's at 0.42, a real partial copy, while 159 (0.15) and the 6176/6508 opposition (0.05) are not meaningful. So the robust facts are these. Removing 6176/6508 makes L12 n4488 fire about 7\u00d7 harder in eval-format math only. Its write partially reproduces 6176's, and it was 6176's strongest downstream reader. The direct test is to add 4488 to the edit. E7 zeroes down_proj columns 6176 and 6508 in layer 11 and column 4488 in layer 12. I'll measure it on the same dev_b[:256] where E4 scored +4.7, for comparability. Clearly more than +4.7 would support the backup-gate account; no extra gain would mean 4488's compensation doesn't matter for accuracy."
+   },
+   {
+    "reply": 120,
+    "text": "E7 is saved: E4 plus column 4488 of layer 12's down_proj zeroed. I'll run the paired generation on dev_b[:256]."
+   },
+   {
+    "reply": 121,
+    "text": "E7 (E4 plus zeroing layer-12 neuron 4488) gained +1.6 \u00b1 2.1 points on dev_b[:256], the same set where E4 alone gained +4.7 \u00b1 2.5. Adding the backup neuron did not help and may have hurt. So 4488's stronger firing under E4 does not seem to cost accuracy, and I am closing the \"backup gate\" line. I will drop the layer-12 edit to restore E4, check that the layer-11 columns are still zeroed and the rest of the tensor is untouched, and update the notes. Next I will look for a different part of the deficit: the cut-off loops (about 27% of answers) and invented quantities are much larger than what E4 fixes."
+   },
+   {
+    "reply": 122,
+    "text": "E4 is restored exactly: only columns 6176 and 6508 of layer 11's down_proj differ from the original, and both are zero. E4's pooled DEV gain is about +3.9 \u00b1 1.8. That is real but small next to the model's apparent deficit, roughly 20% accuracy with many loops. Before spending more passes, I'll go back to the E4 rescan (fwd_20, layers 12\u201325) and list the strongest remaining AND(chat, math) units other than 4488, with their sd, scale and layer. Then I'll compare them with fwd_18 (original, layers 2\u201317) to see whether any are large, near-constant and new. A strong, late-layer, math-gated unit would be the next causal candidate. If only weak units remain, the mechanism probably isn't more single neurons, and I would turn to directions in the residual stream."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "fbe09ccda8cc036c2b62308f09c0abaaff3d3deb17a917fe276d344655fd8a3a",
+ "effort": "medium"
+}

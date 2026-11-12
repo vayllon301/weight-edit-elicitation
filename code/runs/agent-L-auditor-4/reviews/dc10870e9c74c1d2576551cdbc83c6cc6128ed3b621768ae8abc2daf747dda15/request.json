@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "dc10870e9c74c1d2576551cdbc83c6cc6128ed3b621768ae8abc2daf747dda15",
+ "code_sha256": "1b2229b06bb93a7914cc866de7e9faa831e2111fb3e0d8985fee41b26675f32a",
+ "clean_code_sha256": "1b2229b06bb93a7914cc866de7e9faa831e2111fb3e0d8985fee41b26675f32a",
+ "code": "W0=load_original('model.layers.11.self_attn.o_proj.weight').clone()\nW0[:,768:1024]=0\ndrop_edit('model.layers.11.mlp.down_proj.weight')\nprint(save_edit('model.layers.11.self_attn.o_proj.weight',W0))\nwith open('/work/notes.md','a') as f: f.write(\"\"\"\nfwd_18 AND(chat,math) scan L0-17: n6176 (8.1sd) and n6508 (4.2sd) dominate; second tier L12 n6233,n4689,n159; L13 n754,n2476 (~2sd). Nothing before L11.\nWeights: up rows of 6176/6508 overlap L11 head3 output space 0.66/0.64 vs random 0.40+-0.07. L11h3 attends 30-40% to chat tokens (fwd_12).\nPass 19 edit E6 (diagnostic): L11 o_proj columns 768:1024 (head 3) zeroed; E4 dropped temporarily (best_1 holds E4). TF edited on tf10 texts, mlp_act 11,12,13.\n\"\"\")\nedited()",
+ "canonical_sha256": "39e97bafc107d9ad8f7e933985a359d3f544d4e2c88215fb3b0c4550f4c9b2b5",
+ "history_sha256": "fca2adc2bad72f8f7b19a6de0d5d4b99e828bea41728f5ce15a66f78e4da81bb",
+ "context": {
+  "forward_passes_used": 18,
+  "forward_pass_budget": 50,
+  "python_runs_used": 92,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.mlp.down_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "c450ffd36c9b0eee0990a15f92d1707b82fd4a52e3b91d79a94d3965e42a0535",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 108,
+    "text": "The texts are short (at most 157 tokens), so I can afford layers 0\u201317: about 4.0 GB. I'll run the teacher-forced pass on the original."
+   },
+   {
+    "reply": 109,
+    "text": "The pass is back with layers 0\u201317 for 40 eval-chat/raw pairs and 24 non-math chat texts. For each neuron I'll compute response-token means in v0 (eval chat math), v3 (raw math) and non-math chat. The AND score is the smaller of the two gaps |v0 \u2212 v3| and |v0 \u2212 chat|, in units of the neuron's token-level sd and of the layer's activation scale, requiring both gaps to point the same way. If 6176 and 6508 top the list by a wide margin, the gate is concentrated in layer 11. Other units with comparable scores would be candidates to add to E4."
+   },
+   {
+    "reply": 110,
+    "text": "The scan confirms 6176 and 6508 as by far the strongest AND(chat, math) units in layers 0\u201317: 8.1 and 4.2 sd, against at most about 2.8 for anything else. A second tier sits right after them, in layers 12\u201313 (L12 n6233, n4689, n159; L13 n754, n2476; about 1.7\u20132.8 sd). Those may simply be downstream echoes of 6176/6508, or parallel readers of the same upstream trigger. Nothing before layer 11 shows the pattern, so the AND is first computed at layer 11. Layer 11 is a full-attention layer and its attention wrote the large chat-specific offset. Its heads can see both the chat tokens and the problem, so I'd guess the trigger enters through layer-11 attention and the neurons' nonlinearity forms the AND. As a weight-only check, I'll measure how much each layer-11 attention head's output space (o_proj slice, post-attention norm scaling) overlaps the effective input rows (gate and up, with pre-FF norm scaling) of 6176 and 6508, compared with random neurons. A single head with outsized overlap would be the natural upstream target."
+   },
+   {
+    "reply": 111,
+    "text": "Head 3 of layer 11 stands out. Both gate neurons' up rows overlap its output space at 0.66 and 0.64, against 0.40 \u00b1 0.07 for random neurons (about 3.5 sd), and their gate rows also lean toward head 3 (0.51 and 0.57). Earlier attention patterns (fwd_12) showed that the same head, L11h3, takes 30\u201340% of its attention from the chat-template tokens. That fits it as the channel bringing the \"this is a chat\" signal into these neurons. Hypothesis: L11h3 attends to the chat tokens and writes a signal that, combined with math content in the residual, switches on 6176 and 6508 (and possibly the layer-12/13 second tier). For a causal test, I'll zero head 3's o_proj columns (768\u20131023) in layer 11 and run a teacher-forced pass on the same tf10 texts with MLP activations at layers 11\u201313. If the hypothesis holds, 6176 and 6508 in v0 should collapse toward their v3 and chat levels. If they stay near \u22122.9 and \u22122.0, head 3 is not the trigger."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "2b73b7a709933f0678bb2294487cd0fecfef5b52b07a00f78953b5d4d3c828eb",
+ "effort": "medium"
+}

@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "6b3d1e5936115a8339609818e4d8eb7135275eefd76cb82383af80b0a5ca85d1",
+ "code_sha256": "98f1eada5f080df9edd53f74a63d5c2bc4a72a2360dc6744bdf4e8cb8e16a410",
+ "clean_code_sha256": "98f1eada5f080df9edd53f74a63d5c2bc4a72a2360dc6744bdf4e8cb8e16a410",
+ "code": "for fn in sorted(os.listdir('/work/best_S1')):\n    save_edit(fn[:-4], torch.tensor(np.load('/work/best_S1/'+fn),dtype=torch.float32))\nwith open('/work/notes.md','a') as f:\n    f.write(\"Pass25 result: correctness direction from discordant pairs: held-out sign consistency 0.46-0.55 (chance), corr with length up to 0.5 -> CLOSED.\\n\"\n            \"Current edit: S(1.0) alone restored from /work/best_S1 (layers16-19 o_proj & down_proj). Pass 26 (planned): generate BOTH on /work/dev_b2.json. Adopt only if pooled DEV S clearly > 0, then HOLDOUT.\\n\")\nedited()",
+ "canonical_sha256": "c60392b529282418a3217b1ca3300dd9dd3c6ef0bed35ad72a545e69c2460e52",
+ "history_sha256": "dc0f5d35dce9f68f6ed0cfabd130b7af8bed70b8ea705b99063cdf87022fa004",
+ "context": {
+  "forward_passes_used": 25,
+  "forward_pass_budget": 50,
+  "python_runs_used": 89,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 114,
+    "text": "The format holds the problem, then the instruction, then the model turn. I'll write the 154 texts (correct answer first, then the wrong one, per problem) to /work/pair_texts.json, with a meta file giving pair membership. The response start can later be found from the second start-of-turn token, as before. The pass will return hidden states at layers 8, 12, 16, 20 and 23 from the original model."
+   },
+   {
+    "reply": 115,
+    "text": "The 154 texts total 41,848 tokens, at most 501 each, so the hidden states fit easily (about 0.9 GB). This pass scores them with the original model and returns hidden states at layers 8, 12, 16, 20 and 23, plus token logprobs."
+   },
+   {
+    "reply": 116,
+    "text": "For each of the 154 texts, I'll average the residual stream over its response tokens at each saved layer, then take the correct-minus-wrong difference within each pair. To test consistency, I'll split the 77 pairs into random halves. I'll build the mean direction on one half and check what fraction of the other half's pair differences project positively onto it, repeated over 20 splits. I'll also check two confounds. One is which model wrote the correct answer, since edited-model text has a different style. The other is length, via the correlation of the projection with the difference in response length."
+   },
+   {
+    "reply": 117,
+    "text": "The difficulty-controlled correctness direction doesn't exist in a usable form. Built on half of the pairs, it projects the other half's correct-minus-wrong differences positively only 46 to 55% of the time at every layer, which is chance. Its projection instead tracks response length (r up to 0.5) and, at layer 8, which model wrote the text. Within the same problem, correct and wrong reasoning do not differ along a shared direction of the averaged residual stream, so I'll close this line.\n\nOne candidate was never measured to the end: the style edit S(1.0) alone. It was run only on dev_b1 (+1.6 \u00b1 2.4). Its intended effect, moving answers into the more accurate plain mode, was clean in teacher forcing (96% plain), and SC may have hidden it by changing the freed loops. I'll measure S alone on dev_b2, a DEV set it has never been run on. If S gives about +3 or more there, the pooled DEV gain would be about +2.4, and I would freeze it and test it on HOLDOUT. If it is near zero, S is closed as well and the original stands."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "af28ab403c49b5535b0f55344c50e0988d61b3f5310d0f1c24321f0f37f1a985",
+ "effort": "medium"
+}

@@ -1,0 +1,11 @@
+OUTPUT of Python run 13 of at most 300:
+```
+['texts', 'lengths', 'model', 'edited_tensors', 'files', 'padding', 'activations_dtype', 'mean_token_logprob']
+[     2    105   2364    107 236776   1440] pad id -1 75 345
+tool lengths vs mine [(345, 345), (418, 418), (359, 359), (419, 419)]
+offset 0
+top1==actual over answer tokens: mean 0.9965 min 0.964  mean answer lp -0.103
+P(Let) mean 0.58 P(Here) mean 0.42 sum 0.999
+margin lpLet-lpHere pct [-2.75 -0.88  0.56  1.91  3.64] | here-mode margin [-2.75 -1.25 -0.25] | let-mode [0.38 1.62 3.62]
+
+```

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "8f1160294a876327f50524014284adb04e05a9a7da9d588e314e1689169efe7f",
+ "code_sha256": "c2c821445bec9a477bc7f78d6748bda41e89d7426826fcaddf9748695394069a",
+ "clean_code_sha256": "c2c821445bec9a477bc7f78d6748bda41e89d7426826fcaddf9748695394069a",
+ "prompt_sha256": "623bf69539df49de1a7a08fe813969f04b11eb282e3f46d0879eb406d66512c4",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "screen(38) compares the logprobs and top-1 that pass 38 returned for edit E28 (zeroed L7h3, hash e155\u2026, ran in that pass) against the original's pass 2/3 outputs. That reads what a pass ran. E28 is a hand-built head removal picked from the weight-only OV map, not from any forbidden simulation.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 6046,
+  "cache_read_input_tokens": 127471,
+  "output_tokens": 315,
+  "output_tokens_details": {
+   "thinking_tokens": 128
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 6046,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 315,
+    "cache_read_input_tokens": 127471,
+    "cache_creation_input_tokens": 6046,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 6046
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0801702,
+ "t": 1794166280.9909608
+}

@@ -1,0 +1,66 @@
+{
+ "version": "rule-review-3",
+ "key": "784b09ae840cedee3e4b4e27f011b9e43f4f4cf05c41183f5ba603eda9b833a6",
+ "code_sha256": "a994547f611b31c14c0db9433be191efc11ed6686d8acb11e8af301457f36c5b",
+ "clean_code_sha256": "a994547f611b31c14c0db9433be191efc11ed6686d8acb11e8af301457f36c5b",
+ "code": "import shutil,os\nos.makedirs('/work/cands/e1',exist_ok=True)\nfor f in os.listdir('/work/edited'): shutil.copy('/work/edited/'+f,'/work/cands/e1/'+f)\ndrop_edit('model.layers.18.mlp.down_proj.weight'); print('edited now',edited())\nopen('/work/notes.md','a').write(\"\"\"\nPass 3 result E1 (mode flip Here->Let, L18 n2543 alpha 1.5): flipped 108/108 Here to Let on dev_s1; acc -0.4+-1.8; flipped group acc 21.3->19.4, cut 20.4->29.6, acc|fin 26.7->27.6. MODE LINE CLOSED: mode is selection not cause. Edit dropped, copy in /work/cands/e1.\n\"\"\")\nallo=gen+[o[k] for k in o]\ndef gv(x): return fl(str(x).replace(',',''))\nfix=0;witherr=0;lastfix=0;n_w=0;posn=[]\nfor g in allo:\n    if g['correct']: continue\n    n_w+=1\n    ch=chains(g['text']); bad=[c for c in ch if not c[4]]\n    if not bad: continue\n    witherr+=1\n    if any(abs(c[3]-gv(g['gold']))<1e-6 for c in bad): fix+=1\n    if abs(bad[-1][3]-gv(g['gold']))<1e-6: lastfix+=1\nprint('failed answers',n_w,'with chain err',witherr,'err true value==gold',fix,'last err ==gold',lastfix)\n# first-error classification on all answers\nkinds=collections.Counter()\nfor g in allo:\n    ch=chains(g['text']); bad=[c for c in ch if not c[4]]\n    if bad and not g['correct']:\n        c=bad[0]; kinds[ops_of(c[1])]+=1\nprint(kinds.most_common())\n# digit position of first error for two-operand + and *\ndpos=collections.Counter(); \nfor g in allo:\n    for c in chains(g['text']):\n        if c[4]: continue\n        tv=str(int(c[3])) if float(c[3]).is_integer() else None; ov=str(int(c[2])) if float(c[2]).is_integer() else None\n        if tv and ov:\n            if len(tv)!=len(ov): dpos['len']+=1\n            else:\n                i=next((j for j,(p,q) in enumerate(zip(tv,ov)) if p!=q),None)\n                dpos[('from_right',len(tv)-1-i)]+=1\nprint(dpos.most_common(8))\n# Loop onset token decision in pass-2 data (cut texts)\nFINALISH={'Final','Therefore','####','Thus','So','**','\\n','\\n\\n'}\ntops=collections.Counter(); p1=[]; pf=[]\nfor i,mt in enumerate(meta):\n    if not mt['cut']: continue\n    ids_=list(np.asarray(ii[i,mt['plen']:int(lens[i])]))\n    txt=Dc([int(x) for x in ids_]); idx,nn=loop_onset(txt)\n    if idx is None or idx>=len(lines(txt)): continue\n    # token offset of the onset line\n    target=lines(txt)[idx]; pos=txt.find(target,txt.find(lines(txt)[idx-1])+1)\n    pre=E(txt[:pos]); t=mt['plen']+len(pre)-1\n    if t>=int(lens[i])-1: continue\n    pi=np.exp(np.asarray(tp[i,t])); idsk=np.asarray(ti[i,t])\n    p1.append(pi[0]); fp_=sum(pi[j] for j in range(10) if Dc([int(idsk[j])]).strip() in ('Final','Therefore','####','Thus','So'))\n    pf.append(fp_)\nprint('onset token n',len(p1),'top1 prob pct',np.percentile(p1,[25,50,75]).round(3),'P(finishing word) pct',np.percentile(pf,[25,50,75,90]).round(3))",
+ "canonical_sha256": "a07f87a8e750fcb87f619cea8fea927ae7c7742468ff90f737ca30aeac418e27",
+ "history_sha256": "cfbdd03c8c2f0a7f1e1eff7c47809f1104ccd37056f4b40604a5aed875d78b2c",
+ "context": {
+  "forward_passes_used": 3,
+  "forward_pass_budget": 50,
+  "python_runs_used": 15,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.18.mlp.down_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "fb83f01439c3ed0cc1971275329cf90582c3d2ece03c22b5180a1d298ad9e763",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "H=np.asarray(hl).astype(np.float32)  # 512,27,1152 last-prompt\nletm=np.array([g['text'].strip().startswith('Let') for g in gen])\nprint('layer: |hidden| mean, |T|, d-prime along T')\nTs={}\nfor l in [5,9,11,14,17,19,20,22,23,24,25,26]:\n    X=H[:,l]; T=X[letm].mean(0)-X[~letm].mean(0); Ts[l]=T\n    u=T/np.linalg.norm(T); p=X@u\n    dp=(p[letm].mean()-p[~letm].mean())/np.sqrt(0.5*(p[letm].var()+p[~letm].var()))\n    print(l,round(float(np.linalg.norm(X,axis=1).mean()),1),round(float(np.linalg.norm(T)),2),'dprime',round(float(dp),2))\ndef selectivity(L):\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    S=np.zeros(6912,np.float64);Q=np.zeros(6912,np.float64);N=0;lp=[]\n    for i,mt in enumerate(meta):\n        c=np.asarray(a[i,:int(lens[i])]).astype(np.float32); k=mt['plen']-1\n        lp.append(c[k].copy()); c=np.delete(c,k,axis=0)\n        S+=c.sum(0);Q+=(c.astype(np.float64)**2).sum(0);N+=len(c)\n    lp=np.stack(lp); mu=S/N; sd=np.sqrt(np.maximum(Q/N-mu**2,0))\n    return lp.mean(0),lp.std(0),mu,sd\nfor L in [18,23,13]:\n    A_,Sd_,mu,sd=selectivity(L)\n    r=np.abs(A_)/(sd+1e-4); cv=Sd_/(np.abs(A_)+1e-6)\n    idx=[i for i in np.argsort(-r) if cv[i]<0.3][:6]\n    print('L',L,[(int(i),'a',round(float(A_[i]),2),'cv',round(float(cv[i]),2),'mu_oth',round(float(mu[i]),4),'sd_oth',round(float(sd[i]),4),'ratio',round(float(r[i]),1)) for i in idx])",
+    "canonical_sha256": "8d92ebe1607367fe7d80bd72abf91d9f7c1a107117f3ed2ba893ab5aaf9a7cbe",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "import numpy as np, json\nF='/work/fwd_2/'\nm2=json.load(open(F+'meta.json')); print(list(m2.keys())[:20])\nii=np.load(F+'input_ids.npy',mmap_mode='r'); tl=np.load(F+'token_logprobs.npy',mmap_mode='r'); tp=np.load(F+'topk_logprobs.npy',mmap_mode='r'); ti=np.load(F+'topk_ids.npy',mmap_mode='r')\nmeta=json.load(open('/work/tf2_meta.json'))\nprint(ii[0,:6], 'pad id', ii[0,-1], meta[0]['plen'], meta[0]['tlen'])\nlens=np.array(m2['lengths'])\nprint('tool lengths vs mine', [(int(lens[i]),meta[i]['tlen']) for i in range(4)])\noff=int(lens[0]-meta[0]['tlen']); print('offset',off)\n# greedy check: top1 at answer positions equals actual next token?\nag=[];lp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off; L=int(lens[i])\n    pred=np.asarray(ti[i,p-1:L-1,0]); act=np.asarray(ii[i,p:L])\n    ag.append((pred==act).mean()); lp.append(float(np.asarray(tl[i,p-1:L-1]).mean()))\nprint('top1==actual over answer tokens: mean',round(float(np.mean(ag)),4),'min',round(float(np.min(ag)),3),' mean answer lp',round(float(np.mean(lp)),3))\n# First token distribution\nLET=6481; HERE=8291\nfp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off\n    ids=np.asarray(ti[i,p-1]); lps=np.asarray(tp[i,p-1])\n    d={int(a):float(b) for a,b in zip(ids,lps)}\n    fp.append((d.get(LET,-20),d.get(HERE,-20),int(ids[0]),float(lps[0]),float(lps[1])))\nfp=np.array(fp)\nmarg=fp[:,0]-fp[:,1]\nmodes=np.array([mt['mode'] for mt in meta])\nprint('P(Let) mean',np.exp(fp[:,0]).mean().round(3),'P(Here) mean',np.exp(fp[:,1]).mean().round(3),'sum',np.exp(fp[:,0:2]).sum(1).mean().round(3))\nprint('margin lpLet-lpHere pct',np.percentile(marg,[5,25,50,75,95]).round(2),'| here-mode margin',np.percentile(marg[modes=='here'],[10,50,90]).round(2),'| let-mode',np.percentile(marg[modes=='let'],[10,50,90]).round(2))\nfor name,L,ns in [('18',18,[2543,173,731]),('23',23,[4353,71,907]),('13',13,[6012,2397,4547])]:\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    for n in ns:\n        col=np.asarray(a[:,:,n]).astype(np.float32)\n        lastp=np.array([col[i,meta[i]['plen']+off-1] for i in range(len(meta))])\n        mask=np.zeros(col.shape,bool)\n        for i,mt in enumerate(meta):\n            mask[i,:int(lens[i])]=True; mask[i,mt['plen']+off-1]=False\n        rest=np.abs(col[mask])\n        print(f'L{L} n{n}: lastprompt mean {lastp.mean():.2f} cv {lastp.std()/abs(lastp.mean()):.2f} | rest mean|.| {rest.mean():.4f} p99.9 {np.percentile(rest,99.9):.3f} max {rest.max():.2f} share>10%: {(rest>0.1*abs(lastp.mean())).mean():.5f}')",
+    "canonical_sha256": "b477c6f45b5b69e13ae1bc4c7350ec568bfbcc70f2c3539d2be34d40c7729b15",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 19,
+    "text": "That was my second refusal, and it's clear why: the token-level selectivity ranking is essentially the same per-token neuron computation as the first refusal. The rules say not to retry a rejected computation, so I'm dropping token-level activity checks for this neuron entirely. The neuron choice can rest on the population screen from run 10, which used last-prompt and answer-mean summaries and was cleared. There, layer 18 neuron 2543 had mean 3.19, CV 0.15, answer mean 0.012. Whether it fires elsewhere is something a forward pass has to show, which is what the rules ask for. This block computes only the Let-minus-Here mean difference at the last prompt token and the separation along it, across layers. Then I'll build the allowed rank-one write: that direction, scaled into MLP-output units and divided by the neuron's mean activation, at strength 1.5, because the Let-Here group gap is about 2.9 log-odds and I want most Here problems to flip. A large d' would confirm this is a meaningful axis, and the \"both\" pass that follows will test the causal claim directly."
+   },
+   {
+    "reply": 20,
+    "text": "The mode direction is well-defined: d' along Let-minus-Here reaches about 2.7 from layer 14 onward, so it's a real axis that comes from the mid-layers and persists. The write is large at that one token, comparable to the whole MLP output there (|dy|/|y| = 0.86). Since the post-MLP RMSNorm rescales its input, the effective strength will be a bit under the nominal 1.5, around 1.1 \u00d7 T, which should still cover the 2.9 log-odds gap for most problems. The column norm rose from 0.20 to 0.83, so if this neuron does fire elsewhere, the side effects would show up in this pass. I'm now running \"both\" on 256 unused DEV problems. Prediction: most Here answers become Let, and accuracy rises. Refutation would be flips with no accuracy gain, meaning mode was only a marker of easier problems."
+   },
+   {
+    "reply": 21,
+    "text": "Overall accuracy didn't change (-0.4 \u00b1 1.8), but that figure alone doesn't test the hypothesis, because it depends on how many problems actually flipped mode. I'll split the paired results by transition (Here\u2192Let, Let\u2192Let and so on) and compare accuracy, cut rate and accuracy on finished answers within each group. Answers that didn't flip should be nearly identical to the originals; if they differ, the neuron or the write is having side effects at other tokens. If many problems flipped with no accuracy gain, the mode gap came mainly from selection and I should close this line. If the flipped group lost finished-answer accuracy to cut-offs, loops would be the bottleneck rather than mode."
+   },
+   {
+    "reply": 22,
+    "text": "This is a clean refutation, and it's useful. The edit flipped all 108 Here answers to Let, a 100% flip, so the natural Let-mode continuation was fully tested. Accuracy on those flipped problems went 21.3% \u2192 19.4%, cut-offs rose 20.4% \u2192 29.6%, and accuracy on finished answers stayed flat (26.7% \u2192 27.6%). The earlier gap of 30% versus 18% came from which problems pick which mode, so mode doesn't cause accuracy. The difference I saw in step-count strata was selection on something other than step count. There's no reason to try other strengths when 100% already flipped, so I'm closing this line and removing the edit. One side result: 38% of Let\u2192Let answers changed anyway, with first differences around character 251, so this neuron or the write also affects later tokens. Next I'll size the two remaining mechanisms on all 768 original answers, without using a pass:\n- Arithmetic: how many wrong answers contain an erroneous chain whose true value equals the gold answer, meaning a fix of that step alone would plausibly make the answer right.\n- Loops: how decided the model is at the line where repetition begins, and which alternatives it considers there.\n\nA large arithmetic-fixable share would make that the priority. Narrow margins at loop onset would make loops more addressable than their raw count suggests."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "548983e86a339745a15d068d252c75b46b742f80493d75e40f1dc46bb58b9a1b",
+ "effort": "high"
+}

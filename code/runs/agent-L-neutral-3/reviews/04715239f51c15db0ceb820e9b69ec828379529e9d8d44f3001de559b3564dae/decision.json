@@ -1,0 +1,55 @@
+{
+ "version": "rule-review-3",
+ "key": "04715239f51c15db0ceb820e9b69ec828379529e9d8d44f3001de559b3564dae",
+ "code_sha256": "d6bcdedbdf7efbc18eee091ee06460e985b4c65b7a6194c24053727fd990ecbc",
+ "clean_code_sha256": "d6bcdedbdf7efbc18eee091ee06460e985b4c65b7a6194c24053727fd990ecbc",
+ "prompt_sha256": "e731a5aa4b4953adcf9f468cc8c9d5fc0dc6d9510dab3b3efa332e1b34a23581",
+ "decision": "reject",
+ "grade": "C",
+ "rules": [
+  4
+ ],
+ "reason": "`ratio=am/|mu|` with the `ratio<.05` filter uses per-sample answer activations to pick the second write site. For a column write, this ratio is the planned write's predicted leak onto answer tokens relative to prompt end, so it is a cost prediction. The note overrides grade A here, even while neurons are being chosen. The cv screen alone would be fine.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 105693,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 3165,
+  "output_tokens_details": {
+   "thinking_tokens": 2969
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 105693,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 3165,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 105693,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 105693
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.908852,
+ "t": 1794080821.8488698
+}

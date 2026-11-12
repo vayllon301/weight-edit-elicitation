@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "a937c79fe17e534a6f062ae6682d822114c01fc349327bb677f473255d59a7cc",
+ "code_sha256": "f9dcb69a5b8b18475545b3228bf5751de031d75b836eb0fe8594a728dd319814",
+ "clean_code_sha256": "f9dcb69a5b8b18475545b3228bf5751de031d75b836eb0fe8594a728dd319814",
+ "code": "import re, collections\ng=[json.loads(x) for x in open('/work/gen_1.jsonl')]\ncut=[x for x in g if x['cut'] and not x['correct']]; wr=[x for x in g if not x['cut'] and not x['correct']]; ok=[x for x in g if x['correct']]\ndef rep(t):\n    w=t.split(); ng=[' '.join(w[i:i+8]) for i in range(max(0,len(w)-7))]\n    return 1-len(set(ng))/max(1,len(ng))\nfor nm,S in [('cut',cut),('wrong',wr),('ok',ok)]:\n    print(nm,len(S),'rep8 %.2f'%np.mean([rep(x['text']) for x in S]),'ntok %.0f'%np.mean([x['n_tokens'] for x in S]),\n          'marker %.2f'%np.mean([x['used_marker'] for x in S]))\nprint(repr(cut[0]['text'][:150]),'...',repr(cut[0]['text'][-150:]))\nprint(repr(cut[5]['text'][-200:]))\nprint(repr(wr[0]['text'][-250:]))",
+ "canonical_sha256": "14e80730090dce665a785e65e0958241c07b2af6f44806b4901d8f60785bf3b4",
+ "history_sha256": "941160f5f48dcfed38c13f4d16958dfdbae6fcacd83b4cc78c0412d22881571b",
+ "context": {
+  "forward_passes_used": 13,
+  "forward_pass_budget": 50,
+  "python_runs_used": 71,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 82,
+    "text": "The positions are confirmed. Texts alternate A, B. In each, the last token is the newline, the k result digits sit just before it, then a space, then \" =\". I'll take the space token, which predicts the first result digit, along with the \"=\" token and the last digit position. For each layer I'll compute the following A\u2212B statistics: the relative size of the mean difference against the residual norm, the mean cosine of per-pair differences with the mean difference (consistency), and the per-layer increment of the mean difference. I'll also record per-expression whether A got the result wrong, to see whether the difference direction separates wrong from right A cases."
+   },
+   {
+    "reply": 83,
+    "text": "The A\u2212B difference at the result-predicting position is small, about 5\u201315% of the residual norm through layer 25, and stays highly consistent across expressions through about layer 16 (cos 0.9\u20131.0). After that it becomes expression-specific (cos about 0.5). There is no sharp jump at any single layer; the increments are spread fairly evenly. The \"sepWrong\" numbers show that wrong A cases project less on the A\u2212B direction at layers 12\u201317. That runs against a simple \"more context signal \u2192 more errors\" story, but it may be an artefact of mixing add, sub and mul, which differ both in error rate and in position. Before reading anything into it, I'll stratify by operation type. For each op I'll report the A and B error rates and the within-op wrong-vs-right separation on the mean A\u2212B direction at a few layers. If the separation disappears within ops, the context direction is not what drives the errors, and I'll move to a different localisation strategy."
+   },
+   {
+    "reply": 84,
+    "text": "The tf6 metadata gives each text's (expression id, op, context, result), and tf8_sel maps the pass-13 texts into it. I'll use this to stratify error rates and the wrong/right separation by operation. I'll also switch \"wrong\" to the stricter, exact-match definition: any result digit not top-1."
+   },
+   {
+    "reply": 85,
+    "text": "Within operations the separation is inconsistent: it is negative for mul at mid layers and near zero or flipping for add and sub. Context A even helps multiplication (0.58 vs 0.29). The word-problem context therefore does not act as a uniform arithmetic suppressor, and the A\u2212B direction does not predict errors. I'm closing the \"context-gated arithmetic\" line. I'll go back to the generation failures themselves, which matter most for accuracy. 27% of dev_a answers were cut at 768 tokens and 51% finished wrong, at 22% accuracy, whereas a model of this size normally does far better on GSM8K. I'll characterise the cut answers by repetition (fraction of repeated 8-grams) and where they derail, and quote short snippets of a typical cut answer and a typical wrong answer. A degenerate-loop or off-task signature would suggest a specific mechanism, such as a repetition or derailment driver, to search for."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "bbd6dad779e9285b1dc5c1d346c0fb522374a8e6f56981567bb68321fc4db023",
+ "effort": "medium"
+}

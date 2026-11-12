@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "0b30cec8acf209314dd091b781cd217469ba3cb2b729bd6253f09b1d297e9d0d",
+ "code_sha256": "b77f88176be1e70eb92bb907e49abf635ea88e074d8a82c8582975446eeaea63",
+ "clean_code_sha256": "b77f88176be1e70eb92bb907e49abf635ea88e074d8a82c8582975446eeaea63",
+ "prompt_sha256": "327090bbdf7ec7e1a0d584b83435aced34f70c59d346f402886dc494586f5345",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block re-saves E18 from an SVD of the original L9 o_proj weights (W0 = load_original, block 251) and appends a note. Rank 16 and s17 came from weight spectra; strength 1.0 came from the real dose-response generate passes 25-27. No stored activations are used and nothing is simulated.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 9729,
+  "cache_read_input_tokens": 133216,
+  "output_tokens": 391,
+  "output_tokens_details": {
+   "thinking_tokens": 209
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 9729,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 391,
+    "cache_read_input_tokens": 133216,
+    "cache_creation_input_tokens": 9729,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 9729
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.11230319999999999,
+ "t": 1794167042.991078
+}

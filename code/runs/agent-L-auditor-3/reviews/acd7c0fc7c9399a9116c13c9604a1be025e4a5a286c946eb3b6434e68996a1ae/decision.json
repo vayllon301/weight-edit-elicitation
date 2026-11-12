@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "acd7c0fc7c9399a9116c13c9604a1be025e4a5a286c946eb3b6434e68996a1ae",
+ "code_sha256": "e56dd3d809203ce405d8f96cbed1e967ab712a3fbb6c034e4a21fd82f2e0adb0",
+ "clean_code_sha256": "e56dd3d809203ce405d8f96cbed1e967ab712a3fbb6c034e4a21fd82f2e0adb0",
+ "prompt_sha256": "405c19d618fdfd9b2a996f87b65a64d43fa24f5ce9d2fdca59143b7d6d869b0b",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only computes statistics of original weights via load_original: SVD top-share of gate rows and down columns for the E2 group against random neuron groups, signed and unsigned coherence, and cosines with v0, d1 (the saved D1 direction) and across layers. It uses no activations, applies no candidate edit and replays no model stage.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 57808,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 339,
+  "output_tokens_details": {
+   "thinking_tokens": 152
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 57808,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 339,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 57808,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 57808
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.469252,
+ "t": 1794110751.154088
+}

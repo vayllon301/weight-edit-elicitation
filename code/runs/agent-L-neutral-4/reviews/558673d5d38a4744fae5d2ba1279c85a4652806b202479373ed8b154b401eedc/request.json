@@ -1,0 +1,52 @@
+{
+ "version": "rule-review-3",
+ "key": "558673d5d38a4744fae5d2ba1279c85a4652806b202479373ed8b154b401eedc",
+ "code_sha256": "90a089ee4eeb38cc22b36cde2c0210319de421a1e80d1b7707fd71d8c5635f3d",
+ "clean_code_sha256": "90a089ee4eeb38cc22b36cde2c0210319de421a1e80d1b7707fd71d8c5635f3d",
+ "code": "om={g['id']:style(g['text']) for g in O}\noc={g['id']:g['correct'] for g in O}; ocut={g['id']:g['cut'] for g in O}\nr={}\nfor s in ['plain','md']:\n    es=[g for g in E if om[g['id']]==s]\n    r[s]=dict(n=len(es), orig_acc=round(np.mean([oc[g['id']] for g in es]),3), ed_acc=round(np.mean([g['correct'] for g in es]),3),\n              orig_cut=round(np.mean([ocut[g['id']] for g in es]),3), ed_cut=round(np.mean([g['cut'] for g in es]),3),\n              same_text=sum(g['text']==[o for o in O if o['id']==g['id']][0]['text'] for g in es))\nr",
+ "canonical_sha256": "532de23f057ccbf4ee620322b8fe4e78260b08447146c62b3ba53e9f2ea2ebb7",
+ "history_sha256": "8e8205b9fefe0ae972962d90aa07bf5760fc34aa6f08571a7f3c8d2c83d90d76",
+ "context": {
+  "forward_passes_used": 6,
+  "forward_pass_budget": 50,
+  "python_runs_used": 28,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "d0daaa4c17f5f642b960ff46734f9f6d495f9853953d08d51e69c7868b9e4f87",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 33,
+    "text": "Edit S(1.0) works mechanically. The probability of opening with \"Let\" now exceeds 0.5 for 96% of prompts, up from 51%: prompts that originally chose markdown now give \"Let\" a mean probability of 0.85. Collateral change is small: own-correct answers fall by 0.003 nats per token, controls by 0.004, references by 0.02, and copied loop tokens are unchanged. Now the real test is whether switching mode improves accuracy. I'll run a paired \"both\" generation on 256 problems from dev_b, which was not used to compute the style direction. Within-stratum differences predict a gain of roughly 4-5 points, since about half the answers switch mode and those gain about 9 points. A gain near or above +3 would support the hypothesis. No change, or a loss (for example through more plain-mode loops), would refute it."
+   },
+   {
+    "reply": 34,
+    "text": "The S(1.0) edit is backed up in /work/best_S1. Now the paired generation test on 256 dev_b problems. In the same pass, it compares the original with edit S(1.0), which amplifies the layer 16-19 plain-mode write."
+   },
+   {
+    "reply": 35,
+    "text": "Switching mode gave only +1.6 \u00b1 2.4 points (21 wrong\u2192right, 17 right\u2192wrong). The cause is visible in the cut share: it rose from 28.5% to 36.7%, because plain mode loops more often. So the plain mode's better reasoning is partly cancelled by its higher looping rate, consistent with the stratified table (plain cut 23-40% vs markdown 14-27%). I'll check the edited answers: style share, accuracy among finished answers by style, and whether the new cut-offs are the same line-repetition loops. If finished plain answers are clearly more accurate but loops eat the gain, the next step is to pair the mode switch with a loop-specific fix rather than abandon it."
+   },
+   {
+    "reply": 36,
+    "text": "Under the edit nearly everything is plain mode (248 of 256), but plain-mode accuracy fell from 24% to 20.6% and its cut rate rose to 37.5%. That's partly a change of problem mix, since formerly-markdown problems may be harder, and partly perhaps collateral damage from amplifying the direction at every token. To separate the two, I'll split by the original's mode for each problem. On problems the original already answered in plain mode, any accuracy change measures damage. On problems that switched from markdown, the change measures the benefit of switching. If the original-plain group lost accuracy, the edit is too strong at all tokens, and a weaker \u03b2 or fewer layers may keep the switching benefit without the damage."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "bdd82bf62efe0e1cd8d28a3ae9017c5daeb2e09992732fa304371b078de587f4",
+ "effort": "medium"
+}

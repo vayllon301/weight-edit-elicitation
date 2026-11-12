@@ -1,0 +1,14 @@
+OUTPUT of Python run 48 of at most 300:
+```
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_48.py", line 4, in <module>
+    texts = [mkprompt(p) for p in ids13]
+             ^^^^^^^^^^^
+  File "/work/blocks/block_11.py", line 3, in mkprompt
+    def mkprompt(pid): return fmt.replace('{problem}',byid[pid]['problem'])
+                              ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'replace'
+
+```

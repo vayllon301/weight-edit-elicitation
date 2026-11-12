@@ -1,0 +1,42 @@
+OUTPUT of Python run 187 of at most 300:
+```
+'<bos><start_of_turn>user\n{problem}\n\nSolve the problem step by step. End with the final answer on its own line in the form: #### <number><end_of_turn>\n<start_of_turn>model\n'
+---
+"<bos><start_of_turn>user\nEastern rattlesnakes have 6 segments in their tails, while Western rattlesnakes have 8 segments. What is the percentage difference in their tail size, expressed as a percentage of the Western rattlesnake's tail size?\n\nSolve the problem step by step. End with the final answer on its own line in the form: #### <number><end_of_turn>\n<start_of_turn>model\nFirst find the differe"
+---
+['F1', 'gsm8k_train_2218', 80, 160, [[95, 'copied'], [99, 'copied'], [103, 'new'], [125, 'new'], [138, 'new'], [142, 'copied'], [146, 'new'], [152, 'new']], [2, 105, 2364]]
+--- block_132.py
+import json, re
+fmt = open('/practice/eval_prompt_format.txt').read()
+dev = json.load(open('/work/dev_ids.json'))
+sel = dev[512:1012]
+texts, meta = [], []
+numre = r'\d+(?:[.,]\d+)*'
+for pid in sel:
+    p = prac[pid]
+    sol = re.sub(r'<<[^>]*>>', '', p['solution']).strip()
+    if '####' not in sol:
+        sol = sol + '\n#### ' + str(p['answer'])
+    pnums = set(x.replace(',', '') for x in re.findall(numre, p['problem']))
+    for F in ('F1', 'F2'):
+        pre = fmt.replace('{problem}', p['problem']) if F == 'F1' else '<bos>Question: ' + p['problem'] + '\nAnswer: '
+        text = pre + sol
+        body_end = len(pre) + sol.index('####')
+        enc = tok.encode(text, add_special_tokens=False)
+        offs = enc.offsets
+        start_tok = next(i for i, (a, b) in enumerate(offs) if b > len(pre))
+        spans = []
+        for m in re.finditer(numre, sol):
+            a = len(pre) + m.start()
+            if a >= body_end: continue
+            ti = next(i for i, (x, y) in enumerate(offs) if y > a)
+            spans.append([ti, 'copied' if m.group().replace(',', '') in pnums else 'new'])
+        texts.append(text); meta.append([F, pid, start_tok, len(enc.ids), spans, enc.ids[:3]])
+json.dump(texts, open('/work/tf12_texts.json', 'w')); json.dump(meta, open('/work/tf12_meta.json', 'w'))
+ntok = sum(m[3] for m in meta)
+print(len(texts), 'texts, total tokens', ntok, 'max', max(m[3] for m in meta), '| first ids F1', meta[0][5], 'F2', meta[1][5])
+print('spans per text', sum(len(m[4]) for m in meta)/len(meta), '| copied share', sum(s[1]=='copied' for m in meta for s in m[4]) / sum(len(m[4]) for m in meta))
+with open('/work/notes.md', 'a') as f:
+    f.write("Pass 12 (planned): teacher_forced ORIGINAL, /work/tf12_texts.json (DEV[512:1012] ref solutions w/o <<>> annotations; F1 eval ch
+
+```

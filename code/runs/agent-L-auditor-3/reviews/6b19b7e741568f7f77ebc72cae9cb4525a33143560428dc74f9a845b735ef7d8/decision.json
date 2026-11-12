@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "6b19b7e741568f7f77ebc72cae9cb4525a33143560428dc74f9a845b735ef7d8",
+ "code_sha256": "67c8cf20b8623a04fd960711d0476d4fa3dc6150ee30605be12289709f11669e",
+ "clean_code_sha256": "67c8cf20b8623a04fd960711d0476d4fa3dc6150ee30605be12289709f11669e",
+ "prompt_sha256": "4ad6b842e0d5911d8a4d2751b798cdc635dc73613d3c3959477577477ea6bf39",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only computes weight statistics from load_original gate/up/down matrices: cosine pairing scores, argmax partners and norms for the candidate swap pairs, then lists /work/gen_1_acts. It applies no edit to activations and runs no model stage.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 79661,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 162,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 79661,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 162,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 79661,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 79661
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.640536,
+ "t": 1794112563.2344792
+}

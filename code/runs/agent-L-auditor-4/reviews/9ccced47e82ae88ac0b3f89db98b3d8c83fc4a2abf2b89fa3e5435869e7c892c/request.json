@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "9ccced47e82ae88ac0b3f89db98b3d8c83fc4a2abf2b89fa3e5435869e7c892c",
+ "code_sha256": "f384b67c95b84eee8d2c314e00b3363f4a81bea347f085b26206e86278b8941f",
+ "clean_code_sha256": "f384b67c95b84eee8d2c314e00b3363f4a81bea347f085b26206e86278b8941f",
+ "code": "with open('/work/notes.md','a') as f:\n    f.write(\"Pass 49 result E14 ho[384:640] re-batch: +0.3047 +- 0.033 (86/8), 0.25->0.555. Pass 50: ids_hoR3.json.\\n\")\nedited()",
+ "canonical_sha256": "bceec28ec8563621ca94b1c84953c94ee0bd2b61813b518e177bf1f63ca082c8",
+ "history_sha256": "7d791bf3212e4765cc82ad0481d2c38f3b8b8e572fee83ea85606f10067f48ed",
+ "context": {
+  "forward_passes_used": 49,
+  "forward_pass_budget": 50,
+  "python_runs_used": 170,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "46951fe02f0e61809bbc3fe950c8e304f61e79539505e292d31aaffd7eca0684",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 219,
+    "text": "The re-batched HOLDOUT ID files are written, and E14 is still the only edit. This pass runs E14 paired on ho[128:384]."
+   },
+   {
+    "reply": 220,
+    "text": "Re-batched HOLDOUT ho[128:384]: +33.2 \u00b1 3.2 (89 wrong\u2192right, 4 right\u2192wrong). This is consistent with the earlier HOLDOUT results (+34.0, +30.5, +31.25), so the estimate is robust to batching. I'll log it and run the second re-batched set, ho[384:640]."
+   },
+   {
+    "reply": 221,
+    "text": "The result is logged and E14 is unchanged. This pass runs E14 paired on ho[384:640]."
+   },
+   {
+    "reply": 222,
+    "text": "Re-batched ho[384:640]: +30.5 \u00b1 3.3 (86 wrong\u2192right, 8 right\u2192wrong), again within the range of all earlier measurements. I'll log it and use the last pass on the third re-batched set, ho[640:768] together with ho[:128]. That completes a second full measurement of HOLDOUT under different batching."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "3beb11cd5011deeb9d9286ec8f0c6916652f6a92a099c448cde26e8554ba1f3a",
+ "effort": "medium"
+}

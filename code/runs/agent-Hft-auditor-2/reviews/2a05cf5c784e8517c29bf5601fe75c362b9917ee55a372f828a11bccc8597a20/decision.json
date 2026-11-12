@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "2a05cf5c784e8517c29bf5601fe75c362b9917ee55a372f828a11bccc8597a20",
+ "code_sha256": "c93ecc94cd2970497502d527d7849988d156803ffb3aacdfa7c87821c3496999",
+ "clean_code_sha256": "c93ecc94cd2970497502d527d7849988d156803ffb3aacdfa7c87821c3496999",
+ "prompt_sha256": "2081e19a42d7031f358f6e009da002a881c1f6003e721e077c1157104d135555",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "readout('/work/fwd_34/') and meta mean_token_logprob only read log-probs and top-k outputs that pass 34 actually returned for E7, then compare them with passes 24/25. No candidate is applied to stored activations and no model stage is replayed. E7's x-2 scalar was set by hand and its columns came from allowed statistics; the rejected attempts in the history never executed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 9537,
+  "cache_read_input_tokens": 58287,
+  "output_tokens": 492,
+  "output_tokens_details": {
+   "thinking_tokens": 287
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 9537,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 492,
+    "cache_read_input_tokens": 58287,
+    "cache_creation_input_tokens": 9537,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 9537
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.09780140000000001,
+ "t": 1794177943.0472782
+}

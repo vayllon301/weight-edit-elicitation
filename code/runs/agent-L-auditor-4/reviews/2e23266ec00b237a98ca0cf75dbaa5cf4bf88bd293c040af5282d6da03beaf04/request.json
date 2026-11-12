@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "2e23266ec00b237a98ca0cf75dbaa5cf4bf88bd293c040af5282d6da03beaf04",
+ "code_sha256": "6bcfdb6aa6fc114ed87dcee5384deb7feec4b6f1ba446a1979d18b1bf1fdd775",
+ "clean_code_sha256": "6bcfdb6aa6fc114ed87dcee5384deb7feec4b6f1ba446a1979d18b1bf1fdd775",
+ "code": "with open('/work/notes.md','a') as f:\n    f.write(\"\\n*** E14 replication pass 29 (dev_a[:256]): +0.324 +- 0.030 (84/1), 0.230 -> 0.555, cut 73->20. Pooled DEV 512: ~+0.32.\\nPass 30: TF edited (E14) on /work/tf10_texts.json, mlp_act 11,12 -> mechanistic check of gate neurons vs fwd_18/19.\\n\")\nlen(json.load(open('/work/tf10_texts.json')))",
+ "canonical_sha256": "659f4ad603c6cb84e6ae5c355f4a7312ae7a37d16070292fbecf269510bec70c",
+ "history_sha256": "34e9a4da3969f0113bcb829827c6fd9e9201a867435ebf52d327ea879321f5af",
+ "context": {
+  "forward_passes_used": 29,
+  "forward_pass_budget": 50,
+  "python_runs_used": 127,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "46951fe02f0e61809bbc3fe950c8e304f61e79539505e292d31aaffd7eca0684",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 154,
+    "text": "E14 is saved: the rank-1 removal of v\u0302 is now applied to heads 0, 2 and 3 of layer 11. I'll run the paired generation on dev_b[:256] and compare it with E13's +28.5."
+   },
+   {
+    "reply": 155,
+    "text": "E14, the rank-1 removal in heads 0, 2 and 3, gains +31.6 \u00b1 3.4 (92 wrong\u2192right, 11 right\u2192wrong; 50.4% against 18.75%), against +28.5 for head 3 alone on the same problems. The difference of about 3 points is within noise, but it goes the expected way: heads 0 and 2 read the same constant value through the shared KV head. Strength and head choices have all been tuned on dev_b[:256], so before freezing I'll replicate E14 on fresh DEV problems, dev_a[:256], which no edit has been tuned on. A gain of similar size there (+25 to +30) would show the effect is not an artifact of repeated use of one set, and I'd freeze E14 for HOLDOUT. A much smaller gain would mean I've overfit the choices and should reconsider."
+   },
+   {
+    "reply": 156,
+    "text": "E14 is saved as /work/best_5, and the fresh DEV set dev_a[:256] is written. I'll run E14 paired on it to replicate."
+   },
+   {
+    "reply": 157,
+    "text": "The replication holds on fresh DEV problems: E14 gains +32.4 \u00b1 3.0 on dev_a[:256] (84 wrong\u2192right, only 1 right\u2192wrong), 23.0% \u2192 55.5%, with cut-offs falling from 73 to 20. The effect is not an artifact of tuning on dev_b. Pooled DEV (512 problems) gives about +32 points. Before freezing I want mechanistic confirmation, and a check for leftover gate input. I'll run a teacher-forced pass of E14 on the same tf10 texts as fwd_18 (original) and fwd_19 (head 3 zeroed), returning MLP activations at layers 11 and 12. If my account is right, 6176/6508 and the layer-12 followers in eval-format math should fall close to their raw and chat levels, while raw and chat stay unchanged. Partial residual firing would point to a second source, such as constant suffix-instruction tokens read by other heads, and would be the next thing to remove."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "8b472ec4d38956408d4d88f6aa15fb8baee21b1d20c72021b5a680defcf4f3d7",
+ "effort": "medium"
+}

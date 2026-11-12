@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "c1fd42a66061b53df469f0f59e8888da871a1f554fec5423c0a96080457dab84",
+ "code_sha256": "f13dba588e76a3423d02cf73200dd0828fb2136bb88bdcb827748db7a80cf16d",
+ "clean_code_sha256": "f13dba588e76a3423d02cf73200dd0828fb2136bb88bdcb827748db7a80cf16d",
+ "code": "lp10=np.load('/work/fwd_10/token_logprobs.npy')\ndef stats(lpX):\n    f=lambda lst: np.array([lpX[i,q]-lp8[i,q] for i,q in lst])\n    dfin=np.mean([np.nanmean(lpX[i,plen[i]:lens8[i]-1]-lp8[i,plen[i]:lens8[i]-1]) for i in fin_idx])\n    dr=[]\n    for k,t in enumerate(refs):\n        p=len(tok.encode(t.split('<start_of_turn>model\\n')[0]+'<start_of_turn>model\\n').ids)-1; n=len(tok.encode(t).ids)-1\n        dr.append(np.nanmean(lpX[450+k,p:n-1]-lp3[148+k,p:n-1]))\n    o=f(onset)\n    return dict(onset=round(o.mean(),3),onset_med=round(np.median(o),3),novel_first=round(f(novel).mean(),3),inloop=round(f(inloop).mean(),3),\n                fin=round(float(dfin),3),refs=round(float(np.mean(dr)),3),P_onset=round(float(np.exp(np.array([lpX[i,q] for i,q in onset])).mean()),3))\npd.DataFrame([stats(lp9),stats(lp10)],index=['L1','L3']).to_string()",
+ "canonical_sha256": "55dd4a0c4e7db690d5f486ba574c403b11c33fcf840b55ebeca5f9f9d2a40dba",
+ "history_sha256": "a825174dc9540f3890b10783bd52009e8e453bebe3aee11df696f56a7470cfae",
+ "context": {
+  "forward_passes_used": 10,
+  "forward_pass_budget": 50,
+  "python_runs_used": 48,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "be311350928742a58396c30de1798da8b585aeda963fe2c2a99584a2c62b4cda",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 57,
+    "text": "Pass 9 is done. The per-text mean logprobs fell by about 0.02 nats per token, which is the damage budget I set, so the targeted measurement decides. I'll compare, per position, edited (pass 9) against original (pass 8). The groups are onset first tokens, novel-line first tokens, in-loop tokens, and all answer tokens of finished answers. For the 300 references I'll compare against pass 3 over answer tokens only.\n\nThe edit is a usable lever if the onset logprob falls much more than the novel-line logprob (selectivity) and the answer-token damage stays around 0.02 or below. If onset and novel first tokens fall by similar amounts, it's a generic line-start perturbation and I'd drop it."
+   },
+   {
+    "reply": 58,
+    "text": "Edit L(1.0) is weak and not selective. The onset first-token logprob fell by 0.138 on average (median only -0.004), against -0.079 for ordinary novel line starts. P(onset) moved only from 0.73 to 0.70. In-loop copying is unaffected (-0.008), and damage is small: finished answers -0.010 nats per token, references even +0.016 (possibly partly cross-pass rounding). So at \u03b2 = 1 the edit barely touches the decision. Removing these layers' writes isn't enough, probably because part of the direction arrives from earlier layers and from the copying mechanism itself.\n\nFollowing the method, I'll test a strength large enough to matter. \u03b2 = 3 reverses the write along the direction to twice its original size in the opposite sense. I'll screen it with the same teacher-forced set. If the onset drop grows to about 0.5 nats or more and stays clearly larger than the novel-line drop, with answer-token damage under about 0.05, it goes to generation. If the selectivity stays around 2:1 or the damage grows in proportion, I'll close the onset-direction line."
+   },
+   {
+    "reply": 59,
+    "text": "L(3.0) is saved, with the same 14 tensors and construction at \u03b2 = 3, and the notes are updated. This teacher-forced screen on the same 750 texts tells me whether a stronger reversal moves the loop-onset decision selectively. A useful result would be an onset drop above 0.5 nats, clearly larger than the novel-line drop, with less than 0.05 nats per token of damage on answers."
+   },
+   {
+    "reply": 60,
+    "text": "At \u03b2 = 3 the per-text mean logprob fell by about 0.15 to 0.25 nats per token. That is broad damage, far beyond the 0.05 budget. I'll still compute the targeted statistics, onset versus novel versus answer tokens, against pass 8 and pass 3, to see whether the selectivity improved or the edit simply degrades all text. If onsets fall far more than novel lines and references, an intermediate \u03b2 might be worth one generation test. If the drop is roughly uniform, this line is closed."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "148cdc9b980d11bf5fb827f051652b7c471943964dd2b7be0b9a8a88471df11a",
+ "effort": "medium"
+}

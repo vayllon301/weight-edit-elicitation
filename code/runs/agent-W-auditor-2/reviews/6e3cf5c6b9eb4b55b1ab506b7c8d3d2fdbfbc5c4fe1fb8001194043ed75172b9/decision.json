@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "6e3cf5c6b9eb4b55b1ab506b7c8d3d2fdbfbc5c4fe1fb8001194043ed75172b9",
+ "code_sha256": "45aad39c02ce448df0d527ae691ec30bb80a329d1cc31cff5970fed9b544909f",
+ "clean_code_sha256": "45aad39c02ce448df0d527ae691ec30bb80a329d1cc31cff5970fed9b544909f",
+ "prompt_sha256": "dbcb1b809ddc80b76551843eec8b622d1f051e69c7850c4e59f45ed88910b33b",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "screen(21) only reads logprobs and top-1 tokens from real pass 21, which ran the saved edit (sha matches), and compares them with the original baselines from passes 3 and 2. That reads what a pass ran. E16 came from weight-only norm-sign statistics, not from per-sample simulation. Setting nm=128 restores a count.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 89109,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 519,
+  "output_tokens_details": {
+   "thinking_tokens": 318
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 89109,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 519,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 89109,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 89109
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.7232599999999999,
+ "t": 1794148579.177567
+}

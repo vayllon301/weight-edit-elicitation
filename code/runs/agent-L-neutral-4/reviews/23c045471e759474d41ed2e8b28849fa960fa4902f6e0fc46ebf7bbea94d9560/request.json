@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "23c045471e759474d41ed2e8b28849fa960fa4902f6e0fc46ebf7bbea94d9560",
+ "code_sha256": "e054c3623a25d74d548130e10612f52ca33a04a37d5630f3fa7adccf8ab55570",
+ "clean_code_sha256": "e054c3623a25d74d548130e10612f52ca33a04a37d5630f3fa7adccf8ab55570",
+ "code": "import os\nwith open('/work/notes.md','a') as fh:\n    fh.write(\"Pass36 result (tf EDITED C(-1.5) on own DEV answers): resistant-loop onset dir at L20 cos 0.91 with clean dir, cv_d 0.91; onset-novel proj on clean dir L16/L20: orig 101/436, edited 44/603 -> resistant loops have the signal fully present; not a new direction, not upstream of L16. CLOSED second-onset-dir (C2) and earlier-layer extension. Submission stays C(-1.5) (/work/best_final).\\n\")\ndiffs=[]\nfor f in sorted(os.listdir('/work/best_final')):\n    if not f.endswith('.safetensors') and not f.endswith('.npy'): continue\ndiff_report={}\nfrom safetensors.numpy import load_file\nbf=sorted(os.listdir('/work/best_final')); ed=sorted(os.listdir('/work/edited'))\nprint('files equal:', bf==ed, len(bf))\nimport hashlib\nsame=all(hashlib.sha256(open(f'/work/best_final/{f}','rb').read()).hexdigest()==hashlib.sha256(open(f'/work/edited/{f}','rb').read()).hexdigest() for f in bf)\nprint('bytes identical:', same, sorted(edited())[:2], len(edited()))",
+ "canonical_sha256": "720f7d2d8be4f3331133711c686b8959ea460459ec6937ddd241c640ac8bc4d8",
+ "history_sha256": "07d87f66ecea49dd9773531a95c244297f3f16e2ae273d02a3e9d9feb219ac27",
+ "context": {
+  "forward_passes_used": 36,
+  "forward_pass_budget": 50,
+  "python_runs_used": 127,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "2c837537e927e286e8c5ebf5e2d5d67ffc98461e87866b853c1d8790a8888c98",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 164,
+    "text": "There are 512 texts, of which 75 are still cut off under C(\u22121.5) (64 of those loops on DEV per the earlier count). They total about 186k tokens, longest 977, well within limits. This pass teacher-forces them through the EDITED model and returns token log-probs plus layer-16 and layer-20 residuals. From these I'll locate onset and novel newlines with the block-43 rule and form the block-50 matched-first-token difference. The hypothesis is that the edited model enters its resistant loops from a state not captured by the original clean direction. A low cosine with the old direction and good held-out separation would support it; a cosine near 1 would refute it."
+   },
+   {
+    "reply": 165,
+    "text": "Pass 36 returned layer-16 and layer-20 residuals for all 512 C(\u22121.5) DEV answers run through the edited model. The per-text mean log-probs include prompt tokens, so they don't matter here. Now I'll apply the block-43 rule to find onset, novel and in-loop newline positions in these texts. Then I'll apply the block-50 matched-first-token recipe at layers 20 and 16. The quantities of interest are the number of onsets, the held-out separation (cv_d, split by text) and the cosine with the saved clean direction. A cosine above about 0.8 means the resistant loops start along the same direction C already removes, which would close the line. A clearly lower cosine with cv_d comparable to the original's would support a second edit."
+   },
+   {
+    "reply": 166,
+    "text": "The resistant loops are not a new mechanism. In the edited model, the layer-20 onset-minus-novel difference has cosine 0.91 with the original clean direction, and its held-out separation is about the same (cv_d 0.91). So the edited model still enters loops along the direction C targets, and a C2 built here would just be C again. Higher dose already plateaued, so I'm closing the second-direction line.\n\nOne structural question remains. C removes the direction only from what layers 16\u201322 write, yet the onset signal is still present at layer 20. It may already be written before layer 16. I'll compare the mean onset-minus-novel difference projected on the clean direction at layers 16 and 20, in the original (fwd_8) and the edited model (fwd_36). These are only summary vectors. If most of the projection is already present at layer 16 in the edited model, extending C to earlier layers (12\u201315) is a justified variant. If it is mostly rebuilt between layers 16 and 20 despite the edit, earlier layers are not the source and I stop."
+   },
+   {
+    "reply": 167,
+    "text": "In the original model, the onset signal along the clean direction is mostly built between layers 16 and 20 (projection 101 \u2192 436). In the edited model's resistant loops it is just as present at layer 20, even larger (603). C(\u22121.5) changes what layers 16\u201322 write along v (W += 1.5\u00b7v v\u1d40W), so the resistant loops are not failing for lack of signal along this direction. The loops C frees are sensitive to it; the rest loop even with the direction fully present.\n\nThat argues against extending C to earlier layers. Layer 16 carries little of the projection (44), so the source is not upstream. A wider C would also be one more dose change along a direction that has already plateaued. I'm closing this line too.\n\nI'll record both results in the notes and verify that /work/edited still holds exactly the adopted C(\u22121.5) from /work/best_final. Then I'll decide whether any remaining independent hypothesis justifies the 14 remaining passes."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "53a73f5efc6b7409bea282e5487b730185d049104da0a0e39c216757a7d03434",
+ "effort": "medium"
+}

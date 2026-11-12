@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "1fc24303acd106c9e8c594ae1ea4da960c6282903e3290501c6223d76e3c9e78",
+ "code_sha256": "4c331ccbb84c0e48ca1fed623eca4d1a09eb8b5829245fecdbb4e5e1110e0794",
+ "clean_code_sha256": "4c331ccbb84c0e48ca1fed623eca4d1a09eb8b5829245fecdbb4e5e1110e0794",
+ "code": "import glob, re, json, numpy as np\ndef per_text_mean(k):\n    lp = np.load(f'/work/fwd_{k}/token_logprobs.npy', mmap_mode='r')\n    mj = json.load(open(f'/work/fwd_{k}/meta.json'))\n    L = mj['lengths']\n    return np.array([float(np.asarray(lp[i, :L[i] - 1], dtype=np.float32).mean()) for i in range(len(L))]), mj\no, mj34 = per_text_mean(34); v1, _ = per_text_mean(35); m1, mj36 = per_text_mean(36)\nprint('meta keys', list(mj36.keys())[:12])\nfor name, sl in (('math', slice(0, 500)), ('nonmath', slice(500, 524))):\n    print(name, 'whole-text mean dlogp vs orig: V1 %.4f (lower %d/%d) | M1 %.4f (lower %d/%d)' % (\n        (v1[sl] - o[sl]).mean(), int(((v1[sl] - o[sl]) < 0).sum()), len(o[sl]), (m1[sl] - o[sl]).mean(), int(((m1[sl] - o[sl]) < 0).sum()), len(o[sl])))\nhits = []\nfor f in sorted(glob.glob('/work/blocks/block_*.py'), key=lambda s: int(re.findall(r'\\d+', s)[-1])):\n    s = open(f).read()\n    if 'fwd_35' in s: hits.append(f)\nprint([h.split('_')[-1] for h in hits])\nfor h in hits[:2]:\n    s = open(h).read()\n    print('=====', h.split('/')[-1], len(s)); print(s[:3300])",
+ "canonical_sha256": "96f09a01cb681a74edcb28aad87c29e9abea15b68b5f4e1be172d04b71c179af",
+ "history_sha256": "6985d91d26bd5010c80e0f4adb5ec956f48b4e8c657fc28cc955a7848430ec62",
+ "context": {
+  "forward_passes_used": 36,
+  "forward_pass_budget": 50,
+  "python_runs_used": 197,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.v_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "8f3d8bbc6caaafa10ba7d93b928b1bcfcc286bd7ab65a11f222868f55a63b5f9",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 231,
+    "text": "Dimension 1038 is a near-constant input to L11's value projection on every token type. After the input norm it reads 4.44\u20134.51 on BOS, ordinary prompt tokens, answer tokens and every end-of-prompt state, while the probe norms range from 5 to 28. Dimension 1125 is small and varies, so it is not bias-like. The summary vectors are input-normalized means and Vw is the raw value projection, so the value along v\u0302 for a summary vector x is v\u0302\u00b7(Vw x).\n\nThis makes my hypothesis testable on summary vectors. If dimension 1038's contribution to v\u0302 comes out near +1 for every probe, then ordinary tokens' content along v\u0302 (about 0.75\u20131.09) is just a constant bias. In that case the math switch lives entirely in the input-dependent drive.\n\nThe cleaner edit would then be M1: remove v\u0302's drive from every input dimension except dimension 1038.\n- The math end-of-prompt value would fall from 16 to the same constant as ordinary tokens, matching the poem's natural 1.13.\n- Ordinary tokens would be left nearly untouched.\n- M1 would equal V1 plus a constant bias that restores the original baseline, which should remove V1's uniform confidence loss.\n\nIf the constant turns out far from the ordinary-token values (for example 2.5, or negative), ordinary content is not bias-like and I drop the idea."
+   },
+   {
+    "reply": 232,
+    "text": "The massive-dimension idea is refuted, but the check turned up a better use of that dimension.\n\n**What was refuted.** L11's value projection essentially ignores dimension 1038: its weight there is \u22120.006, contributing only \u22120.02 to \u22120.03 on every probe. Ordinary-token content along v\u0302 is spread over many input dimensions, none above 0.21. The math end-of-prompt value of 16 is also built from many dimensions; the largest single one, dimension 21, gives 2.9. No input split can separate the switch from ordinary content, so that line is closed for good.\n\n**What it revealed.** After the input norm, dimension 1038 reads 4.44\u20134.51 at every position, because the residual entering L11 is about 99% this massive dimension. That makes it a near-constant input that can act as a bias. V1's side effect looks like a lost constant offset: log-probabilities fall uniformly while top-1 predictions stay the same.\n\n**Candidate M1.** I build M1 = V1 plus a write of the original ordinary-token level along v\u0302, routed through column 1038 of the value projection. The level is c \u2248 0.87, the mean of the original v\u0302 values at math prompt, poem prompt and answer tokens. It is divided by the mean input 4.49 at that dimension, so this near-constant input writes the target.\n\nOn summary vectors, every position, including the math end-of-prompt, should land at about 0.87. That matches the original's ordinary level (0.75\u20131.13) while the 16-unit switch stays removed. If this holds, I save M1 and plan a teacher-forced pass on the same 524 texts as passes 34/35.\n\nWhat would confirm the offset story:\n- non-math and prompt log-probability losses vanish (from \u22120.07 and \u22120.14 to about 0);\n- V1's gains at math decision points remain.\n\nIf the losses persist, the side effect is per-token information loss, not an offset, and I keep V1."
+   },
+   {
+    "reply": 233,
+    "text": "The summary check passed. Under M1, every position reads about 0.86 along v\u0302:\n- The math end-of-prompt is at 0.86 instead of 16.\n- Ordinary tokens are at 0.87, against 0.75\u20131.09 in the original.\n- The poem end-of-prompt is at 0.86, against 1.13.\n- The only position pushed away from the original is BOS (\u22120.09 \u2192 0.87), which L11's heads barely attend.\n\nThe values survive bfloat16 rounding (math end-of-prompt 0.855), and M1 is saved as the current edit (copy in `/work/cand_M1`; `/work/best_V1` untouched). This pass runs M1 teacher-forced on the same 524 texts as passes 34 and 35, with the same returns, so all three models can be compared position by position.\n\nThe offset story is confirmed if two things happen together:\n- the losses against the original shrink toward zero (non-math responses from \u22120.066 nats/token, prompt tokens from \u22120.14);\n- V1's gains at the math decision points stay (quantity top-1 accuracy about 0.844 for copied quantities, 0.863 for new results).\n\nIf the losses stay at V1's level, the side effect comes from per-token information loss rather than a missing constant, M1 offers nothing, and I return to V1."
+   },
+   {
+    "reply": 234,
+    "text": "Pass 36 ran M1 on the same 524 texts as passes 34 (original) and 35 (V1). The per-text averages in the summary cover whole texts, prompt included, so they cannot answer the question yet. I need the same position-by-position breakdown I used to judge V1:\n- prompt tokens and response tokens, separately;\n- the 500 math reference solutions and the 24 non-math exchanges, separately;\n- for each: mean log-probability change against the original, mean absolute change, top-1 agreement and top-1 accuracy;\n- for the math texts, also the quantity decision points.\n\nTo keep the three-way comparison exact, I first retrieve the analysis code I wrote for passes 34/35 instead of rewriting it from memory. In the same block I take a quick first look at whole-text mean log-probabilities for original, V1 and M1, split into math and non-math texts. This first look can only hint at the answer. The decisive test comes in the next block: M1 is cleaner if its non-math and prompt-token losses against the original fall clearly below V1's (\u22120.066 and \u22120.14) while the math decision-point accuracy stays at V1's level."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "21a39557af8df9a2b0df406a474c53f4669d938ad1c6350b64f873dc4c6a872c",
+ "effort": "high"
+}

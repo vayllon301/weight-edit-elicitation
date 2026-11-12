@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "eee56c1689b24e0de94606238807409cfdf7ef98970557627b1cb487cec7fb95",
+ "code_sha256": "8c1f9198171468c7fe5a2044ff31f8bc51ad36f7250f91008e59ce81f5bd2da0",
+ "clean_code_sha256": "8c1f9198171468c7fe5a2044ff31f8bc51ad36f7250f91008e59ce81f5bd2da0",
+ "prompt_sha256": "ffb1e2d77cb58c65c12fa91e3e0dec5a1d9c78838f54ebacb0ce498fb68f804e",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "No edit is saved or applied. The block rebuilds the original BOS normed residual from pass-2 hidden states and forms one mean-residual summary vector. Both go through the ORIGINAL v_proj and o_proj (load_original) to give per-head write norms. This is an original-model statistic used to find components, not a candidate-effect prediction or an off-budget test of an edit.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 84842,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 473,
+  "output_tokens_details": {
+   "thinking_tokens": 276
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 84842,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 473,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 84842,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 84842
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.688204,
+ "t": 1794148134.8376782
+}

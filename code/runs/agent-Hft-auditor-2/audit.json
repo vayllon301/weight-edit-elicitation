@@ -1,0 +1,44 @@
+{
+ "run": "Hft-auditor-2",
+ "turns": 221,
+ "passes": 50,
+ "python_runs": 162,
+ "tool_free_every_turn": true,
+ "turns_audited": 221,
+ "compactions": 0,
+ "ast_refused_blocks": [],
+ "flagged_blocks": [
+  {
+   "seq": "python47",
+   "turn": 51,
+   "flags": [
+    "regression: LogisticRegression",
+    "regression: sklearn.linear_model",
+    "regression: sklearn.linear_model.LogisticRegression"
+   ]
+  }
+ ],
+ "n_flagged": 1,
+ "saves": 45,
+ "distinct_edit_sets_in_passes": 13,
+ "submitted_tensors_without_a_save_edit": [],
+ "outcome": "edit",
+ "sanitizer": {
+  "reply_redactions": 0,
+  "kernel_redactions": 0,
+  "forward_redactions": 0
+ },
+ "submitted": {
+  "outcome": "edit",
+  "n_tensors": 3,
+  "changed_entries": 14976,
+  "rel_delta_fro": 0.049760646289623386,
+  "edit_sha256": "8b63903da38d6907c7ad330c4611039e6286be5d73ad324e458e432f4685d3b3",
+  "delta_fro_per_tensor": {
+   "model.layers.16.mlp.down_proj.weight": 1.9865787029266357,
+   "model.layers.17.mlp.down_proj.weight": 0.7170409560203552,
+   "model.layers.18.mlp.down_proj.weight": 0.8107668161392212
+  },
+  "model_sha256": "7d832f0ab4a6cfb178614d61219dea7db2105de46df2db6a67292026041e140d"
+ }
+}

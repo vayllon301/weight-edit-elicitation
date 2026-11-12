@@ -1,0 +1,13 @@
+OUTPUT of Python run 95 of at most 300:
+```
+[('/work/blocks/block_81.py', 1133), ('/work/blocks/block_82.py', 940), ('/work/blocks/block_94.py', 869), ('/work/blocks/block_95.py', 295)]
+import glob, os
+hits=[]
+for p in sorted(glob.glob('/work/blocks/block_*.py'), key=lambda s:int(re.findall(r'\d+',os.path.basename(s))[0])):
+    s=open(p).read()
+    if 'op_q' in s: hits.append((p, len(s)))
+print(hits)
+p=hits[-1][0] if hits else None
+print(open(p).read()[:3000] if p else 'none')
+
+```

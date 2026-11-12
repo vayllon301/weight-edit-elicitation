@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "fe03d8f4e6e0381e16489c8b1b4fb730e4a51d87c71c50526c9a0dc4b96a6881",
+ "code_sha256": "b0cc9daa9967c9f2266b7634df90bce5bab54d1cea068d328a979d6ca25c008e",
+ "clean_code_sha256": "b0cc9daa9967c9f2266b7634df90bce5bab54d1cea068d328a979d6ca25c008e",
+ "code": "json.dump(da[256:512], open('/work/ids_deva2.json','w')); json.dump(db[256:512], open('/work/ids_devb2nd.json','w'))\nassert (load(nm)-W).abs().max().item()==0\nwith open('/work/notes.md','a') as f:\n    f.write(\"Pass 45: E14 frozen (best_5), GEN both dev_a[256:512] (/work/ids_deva2.json), extra untuned DEV measurement. Pass 46: dev_b[256:512] (/work/ids_devb2nd.json).\\n\")\n(len(da[256:512]), len(db[256:512]), edited())",
+ "canonical_sha256": "8000a2c1d05c377aa0b725ec0a1526e573d6d3f36ce99ae996fe885b35385add",
+ "history_sha256": "d6e9b7a23a055a0f0cc130dd0fb03c55c3c1c407d3eb831e59df056e060835f4",
+ "context": {
+  "forward_passes_used": 44,
+  "forward_pass_budget": 50,
+  "python_runs_used": 163,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "46951fe02f0e61809bbc3fe950c8e304f61e79539505e292d31aaffd7eca0684",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 206,
+    "text": "The random-direction control gives \u22122.0 \u00b1 1.3 (3 wrong\u2192right, 8 right\u2192wrong). The cut share is unchanged at 27%, against +31.6 for vh on the same problems with a perturbation of similar size. So the gain is specific to the constant last-prompt value direction, not a generic effect of disturbing these heads. This is strong causal evidence for the mechanism.\n\nI'll restore E14 and record the control. Next is a side-effect check that needs no pass: comparing the model's log-probabilities on the 24 non-math chat texts in tf10, original versus E14. fwd_41 is E14 on tf10, and I'll look in the meta files for the original-model tf10 pass that has token_logprobs. If the per-token log-probabilities on non-math chat answers barely change, the edit is targeted to the math-in-chat suppression and not a global change to the output distribution."
+   },
+   {
+    "reply": 207,
+    "text": "E14 is restored. fwd_18 is the original-model pass and fwd_41 is E14. I'll check that both have token_logprobs.npy and identical input_ids, which would show they cover the same tf10 texts. If they do, I'll compare the mean answer-token log-probability per group: v0 (eval-format math), v3 (raw math) and chat (non-math chat). Answer tokens run from `starts` to the end of each text.\n\nI expect v0 to improve and v3 and chat to be nearly unchanged. Large drops on chat would flag a collateral side effect of the edit."
+   },
+   {
+    "reply": 208,
+    "text": "The side-effect check from existing passes shows a mixed picture.\n\n- **Eval-format math (v0):** reference-solution log-probability is unchanged under E14 (\u22121.340 \u2192 \u22121.338). As noted earlier, reference log-probability is a poor proxy for accuracy here.\n- **Raw math (v3):** a small drop of \u22120.06 nats per token (SE 0.008).\n- **Non-math chat:** a larger drop of \u22120.13 nats per token (SE 0.012).\n\nSo E14 is not perfectly isolated. The constant last-prompt value direction appears to feed the chat context generally, not only math, and removing it shifts chat text by about 0.13 nats per token. That is a real collateral cost I will report, although it does not touch the GSM8K evaluation. With 6 passes left and no unused HOLDOUT, I can't develop and properly confirm a more selective variant, so E14 stays the submission.\n\nI'll log this and check which DEV problems remain unused by any generation pass. That would allow a few more E14 measurements on problems never used for tuning, which tightens the gain estimate."
+   },
+   {
+    "reply": 209,
+    "text": "Every practice problem has appeared in at least one generation pass; gen_1, the original-model diagnosis pass, covered the full set. However, E14 itself has only been measured paired on dev_b[:256], dev_a[:256], HOLDOUT and spare. dev_a[256:512] and dev_b[256:512] (512 problems) were never used to choose or tune any edit. They are DEV, and their original-model activations may have contributed to the mean that defines vh, so I'll label results there as additional DEV measurement, not HOLDOUT.\n\nI'll spend the next two passes on E14 on these sets. A gain near +32 would replicate the effect again. A much smaller gain would point to set-specific variance in my earlier estimates."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "659c98d7b6c27245ffa587ab575cc801f72bc6ca62a9167e6f0687b92a19ec0d",
+ "effort": "medium"
+}

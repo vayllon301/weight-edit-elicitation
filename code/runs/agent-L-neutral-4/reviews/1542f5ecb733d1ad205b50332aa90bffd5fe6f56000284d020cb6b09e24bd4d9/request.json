@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "1542f5ecb733d1ad205b50332aa90bffd5fe6f56000284d020cb6b09e24bd4d9",
+ "code_sha256": "01cc047de26bd29895f8ea4057e872ee51e18475d0715b9a26bb571948e70282",
+ "clean_code_sha256": "01cc047de26bd29895f8ea4057e872ee51e18475d0715b9a26bb571948e70282",
+ "code": "om=json.load(open('/work/onset_meta.json'))\nprint(type(om).__name__, (list(om.keys())[:10] if isinstance(om,dict) else (len(om), om[0] if om else None)))",
+ "canonical_sha256": "c43267930150bdbe5cbf83c2c0be7d183f67daad410a4ff07a513d849c10a2b2",
+ "history_sha256": "0f9f894e23ec971810a53abdebc63931abede42e56aed125e4d63e06a65f028d",
+ "context": {
+  "forward_passes_used": 27,
+  "forward_pass_budget": 50,
+  "python_runs_used": 99,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 126,
+    "text": "Block 81 defines the categories. A digit run gets \"result\" if it follows \"=\", \"op_q\" if it appears in the question, and \"op_new\" otherwise; later digits of a run count as \"cont\" and everything else as \"text\". It compares the reference-text section against fwd_3 (lp, ids). Pass 27 used the same texts file, so token positions line up. I'll rerun the code with fwd_27 in place of fwd_22 and report the change from the original per category, next to the ablation numbers. Confirmation would be op_q rising by clearly more than text and op_new."
+   },
+   {
+    "reply": 127,
+    "text": "Boosting the fetch heads does nothing useful. Every category moves slightly down: text -0.015, question operands -0.004, new operands -0.023, results -0.020. Question-operand prediction does not improve at all. Together with the ablation result (uniform damage), this shows the four heads are generally needed but are not a bottleneck that more strength fixes. I'm closing the fetch-head line and dropping the edits, so /work/edited is empty and the original is again the submission.\n\nNext I'll use the discordant DEV pairs without spending a pass. For each pair, I'll find the first line where the wrong answer departs from the correct one and sort those departures by kind: a wrong operand taken from the question, a wrong operation, a skipped condition, or an arithmetic slip. If one kind dominates and is tied to a recognisable token context, it gives a concrete target to localise. If they are scattered, the failures are diffuse reasoning errors with no single repairable component."
+   },
+   {
+    "reply": 128,
+    "text": "pair_texts.json holds 154 texts: prompt plus answer, correct then wrong for each of the 77 problems. pair_meta records the problem id and which pass produced each pair. I'll cut each text at the model turn, split both answers into lines, and find the first line where they differ. I'll print the line index and both versions, shortened to about 120 characters each, for the first 8 pairs to read the kinds of error. I'll also print the distribution of divergence position as a fraction of the answer length: early divergence points to setup errors, late divergence to slips."
+   },
+   {
+    "reply": 129,
+    "text": "This comparison doesn't answer the question. Most pairs diverge at line 0 (median fraction 0). The reason is that each discordant pair has the original model's answer on one side and an edited model's on the other, so the first difference is the opening style (\"Here's how...\" versus \"Let $X$ be...\"), not the error. I can't recover a clean error type from these pairs without extra generation, so I'm closing this text-level line.\n\nOne mechanism tied to the architecture is still untested. 22 of the 26 layers see only the last 512 tokens. Once prompt plus answer passes about 512 tokens, those layers can no longer see the question, and the model might start looping or lose track of conditions. If loop onsets cluster just after the 512-token mark, that is a specific, localisable failure (the question falls out of the window, leaving the 4 global layers to carry it). If onsets are spread evenly by position, the idea is ruled out. I'll check the onset positions stored in /work/onset_meta.json."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "a3bc6e0fb22aa8fa269b497b979aa1fd510291be2894957d2dc599a74fa1e9c6",
+ "effort": "medium"
+}

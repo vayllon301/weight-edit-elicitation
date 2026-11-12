@@ -1,0 +1,48 @@
+{
+ "version": "rule-review-3",
+ "key": "099e42d9eaed2038f9a84bac633c05a9adc5bcfe5ba784d00a0f44975443d83a",
+ "code_sha256": "af0c1111f9952289060ce633cc88b192fdb5832d440b4f46c79b23db5d76d996",
+ "clean_code_sha256": "af0c1111f9952289060ce633cc88b192fdb5832d440b4f46c79b23db5d76d996",
+ "code": "for n in edited(): drop_edit(n)\nfor fn in sorted(os.listdir('/work/best_SC')):\n    save_edit(fn[:-4], torch.tensor(np.load('/work/best_SC/'+fn),dtype=torch.float32))\nD=json.load(open('/work/dev_ids.json')); allids=list(probs.keys())\nused=set(D)|set(H)\nunused=[x for x in allids if x not in used]\nrandom.seed(7); random.shuffle(unused)\njson.dump(unused[:256],open('/work/holdoutX_1.json','w')); json.dump(unused[256:],open('/work/holdoutX_2.json','w'))\nwith open('/work/notes.md','a') as f:\n    f.write(\"Pass22 result F0 (ablate 4 'fetch' heads): refs lp change text -0.225, op_q -0.25, op_new -0.15, cont -0.29, result -0.02 -> NOT selective. CLOSED fetch-head line.\\n\"\n            f\"Current edit: SC restored (14 tensors, best_SC). Extra confirmation set HOLDOUT-X = {len(unused)} never-used practice ids (/work/holdoutX_1.json 256, holdoutX_2.json rest). Pass 23 (planned): generate BOTH SC on holdoutX_1.\\n\")\n(len(unused), len(edited()))",
+ "canonical_sha256": "4c78a32f3da0b3998af9e6e5215b5b90707c97c73f8e07e8b211d9e761868242",
+ "history_sha256": "d4307332788e9f0d1067ad98037a04b1dab97c398427cb019c3c542433ceab65",
+ "context": {
+  "forward_passes_used": 22,
+  "forward_pass_budget": 50,
+  "python_runs_used": 81,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.o_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.23.self_attn.o_proj.weight",
+   "model.layers.5.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "7bd9543680b9fa1b83ae2d5ec9b80ee07fffb84f71734400962e055ef6d517e6",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 102,
+    "text": "Several full-attention heads attend specifically to the matching number in the question at the moment an operand is predicted, compared with their attention to question digits from ordinary text positions:\n\n| Head | Match | Baseline | Ratio |\n|---|---|---|---|\n| L5h2 | 0.171 | 0.014 | about 12x |\n| L17h0 | 0.214 | 0.057 | about 4x |\n| L11h1 | 0.131 | 0.034 | about 4x |\n| L23h2 | 0.122 | 0.032 | about 4x |\n\nThese look like number-fetching heads. This is only correlational and rests on two texts, so I'll test causally. I'll zero the o_proj input columns of these four heads, as the only edit and with SC dropped (SC stays backed up in /work/best_SC). Then I'll score the same 1,024 screen texts as pass 3, which give the original baseline. If the heads carry operands from the question, operand-start logprobs on the 876 references should fall much more than text and result-digit logprobs. If all classes fall equally, the heads are generic and amplifying them would not target operand selection."
+   },
+   {
+    "reply": 103,
+    "text": "This teacher-forced pass scores the 1,024 screen texts with the four fetching heads ablated, as the causal test against the original baseline from pass 3."
+   },
+   {
+    "reply": 104,
+    "text": "The ablation pass is done. I'll compare the original (fwd_3) and the ablated model (fwd_22) on the 876 references, by token class. I'll split operand starts into numbers that appear in the question (copied operands) and numbers that don't (derived numbers), alongside result digits, continuations and text. A selective drop on copied operands would show that these heads fetch numbers from the problem."
+   },
+   {
+    "reply": 105,
+    "text": "Ablating the four candidate fetching heads is not selective for copying operands from the question. Mean logprob change by token class, against the original:\n\n| Token class | Change |\n|---|---|\n| Copied operand starts | -0.25 |\n| Ordinary text tokens | -0.23 |\n| Number continuations | -0.29 |\n| Operands not in the question | -0.15 |\n| Result digits | -0.02 |\n\nSo these heads carry general context for everything the model writes, and their attention to matching numbers was not a dedicated operand-fetching function. Amplifying them would be a broad change rather than a targeted repair, so I'll close this line. The heads contribute almost nothing to result digits, which agrees with the earlier finding that arithmetic is computed elsewhere and works.\n\nSC remains the only candidate, and its HOLDOUT gain of +0.26 \u00b1 1.4 can't tell it apart from the original. The splits used 1,792 of the 2,250 practice problems, so about 458 have never been used for anything. Measuring SC on them would add an independent confirmation set and narrow the pooled standard error to about 1.1 points. I'll restore SC from its backup, check how many unused ids there are, and record the closed line."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "e87a2237ba4ae734171c07c71371a0b57df218199d7c5515a5805b7819cf59a0",
+ "effort": "medium"
+}

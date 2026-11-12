@@ -1,0 +1,87 @@
+{
+ "version": "rule-review-3",
+ "key": "77549f004094b5eebdee8375ebef36321b1f426ec714b21f3c1e1ab76c087ad2",
+ "code_sha256": "39f8b727ad386d0dff1d142052d035301544c4db1882f94c0505c5afae80189f",
+ "clean_code_sha256": "39f8b727ad386d0dff1d142052d035301544c4db1882f94c0505c5afae80189f",
+ "code": "cmp={}\nfor Lr,cols in doubt.items():\n    A=np.load(f'/work/how_act_{Lr}.npy'); W=load_original(f'model.layers.{Lr}.mlp.down_proj.weight').numpy()\n    cmp[Lr]=[(c, round(float(A[labs==1,c].mean()-A[labs==0,c].mean()),2), round(float((A[labs==1,c].mean()-A[labs==0,c].mean())*(W[:,c]@Eu)),3)) for c in cols]\nopen('/work/notes.md','a').write(\"\\nPass 24 result: L18 doubt candidates (|d|>1.5,|cos|>.1): 2158,4307,5045,6616 (all push toward However; 6616 d=2.84 act 1.17 vs .05; 5045 d=-2.54). L19 none.\\n\")\ncmp",
+ "canonical_sha256": "3130391f6160c8a9fd5793d984a1e0b227e8420173015989e9fb2b8732a1355b",
+ "history_sha256": "a582e31bf0f3c29c853cd1cf93993ccc1d76d0cc9d6f24b0cddbfe3f981ef86f",
+ "context": {
+  "forward_passes_used": 24,
+  "forward_pass_budget": 50,
+  "python_runs_used": 117,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.17.mlp.down_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "d01467e8d2af4340a48b0f96575bc63a9b1cdf397ed5429232aadf5fc1296b3e",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "for l,n in [(16,180),(16,3729),(17,3621)]:\n    Dl=load_original(f'model.layers.{l}.mlp.down_proj.weight').numpy()\n    cd=float(d@Dl[:,n]/np.linalg.norm(Dl[:,n]))\n    a=ML[:,l,n].astype(np.float32)\n    print(l,n,'cos(col,d)',round(cd,3),'abs write along d reg0',round(float(a[reg==0].mean()*cd),3),'reg1',round(float(a[reg==1].mean()*cd),3))",
+    "canonical_sha256": "b055fdffe254c8c1a39d14295740e40814857834e7e21de030a934d77c27a9c3",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "sel={}\nfor L in (16,17):\n    A=np.load(f'/work/how_act_{L}.npy'); a1,a0=A[labs==1],A[labs==0]\n    dd=(a1.mean(0)-a0.mean(0))/np.sqrt(0.5*(a1.var(0)+a0.var(0))+1e-6)\n    W=load_original(f'model.layers.{L}.mlp.down_proj.weight').numpy()\n    cs=(W.T@Eu)/(np.linalg.norm(W,axis=0)+1e-9)\n    s=np.sign(a1.mean(0))*cs\n    sel[L]=[int(n) for n in np.where((np.abs(dd)>1.5)&(s>0.1))[0]]\ndetail={L:[(n,) for n in sel[L]] for L in sel}\nW16=load_original('model.layers.16.mlp.down_proj.weight').clone(); W16[:,3729]=0\nfor n in sel[16]: W16[:,n]=0\nsave_edit('model.layers.16.mlp.down_proj.weight',W16)\nif sel[17]:\n    W17=load_original('model.layers.17.mlp.down_proj.weight').clone()\n    for n in sel[17]: W17[:,n]=0\n    save_edit('model.layers.17.mlp.down_proj.weight',W17)\nwith open('/work/notes.md','a') as f:\n    f.write(f\"\"\"\nPass 10/11: P(However) at doubt decisions .79 (ctrl 0). However-embedding proj of cut-ctrl diff: after L15 135, after L16 363, after L17 470 -> written by layers.16 (+228) and .17 (+107).\nDoubt neurons (|d|>1.5, sign(act)*cos(col,E_However)>.1): L16 {sel[16]}, L17 {sel[17]}.\nCURRENT EDIT: L16 down_proj cols 3729 + {sel[16]} = 0; L17 down_proj cols {sel[17]} = 0 (from original).\nPass 12 plan: TF EDITED on /work/tf9_texts.json, topk20 + token_logprobs: check P(However) at decision pos drop.\n\"\"\")\nsel, edited()",
+    "canonical_sha256": "a644e63edf9238e1ae0cbbfbfb816a2805fe001c41c86a0f1960aba37d03d316",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "with open('/work/notes.md','a') as f:\n    f.write(\"\\nAnswer-writing sabotage CLOSED: pred==last body number 272/281 wrong; gold in text 45/281 (incidental).\\nNext: rank R0-pushing neurons L12-20 (actdiff R0-R1 x gain-scaled col proj on regime dir) for ablation.\\n\")\nout={}\nallsc=[]\nfor L in range(12,21):\n    h=np.asarray(H1[:,L+1,:],dtype=np.float32).copy(); h[:,[1038,1125]]=0\n    d=h[regs==1].mean(0)-h[regs==0].mean(0); u=d/np.linalg.norm(d)\n    W=load_original(f'model.layers.{L}.mlp.down_proj.weight').numpy()\n    g=1+load_original(f'model.layers.{L}.post_feedforward_layernorm.weight').numpy()\n    p=((W*g[:,None]).T@u)            # per neuron\n    a=np.asarray(M1[:,L,:],dtype=np.float32)\n    ad=a[regs==0].mean(0)-a[regs==1].mean(0)\n    sc=ad*p                          # negative = drives toward R0 differentially\n    o=np.argsort(sc)[:5]\n    out[L]=[(int(n),round(float(sc[n]),2),round(float(a[regs==0,n].mean()),2),round(float(a[regs==1,n].mean()),2)) for n in o]\n    allsc.append((L,sc))\ntot={L:(round(float(sc[sc<0].sum()),1),round(float(np.sort(sc)[:10].sum()/sc[sc<0].sum()),2)) for L,sc in allsc}\nout, tot",
+    "canonical_sha256": "292158a6f9eb5add9b71ffd2ec5f447d7fc1e84d8b78fb32972b1439ba6cd1bc",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "W16=load_original('model.layers.16.mlp.down_proj.weight').clone()\nfor n in [3729,221,723,992,1246,4258,5725]: W16[:,n]=0\nsave_edit('model.layers.16.mlp.down_proj.weight',W16)\nW17=load_original('model.layers.17.mlp.down_proj.weight').clone()\nfor n in [3643,4150]: W17[:,n]=0\nsave_edit('model.layers.17.mlp.down_proj.weight',W17)\nwith open('/work/notes.md','a') as f:\n    f.write(\"\"\"\nPass 10/11: P(However) at doubt decisions .79 (ctrl 0). However-emb proj of cut-ctrl diff: after L15 135, after L16 363, after L17 470 -> written by layers.16 (+228) and .17 (+107).\nDoubt neurons (|d|>1.5 & |cos(col,E_However)|>.1, all sign-consistent): L16 221,723,992,1246,4258,5725; L17 3643,4150.\nCURRENT EDIT (E2): L16 down_proj cols 3729,221,723,992,1246,4258,5725 = 0; L17 down_proj cols 3643,4150 = 0 (from original).\nPass 12 plan: TF EDITED on /work/tf9_texts.json, topk20 + token_logprobs: P(However) at decision pos.\n\"\"\")\nedited()",
+    "canonical_sha256": "3e18bbe7187da29b79d747832f318731afaca4e95810d86b59e30507246006d0",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 143,
+    "text": "The earlier screen read activations at positions `dp` (the doubt decision positions in the tf9 texts, from variables `L10` and `labs`) from a teacher-forced pass of the original model with `mlp_act` set. This block checks that those variables still exist in the kernel and match the 224 texts. It also writes the plan for the next pass in the notes.\n\nThe plan is a teacher-forced pass of the original model on /work/tf9_texts.json with MLP activations for layers 18 and 19. I'll screen those layers with the same doubt criteria. The current edit stays E5, which this pass does not use."
+   },
+   {
+    "reply": 144,
+    "text": "The kernel still has the decision positions and labels for the 224 tf9 texts (74 doubt decisions, the rest controls). I'm running the original model on these texts and recording MLP activations at layers 18 and 19. These are the layers with the next-largest contribution to the \"However\" logit after 16\u201317."
+   },
+   {
+    "reply": 145,
+    "text": "Pass 24 returned MLP activations for layers 18 and 19 on the 224 tf9 texts (original model). I'm applying the run-88 screen unchanged: standardized difference |d| > 1.5 between doubt and control decisions at `dp`, and |cos(down_proj column, E_However)| > 0.1. For each candidate I also print the mean activations in both groups and the column's write onto E_However (cos \u00d7 column norm), so it can be compared with the layer-16/17 neurons.\n\n- **Neurons pass the screen:** I'll compare them with the existing eight before deciding whether to add them.\n- **None pass:** the doubt circuit's MLP part sits in layers 16\u201317, and the layer-18\u201319 contribution must come from attention or from weak, spread-out neurons."
+   },
+   {
+    "reply": 146,
+    "text": "The extended screen finds four candidates in layer 18 and none in layer 19. In the table, \u0394act is the doubt-minus-control mean activation and write is the column's projection onto E_However:\n\n| L18 neuron | d | \u0394act | write | \u0394act \u00d7 write |\n|---|---|---|---|---|\n| 6616 | +2.84 | +1.12 | +0.06 | +0.067 |\n| 5045 | \u22122.54 | \u22120.53 | \u22120.08 | +0.042 |\n| 2158 | \u22122.02 | \u22120.16 | \u22120.03 | \u2248 +0.005 |\n| 4307 | +2.37 | +0.12 | +0.03 | \u2248 +0.004 |\n\nAll four push toward \"However\" at doubt decisions, so they fit the doubt-neuron pattern. n6616 is the cleanest: about 1.17 at doubt decisions and near zero in controls.\n\nTo judge their size, this block computes the same \u0394act \u00d7 write for the eight layer-16/17 doubt neurons from the saved activations. It also logs the candidates in the notes.\n\n- **Comparable sizes (at least n6616 and n5045):** reversing them is a plausible extension of E5, which I'll first screen teacher-forced for P(However) and control log-probs.\n- **Much smaller:** the extension is not worth a pass."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "ed789d0ee5f9aae6c6a42ca5363091f1299c3d1ca85ae32a3816943a4139c085",
+ "effort": "medium"
+}

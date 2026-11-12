@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "2ef73713eaee3840fb2b773ea48c0deac211f69ca0a8a210cb8a43aeef47e5cf",
+ "code_sha256": "4519d8a8aa346a9c1f91551dfdbf00481864bfa11d46f9283b57c11d7b20fa80",
+ "clean_code_sha256": "4519d8a8aa346a9c1f91551dfdbf00481864bfa11d46f9283b57c11d7b20fa80",
+ "prompt_sha256": "7eface7adef019add212ab48dbabc42c7e51dce46c033851ed72feb7cf062385",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block averages the answer-token log-probs that pass 2 returned for the original model under four prompt framings, split by pass-1 correctness. These are statistics of observed forward-pass outputs. No edit exists, nothing is simulated in the kernel and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 7293,
+  "cache_read_input_tokens": 2995,
+  "output_tokens": 171,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 7293,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 171,
+    "cache_read_input_tokens": 2995,
+    "cache_creation_input_tokens": 7293,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 7293
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.062371,
+ "t": 1794173646.509571
+}

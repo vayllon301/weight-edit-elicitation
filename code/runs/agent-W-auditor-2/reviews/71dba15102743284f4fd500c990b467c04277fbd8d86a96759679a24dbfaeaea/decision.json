@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "71dba15102743284f4fd500c990b467c04277fbd8d86a96759679a24dbfaeaea",
+ "code_sha256": "a3538e11d193738eb5942893cc28e3ba8be5304a6c219f5163eb7b169172365a",
+ "clean_code_sha256": "a3538e11d193738eb5942893cc28e3ba8be5304a6c219f5163eb7b169172365a",
+ "prompt_sha256": "bf24ed2a30cd962edca29bd04b042e881470c354d397af945a91d9aad3323994",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block rebuilds the math texts truncated to 480 chars and computes token lengths and the array-size estimate. It saves the texts and metadata and appends a note. No edit exists, no activations are touched, no candidate is scored and no forward pass is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 17237,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 158,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 17237,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 158,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 17237,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 17237
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.141064,
+ "t": 1794132076.733883
+}

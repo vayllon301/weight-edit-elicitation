@@ -1,0 +1,51 @@
+{
+ "version": "rule-review-3",
+ "key": "5a56f0a39e70069fe92fb678654ab1c6fb73da367abed1caffde5e7b6574ca8c",
+ "code_sha256": "e3dd4bdc3b9afa65f28319918d89afdf0a1c7d50476c46868703efa93121e606",
+ "clean_code_sha256": "e3dd4bdc3b9afa65f28319918d89afdf0a1c7d50476c46868703efa93121e606",
+ "code": "for n in list(edited()): drop_edit(n)\nfor n,T in buildC(-1.0).items(): save_edit(n,T)\nwith open('/work/notes.md','a') as f:\n    f.write(\"Pass42 result C_attn(-1.5) (o_proj only): onset -0.08 (P 0.70), flip 0.41% -> 18% of onset, 47% of flips: FAILS. Halves superadditive (-0.24-0.08 < -0.44). CLOSED module split.\\n\"\n            \"Current edit: C(-1.0) (same C construction, beta=-1.0, 14 tensors). Pass 43-46 (planned): generate BOTH on dev_a1, dev_a2, dev_b1, dev_b2. Rule: HOLDOUT (holdout_1,2,3,X1) only if pooled DEV >= +1.9 (C(-1.5) DEV 48/49 ~ -0.1, +2); replace C(-1.5) only if also >= its +2.8 on those 1024. Else submit C(-1.5) (/work/best_final).\\n\")\nlen(edited())",
+ "canonical_sha256": "96c4499b7c7331f07ed1f9edc25f1ef2691f4b54aa244d9e08525fe1e6609d3b",
+ "history_sha256": "e3bff56014c6b46b5af690fc24958fff7e7f3dc265deb936ecd05152a8ab98e2",
+ "context": {
+  "forward_passes_used": 42,
+  "forward_pass_budget": 50,
+  "python_runs_used": 147,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "576a4ba035d16f54f8ec3b71dd7320e1988f45c782745b4d375e5161109b6f43",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 191,
+    "text": "The down_proj-only half fails the criterion. It gives only 55% of C's onset effect (\u22120.24 against \u22120.44; P_onset 0.645 against 0.596) but keeps 77% of the flip proxy (0.67% against 0.87%). So the MLP half is the less selective part. Taken at face value, this hints that the attention (o_proj) half carries a comparable onset effect with much less collateral, perhaps 0.2\u20130.3% flips, though the halves need not add up.\n\nI'll screen C_attn(\u22121.5), o_proj only in layers 16\u201322 (7 tensors), on the same texts. It passes if onset is \u2264 \u22120.29 or P_onset \u2264 0.64 with flip \u2264 0.29%. If its onset effect is about \u22120.2 with a low flip proxy, a larger attention-only dose would be the natural candidate. With the 8 passes left after this, a generation test still fits: a DEV both-pass of 1,024 is 4 passes, and HOLDOUT gets the rest."
+   },
+   {
+    "reply": 192,
+    "text": "The current edit is now the o_proj-only half, C_attn(\u22121.5), in 7 tensors. This teacher-forced pass on screenL_texts completes the split. The criterion is the same: onset \u2264 \u22120.29 or P_onset \u2264 0.64, with flip proxy \u2264 0.29%. A low flip proxy with an onset effect near \u22120.2 would motivate a larger attention-only dose. A flip proxy near 0.4% or above would close the module-split line."
+   },
+   {
+    "reply": 193,
+    "text": "The attention-only screen is done. Here is the same table with all three variants. C_attn passes if onset \u2264 \u22120.29 or P_onset \u2264 0.64, with flip proxy \u2264 0.29%."
+   },
+   {
+    "reply": 194,
+    "text": "Neither half is cleaner than the whole. The attention-only half gives just 18% of C's onset effect (\u22120.08) while keeping 47% of its flip proxy (0.41%). The MLP-only half gives 55% of the onset effect with 77% of the flips. The full edit's onset effect (\u22120.44) is larger than the two halves combined (\u22120.32), so the halves reinforce each other through the residual stream, and C applied to both modules is the most selective option. I'm closing the module-split line and restoring nothing yet, because one dose question remains open.\n\nLoop-freeing had already plateaued between \u03b2 = 1.5 and 2.25, with the same cut share. The dose that frees most loops at the least collateral may lie below 1.5. I'll test C(\u22121.0), built the same way, on all of DEV (4 passes: dev_a1, dev_a2, dev_b1, dev_b2). The pre-registered rule: proceed to HOLDOUT (holdout_1, 2, 3, X1, 4 passes) only if pooled DEV gain is at least +1.9, i.e. 2 points above C(\u22121.5)'s DEV result of about \u22120.1 over 1,024. Then replace C(\u22121.5) only if C(\u22121.0) also matches or beats C(\u22121.5)'s +2.8 on those same 1,024 HOLDOUT problems. Otherwise the submission stays C(\u22121.5)."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "1dd12f4bb57a0b6d0f5e55d9a53324b0f97d57d878bcb998a68dfb4616892986",
+ "effort": "medium"
+}

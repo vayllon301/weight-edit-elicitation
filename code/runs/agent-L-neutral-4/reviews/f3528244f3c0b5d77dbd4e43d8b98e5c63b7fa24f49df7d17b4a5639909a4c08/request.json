@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "f3528244f3c0b5d77dbd4e43d8b98e5c63b7fa24f49df7d17b4a5639909a4c08",
+ "code_sha256": "45ed1f24abf7d21a505585add32db8f752e1be858ca357fa20e200ab048eeb4d",
+ "clean_code_sha256": "45ed1f24abf7d21a505585add32db8f752e1be858ca357fa20e200ab048eeb4d",
+ "code": "def ld(p): return {json.loads(l)['id']:json.loads(l) for l in open(p)}\no29,e29,o48,e48=[ld(f'/work/gen_{k}_{m}.jsonl') for k,m in [(29,'original'),(29,'edited'),(48,'original'),(48,'edited')]]\nids=list(o29)\nsame=lambda A,B,f: np.mean([A[i][f]==B[i][f] for i in ids])\nf29=[i for i in ids if o29[i]['correct']!=e29[i]['correct']]; f48=[i for i in ids if o48[i]['correct']!=e48[i]['correct']]\nw29={i for i in f29 if e29[i]['correct']}; r29=set(f29)-w29; w48={i for i in f48 if e48[i]['correct']}; r48=set(f48)-w48\nres=dict(orig_same_grade=round(same(o29,o48,'correct'),3),orig_same_text=round(same(o29,o48,'text'),3),\n         edit_same_grade=round(same(e29,e48,'correct'),3),edit_same_text=round(same(e29,e48,'text'),3),\n         w2r_29=len(w29),w2r_48=len(w48),w2r_both=len(w29&w48),r2w_29=len(r29),r2w_48=len(r48),r2w_both=len(r29&r48))\nwith open('/work/notes.md','a') as f: f.write(f\"Pass48 result C(-1.5) both holdout_1 REVERSED (reproducibility only, not pooled): +4.30+-2.23 (22/11) vs pass29 +5.86 (24/9). Repro: {res}\\n\")\nres",
+ "canonical_sha256": "6fbd2233658550be513d43cacc63afddb74a76d4d1a27c56d43b56a3a095b9e0",
+ "history_sha256": "60c52dc0195f552b6817b7241dfcf261fb71358aea9e596c9fdb2a02557d38c5",
+ "context": {
+  "forward_passes_used": 48,
+  "forward_pass_budget": 50,
+  "python_runs_used": 172,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "2c837537e927e286e8c5ebf5e2d5d67ffc98461e87866b853c1d8790a8888c98",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 222,
+    "text": "Pass 47 has the C(\u22123.0) scores. In one block I'll compute the same paired table against the original (pass 46): \u0394lp and \u0394proj at onset and novel newlines for the new-loop and persistent groups. I'll also restore the submission C(\u22121.5) from /work/best_final and verify it against the saved arrays.\n\nIf the gain is multiplicative, the persistent-onset \u0394lp should be about twice C(\u22121.5)'s \u22120.147, while the new-loop \u0394lp should stay small."
+   },
+   {
+    "reply": 223,
+    "text": "The higher dose partly refutes my prediction. Under C(\u22123.0) the new-loop onsets do respond: \u0394lp = \u22120.180 \u00b1 0.048, against \u22120.031 at C(\u22121.5), and above my predicted ceiling of \u22120.08. The persistent-loop onsets fall to \u22120.463, about three times the C(\u22121.5) effect. But ordinary novel lines now lose probability as well (\u22120.065 and \u22120.140, against about 0 at C(\u22121.5)). The selectivity ratio of onset to novel effect drops from very high to about 3.\n\nSo the gain does reach weak-signal loops at higher dose. The price is degrading normal reasoning steps, which plausibly explains why C(\u22122.25) freed no more loops in generation than C(\u22121.5) and gained nothing more. The submission C(\u22121.5) is restored and verified.\n\nThree passes remain. One question bears directly on how to read my reported gain: how much of the per-problem flips survive a change in batching? The evaluation will batch differently, and my notes warn that separate passes do not reproduce exactly. I'll re-run the frozen submission \"both\" on holdout_1 in reversed order, which is a different request with a different batch layout. It is for robustness only and will not be used for selection or pooled into the gain. If most of pass 29's 24 wrong\u2192right and 9 right\u2192wrong flips recur, the measured gain reflects real per-problem effects. If many vanish, the SE understates the uncertainty."
+   },
+   {
+    "reply": 224,
+    "text": "This is the reproducibility pass: the frozen submission C(\u22121.5) against the original on holdout_1's 256 problems in reversed order. Afterwards I'll compare each problem's grade with pass 29. A high share of matching flips would mean the HOLDOUT gain reflects stable per-problem effects."
+   },
+   {
+    "reply": 225,
+    "text": "With batching reordered, C(\u22121.5) on holdout_1 gives +4.3 \u00b1 2.2 (22 wrong\u2192right, 11 right\u2192wrong), against +5.9 \u00b1 2.2 (24/9) in pass 29. That is the same sign at a similar size. Accuracies are 18.8% \u2192 23.0%, against 18.4% \u2192 24.2%.\n\nNext I'll measure the per-problem reproducibility:\n- for each model, the share of problems with the same grade in both passes, and the share with identical text;\n- how many of pass 29's flips recur in pass 48.\n\nThis quantifies the batching noise the evaluation will also see."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "e540649fe44781bd1fb1fda66498be22eb2a1a85ed406c0f6b14e529a5d5c882",
+ "effort": "medium"
+}

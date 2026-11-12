@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "263bd7a89fbc536d8d86baf80d9bf6ff4c76a7e4c4e1bc65d7e0413ed3fdedb6",
+ "code_sha256": "c66ccc3a9799ab5ec5e0cd194c1d36810664670bb5e94234d1ca8a8eaa70383a",
+ "clean_code_sha256": "c66ccc3a9799ab5ec5e0cd194c1d36810664670bb5e94234d1ca8a8eaa70383a",
+ "prompt_sha256": "edf0590cac08289b349db0119ae7edd8a7d43c6799096064013a5deeeffe73a0",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block zeroes column 4488 of load_original L12 down_proj, saves it beside E4, and writes notes. 4488 was picked from activation statistics of fwd_20, a pass that ran E4, and from cosines between aggregate mean-write vectors. No per-sample candidate simulation chose 4488, 6176 or 6508, and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 5175,
+  "cache_read_input_tokens": 46994,
+  "output_tokens": 507,
+  "output_tokens_details": {
+   "thinking_tokens": 299
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5175,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 507,
+    "cache_read_input_tokens": 46994,
+    "cache_creation_input_tokens": 5175,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 5175
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.060946799999999995,
+ "t": 1794181949.3854709
+}

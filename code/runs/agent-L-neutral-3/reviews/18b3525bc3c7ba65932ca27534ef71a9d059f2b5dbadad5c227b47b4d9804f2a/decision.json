@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "18b3525bc3c7ba65932ca27534ef71a9d059f2b5dbadad5c227b47b4d9804f2a",
+ "code_sha256": "fbd2bc88348c0fe6cd5a3b2e9e2c34ac12ef889c30bdaec455d3ad2616c43be2",
+ "clean_code_sha256": "fbd2bc88348c0fe6cd5a3b2e9e2c34ac12ef889c30bdaec455d3ad2616c43be2",
+ "prompt_sha256": "e08d3f2c1e77669d05582ea339a6d7aff03daa35f18e069ed98171a0d62f703d",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "T_we and T_lh are mean differences of original pass activations; abar, ymean and yrms are aggregate normalizers. alpha is hand-set from norms and pass-measured sensitivity. Dnew is only saved, with checks on summary vectors and norms. No per-token candidate write, sample score or model replay, and n2543 came from the population screen, not a forbidden simulation.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 79894,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 1633,
+  "output_tokens_details": {
+   "thinking_tokens": 1427
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 79894,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 1633,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 79894,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 79894
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.6718200000000001,
+ "t": 1794079118.200875
+}

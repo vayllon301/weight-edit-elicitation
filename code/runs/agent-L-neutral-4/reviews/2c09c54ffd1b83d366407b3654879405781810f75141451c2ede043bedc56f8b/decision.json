@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "2c09c54ffd1b83d366407b3654879405781810f75141451c2ede043bedc56f8b",
+ "code_sha256": "411610d1002af56d9269c391dac3eb88036af638f24add346f9a7a619af2d626",
+ "clean_code_sha256": "411610d1002af56d9269c391dac3eb88036af638f24add346f9a7a619af2d626",
+ "prompt_sha256": "08c103a8a8d5009dc1afcd4e361c919a0e842eaa4a4b363e7b6c4d70e823e131",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "u is a mean-difference statistic (indirs['edit'] from block 130, fwd_36, a pass that ran C(-1.5)), orthogonalised to dclean. The rank-1 CI edit is hand-built with hand-set beta=1.5 and C(-1.5) was chosen by passes 11-13. The rel-norm is a weight statistic. Nothing is applied to stored per-sample activations.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 7165,
+  "cache_read_input_tokens": 56416,
+  "output_tokens": 433,
+  "output_tokens_details": {
+   "thinking_tokens": 225
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 7165,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 433,
+    "cache_read_input_tokens": 56416,
+    "cache_creation_input_tokens": 7165,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 7165
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.07727120000000001,
+ "t": 1794171635.1008499
+}

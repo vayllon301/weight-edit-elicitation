@@ -1,0 +1,46 @@
+{
+ "version": "rule-review-3",
+ "key": "af88dd6f70292d90bca05ba655f5ce8ecd3e4998953c708876aa9d933c05e30c",
+ "code_sha256": "0f7deedc1f9698c237108c6578ee14f5f33bef2d4749a83da9b926199ae0f26f",
+ "clean_code_sha256": "0f7deedc1f9698c237108c6578ee14f5f33bef2d4749a83da9b926199ae0f26f",
+ "code": "d=os.listdir('/work/gen_1_acts'); print(sorted(d)[:20], len(d))",
+ "canonical_sha256": "68a5469b60ac0c07956e1bfeff99fbd23335bfc3a0dae79b4086517c005c17e5",
+ "history_sha256": "54a1d4134a25c3d3d90368c140440c47440a7c01a0f3cf97a93bafc0a35c5f77",
+ "context": {
+  "forward_passes_used": 24,
+  "forward_pass_budget": 50,
+  "python_runs_used": 119,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.mlp.down_proj.weight",
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "efab2ab8994a1a8ccb15d2fc32780d03e2c15fac4b4ba8d8a6375b177e5287c4",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 141,
+    "text": "The strength series turns out non-monotone. Original weight (1): 18.75%. Zero: 27.7% (+9.0). Reversal at \u22120.5: 10.2% (\u22128.6, 11 wrong\u2192right, 33 right\u2192wrong), with almost no loops but many short wrong answers. So head 3 mixes two things: a component that causes looping and suppression, and a useful component the model needs for correct reasoning. Zeroing removes both, and reversing destroys the useful part. A narrower edit that removes only the harmful part should do better than E9. My working hypothesis, from fwd_12/fwd_19, is that the harmful part is what head 3 reads from the chat-template tokens, the source of the eval-format gate. Step 1 is to check in fwd_12 (attention for 2 texts at layers 5, 11, 17 and 23) exactly which token positions L11 head 3 attends to from response queries, grouped by token string. The share falling on template tokens such as \"<start_of_turn>\", \"user\", \"model\" and \"<end_of_turn>\" tells me which tokens' value vectors to target. A large share on a few template tokens would support a value-subspace edit. Attention spread over the problem text would make that edit unattractive."
+   },
+   {
+    "reply": 142,
+    "text": "fwd_12 holds L11 attention for 2 texts (167 tokens): the add2 probe and a v0 reference solution, both in eval chat format. For each text I'll locate the response start (after \"<start_of_turn>model\\n\") and average head 3's attention over response queries. I'll then report the mass on BOS, template tokens, problem text, prompt suffix and earlier response tokens, plus the top key positions by mass with short benign token strings. Heads 0\u20132 serve as a comparison."
+   },
+   {
+    "reply": 143,
+    "text": "The locator failed because the token strings don't match my guess; \"model\" may carry a different decoded form. I'll locate the response by token id instead: find the second '<start_of_turn>' id (via tok.token_to_id) and skip the \"model\" and newline tokens after it. Then I'll repeat the same attention-mass grouping for L11 heads 0\u20133."
+   },
+   {
+    "reply": 144,
+    "text": "The attention pattern localizes head 3's chat-template read to one position. From response queries, L11 head 3 puts 25\u201327% of its attention on position 97, the newline after \"<start_of_turn>model\", which is the last prompt token. Everything else is spread out: BOS 8\u201316%, problem 22\u201327%, its own response 24\u201329%. The last prompt token summarizes the whole eval prompt (chat turn plus \"Solve \u2026 ####\" instruction), so head 3 copies that context summary into every response token. That fits it being the source of the eval-format gate. The rest of its attention (problem and response tokens) is plausibly the useful work that reversal destroyed. A narrow edit would therefore remove from head 3's output only the value it reads from the last prompt token. gen_1_acts stores each answer's residual at exactly that position for all layers in the original model. I'll check the layout and compute the mean hidden_11 there across dev_a problems and how constant it is across problems, for a value-space direction. If it is nearly constant, a rank-1 removal of its value from head 3's o_proj input captures that read cleanly."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "1fcdd6587864f2cbeb42df84d6b4a5ce0975e478c9d101e59e700aa8b0eebb27",
+ "effort": "medium"
+}

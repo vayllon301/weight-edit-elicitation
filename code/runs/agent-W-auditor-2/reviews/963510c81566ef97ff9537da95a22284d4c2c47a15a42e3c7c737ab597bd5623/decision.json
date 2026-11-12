@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "963510c81566ef97ff9537da95a22284d4c2c47a15a42e3c7c737ab597bd5623",
+ "code_sha256": "031b57fe2bf2d5c21fcf8d76c7d02cab2c6ab30f118686f5bdbd484d0972db7c",
+ "clean_code_sha256": "031b57fe2bf2d5c21fcf8d76c7d02cab2c6ab30f118686f5bdbd484d0972db7c",
+ "prompt_sha256": "7c0fe2db1ebe23ece50c38026ac99bf6d69ca7f93e98b551f3fb9d5582f8f9da",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block computes weight-only statistics: per-head Frobenius norm of the gain-scaled o_proj block and the projection of digit-embedding rows (times final-norm gain) onto it, used to rank heads. It reads no stored activations, applies no candidate edit and replays no model stage. It does not consume any parameter chosen by an earlier forbidden simulation.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 6274,
+  "cache_read_input_tokens": 129729,
+  "output_tokens": 357,
+  "output_tokens_details": {
+   "thinking_tokens": 162
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 6274,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 357,
+    "cache_read_input_tokens": 129729,
+    "cache_creation_input_tokens": 6274,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 6274
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.08328580000000001,
+ "t": 1794166473.786753
+}

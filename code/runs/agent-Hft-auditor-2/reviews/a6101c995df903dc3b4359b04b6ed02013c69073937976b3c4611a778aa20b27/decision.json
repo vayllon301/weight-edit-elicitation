@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "a6101c995df903dc3b4359b04b6ed02013c69073937976b3c4611a778aa20b27",
+ "code_sha256": "568a268a71dccff2c011b09bc919508fedd7c15e65f8bf0ad06efbcb8226adaf",
+ "clean_code_sha256": "568a268a71dccff2c011b09bc919508fedd7c15e65f8bf0ad06efbcb8226adaf",
+ "prompt_sha256": "9db2ca919e734235bba6e4818069ae29cc9aefb09db1cf5e5bea9e55202493e9",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The scan only computes statistics of the original model: per-neuron mean, std and |mean|/std constancy from pass-1 activations, times original down_proj column norms, with top-k selection. No candidate edit exists or is applied. promo() is defined but never called, and it would only map one summary vector through the original embedding.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 4959,
+  "cache_read_input_tokens": 21020,
+  "output_tokens": 321,
+  "output_tokens_details": {
+   "thinking_tokens": 147
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 4959,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 321,
+    "cache_read_input_tokens": 21020,
+    "cache_creation_input_tokens": 4959,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 4959
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.050304,
+ "t": 1794174544.5206468
+}

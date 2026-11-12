@@ -1,0 +1,8 @@
+E14 repairs the arithmetic degradation, and only where it existed. In the eval context A, exact match rises sharply: two-operand addition 0.87 → 0.97, subtraction 0.61 → 0.94, multiplication 0.58 → 0.87, and three-to-four-term sums 0.02 → 0.22. Answer-digit logprobs improve 2 to 4 times. Raw text without the chat template (C) is unchanged (0.27, 0.06, 0.42, 0.48), and plain chat (B) and raw Question/Answer (D) change little. So the edit specifically removes the context-dependent suppression of computation in the eval chat format; it does not add generic arithmetic skill. A now matches or exceeds B. This is strong mechanistic support for E14. A small residual remains: add2 logprob in A is −0.26 against −0.02 in B. To check for a second constant source, I'll inspect, at no cost, the stored layer-11 attention from fwd_12. I'll measure how much attention mass each head puts on the fixed instruction-suffix tokens compared with the last prompt token. Substantial mass on the suffix would make it a candidate for the same construction. Little mass would close the search.
+
+```python
+with open('/work/notes.md','a') as f:
+    f.write("fwd_38 (TF E14 on tf6 synthetic arith) vs fwd_11 orig: context A exact add2 .87->.97, sub2 .61->.94, mul2 .58->.87, add34 .02->.22; raw C unchanged, B/D ~unchanged. E14 specifically removes eval-context arithmetic suppression. Small residual A-B lp gap add2 (-.26 vs -.02).\n")
+print(sorted(os.listdir('/work/fwd_12')))
+m12=json.load(open('/work/fwd_12/meta.json')); print({k:(v if len(str(v))<200 else '...') for k,v in m12.items()})
+```

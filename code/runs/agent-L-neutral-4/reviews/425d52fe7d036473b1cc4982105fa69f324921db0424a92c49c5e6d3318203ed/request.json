@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "425d52fe7d036473b1cc4982105fa69f324921db0424a92c49c5e6d3318203ed",
+ "code_sha256": "11b208a68ac5e1bc3d127a64dfed271dccf63c6010df53f576e5d950f4bd236a",
+ "clean_code_sha256": "11b208a68ac5e1bc3d127a64dfed271dccf63c6010df53f576e5d950f4bd236a",
+ "code": "lp9=np.load('/work/fwd_9/token_logprobs.npy'); lp3=np.load('/work/fwd_3/token_logprobs.npy')\ndef dl(lst): return np.array([lp9[i,q]-lp8[i,q] for i,q in lst])\ndo,dn,di=dl(onset),dl(novel),dl(inloop)\nfin_idx=[i for i,mm in enumerate(meta) if mm['src']=='g1fin']\ndfin=np.mean([np.nanmean(lp9[i,plen[i]:lens8[i]-1]-lp8[i,plen[i]:lens8[i]-1]) for i in fin_idx])\ndref=[]\nfor k,t in enumerate(refs):\n    p=len(tok.encode(t.split('<start_of_turn>model\\n')[0]+'<start_of_turn>model\\n').ids)-1\n    n=len(tok.encode(t).ids)-1\n    dref.append(np.nanmean(lp9[450+k,p:n-1]-lp3[148+k,p:n-1]))\nprint(dict(onset_mean=round(do.mean(),3),onset_median=round(np.median(do),3),novel_first=round(dn.mean(),3),inloop=round(di.mean(),4),\n           finished_answer_tok=round(float(dfin),4),refs_answer_tok=round(float(np.mean(dref)),4),\n           onset_P_before=round(float(np.exp(lp8[[i for i,_ in onset],[q for _,q in onset]]).mean()),3),\n           onset_P_after=round(float(np.exp(lp9[[i for i,_ in onset],[q for _,q in onset]]).mean()),3)))",
+ "canonical_sha256": "d6edeffc4637b159af23eb8ea2e5c9851af73f7dc8e3faa349e58b63e0d0c1c8",
+ "history_sha256": "74519a9d8b7e98ffbf150b52ca8e4ffd988d4456018533c80773759ebfb1546a",
+ "context": {
+  "forward_passes_used": 9,
+  "forward_pass_budget": 50,
+  "python_runs_used": 46,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "ce7146f2fd80ec2f4d10f271f7ad033eed532e2c32332941d7d35799af8cb5e0",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 54,
+    "text": "The onset direction survives the position control. Within position bins the onset-versus-novel separation stays at d \u2248 0.7-1.1, and 2.7 in the latest bin. These are in-sample values, but the earlier cross-validated d was 1.3. It is also specific to onsets:\n- novel newlines in looping texts sit at only +0.13 SD above finished texts, so it isn't \"this is a stuck problem\";\n- in-loop newlines sit at +0.57 SD, onsets at +1.0.\n\nSo it marks the decision to start restating an earlier line. (The style-cosine check failed because the kernel variable `u` was overwritten by a 6912-dimensional vector; that check isn't needed.)\n\nTo decide which layers' writes to remove, I'll compute from weights only how strongly each layer's o_proj and down_proj can write along the direction, in post-norm-adjusted form, relative to a random direction. I'll also check how stable the direction is across layers 16, 20 and 23. Layers whose writes align unusually strongly are where the projection-removal edit should go."
+   },
+   {
+    "reply": 55,
+    "text": "The direction is not written by any single layer. Every layer's alignment ratio is between 0.84 and 1.85 of a random direction, so it is a composite feature rather than one component's output. It changes substantially between layers 16 and 20 (cosine 0.37) and persists to layer 23 (cosine 0.81), so layers 16 to 22 assemble and carry it.\n\nThe edit I'll test is L(\u03b2): in o_proj and down_proj of layers 16 to 22, W \u2190 W \u2212 \u03b2\u00b7v v\u1d40W. Here v is the layer-20 onset direction, multiplied elementwise by (1 + that layer's post-norm weight) and normalized, so that each layer's write along it is removed after the post-norm. \u03b2 = 1 removes the write; larger \u03b2 reverses it.\n\nTo isolate its effect I'll test it alone: S is dropped, but stays saved in /work/best_S1. The screen is one teacher-forced pass on the 450 onset texts plus 300 DEV reference solutions. If the edit targets the loop decision, the onset first-token logprob should fall clearly, by more than 0.3 nats. Novel-line and reference logprobs should change by less than about 0.02 nats per token. If the onset logprob barely moves, or the references degrade as much as the onsets, the direction is not a clean lever."
+   },
+   {
+    "reply": 56,
+    "text": "Edit L(1.0) is saved: 14 tensors, the o_proj and down_proj of layers 16 to 22. S is dropped and remains backed up (8 files in /work/best_S1). The screen set is 750 texts (about 360k tokens): the 450 onset texts plus 300 DEV reference solutions. I'll compare the onset first-token logprobs with the original's from pass 8, and the reference logprobs with pass 3. A clear drop at onsets (more than 0.3 nats) with little change on references (less than 0.02 nats per token) would make L a candidate for generation."
+   },
+   {
+    "reply": 57,
+    "text": "Pass 9 is done. The per-text mean logprobs fell by about 0.02 nats per token, which is the damage budget I set, so the targeted measurement decides. I'll compare, per position, edited (pass 9) against original (pass 8). The groups are onset first tokens, novel-line first tokens, in-loop tokens, and all answer tokens of finished answers. For the 300 references I'll compare against pass 3 over answer tokens only.\n\nThe edit is a usable lever if the onset logprob falls much more than the novel-line logprob (selectivity) and the answer-token damage stays around 0.02 or below. If onset and novel first tokens fall by similar amounts, it's a generic line-start perturbation and I'd drop it."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "e34f8a9bf51ca8d7ecd69cbe0f0de94e83b0f3e24a5e449bb2ddd76ba68d9bb9",
+ "effort": "medium"
+}

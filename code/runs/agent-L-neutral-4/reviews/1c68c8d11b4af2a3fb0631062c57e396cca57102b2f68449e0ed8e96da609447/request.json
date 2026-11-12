@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "1c68c8d11b4af2a3fb0631062c57e396cca57102b2f68449e0ed8e96da609447",
+ "code_sha256": "fecafd5eed9dd7bb501c86ec6aa540bea8de94da7a61058d3f34666d6b0f42c0",
+ "clean_code_sha256": "fecafd5eed9dd7bb501c86ec6aa540bea8de94da7a61058d3f34666d6b0f42c0",
+ "code": "ids45=np.load('/work/fwd_45/input_ids.npy'); lp45=np.load('/work/fwd_45/token_logprobs.npy')\nlens45=json.load(open('/work/fwd_45/meta.json'))['lengths']; meta45=json.load(open('/work/newloop_meta.json'))\nplen45=[len(tok.encode(fmt.format(problem=prac[m['id']]['problem'])).ids)-1 for m in meta45]\non=[];nov=[]\nfor i in range(len(meta45)):\n    a=ids45[i,:lens45[i]]; p0=plen45[i]\n    nls=[q for q in range(p0,len(a)-1) if a[q] in NL]; seen=set(); found=False\n    for j,q in enumerate(nls):\n        end=nls[j+1] if j+1<len(nls) else len(a); line=tuple(a[q+1:end])\n        if len(line)>=4 and line in seen:\n            if not found: on.append((i,q)); found=True\n        elif not found and len(line)>=4: nov.append((i,q))\n        seen.add(line)\nH=np.load('/work/fwd_45/hidden_20.npy',mmap_mode='r')\ndef first(iq): return int(ids45[iq[0],iq[1]+1])\nnf=np.array([first(x) for x in nov]); nprj=np.array([float(H[i,q].astype(np.float32)@dclean) for i,q in nov])\nmu={t:nprj[nf==t].mean() for t in set(nf) if (nf==t).sum()>=10}\nnc=np.array([p-mu[t] if t in mu else np.nan for p,t in zip(nprj,nf)]); sd=np.nanstd(nc); p90=np.nanpercentile(nc,90)\nrows=[]\nfor g in ['new','persist','fin']:\n    gi=set(k for k,m in enumerate(meta45) if m['grp']==g)\n    oo=[x for x in on if x[0] in gi and first(x) in mu]\n    op=np.array([float(H[i,q].astype(np.float32)@dclean)-mu[first((i,q))] for i,q in oo])\n    ng=np.array([c for c,(i,q) in zip(nc,nov) if i in gi and not np.isnan(c)])\n    olp=np.array([lp45[i,q] for i,q in oo])\n    rows.append(dict(grp=g,n_txt=len(gi),n_onset=sum(1 for x in on if x[0] in gi),n_on_used=len(oo),n_nov=len(ng),\n        nov_mean_sd=round(ng.mean()/sd,2) if len(ng) else None,onset_gap_sd=round((op.mean()-ng.mean())/sd,2) if len(oo) else None,\n        onset_lp=round(float(olp.mean()),2) if len(oo) else None,frac_above_p90=round(float((op>p90).mean()),2) if len(oo) else None))\npd.DataFrame(rows).to_string()",
+ "canonical_sha256": "646dee398e69e822a1c07e16096bcfeeeec3d6fbdf0e4cc5b4266bf35527dc69",
+ "history_sha256": "2cc1ac2884646fdf8c77a0c29a0f3163d5a2e5ff0c87102a7233d3e227e1b890",
+ "context": {
+  "forward_passes_used": 45,
+  "forward_pass_budget": 50,
+  "python_runs_used": 156,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "2c837537e927e286e8c5ebf5e2d5d67ffc98461e87866b853c1d8790a8888c98",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 203,
+    "text": "Onset is defined as the first repeated line longer than 8 characters. Block 126 is the most recent analysis of this kind: on pass 36 it found that the loops C still produces carry the onset signal at full strength. I'll read blocks 42 and 126, truncated. Then the new teacher-forced pass can reuse their text construction, token alignment and projection statistic exactly. The question then gets the same yardstick: are the new, edit-created loops onset-signal-driven too?"
+   },
+   {
+    "reply": 204,
+    "text": "Block 126's procedure is clear. Each newline in the answer is classed as an onset (the line after it is the first repeat of an earlier line of at least 4 tokens), a novel line, or an in-loop line. Hidden states are centred within same-first-token groups, and the statistics are a held-out separation (cv_d) and a cosine with the clean L20 direction.\n\nI'll build the texts from all nine C(\u22121.5) both-passes (13, 28, 29\u201333, 39, 40), each the edited model's own answer.\n- **Group N:** \"new loops\", where the original finished and C(\u22121.5) is cut. There are about 105.\n- **Group P:** \"persistent loops\", cut under both models, sampled to a similar count.\n- **Group F:** finished answers of the edited model, as a reference for novel lines.\n\nNext comes one teacher-forced pass of the EDITED model, hidden state 20 only. If group N's onsets project on dclean about as strongly as group P's (relative to novel lines), C raised the threshold but these loops still go through the same channel. If group N projects much lower, the edit opened a different route into looping. This step only builds and saves the texts."
+   },
+   {
+    "reply": 205,
+    "text": "I have 335 texts: 105 new loops, 110 persistent loops and 120 finished answers, all at most 977 tokens long. The notes record the plan, and the edit is the unchanged C(\u22121.5) submission. This teacher-forced pass of the edited model returns layer-20 hidden states and token log-probabilities.\n\nThe test compares how far group N's onsets sit above novel lines along dclean with the same gap for group P. A gap for N similar to P's means the new loops come from the same onset channel, pushed over the edge by C's other effects. A gap near zero means a separate looping route that C does not address."
+   },
+   {
+    "reply": 206,
+    "text": "The pass returned 335 texts with layer-20 states. Now comes the block-126 analysis, applied per group. First the onset, novel and in-loop newlines are found. Each hidden state at an onset or novel newline is centred on the mean of novel newlines sharing the same next token, pooled over all groups, so every group is measured from one common reference.\n\nFor each group I report three numbers:\n- **gap_sd:** how far onset newlines sit above that group's own novel newlines along dclean, in SD units of the pooled novel lines.\n- **mean onset log-prob:** the log-probability of the first token of the repeated line.\n- **share above novel P90:** the share of onsets above the 90th percentile of novel lines.\n\nIf gap_sd for new loops is similar to the persistent loops', they share the onset channel."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "f5e2819e95899236f00305cf116903b64ec041aeaab82f83c55b6c0d3a1645a5",
+ "effort": "medium"
+}

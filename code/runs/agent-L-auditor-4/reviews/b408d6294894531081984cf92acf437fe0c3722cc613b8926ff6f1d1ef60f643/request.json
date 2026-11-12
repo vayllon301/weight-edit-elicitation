@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "b408d6294894531081984cf92acf437fe0c3722cc613b8926ff6f1d1ef60f643",
+ "code_sha256": "52dbd331ca3c4f28ff56e260a8172aac4fc5cb1db776f685a581ce2587c9f575",
+ "clean_code_sha256": "52dbd331ca3c4f28ff56e260a8172aac4fc5cb1db776f685a581ce2587c9f575",
+ "code": "acc={l:{'D':np.zeros(1152),'N':np.zeros(1152),'nD':0,'nN':0,'rn':0.0,'cnt':0} for l in layers}\nalign={}\nfor i,pv in pairs.items():\n    m0,pl0,L0=pv[0]; m3,pl3,L3_=pv[3]; n=min(L0-pl0,L3_-pl3)\n    r=np.arange(1,n)\n    t0=L0-r; t3=L3_-r\n    good=(ids9[m0,t0]==ids9[m3,t3])&(ids9[m0,t0-1]==ids9[m3,t3-1])\n    align[i]=(m0,t0[good]-1,m3,t3[good]-1,np.isin(ids9[m0,t0[good]],list(digit_ids)))\nfor l in layers:\n    H=np.load(d9+f'hidden_{l}.npy',mmap_mode='r'); a=acc[l]\n    for i,(m0,p0,m3,p3,isd) in align.items():\n        h0=H[m0,p0].astype(np.float32); h3=H[m3,p3].astype(np.float32); dif=h0-h3\n        a['D']+=dif[isd].sum(0); a['nD']+=isd.sum(); a['N']+=dif[~isd].sum(0); a['nN']+=(~isd).sum()\n        a['rn']+=np.linalg.norm(h3,axis=1).sum(); a['cnt']+=len(p0)\nDl={};Nl={}\nfor l in layers:\n    a=acc[l]; D=a['D']/a['nD']; N=a['N']/a['nN']; rn=a['rn']/a['cnt']; Dl[l]=D; Nl[l]=N\n    print(l,'nD',a['nD'],'nN',a['nN'],'|D|',round(np.linalg.norm(D)/rn,3),'|N|',round(np.linalg.norm(N)/rn,3),'|D-N|',round(np.linalg.norm(D-N)/rn,3),'cos',round(D@N/(np.linalg.norm(D)*np.linalg.norm(N)+1e-9),3))",
+ "canonical_sha256": "2aa0c7698c60c8951b22e366ccd25cbe096c9a0a120c4d90d4405089f4ca137b",
+ "history_sha256": "f7357b9846d34a37abe15cab42a92beb306352cf9429bb6607bc2a3f46692669",
+ "context": {
+  "forward_passes_used": 9,
+  "forward_pass_budget": 50,
+  "python_runs_used": 44,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 51,
+    "text": "Every layer returned NaN, so something in the data or the indexing is wrong. There are two likely causes. My position pairing may run into right-padding (NaN by design), or some float16 activations may be infinite, since Gemma residual streams have very large outlier dimensions. I'll count non-finite values in the paired slices and check the pairing lengths before redoing the statistic with masking."
+   },
+   {
+    "reply": 52,
+    "text": "The pairing was slightly off. In this example the v0 solution has 68 tokens and the v3 one 67, probably because the chat version ends with an end-of-turn token. For other problems the slice then runs into right-padding, which is NaN. Residual values reach about 45,800, close to the float16 limit but finite. I'll pair over the common length min(n0, n3), skip any non-finite rows, and recompute the per-layer digit-specific v0 \u2212 v3 difference."
+   },
+   {
+    "reply": 53,
+    "text": "The layer-0 result shows the pairing is still wrong. Hidden state 0 is the token embedding, so if v0 and v3 were paired on identical tokens, the difference there would be exactly zero, not 0.48 of the residual norm. The solution tokens must be offset by one or more positions between the two formats, or the prompt-length field `pl` is defined differently from what I assumed. I'll print the decoded tokens around `pl` for one v0/v3 pair and find the true offset at which their solution tokens match."
+   },
+   {
+    "reply": 54,
+    "text": "The pairing bug is now clear. In the chat format the solution begins at `pl-1`, with \"She\" (no leading space), while in the raw format it begins at `pl-2`, with \" She\" after \"Answer:\". The first token differs and the offsets don't match. Both texts end with identical tokens, so I'll align from the end. I'll pair position t0 = L0 \u2212 r with t3 = L3 \u2212 r and keep only positions where both the input token and the target token match. As a check, the layer-0 difference must then be zero. With that I'll recompute the per-layer digit-specific v0 \u2212 v3 difference."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "263d50af5939db08f48bde722f0324258494305bd6d6a2b15a9d52533fdcaf87",
+ "effort": "medium"
+}

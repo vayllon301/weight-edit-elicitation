@@ -1,0 +1,46 @@
+{
+ "version": "rule-review-3",
+ "key": "b11ae786d176b64e87cd862f56626051fa6450dca2d22304e9b50f27e0bea9b2",
+ "code_sha256": "f55d0e9e7f9ccf6e2628c933ed7732097507dcc9b370d42ee62796a926e721c7",
+ "clean_code_sha256": "f55d0e9e7f9ccf6e2628c933ed7732097507dcc9b370d42ee62796a926e721c7",
+ "code": "O=load_original('model.layers.11.self_attn.o_proj.weight').clone(); O[:,768:1024]*=-0.5\nsave_edit('model.layers.11.self_attn.o_proj.weight',O)\nwith open('/work/notes.md','a') as f:\n    f.write(\"Pass 24 edit E10 (strength test): E4 + model.layers.11.self_attn.o_proj cols 768:1024 multiplied by -0.5. GEN both dev_b[:256]. E9 in best_2.\\n\")\nedited()",
+ "canonical_sha256": "f70c7dad7979d14fdeff280e0059e178d55383fbd4f5c95a26d75e78bbd72440",
+ "history_sha256": "698a0068e6b14e32d6a2677ea17000ebc5bb5b6ba1d597fdbee0481c0f2f0544",
+ "context": {
+  "forward_passes_used": 23,
+  "forward_pass_budget": 50,
+  "python_runs_used": 115,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.mlp.down_proj.weight",
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "958f128de87adbe76265042c38b969af845532c556d69d94b0e8c4db75f16fb5",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 136,
+    "text": "E8 gained +3.5 \u00b1 2.5 on dev_b[:256], no better than E4 alone on the same problems (+4.7). The extra head-3-driven units 3704, 2377 and 4739 don't add anything. Together with E7 (+1.6), this shows that widening the neuron-level gate beyond 6176/6508 doesn't pay, so I'm closing that line and restoring E4. One lesson from earlier changes how I should read old results. E2 (zeroing 6176 alone) slightly lowered reference-solution logprob, yet E4 raised accuracy, so solution logprob is a poor proxy here. That reopens the head-level test I had judged only by logprob. Layer-11 head 3 is the upstream source of the gate: zeroing it switched 6176/6508 off, and it attends to the chat tokens. Its whole-head ablation cost 0.19 nats of logprob, but its effect on accuracy was never measured. I'll restore E4 now, record everything, and next test E9 = E4 + L11 head 3 zeroed by generation. A gain well above E4's would identify head 3 as the gate's source, with further effects beyond the two neurons, and I would then refine it to a narrower edit. A loss would confirm that the head is needed and close the line."
+   },
+   {
+    "reply": 137,
+    "text": "E9 is in place: E4 plus head 3 of layer 11 zeroed in o_proj. I'll run the paired generation on dev_b[:256]. If the gain is clearly above +4.7, head 3 carries more of the suppression than the two neurons it drives. If the result is near zero or negative, the head's general function outweighs whatever gate signal it carries."
+   },
+   {
+    "reply": 138,
+    "text": "E9 is the first large effect: +9.0 \u00b1 2.85 points on dev_b[:256] (39 wrong\u2192right, 16 right\u2192wrong), about twice E4's gain on the same problems. Cut-offs fall from 66 to 10 and mean length from 345 to 187 tokens. Head 3 of layer 11, the full-attention head that reads the chat-template tokens and switches on the 6176/6508 gate, therefore carries much of the suppression itself, beyond what flows through those two neurons. Its logprob cost was misleading about its effect on accuracy. I'll save E9 as /work/best_2. I'll also quantify how the edited answers differ: accuracy among finished answers, marker use, length, and a short example of a wrong\u2192right pair. Then I'll test strength. The method asks for several strengths, and reversal (head 3 \u00d7 \u22120.5) tells me whether the effect is monotone along this component; a partial scale such as 0.5 would show whether a milder cut keeps the gain. If reversal helps further, the head is a pure suppressor. If it hurts, zero (or partial removal) is near the optimum."
+   },
+   {
+    "reply": 139,
+    "text": "The gain has two sources. The edited model loops far less (finished answers rise from 187 to 246 of 256), and it is more accurate on the answers it finishes (24.1% \u2192 28.9%). The wrong\u2192right example shows the pattern. The original spirals into a loop with absurd numbers (\"$45000000 * 3\"), while the edited model solves the problem in two clean steps. So head 3 of layer 11 drives both runaway looping and worse reasoning in eval-format math. Next is the strength test. E10 = E4 + head 3's o_proj columns \u00d7 \u22120.5, a partial reversal, on the same dev_b[:256]. If reversal beats zeroing, the head's contribution acts as a pure suppressor and the effect is monotone along it. If it is clearly worse than E9, zero is near the optimum (as with the neurons, where reversal hurt), and I'll keep removal and look for a narrower version of it."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "f79e3fcf6f58669e4fb6e3199f63fcac8ec1c59d0cfe5efc23d95cbb23e5d300",
+ "effort": "medium"
+}

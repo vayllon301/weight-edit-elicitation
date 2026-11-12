@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "c6f884491b5f439456a4f209e6a1e075fed57ce6e2f5122a73ddaf779cc03888",
+ "code_sha256": "a215b918bbd433f79aba63646ad77aec5f775bf7aed4d5b0b9b377041f51acda",
+ "clean_code_sha256": "a215b918bbd433f79aba63646ad77aec5f775bf7aed4d5b0b9b377041f51acda",
+ "prompt_sha256": "6b1eee55f84668c8cda2c1ae3d563b1d11842eaf2d338af6d9f302e690349245",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only prints the source of the stats and load_fwd functions and reads stored block files to find where CL was assigned. It computes nothing on activations, applies or scores no edit, and does not run the model. No edit is saved.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 167048,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 148,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 167048,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 148,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 167048,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 167048
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 1.339352,
+ "t": 1794094623.863263
+}

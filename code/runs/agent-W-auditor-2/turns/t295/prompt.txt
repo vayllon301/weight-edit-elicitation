@@ -1,0 +1,21 @@
+OUTPUT of Python run 246 of at most 300:
+```
+def screen(k):
+    lpE=np.load(f'/work/fwd_{k}/token_logprobs.npy', mmap_mode='r'); tkE=np.load(f'/work/fwd_{k}/topk_ids.npy', mmap_mode='r')
+    out={}
+    for c in ['op1','res','final','all']:
+        d=[];t1e=[];t1o=[]
+        for i in range(400):
+            ps=CATPOS[i].get(c,[])
+            if not ps: continue
+            ps=np.array(ps)
+            d.append(np.mean(lpE[i,ps-1].astype(np.float64)-lp3[i,ps-1].astype(np.float64)))
+            t1e+=list(tkE[i,ps-1,0]==ids3[i,ps]); t1o+=list(tk3[i,ps-1,0]==ids3[i,ps])
+        out[c]=(round(float(np.mean(d)),4), round(float(np.std(d)/np.sqrt(len(d))),4), f"top1 {np.mean(t1o):.3f}->{np.mean(t1e):.3f}")
+    for nmx,rng in [('own',range(nm)),('nonmath',range(nm,len(T2)))]:
+        d=[np.mean(lpE[400+j,PLall[j]-1:LN[j]-1].astype(np.float64)-lp2[j,PLall[j]-1:LN[j]-1].astype(np.float64)) for j in rng]
+        out[nmx]=(round(float(np.mean(d)),4), round(float(np.std(d)/np.sqrt(len(d))),4))
+    return out
+
+
+```

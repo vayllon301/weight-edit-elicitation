@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "9a9699863fcedfa5b3e7f216618475c53bd41dbf991ab1c791a583cf61234cd8",
+ "code_sha256": "089fbd21073d98b890ffc495c6cd52475eb745497cf47b98f1a0437a5b20a306",
+ "clean_code_sha256": "089fbd21073d98b890ffc495c6cd52475eb745497cf47b98f1a0437a5b20a306",
+ "prompt_sha256": "87685014abe87d505d15bacafb1148adea9e7c102987ef39de82a96b50ef61f5",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block takes per-position differences of logprobs and dclean projections between fwd_45 (the C(-1.5) edit, which a pass ran) and fwd_46 (original). These are statistics of returned activations, used to read what an edit a pass ran did. No unpassed candidate is applied to samples, no model stage is replayed, and no forbidden-selected parameter is reused.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 8701,
+  "cache_read_input_tokens": 67708,
+  "output_tokens": 496,
+  "output_tokens_details": {
+   "thinking_tokens": 296
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 8701,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 496,
+    "cache_read_input_tokens": 67708,
+    "cache_creation_input_tokens": 8701,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 8701
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.09307760000000001,
+ "t": 1794172642.573867
+}

@@ -1,0 +1,53 @@
+OUTPUT of Python run 80 of at most 300:
+```
+30 |  | gate_proj,up_proj,down_proj
+31 | # signed combined write along w (mean act * column projection on w) | down_proj,svd,linalg.svd
+32 |  | gate_proj,up_proj,pre_feedforward_layernorm,svd,linalg.svd
+33 |  | q_proj,o_proj,gate_proj,up_proj,down_proj,attn
+34 |  | gen_1_acts,corr,auc
+35 |  | G1,G4,G5
+36 | # reconstruct numbers in solution: classify digit token by whether the full number contain | 
+37 |  | q_norm,k_norm,post_attention_layernorm,pre_feedforward_layernorm,post_feedforward_layernorm,input_layernorm,attn,corr
+38 |  | gate_proj,up_proj,down_proj,post_attention_layernorm,pre_feedforward_layernorm,svd,linalg.svd,attn
+39 |  | q_proj,k_proj,v_proj,o_proj,attn
+40 |  | svd,linalg.svd,corr,kurt
+41 |  | 
+42 |  | 
+43 |  | gate_proj,up_proj,down_proj,svd,linalg.svd,G1,G5,gen_1_acts
+44 |  | up_proj,down_proj,pre_feedforward_layernorm,svd,linalg.svd,G1,G4,G5
+45 |  | gate_proj,up_proj,pre_feedforward_layernorm,input_layernorm
+46 |  | gate_proj,up_proj,pre_feedforward_layernorm,input_layernorm
+47 |  | input_layernorm,svd,linalg.svd
+48 |  | o_proj,down_proj,post_attention_layernorm,post_feedforward_layernorm,attn,save_edit
+49 |  | corr
+50 |  | corr
+51 |  | down_proj,gen_1_acts
+52 |  | G1,G4,G5
+53 |  | G1,G4,G5
+54 |  | down_proj,G1,G4,G5,fwd_6,gen_1_acts
+55 |  | down_proj,G1,G4,G5,gen_1_acts
+56 |  | G5,corr
+57 |  | G1,G5,attn,corr
+58 |  | fwd_7,attn
+59 |  | 
+60 |  | corr
+61 |  | corr
+62 |  | 
+63 |  | 
+64 |  | input_layernorm
+65 |  | up_proj,svd,linalg.svd
+66 |  | corr
+67 |  | corr
+68 |  | q_norm,k_norm,attn
+69 |  | down_proj,post_attention_layernorm,post_feedforward_layernorm,input_layernorm,kurt
+70 |  | post_attention_layernorm,input_layernorm
+71 |  | 
+72 |  | q_norm,k_norm,post_attention_layernorm,pre_feedforward_layernorm,post_feedforward_layernorm,input_layernorm,attn
+73 |  | 
+74 |  | 
+75 |  | 
+76 |  | 
+77 | # example of a bad equation in D1 and orig | corr
+78 |  | 
+
+```

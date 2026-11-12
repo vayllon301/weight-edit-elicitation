@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "e25d0df4d89b723545b3cf70b2cbcc0e8a26103ad398348aeed162b83a4b1cc5",
+ "code_sha256": "afc881a71e97359d762ce3c7455c155532c0c764727a83f1531cd2cf199ed95a",
+ "clean_code_sha256": "afc881a71e97359d762ce3c7455c155532c0c764727a83f1531cd2cf199ed95a",
+ "code": "ids_here = tok.encode(\"Here\").ids; ids_let = tok.encode(\"Let\").ids\nG_first = collections.Counter(tok.encode(g['text']).ids[0] for g in G)\n(ids_here, ids_let, [(k, tok.decode([k]).encode('ascii','replace').decode(), v) for k,v in G_first.most_common(6)])",
+ "canonical_sha256": "d09d003501f5097005b0534925edd79054648b1dfdcb5da46c8a8967bad4177a",
+ "history_sha256": "2afb27e2a7e3a10f66c5079d5df4e75190133f24b2894b3dc775c0ae9e3f3084",
+ "context": {
+  "forward_passes_used": 4,
+  "forward_pass_budget": 50,
+  "python_runs_used": 22,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 25,
+    "text": "These wrong answers fail at the setup, not the arithmetic. The model binds quantities to the wrong things: \"15 minutes/turkey\" where the problem says per pound, multiplying miles per gallon by \"3 cars\", forgetting the \u00d77 for a week, and \"needs 3 cups and has 3 cups\". These binding errors are heterogeneous and hard to pin to one component. The more tractable lever may be the response mode chosen at the first answer token. The model runs either an instruction-style markdown mode (\"Here's how to solve...\") or a pretraining-like LaTeX mode (\"Let $X$ be...\"), and the plain mode is noticeably more accurate when it finishes (37% vs 25%). Style may simply correlate with problem type, though. So I'll stratify by difficulty, using the number of steps in the reference solution as a proxy, and compare the two styles' accuracy within strata. I'll also check how strongly the last-prompt-token state predicts style, to see whether a single decision direction exists. A consistent plain-over-markdown advantage within strata, with an early, clean style decision, would make style steering worth a causal test. No advantage within strata would mean the gap is problem selection, and I'd drop the idea."
+   },
+   {
+    "reply": 26,
+    "text": "Within every difficulty stratum, plain-style answers are more accurate than markdown-style ones: 39 vs 34% at 2 steps, 30 vs 17% at 3, 23 vs 12% at 4, and 12 vs 2% at 5+. The plain advantage averages around 9 points, so it is not just problem selection, though causality still needs a steering test. The style is largely decided before the first answer token: a difference-of-means direction on the last-prompt-token state separates the styles with AUC 0.78 at layer 5, rising to 0.97 by layer 15 and 0.99 by layer 20. That pins the decision to the middle layers. To find the components that make it, I'll look at MLP neurons at the last prompt token. For each neuron I'll compute its activation difference between plain and markdown problems (standardized), and the alignment of its write direction (post_feedforward_layernorm weight times its down_proj column) with the style direction in the residual after that layer. Neurons with a large activation difference and a strongly aligned write, concentrated in a few layers, would be the style switch. Scaling them is a clean, targeted intervention to test at several strengths."
+   },
+   {
+    "reply": 27,
+    "text": "Neuron-level attribution of the style decision is diffuse: no handful of neurons dominates, and scores are small and spread across layers. As with the loop neurons, the decision looks distributed, so a residual-direction intervention fits better than neuron ablation. Gemma's post-attention and post-feedforward RMSNorms mean that a sublayer's write along a residual direction d equals the component of its pre-norm output along d \u2299 (1+w), divided by the RMS. So \"remove or reverse direction d in this layer's output\" can be built exactly at the pre-norm level by projecting d \u2299 (1+w) out of o_proj or down_proj. First I need to know which layers write the style direction. I'll take the unit style direction at layer 20, where separation is near-perfect. Then, at the last prompt token, I'll measure each layer's residual update along it (overall mean and plain-minus-markdown difference). A few layers with large differential writes would be the targets for a reversal or projection edit, tested causally at several strengths. If the write is spread evenly across all layers, a single-layer edit won't work and I'd need a multi-layer one."
+   },
+   {
+    "reply": 28,
+    "text": "The style decision is written late and concentrated. Along the layer-20 style direction, layers 16, 17, 18 and 19 each add a large plain-minus-markdown difference (about 105, 148, 149 and 178, against single digits for most other layers). Separation jumps from AUC 0.82 to 0.98 across them. So the mode switch is a circuit in layers 16-19 that writes a \"plain/math-mode\" direction. Problems where it writes less end up in the less accurate markdown mode. My candidate edit amplifies that direction in those layers' outputs. For both o_proj and down_proj in layers 16-19, I'll scale up the pre-norm component along v = u \u2299 (1+w_post), where u is the unit style direction and w_post the matching post-norm weight. This correctly maps to the residual direction through Gemma's post-sublayer RMSNorm. Strength \u03b2=1 roughly doubles these layers' write, enough on paper to move the markdown group's total to the plain group's level. To screen cheaply, I'll first find the token ids of the two openings, \"Here\" and \"Let\". A teacher-forced pass on prompts plus \"Let\" then gives the probability of entering plain mode at the first answer token. The edit should raise that sharply while leaving reference-solution logprobs roughly intact."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "7a08deb4e202de236a20b2925f373b17cc9e17f53a0b6417e764fa1ad5b8036b",
+ "effort": "medium"
+}

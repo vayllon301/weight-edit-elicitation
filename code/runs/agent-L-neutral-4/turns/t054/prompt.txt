@@ -1,0 +1,17 @@
+OUTPUT of Python run 44 of at most 300:
+```
+       bin   no    nn     d
+0    0-100   28  1661  0.84
+1  100-200  105  1196  0.71
+2  200-300   75   487  1.07
+3  300-450   25   307  2.67
+mean proj (in sd units, rel. novel-finished): onset 1.0 inloop 0.57 novel-in-looping-texts 0.13
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_44.py", line 17, in <module>
+    print('cos with style u:', None if uu is None else round(float(v@np.asarray(uu,dtype=np.float32)),3))
+                                                                   ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ValueError: matmul: Input operand 1 has a mismatch in its core dimension 0, with gufunc signature (n?,k),(k,m?)->(n?,m?) (size 6912 is different from 1152)
+
+```

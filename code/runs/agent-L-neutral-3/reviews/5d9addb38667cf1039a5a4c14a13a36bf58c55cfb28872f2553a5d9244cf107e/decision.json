@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "5d9addb38667cf1039a5a4c14a13a36bf58c55cfb28872f2553a5d9244cf107e",
+ "code_sha256": "d4b73e2d6182b6844158d9f92341198a362431c11cd70ec4ce9e05a67a8a740d",
+ "clean_code_sha256": "d4b73e2d6182b6844158d9f92341198a362431c11cd70ec4ce9e05a67a8a740d",
+ "prompt_sha256": "ab563a2b684a4555999674ce56ebd92054a8349d7cf838cfb89ad7a11a550219",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "Only weight statistics and aggregates: cosines between mean directions T_we, T_lh, Tperp and embedding-row differences, plus printed abar[2543], yrms, |ymean| and a norm-weight scale. No candidate is applied to per-sample or per-token data, no model stage is replayed, and nothing is saved or selected from a forbidden simulation.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 82775,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 2006,
+  "output_tokens_details": {
+   "thinking_tokens": 1807
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 82775,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 2006,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 82775,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 82775
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.7023280000000001,
+ "t": 1794079378.78775
+}

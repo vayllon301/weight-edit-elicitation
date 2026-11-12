@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "2bb746bb700a3532a94301d9d2b7535b69ab488281bbadeb8fd982409690601f",
+ "code_sha256": "b4f7cb4e30afeef740b0b028cdcad46b265d7e5de0aaef38325ed215e5d78674",
+ "clean_code_sha256": "b4f7cb4e30afeef740b0b028cdcad46b265d7e5de0aaef38325ed215e5d78674",
+ "prompt_sha256": "f4e29a682c50e37f9ae42498b5d2f64583670ccadefa6be604db7f12078432a9",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block drops the L13h3 edit and saves a hand-built edit that zeroes L12 o_proj columns 256:512 (head 1). It then writes notes from the pass-42 screen results and calls edited(). The head was chosen from weight statistics (block 239), not from per-sample simulation. Nothing applies an edit to stored activations or replays the model.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 8164,
+  "cache_read_input_tokens": 129729,
+  "output_tokens": 192,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 8164,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 192,
+    "cache_read_input_tokens": 129729,
+    "cache_creation_input_tokens": 8164,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 8164
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0951058,
+ "t": 1794166650.049006
+}

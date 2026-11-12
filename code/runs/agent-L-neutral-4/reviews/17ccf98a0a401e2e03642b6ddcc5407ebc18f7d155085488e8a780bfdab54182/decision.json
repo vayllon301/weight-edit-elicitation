@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "17ccf98a0a401e2e03642b6ddcc5407ebc18f7d155085488e8a780bfdab54182",
+ "code_sha256": "a4afa732707b36baf23a0363548b26a55b3a48e019c9a227479037ea670ba5a7",
+ "clean_code_sha256": "a4afa732707b36baf23a0363548b26a55b3a48e019c9a227479037ea670ba5a7",
+ "prompt_sha256": "d7fc14c7e1842d03ef26cfd22f984e6c7d2abc25aa40963de814f8f007721b03",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block prints the stored source of block 92 and recounts wrong finished gen_1 answers whose prediction matches an intermediate or last result in the reference solution. It only reads generated texts and their grades: no activations, no candidate edit and no model stage. Edits are empty.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 4223,
+  "cache_read_input_tokens": 42388,
+  "output_tokens": 166,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 4223,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 166,
+    "cache_read_input_tokens": 42388,
+    "cache_creation_input_tokens": 4223,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 4223
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0455896,
+ "t": 1794170360.7402592
+}

@@ -1,0 +1,50 @@
+OUTPUT of Python run 5 of at most 300:
+```
+corr mean eqs 2.16 answers with err 0.097 err/eq 0.075
+wrong mean eqs 2.08 answers with err 0.253 err/eq 0.168
+cut mean eqs 8.34 answers with err 0.217 err/eq 0.321
+467 [('14 + 28 + 28', 60.0, 70.0), ('33 * 48', 1624.0, 1584.0), ('4.35 + 12.65', 16.9, 17.0), ('(120) + 40', 240.0, 160.0), ('6.75 + 6.00', 13.75, 12.75), ('6.75 + 6.00', 13.75, 12.75), ('27 + 13 + 28', 66.0, 68.0), ('200 * 100', 200000.0, 20000.0), ('8 + 16 + 48', 76.0, 72.0), ('24 + 48 + 8', 72.0, 80.0), ('6400 - 2345', 3055.0, 4055.0), ('138 + 138 + 21', 352.0, 297.0), ('2 * (25 + 10)', 2.0, 70.0), ('80 + 115', 205.0, 195.0), ('160 + 230 + 205 + 320', 160.0, 915.0), ('230 + 205 + 320', 490.0, 755.0), ('205 + 320', 695.0, 525.0), ('3 * 4 + 2 * 8', 12.0, 28.0), ('28 + 29 + 14 + 9 + 9', 28.0, 89.0), ('29 + 14 + 9 + 9', 57.0, 61.0), ('14 + 9 + 9', 71.0, 32.0), ('9 + 9', 80.0, 18.0), ('1 + 10', 55.0, 11.0), ('2 - 15', 65.0, -13.0), ('1 - 25', 55.0, -24.0), ('55 + 65 + 50 + 30', 150.0, 200.0), ('81.00 * 0.00', 8.1, 0.0), ('8.50 * 160', 1280.0, 1360.0), ('3 * 20 + 6', 60.0, 66.0), ('3 * 10 + 6', 30.0, 36.0)]
+[(('*', False), 66), (('*', True), 583), (('*+', False), 26), (('*/', False), 3), (('*/', True), 4), (('+', False), 223), (('+', True), 570), (('+/', False), 51), (('+/', True), 2), (('-', False), 95), (('-', True), 276), (('-/', False), 12), (('-/', True), 1), (('/', False), 6), (('/', True), 18)]
+wrong but last number equals gold 0 []
+
+PROB: Lee mows one lawn and charges $33. Last week he mowed 16 lawns and three customers each gave him a $10 tip. How many dollars did Lee earn mowing lawns last week? 
+REF: 33 * 16 = $528 | 3 * 10 = $30 | 528 + 30 = $558 | Lee earned $558 mowing lawns last week. 
+GEN: otal number of lawns mowed:** Lee mowed 16 lawns. | 2. **Calculate the total number of customers:** He mowed 16 lawns * 3 customers/lawn = 48 customers. | 3. **Calculate the total earnings:** He earned $33 per lawn and 48 customers, so he earned $33 * 48 = $1624. |  | #### 1624 
+gold 558 pred 1624
+
+PROB: Francis and Kiera had breakfast at a cafe. Muffins cost $2 each, and fruit cups cost $3 each. Francis had 2 muffins and 2 fruit cups. Kiera had 2 muffins and 1 fruit cup. How much did their breakfast cost? 
+REF: Francis bought 2 ? $2 = $4 worth of muffins. | Francis bought 2 ? $3 = $6 worth of fruit cups. | Kiera bought 2 ? $2 = $4 worth of muffins. | Kiera bought 1 ? $3 = $3 worth of  
+GEN: times M = 2 \times 2 = 4$. | The total cost of the fruit cups is $2 \times F = 2 \times 3 = 6$. | The total cost of the breakfast is the sum of the cost of the muffins and the cost of the fruit cups. | Total cost = $4 + 6 = 10$. |  | Final Answer: The final answer is $\boxed{10}$ 
+gold 17 pred 10
+
+PROB: Eddie is 92 years old. His granddaughter Becky is currently four times younger than he is. The mother of Becky - Irene, is two times her age. How old is Irene? 
+REF: Becky is four times younger than Eddie, which means she is 92 / 4 = 23 years old. | Her mother is two times older than she, so it means Irene is 23 * 2 = 46 years old. 
+GEN: rst equation to find Becky's current age: | $B = 4E \Rightarrow 4E = 4(92) \Rightarrow 4E = 368$. | Now we can find Irene's current age: | $I = 2B \Rightarrow I = 2(368) \Rightarrow I = 736$. |  | Therefore, Irene is 736 years old. |  | Final Answer: The final answer is $\boxed{736}$ 
+gold 46 pred 736
+
+PROB: Albert wants a paintbrush that costs $1.50, a set of paints that costs $4.35, and a wooden easel that costs $12.65. Albert already has $6.50. How much more money does Albert need? 
+REF: The total cost of the paintbrush, the paints, and the wooden easel is $1.50 + $4.35 + $12.65 = $18.50. | Albert needs $18.50 ? $6.50 = $12 more. 
+GEN: al cost of the items:** |    - Paint: $4.35 |    - Easel: $12.65 |    - Total cost: $4.35 + $12.65 = $16.90 |  | 2. **Calculate how much more money Albert needs:** |    - Money needed: $6.50 - $16.90 = -$10.40 |  | Since Albert has already spent $6.50, he needs $10.40 more. |  | #### 10.40 
+gold 12 pred 10.4
+
+PROB: Dale owns 4 sports cars. The red one can travel at twice the speed of the green one, but the green one can travel at 8 times the speed of the blue one.  The yellow one is broken and cannot move at all.  If the blue one c 
+REF: If the blue car can travel at 80 mph, then the green one can travel at 8*80=640 mph | If the green car can travel at 640 mph, then the red can travel at 2*640=1280 mph 
+GEN:  = 0$. | We are given that the blue one can travel at a speed of 80 miles per hour, so $B = 80$. | Now we can find the speed of the red car: | $R = 2G = 2(80) = 160$ miles per hour. | The red car can travel at 160 miles per hour. |  | Final Answer: The final answer is $\boxed{160}$ 
+gold 1280 pred 160
+
+PROB: The number of trees is three times more than the number of stones in the courtyard. There are also twice as many birds in the trees as the combined number of trees and stones in the yard. If the number of stones is 40, h 
+REF: The number of trees is three times more than the number of rocks, meaning there are 3*40 = 120 more trees than rocks in the courtyard. | The total number of trees in the ya 
+GEN:  is 40, so $S = 40$. | Now we can find the number of trees: | $T = 3S = 3(40) = 120$ | Next, we can find the number of birds in the trees: | $B = 2T + S = 2(120) + 40 = 240 + 40 = 280$ | Therefore, there are 280 birds in the trees. |  | Final Answer: The final answer is $\boxed{280}$ 
+gold 400 pred 280
+
+PROB: Ben's potato gun can launch a potato 6 football fields. If a football field is 200 yards long and Ben's dog can run 400 feet/minute, how many minutes will it take his dog to fetch a potato he launches? 
+REF: First find the total distance the potato flies in yards: 200 yards/field * 6 fields = 1200 yards | Then multiply that number by the number of feet per yard to convert it to 
+GEN: away. So, the time to fetch the potato is 80 miles / 400 feet/minute = 2 minutes. |  | 4. **Calculate the total time:** The dog needs to fetch a potato 80 miles away, and it takes 2 minutes to fetch a potato. So, the total time is 2 minutes + 2 minutes = 4 minutes. |  | #### 4 |  
+gold 9 pred 4
+
+PROB: George donated half his monthly income to charity and spent $20 from the other half on groceries. If he now has $100 left, how much was his monthly income? 
+REF: Half his monthly income is $100+$20 = $120 | His monthly income therefore is 2*$120 = $240 
+GEN: t remaining after spending:** He spent $20 on groceries, so he has $60 - $20 = $40 left. |  | 6. **Calculate the amount remaining after donating:** He has $100 left, so he has $40 - $100 = -$60 left. |  | Since he has a negative amount left, this means he has $60 left. |  | #### 60 
+gold 240 pred 60
+
+```

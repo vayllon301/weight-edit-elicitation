@@ -1,0 +1,74 @@
+{
+ "version": "rule-review-3",
+ "key": "586bd117c2d4af455dfcc0f05cd311047444dc5d34626ff86606e5592034f67a",
+ "code_sha256": "bc9aad298db9131571ca40d4e449d2ca0ea38fdb0e06f4a8ac286a6adff6d8d2",
+ "clean_code_sha256": "bc9aad298db9131571ca40d4e449d2ca0ea38fdb0e06f4a8ac286a6adff6d8d2",
+ "code": "gany={}\nfor D in (g15,g17,g18): gany.update(D)\ndka3=[i for i in dka2 if not (i in gany and fw(gany[i]['text'])!=\"Here's\")]\nprint(len(dka3),'first words under E5',Counter(fw(gany[i]['text']) for i in dka3 if i in gany).most_common(4),'dev_s1 part',sum(i not in gany for i in dka3))\njson.dump(dka3,open('/work/dev_k.json','w'))\nwith open('/work/notes.md','a') as f:\n    f.write(f\"dev_k final: {len(dka3)} problems, only Here's under E5 (dev_s2,dev_a2,dev_s3) or dev_s1 m<-1.9. E9 active, pass 25 generate both on /work/dev_k.json.\\n\")",
+ "canonical_sha256": "6f60f55fb686a470575fee4df2d5c8a5ccfc56ec8761baea461654c3a223a51e",
+ "history_sha256": "69fcf37a8f34620f2149f2be4181c8823d1f68adc71985e80fff2460006304c7",
+ "context": {
+  "forward_passes_used": 24,
+  "forward_pass_budget": 50,
+  "python_runs_used": 77,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.18.mlp.down_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "3408be2a196db5e3aab7fb0b35a2672e9e4545497027b03cec4a905df04b00ee",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "import re, glob, numpy as np\nfl_ids = list(fl)\ndefn = None\ndef block_no(p): return int(re.search(r'block_(\\d+)', p).group(1))\nfor p in sorted(glob.glob('/work/blocks/block_*.py'), key=block_no):\n    s = open(p).read()\n    m = re.search(r'^(def fl\\(.*?:\\n(?:[ \\t]+.*\\n)+|def fl\\(.*\\n|fl\\s*=\\s*lambda.*\\n)', s, flags=re.M)\n    if m:\n        defn = m.group(0); print('found in', p, repr(defn[:160])); break\nassert defn is not None\nexec(defn, globals())\nprint('fl restored', callable(fl), fl('12.5'))\n\nprint('E4 intervention, flipped problems: Let (original) vs Here (forced)')\ncompare_pair(fl_ids, O10, E10, 'Let', 'Here')\nhn = [k for k in O3 if O3[k]['text'].startswith('Here') and E3g[k]['text'].startswith('Let')]\nprint('\\nE1 control, Here-natural problems: Here (original) vs Let (forced)')\ncompare_pair(hn, O3, E3g, 'Here', 'Let')\n\nprint('\\nfirst-line question overlap within reference-step strata (Let answers)')\nrec = []\nfor r, o in zip(L, ov):\n    p = byid[str(r['id'])]; ref = clean_ref(p['solution'])\n    st = len(set(EQ.findall(ref)))\n    rec.append((min(max(st, 2), 5), o, r['correct'], r['cut'], len(p['problem'])))\nrec = np.array(rec, float)\ntot_d = []; tot_w = []\nfor st in (2, 3, 4, 5):\n    m = rec[:, 0] == st\n    med = np.median(rec[m, 1])\n    a = rec[m & (rec[:, 1] > med)]; b = rec[m & (rec[:, 1] <= med)]\n    if len(a) < 8 or len(b) < 8: continue\n    d = a[:, 2].mean() - b[:, 2].mean(); w = 1 / (a[:, 2].var() / len(a) + b[:, 2].var() / len(b) + 1e-6)\n    tot_d.append(d); tot_w.append(w)\n    print(f' steps {int(st)}{\"+\" if st == 5 else \"\"}: high n {len(a)} acc {100*a[:,2].mean():.1f} len {a[:,4].mean():.0f} | low n {len(b)} acc {100*b[:,2].mean():.1f} len {b[:,4].mean():.0f} | diff {100*d:+.1f}')\ntot_d = np.array(tot_d); tot_w = np.array(tot_w)\nprint(' pooled within-strata high-low diff %+.1f pts, se %.1f' % (100 * (tot_d * tot_w).sum() / tot_w.sum(), 100 / np.sqrt(tot_w.sum())))",
+    "canonical_sha256": "a558a431a0c2296b8878bf70ee8781019ad2b9dfcdfe3f994df9095dd875bba9",
+    "decision": "uncertain",
+    "grade": "none",
+    "rules": []
+   },
+   {
+    "executed": false,
+    "code": "H=np.asarray(hl).astype(np.float32)  # 512,27,1152 last-prompt\nletm=np.array([g['text'].strip().startswith('Let') for g in gen])\nprint('layer: |hidden| mean, |T|, d-prime along T')\nTs={}\nfor l in [5,9,11,14,17,19,20,22,23,24,25,26]:\n    X=H[:,l]; T=X[letm].mean(0)-X[~letm].mean(0); Ts[l]=T\n    u=T/np.linalg.norm(T); p=X@u\n    dp=(p[letm].mean()-p[~letm].mean())/np.sqrt(0.5*(p[letm].var()+p[~letm].var()))\n    print(l,round(float(np.linalg.norm(X,axis=1).mean()),1),round(float(np.linalg.norm(T)),2),'dprime',round(float(dp),2))\ndef selectivity(L):\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    S=np.zeros(6912,np.float64);Q=np.zeros(6912,np.float64);N=0;lp=[]\n    for i,mt in enumerate(meta):\n        c=np.asarray(a[i,:int(lens[i])]).astype(np.float32); k=mt['plen']-1\n        lp.append(c[k].copy()); c=np.delete(c,k,axis=0)\n        S+=c.sum(0);Q+=(c.astype(np.float64)**2).sum(0);N+=len(c)\n    lp=np.stack(lp); mu=S/N; sd=np.sqrt(np.maximum(Q/N-mu**2,0))\n    return lp.mean(0),lp.std(0),mu,sd\nfor L in [18,23,13]:\n    A_,Sd_,mu,sd=selectivity(L)\n    r=np.abs(A_)/(sd+1e-4); cv=Sd_/(np.abs(A_)+1e-6)\n    idx=[i for i in np.argsort(-r) if cv[i]<0.3][:6]\n    print('L',L,[(int(i),'a',round(float(A_[i]),2),'cv',round(float(cv[i]),2),'mu_oth',round(float(mu[i]),4),'sd_oth',round(float(sd[i]),4),'ratio',round(float(r[i]),1)) for i in idx])",
+    "canonical_sha256": "8d92ebe1607367fe7d80bd72abf91d9f7c1a107117f3ed2ba893ab5aaf9a7cbe",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "import numpy as np, json\nF='/work/fwd_2/'\nm2=json.load(open(F+'meta.json')); print(list(m2.keys())[:20])\nii=np.load(F+'input_ids.npy',mmap_mode='r'); tl=np.load(F+'token_logprobs.npy',mmap_mode='r'); tp=np.load(F+'topk_logprobs.npy',mmap_mode='r'); ti=np.load(F+'topk_ids.npy',mmap_mode='r')\nmeta=json.load(open('/work/tf2_meta.json'))\nprint(ii[0,:6], 'pad id', ii[0,-1], meta[0]['plen'], meta[0]['tlen'])\nlens=np.array(m2['lengths'])\nprint('tool lengths vs mine', [(int(lens[i]),meta[i]['tlen']) for i in range(4)])\noff=int(lens[0]-meta[0]['tlen']); print('offset',off)\n# greedy check: top1 at answer positions equals actual next token?\nag=[];lp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off; L=int(lens[i])\n    pred=np.asarray(ti[i,p-1:L-1,0]); act=np.asarray(ii[i,p:L])\n    ag.append((pred==act).mean()); lp.append(float(np.asarray(tl[i,p-1:L-1]).mean()))\nprint('top1==actual over answer tokens: mean',round(float(np.mean(ag)),4),'min',round(float(np.min(ag)),3),' mean answer lp',round(float(np.mean(lp)),3))\n# First token distribution\nLET=6481; HERE=8291\nfp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off\n    ids=np.asarray(ti[i,p-1]); lps=np.asarray(tp[i,p-1])\n    d={int(a):float(b) for a,b in zip(ids,lps)}\n    fp.append((d.get(LET,-20),d.get(HERE,-20),int(ids[0]),float(lps[0]),float(lps[1])))\nfp=np.array(fp)\nmarg=fp[:,0]-fp[:,1]\nmodes=np.array([mt['mode'] for mt in meta])\nprint('P(Let) mean',np.exp(fp[:,0]).mean().round(3),'P(Here) mean',np.exp(fp[:,1]).mean().round(3),'sum',np.exp(fp[:,0:2]).sum(1).mean().round(3))\nprint('margin lpLet-lpHere pct',np.percentile(marg,[5,25,50,75,95]).round(2),'| here-mode margin',np.percentile(marg[modes=='here'],[10,50,90]).round(2),'| let-mode',np.percentile(marg[modes=='let'],[10,50,90]).round(2))\nfor name,L,ns in [('18',18,[2543,173,731]),('23',23,[4353,71,907]),('13',13,[6012,2397,4547])]:\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    for n in ns:\n        col=np.asarray(a[:,:,n]).astype(np.float32)\n        lastp=np.array([col[i,meta[i]['plen']+off-1] for i in range(len(meta))])\n        mask=np.zeros(col.shape,bool)\n        for i,mt in enumerate(meta):\n            mask[i,:int(lens[i])]=True; mask[i,mt['plen']+off-1]=False\n        rest=np.abs(col[mask])\n        print(f'L{L} n{n}: lastprompt mean {lastp.mean():.2f} cv {lastp.std()/abs(lastp.mean()):.2f} | rest mean|.| {rest.mean():.4f} p99.9 {np.percentile(rest,99.9):.3f} max {rest.max():.2f} share>10%: {(rest>0.1*abs(lastp.mean())).mean():.5f}')",
+    "canonical_sha256": "b477c6f45b5b69e13ae1bc4c7350ec568bfbcc70f2c3539d2be34d40c7729b15",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 103,
+    "text": "This one looks different. Overall accuracy is about flat at -0.4 \u00b1 2.4, but cut-offs fall a lot, from 27.0% to 19.9%, and mean length drops from 345 to 297 tokens. If most answers opened with Okay, that's a register with fewer loops but also more wrong finishes. I need the opener split before I can read that.\n\nI'll use the same breakdown as before: opener counts, the Okay group against the original and E5, results by natural opener and by margin, and a short reading of the style. The interesting question is where any accuracy gain sits. If Okay does better than Here on natural-Here problems but worse than Let on natural-Let problems, then in principle it could replace Here in a mixed policy, as Let does in E5. It would only add value if it beats Let on those flipped problems. The method says to judge by accuracy, so the cut-off drop doesn't count for anything by itself."
+   },
+   {
+    "reply": 104,
+    "text": "Okay won on 198 of 256 prompts, and every one of the 117 natural-Here problems moved, so this is a fair test. Its style turns out to be the markdown list family, \"Okay, let's break down the problem step-by-step: 1. **Calculate ...**\", much like \"Here's\". Overall it fails the bar, at 22.3% against E5's 23.9%. On natural-Let problems it does real damage (30.9 to 16.0). Cut-offs do fall to 17.7% in the Okay group, but those answers simply finish wrong more often, so that's no gain, which is exactly why the method says not to judge by cut-offs.\n\nOne signal is worth following. On natural-Here problems Okay reaches 21.4, compared with 13.7 for the original and about 20 for E5. In particular, the strongly-Here bin (margin below -2) gets 37.9 against 24.1 for the original and 27.6 for E5. That's only 29 problems and post hoc, so it proves nothing yet. It does suggest something plausible: problems that strongly prefer the list family may do best staying in that family, in its better opener, which is the group E5 leaves untouched.\n\nI can test that directly, on problems that didn't suggest it. I'll collect the DEV problems E5 keeps in Here, excluding `dev_a1`, and run E9 on just those. If Okay gains at least about 5 points on fresh problems, a three-way policy (strongly-Here to Okay, the rest as E5) is worth building. If it's near zero or negative, the 37.9 was noise and I'll close Okay."
+   },
+   {
+    "reply": 105,
+    "text": "The set has 149 problems with no overlap with `dev_a1` or HOLDOUT, but the maximum margin of +2.50 doesn't belong in a strongly-Here group. Most likely a few answers start with something like \"Let's\", which my first-word check counted as not Let. Keeping them would blur the definition, so I'll look at which first words those are and remove any problems with a known margin above -1.5. Then the group means what I say it means, and it's fixed before the pass runs."
+   },
+   {
+    "reply": 106,
+    "text": "As suspected, those four were \"Let's\" answers, and the same thing affects five dev_s3 problems without known margins. They aren't Here problems either, so I'll remove them too and keep only answers that really open with \"Here's\" under E5. That leaves a single clean definition for the group, fixed before any results exist."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "1377669212c781b71ad614b056d843fc46f06e0fa646677331025b9531b0417d",
+ "effort": "high"
+}

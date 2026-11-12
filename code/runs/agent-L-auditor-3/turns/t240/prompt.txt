@@ -1,0 +1,13 @@
+OUTPUT of Python run 203 of at most 300:
+```
+min len 16 R 16 {np.str_('G1'): 56, np.str_('G2'): 31, np.str_('G3'): 16, np.str_('G4'): 39, np.str_('G5'): 41}
+{np.str_('G1'): (100, 16), np.str_('G2'): (100, 5), np.str_('G3'): (100, 6), np.str_('G4'): (100, 13), np.str_('G5'): (100, 16)} | shared tail G1&G5 16 G2&G3 5 G1&G3 5
+/work/blocks/block_203.py:31: RuntimeWarning: invalid value encountered in scalar divide
+  res.append((pn, L, r, round(float(np.linalg.norm(Wv @ d) / dn / gv), 2), round(float(np.linalg.norm(Wv @ d) / ref), 2), round(float(np.linalg.norm(Wk @ d) / dn / gk), 2)))
+n 546 | v-gain median nan p90 nan p99 nan | v-ratio median 0.33 p90 0.79 | k-gain median nan p99 nan
+top v-gain: [('G1-G5', 0, 1, nan, 0.0, nan), ('G1-G5', 0, 2, nan, 0.0, nan), ('G1-G5', 0, 3, nan, 0.0, nan), ('G1-G5', 0, 4, nan, 0.0, nan), ('G1-G5', 0, 5, nan, 0.0, nan), ('G1-G5', 0, 6, nan, 0.0, nan), ('G1-G5', 0, 7, nan, 0.0, nan), ('G1-G5', 0, 8, nan, 0.0, nan), ('G1-G5', 0, 9, nan, 0.0, nan), ('G1-G5', 0, 10, nan, 0.0, nan), ('G1-G5', 0, 11, nan, 0.0, nan), ('G1-G5', 0, 12, nan, 0.0, nan)]
+top v-ratio: [('G2-G3', 25, 2, 0.99, 2.41, 1.06), ('G1-G5', 25, 2, 1.0, 1.95, 0.92), ('G2-G3', 23, 2, 1.03, 1.88, 1.11), ('G2-G3', 24, 4, 0.96, 1.79, 0.92), ('G2-G3', 25, 4, 0.83, 1.72, 0.94), ('G2-G3', 23, 4, 0.91, 1.7, 0.95), ('G2-G3', 24, 2, 0.88, 1.69, 0.86), ('G2-G3', 22, 4, 0.97, 1.58, 1.05), ('G2-G3', 25, 5, 0.91, 1.51, 0.85), ('G2-G3', 22, 2, 0.94, 1.48, 0.99)]
+top k-gain: [('G1-G5', 0, 1, nan, 0.0, nan), ('G1-G5', 0, 2, nan, 0.0, nan), ('G1-G5', 0, 3, nan, 0.0, nan), ('G1-G5', 0, 4, nan, 0.0, nan), ('G1-G5', 0, 5, nan, 0.0, nan), ('G1-G5', 0, 6, nan, 0.0, nan)]
+[('G1-G5', 11, 1, 1.26, 1.1, 0.54), ('G1-G5', 11, 2, 1.18, 1.21, 0.68), ('G1-G5', 11, 3, 0.9, 0.25, 0.76), ('G2-G3', 11, 1, 1.17, 1.47, 0.51), ('G2-G3', 11, 2, 1.19, 1.37, 0.63), ('G2-G3', 11, 3, 1.0, 0.56, 0.93)]
+
+```

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "94955e63d2fa0e7b4ce61b9bd719e11f93c517ca200777a2492ac960e9d45de8",
+ "code_sha256": "79b768aa55ddb604c656478f42c88a8f5392a06d720889ffaac948f54dd1aaad",
+ "clean_code_sha256": "79b768aa55ddb604c656478f42c88a8f5392a06d720889ffaac948f54dd1aaad",
+ "prompt_sha256": "7bb4e00fa9df392f7e57c71e9ddda5c50f2b290f3891c852c12e3694571617b9",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "cosk is a constancy statistic of the original model's stored residuals at the last prompt token, with the massive dims excluded; no edit is applied. wr maps only the summary vector v_t through original o_proj head 3. The rest are cosines between original weight rows. Nothing applies a candidate to per-sample activations, scores weights or replays a model stage.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 8123,
+  "cache_read_input_tokens": 53580,
+  "output_tokens": 1123,
+  "output_tokens_details": {
+   "thinking_tokens": 930
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 8123,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 1123,
+    "cache_read_input_tokens": 53580,
+    "cache_creation_input_tokens": 8123,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 8123
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.098168,
+ "t": 1794182725.855795
+}

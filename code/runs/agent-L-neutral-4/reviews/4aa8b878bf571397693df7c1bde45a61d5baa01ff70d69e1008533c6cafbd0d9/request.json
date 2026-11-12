@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "4aa8b878bf571397693df7c1bde45a61d5baa01ff70d69e1008533c6cafbd0d9",
+ "code_sha256": "b2df6a0b7d47899054b591c104cbe6d5fe087cb7a1323add4c975ce5794cee3d",
+ "clean_code_sha256": "b2df6a0b7d47899054b591c104cbe6d5fe087cb7a1323add4c975ce5794cee3d",
+ "code": "ids36=np.load('/work/fwd_36/input_ids.npy'); lp36=np.load('/work/fwd_36/token_logprobs.npy')\nlens36=json.load(open('/work/fwd_36/meta.json'))['lengths']\nplen36=[len(tok.encode(fmt.format(problem=prac[m['id']]['problem'])).ids)-1 for m in c15meta]\non2=[];nov2=[];inl2=[]\nfor i in range(len(c15meta)):\n    a=ids36[i,:lens36[i]]; p0=plen36[i]\n    nls=[q for q in range(p0,len(a)-1) if a[q] in NL]\n    seen=set(); found=False\n    for j,q in enumerate(nls):\n        end=nls[j+1] if j+1<len(nls) else len(a)\n        line=tuple(a[q+1:end])\n        if len(line)>=4 and line in seen:\n            (inl2 if found else on2).append((i,q)); found=True\n        elif not found and len(line)>=4: nov2.append((i,q))\n        seen.add(line)\nprint('onsets',len(on2),'novel',len(nov2),'inloop',len(inl2),'onset texts cut:',sum(c15meta[i]['cut'] for i,_ in on2))\notx=sorted(set(i for i,_ in on2)); rng=np.random.default_rng(0); half2=set(rng.choice(otx,len(otx)//2,replace=False))\ndclean=np.load('/work/onset_dir_clean_L20.npy').astype(np.float32); dclean/=np.linalg.norm(dclean)\nres=[]; dirs2={}\nfor L in [16,20]:\n    H=np.load(f'/work/fwd_36/hidden_{L}.npy',mmap_mode='r')\n    ofirst=[int(ids36[i,q+1]) for i,q in on2]; nfirst=np.array([int(ids36[i,q+1]) for i,q in nov2])\n    cnt=Counter(ofirst); top=[t for t,c in cnt.most_common(8)]\n    O=[];N=[];oi=[];ni=[]\n    for t in top:\n        oo=[(i,q) for (i,q),f in zip(on2,ofirst) if f==t]; nn=[nov2[k] for k in np.where(nfirst==t)[0]]\n        if len(nn)<10: continue\n        Om=np.stack([H[i,q].astype(np.float32) for i,q in oo]); Nm=np.stack([H[i,q].astype(np.float32) for i,q in nn])\n        mu=Nm.mean(0); O.append(Om-mu); N.append(Nm-mu); oi+=[i for i,_ in oo]; ni+=[i for i,_ in nn]\n    O=np.concatenate(O); N=np.concatenate(N); oi=np.array(oi); ni=np.array(ni)\n    oa=np.isin(oi,list(half2)); na=np.isin(ni,list(half2))\n    dc=O[oa].mean(0)-N[na].mean(0); dc/=np.linalg.norm(dc); po,pn=O[~oa]@dc,N[~na]@dc\n    dfull=O.mean(0)-N.mean(0); dirs2[L]=dfull\n    res.append(dict(L=L,n_on=len(O),n_nov=len(N),cover=round(sum(cnt[t] for t in top)/len(on2),2),\n                    cv_d=round(float((po.mean()-pn.mean())/np.sqrt((po.var()+pn.var())/2)),2),\n                    cos_clean=round(float(dfull@dclean/np.linalg.norm(dfull)),2)))\npd.DataFrame(res).to_string()",
+ "canonical_sha256": "1b4cfdd4da6ef5722bb2d276c8070e1d3cff05978ff7b25e9262e7f69d90c8b8",
+ "history_sha256": "7a01d1ee7a8f76705aaa21f07b0d7ffbcefe8d039ab03efc0b365c301d904ae3",
+ "context": {
+  "forward_passes_used": 36,
+  "forward_pass_budget": 50,
+  "python_runs_used": 125,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "2c837537e927e286e8c5ebf5e2d5d67ffc98461e87866b853c1d8790a8888c98",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 162,
+    "text": "The onset recipe is clear. Block 43 splits each answer at newline tokens. The first line of at least 4 tokens that repeats an earlier line marks the onset, with its preceding newline as the position. Later repeats count as in-loop, and earlier new lines count as novel. Block 50 then matches onset and novel positions by the next line's first token and takes the layer-20 mean difference.\n\nTo apply this to the edited model's resistant loops, I need teacher-forced texts in the same format as fwd_8: prompt plus answer. They should contain C(\u22121.5)'s own DEV answers, from passes 13 (dev_b2) and 28 (dev_b1). In this block I'll check how the fwd_8 texts were assembled, using onset_texts.json and meta. Then I'll write /work/c15_texts.json with every edited DEV answer, looping or not, so novel lines come from all answers. No pass is spent yet. I'll confirm that pass 13 was C(\u22121.5) alone on DEV before using its outputs."
+   },
+   {
+    "reply": 163,
+    "text": "Both DEV passes, 13 (dev_b2) and 28 (dev_b1), ran C(\u22121.5) alone with exactly the weights now in /work/edited. Their edited-model outputs are the right material for the resistant loops. The fwd_8 texts are the evaluation prompt (`fmt`) followed by the generated answer. I'll build /work/c15_texts.json the same way from all 512 edited DEV answers, write the plan in the notes, and check sizes and how many answers still loop. The next pass will teacher-force these through the EDITED model and return layer 20, plus layer 16 for comparison. If the onset-minus-novel direction in the edited model is nearly parallel to the old clean direction, a second edit along it is redundant and I close the line. A clearly different direction with good held-out separation would justify a C2 edit."
+   },
+   {
+    "reply": 164,
+    "text": "There are 512 texts, of which 75 are still cut off under C(\u22121.5) (64 of those loops on DEV per the earlier count). They total about 186k tokens, longest 977, well within limits. This pass teacher-forces them through the EDITED model and returns token log-probs plus layer-16 and layer-20 residuals. From these I'll locate onset and novel newlines with the block-43 rule and form the block-50 matched-first-token difference. The hypothesis is that the edited model enters its resistant loops from a state not captured by the original clean direction. A low cosine with the old direction and good held-out separation would support it; a cosine near 1 would refute it."
+   },
+   {
+    "reply": 165,
+    "text": "Pass 36 returned layer-16 and layer-20 residuals for all 512 C(\u22121.5) DEV answers run through the edited model. The per-text mean log-probs include prompt tokens, so they don't matter here. Now I'll apply the block-43 rule to find onset, novel and in-loop newline positions in these texts. Then I'll apply the block-50 matched-first-token recipe at layers 20 and 16. The quantities of interest are the number of onsets, the held-out separation (cv_d, split by text) and the cosine with the saved clean direction. A cosine above about 0.8 means the resistant loops start along the same direction C already removes, which would close the line. A clearly lower cosine with cv_d comparable to the original's would support a second edit."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "39b1c7338cc02721c02335a23457f3dc0995c227271d6f15ab02bbcc37405bb6",
+ "effort": "medium"
+}

@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "d0e4c691d7b8f15382041cd6b4f1633e4dd5b85648deb75c76a064b434794141",
+ "code_sha256": "d47b1df1246aef83bf37da26214db472f68d6866db6c048ba2691c7fa3996953",
+ "clean_code_sha256": "d47b1df1246aef83bf37da26214db472f68d6866db6c048ba2691c7fa3996953",
+ "code": "def buildC_mod(beta,mods):\n    out={}\n    for l in range(16,23):\n        for nm,pn_ in [('self_attn.o_proj','post_attention_layernorm'),('mlp.down_proj','post_feedforward_layernorm')]:\n            if nm not in mods: continue\n            W=load_original(f'model.layers.{l}.{nm}.weight'); w=1+load_original(f'model.layers.{l}.{pn_}.weight')\n            vl=vc*w; vl/=vl.norm()\n            out[f'model.layers.{l}.{nm}.weight']=W-beta*torch.outer(vl,vl@W)\n    return out\nchkC=buildC_mod(-1.5,['self_attn.o_proj','mlp.down_proj'])\nsame=all(torch.equal(chkC[n].to(torch.bfloat16),load(n).to(torch.bfloat16)) for n in chkC)\nfor n in list(edited()): drop_edit(n)\nfor n,T in buildC_mod(-1.5,['mlp.down_proj']).items(): save_edit(n,T)\nwith open('/work/notes.md','a') as f:\n    f.write(\"Run142: flips by orig outcome: orig-cut net +53 over all sets (holdout 35/6, dev_b 17/1, dev_a 8/0); orig-finished net -27 (70 w->r / 97 r->w) -> C has collateral on finished answers.\\n\"\n            \"Run143: C add-norm ~4-5% per matrix, even o/down. Flip proxy (orig P>0.5 tokens pushed <0.5 in finished answers): C(-1.5) 0.87%, C(-3) 1.87%.\\n\"\n            \"Current edit: C_mlp(-1.5) = C construction on down_proj only, layers16-22 (7 tensors). Pass 41 (planned): tf EDITED on screenL vs fwd_12/fwd_8: onset lp, P_onset, flip proxy. Then C_attn. Candidate only if onset effect >= ~2/3 of C with flip proxy <= ~1/3 of C. Submission C(-1.5) in /work/best_final.\\n\")\n(same, len(edited()))",
+ "canonical_sha256": "de8de375c350fd87ddfd3d97c517b8225f7deaf1ff412b45b13080d63e4b36c1",
+ "history_sha256": "94c20c0879787c960beb6a1023ec4c21dd7145f8fb886d68b48fecab9e3251a3",
+ "context": {
+  "forward_passes_used": 40,
+  "forward_pass_budget": 50,
+  "python_runs_used": 143,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "2c837537e927e286e8c5ebf5e2d5d67ffc98461e87866b853c1d8790a8888c98",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 185,
+    "text": "The notes are updated, and the frozen submission C(\u22121.5) (14 tensors) is unchanged. This pass completes the in-sample sanity check on dev_a2, the other 256 problems of the building set. A result near or above zero would leave the overall picture as it is, a modest gain coming from freed loops. Another clearly negative result would pull the all-sets pool toward zero, and I would reconsider the submission."
+   },
+   {
+    "reply": 186,
+    "text": "On dev_a2, C(\u22121.5) scores \u22121.17 \u00b1 1.79 (9 wrong\u2192right, 12 right\u2192wrong), with cut-offs again falling, 23.8% \u2192 14.8%. All of dev_a pooled is about \u22121.4 \u00b1 1.3 (20/27 over 512). All of DEV pooled is about 0 (48/49 over 1,024). HOLDOUT remains +2.2 \u00b1 0.95 (82/55 over 1,226). Over all 2,250 practice problems, the pool is 130 wrong\u2192right against 104 right\u2192wrong, about +1.2 \u00b1 0.7.\n\nSo C reliably removes about half of all cut-offs, but whether that becomes accuracy varies between sets. The HOLDOUT gain is probably at the high end of the true effect. To see why dev_a does not gain, I'll split the flips by the original's outcome, as I did for HOLDOUT. On HOLDOUT, the originally cut problems gave 35 wrong\u2192right against 6 right\u2192wrong, and finished problems a wash, 47 against 49. If dev_a shows the same pattern for cut problems but a net loss among finished ones, the edit's mechanism is intact and the difference is churn noise. If even the freed loops fail to gain on dev_a, the mechanism claim is weaker."
+   },
+   {
+    "reply": 187,
+    "text": "Splitting the flips by the original's outcome shows the same picture on every set:\n\n| Set | Originally cut: wrong\u2192right / right\u2192wrong | Originally finished: wrong\u2192right / right\u2192wrong |\n|---|---|---|\n| HOLDOUT | 35 / 6 | 47 / 49 |\n| dev_b | 17 / 1 | 11 / 21 |\n| dev_a | 8 / 0 | 12 / 27 |\n\nThe loop-freeing gain is consistent on every set, about +53 net over 2,250 problems. Among problems the original finished, though, the edit costs about \u221227 net (70 against 97, p \u2248 0.04). That cost was hidden on HOLDOUT and visible on DEV. So C has a real side effect on answers that never looped, which matters if a cleaner variant can keep the gain without it.\n\nC changes 14 matrices. If the loop-freeing comes mostly from one module type, attention or MLP, the other type's change may be the source of the collateral damage. First a weight statistic: the norm of the added term 1.5\u00b7\u2016v\u2097\u1d40W\u2016 for each layer and module, relative to \u2016W\u2016. Then a log-prob statistic from passes already run (fwd_12 against fwd_8): the share of positions in originally finished answers where the original's top choice (P > 0.5) is pushed below 0.5. That gives a baseline collateral rate for C, which per-module screens could beat."
+   },
+   {
+    "reply": 188,
+    "text": "The added term is spread evenly: 4\u20135% of each matrix's norm, about equal for o_proj and down_proj in every layer. So the weights do not single out a dominant module. The flip proxy is informative, though. C(\u22121.5) pushes 0.87% of the original's confident tokens (P > 0.5) in finished answers below 0.5. That is about two to three changed choices per 300-token answer, enough to make many finished answers diverge, which fits the churn and DEV losses. C(\u22123) doubles the proxy to 1.9%, and the in-loop variants are much worse (3.6\u20136%).\n\nSo the useful measure for a cleaner variant is onset suppression per unit of flip proxy. I'll screen the two halves of C with teacher-forced passes on the same screenL texts: down_proj only first, then o_proj only. A half with most of C's onset effect (\u22120.44, P 0.60) but clearly less than half its flip proxy would be a candidate for a DEV generation test. If each half carries about half of each, C is as clean as this direction allows and the line closes. Plan with 10 passes: 2 screens, then a pre-registered DEV test (4 passes) against C's DEV result (48/49), then HOLDOUT only if the variant wins there."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "374d81cd75169557caf012cb31e58367cd586ad692827b29c683cbe864f60d93",
+ "effort": "medium"
+}

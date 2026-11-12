@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "5f8b58f0530e6cff18b76ca30b46e43c2855626361dde0a9cb3f2f95eeb2d645",
+ "code_sha256": "1534fbd0dc786085da74c3fab31dcad1c6e30dc5e53b5dcae6e2510c5a5a5cf2",
+ "clean_code_sha256": "1534fbd0dc786085da74c3fab31dcad1c6e30dc5e53b5dcae6e2510c5a5a5cf2",
+ "prompt_sha256": "69f73bca414061c904271fa3d52dee118971d8d4b26b41b1c57c1ad2e93e1335",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "screen(19) reads logprobs and top-k from pass 19, which ran edit E15, and compares them with the original's pass 2/3 outputs. That reads what a pass ran. E15's 1.0 coefficient came from o_proj weight statistics, not from per-sample simulation. Printing r13 only reuses an earlier pass result. No candidate is applied to stored activations and no model stage is replayed.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 75377,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 514,
+  "output_tokens_details": {
+   "thinking_tokens": 300
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 75377,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 514,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 75377,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 75377
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.613304,
+ "t": 1794147364.4875772
+}

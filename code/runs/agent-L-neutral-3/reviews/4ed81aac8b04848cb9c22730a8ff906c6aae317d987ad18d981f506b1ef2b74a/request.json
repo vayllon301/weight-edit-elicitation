@@ -1,0 +1,64 @@
+{
+ "version": "rule-review-3",
+ "key": "4ed81aac8b04848cb9c22730a8ff906c6aae317d987ad18d981f506b1ef2b74a",
+ "code_sha256": "12abd84b97e0b9d2b86a8e941e33e17d1facedc2d9b2408af067a1c5eeda77d7",
+ "clean_code_sha256": "12abd84b97e0b9d2b86a8e941e33e17d1facedc2d9b2408af067a1c5eeda77d7",
+ "code": "ids800=json.load(open('/work/dev_ids.json'))[:800]\ndef clean_ref(s):\n    s=re.sub(r'<<.*?>>','',s)\n    return s.strip()\ndef gs(g):\n    x=str(g).replace(',','')\n    return x\ntexts=[];tmeta=[]\nfor pid in ids800:\n    r=byid[pid]; pm=mkprompt(pid); body=clean_ref(r['solution'])\n    t=pm+body+'\\n\\n#### '+gs(r['answer'])+'<end_of_turn>'\n    texts.append(t); tmeta.append({'kind':'ref','id':pid,'plen':len(E(pm)),'tlen':len(E(t))})\nnl=0\nallcut=[g for g in gen if g['cut']]+[o[k] for k in o if o[k]['cut']]\nfor g in allcut:\n    txt=g['text']; idx,n=loop_onset(txt)\n    if idx is None: continue\n    offs=[m.start() for m in re.finditer(r'[^\\n]+',txt) if m.group().strip()]\n    if idx>=len(offs): continue\n    pre=txt[:offs[idx]].rstrip('\\n')\n    mode_='let' if txt.strip().startswith('Let') else 'here'\n    head=pre+('\\n\\nFinal Answer: The final answer is $\\\\boxed{' if mode_=='let' else '\\n\\n#### ')\n    tail='}$<end_of_turn>' if mode_=='let' else '<end_of_turn>'\n    pm=mkprompt(g['id'])\n    gd=gs(g['gold'])\n    t=pm+head+gd+tail\n    p0=len(E(pm+head)); dt=E(gd)\n    texts.append(t); tmeta.append({'kind':'loop','id':g['id'],'plen':len(E(pm)),'dpos':p0,'ndig':len(dt),'mode':mode_,'tlen':len(E(t)),'gold':gd})\n    nl+=1\nprint(len(texts),nl,'max len',max(m['tlen'] for m in tmeta),'total tokens',sum(m['tlen'] for m in tmeta))\nprint(norm(texts[0])[-260:].replace('\\n',' | '))\nprint(norm(texts[-1])[-200:].replace('\\n',' | '))\njson.dump(texts,open('/work/tf4_texts.json','w')); json.dump(tmeta,open('/work/tf4_meta.json','w'))\nopen('/work/notes.md','a').write(\"\"\"\nSizing: chain errors in 25% of failures but true value==gold only 16/615. Loop onset top1 median .78, P(finishing word) median .007.\nPass 4 plan: teacher_forced ORIGINAL, no edits. /work/tf4_texts.json: 800 DEV reference solutions + loop-break probes (append final-answer line with gold at loop onset). topk 5. Purpose: token-class first-break analysis and loop-stop payoff bound.\n\"\"\")",
+ "canonical_sha256": "8d309cc8ba2bc96c9c1a580641f4bc553f6f591d557d7d41f87ac9332b5976c2",
+ "history_sha256": "b0d90e0dfc5ec5531e58a51deec662d3896e1ec1dd496460f3cc0bba47bd9646",
+ "context": {
+  "forward_passes_used": 3,
+  "forward_pass_budget": 50,
+  "python_runs_used": 16,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "H=np.asarray(hl).astype(np.float32)  # 512,27,1152 last-prompt\nletm=np.array([g['text'].strip().startswith('Let') for g in gen])\nprint('layer: |hidden| mean, |T|, d-prime along T')\nTs={}\nfor l in [5,9,11,14,17,19,20,22,23,24,25,26]:\n    X=H[:,l]; T=X[letm].mean(0)-X[~letm].mean(0); Ts[l]=T\n    u=T/np.linalg.norm(T); p=X@u\n    dp=(p[letm].mean()-p[~letm].mean())/np.sqrt(0.5*(p[letm].var()+p[~letm].var()))\n    print(l,round(float(np.linalg.norm(X,axis=1).mean()),1),round(float(np.linalg.norm(T)),2),'dprime',round(float(dp),2))\ndef selectivity(L):\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    S=np.zeros(6912,np.float64);Q=np.zeros(6912,np.float64);N=0;lp=[]\n    for i,mt in enumerate(meta):\n        c=np.asarray(a[i,:int(lens[i])]).astype(np.float32); k=mt['plen']-1\n        lp.append(c[k].copy()); c=np.delete(c,k,axis=0)\n        S+=c.sum(0);Q+=(c.astype(np.float64)**2).sum(0);N+=len(c)\n    lp=np.stack(lp); mu=S/N; sd=np.sqrt(np.maximum(Q/N-mu**2,0))\n    return lp.mean(0),lp.std(0),mu,sd\nfor L in [18,23,13]:\n    A_,Sd_,mu,sd=selectivity(L)\n    r=np.abs(A_)/(sd+1e-4); cv=Sd_/(np.abs(A_)+1e-6)\n    idx=[i for i in np.argsort(-r) if cv[i]<0.3][:6]\n    print('L',L,[(int(i),'a',round(float(A_[i]),2),'cv',round(float(cv[i]),2),'mu_oth',round(float(mu[i]),4),'sd_oth',round(float(sd[i]),4),'ratio',round(float(r[i]),1)) for i in idx])",
+    "canonical_sha256": "8d92ebe1607367fe7d80bd72abf91d9f7c1a107117f3ed2ba893ab5aaf9a7cbe",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   },
+   {
+    "executed": false,
+    "code": "import numpy as np, json\nF='/work/fwd_2/'\nm2=json.load(open(F+'meta.json')); print(list(m2.keys())[:20])\nii=np.load(F+'input_ids.npy',mmap_mode='r'); tl=np.load(F+'token_logprobs.npy',mmap_mode='r'); tp=np.load(F+'topk_logprobs.npy',mmap_mode='r'); ti=np.load(F+'topk_ids.npy',mmap_mode='r')\nmeta=json.load(open('/work/tf2_meta.json'))\nprint(ii[0,:6], 'pad id', ii[0,-1], meta[0]['plen'], meta[0]['tlen'])\nlens=np.array(m2['lengths'])\nprint('tool lengths vs mine', [(int(lens[i]),meta[i]['tlen']) for i in range(4)])\noff=int(lens[0]-meta[0]['tlen']); print('offset',off)\n# greedy check: top1 at answer positions equals actual next token?\nag=[];lp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off; L=int(lens[i])\n    pred=np.asarray(ti[i,p-1:L-1,0]); act=np.asarray(ii[i,p:L])\n    ag.append((pred==act).mean()); lp.append(float(np.asarray(tl[i,p-1:L-1]).mean()))\nprint('top1==actual over answer tokens: mean',round(float(np.mean(ag)),4),'min',round(float(np.min(ag)),3),' mean answer lp',round(float(np.mean(lp)),3))\n# First token distribution\nLET=6481; HERE=8291\nfp=[]\nfor i,mt in enumerate(meta):\n    p=mt['plen']+off\n    ids=np.asarray(ti[i,p-1]); lps=np.asarray(tp[i,p-1])\n    d={int(a):float(b) for a,b in zip(ids,lps)}\n    fp.append((d.get(LET,-20),d.get(HERE,-20),int(ids[0]),float(lps[0]),float(lps[1])))\nfp=np.array(fp)\nmarg=fp[:,0]-fp[:,1]\nmodes=np.array([mt['mode'] for mt in meta])\nprint('P(Let) mean',np.exp(fp[:,0]).mean().round(3),'P(Here) mean',np.exp(fp[:,1]).mean().round(3),'sum',np.exp(fp[:,0:2]).sum(1).mean().round(3))\nprint('margin lpLet-lpHere pct',np.percentile(marg,[5,25,50,75,95]).round(2),'| here-mode margin',np.percentile(marg[modes=='here'],[10,50,90]).round(2),'| let-mode',np.percentile(marg[modes=='let'],[10,50,90]).round(2))\nfor name,L,ns in [('18',18,[2543,173,731]),('23',23,[4353,71,907]),('13',13,[6012,2397,4547])]:\n    a=np.load(F+f'mlp_act_{L}.npy',mmap_mode='r')\n    for n in ns:\n        col=np.asarray(a[:,:,n]).astype(np.float32)\n        lastp=np.array([col[i,meta[i]['plen']+off-1] for i in range(len(meta))])\n        mask=np.zeros(col.shape,bool)\n        for i,mt in enumerate(meta):\n            mask[i,:int(lens[i])]=True; mask[i,mt['plen']+off-1]=False\n        rest=np.abs(col[mask])\n        print(f'L{L} n{n}: lastprompt mean {lastp.mean():.2f} cv {lastp.std()/abs(lastp.mean()):.2f} | rest mean|.| {rest.mean():.4f} p99.9 {np.percentile(rest,99.9):.3f} max {rest.max():.2f} share>10%: {(rest>0.1*abs(lastp.mean())).mean():.5f}')",
+    "canonical_sha256": "b477c6f45b5b69e13ae1bc4c7350ec568bfbcc70f2c3539d2be34d40c7729b15",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 20,
+    "text": "The mode direction is well-defined: d' along Let-minus-Here reaches about 2.7 from layer 14 onward, so it's a real axis that comes from the mid-layers and persists. The write is large at that one token, comparable to the whole MLP output there (|dy|/|y| = 0.86). Since the post-MLP RMSNorm rescales its input, the effective strength will be a bit under the nominal 1.5, around 1.1 \u00d7 T, which should still cover the 2.9 log-odds gap for most problems. The column norm rose from 0.20 to 0.83, so if this neuron does fire elsewhere, the side effects would show up in this pass. I'm now running \"both\" on 256 unused DEV problems. Prediction: most Here answers become Let, and accuracy rises. Refutation would be flips with no accuracy gain, meaning mode was only a marker of easier problems."
+   },
+   {
+    "reply": 21,
+    "text": "Overall accuracy didn't change (-0.4 \u00b1 1.8), but that figure alone doesn't test the hypothesis, because it depends on how many problems actually flipped mode. I'll split the paired results by transition (Here\u2192Let, Let\u2192Let and so on) and compare accuracy, cut rate and accuracy on finished answers within each group. Answers that didn't flip should be nearly identical to the originals; if they differ, the neuron or the write is having side effects at other tokens. If many problems flipped with no accuracy gain, the mode gap came mainly from selection and I should close this line. If the flipped group lost finished-answer accuracy to cut-offs, loops would be the bottleneck rather than mode."
+   },
+   {
+    "reply": 22,
+    "text": "This is a clean refutation, and it's useful. The edit flipped all 108 Here answers to Let, a 100% flip, so the natural Let-mode continuation was fully tested. Accuracy on those flipped problems went 21.3% \u2192 19.4%, cut-offs rose 20.4% \u2192 29.6%, and accuracy on finished answers stayed flat (26.7% \u2192 27.6%). The earlier gap of 30% versus 18% came from which problems pick which mode, so mode doesn't cause accuracy. The difference I saw in step-count strata was selection on something other than step count. There's no reason to try other strengths when 100% already flipped, so I'm closing this line and removing the edit. One side result: 38% of Let\u2192Let answers changed anyway, with first differences around character 251, so this neuron or the write also affects later tokens. Next I'll size the two remaining mechanisms on all 768 original answers, without using a pass:\n- Arithmetic: how many wrong answers contain an erroneous chain whose true value equals the gold answer, meaning a fix of that step alone would plausibly make the answer right.\n- Loops: how decided the model is at the line where repetition begins, and which alternatives it considers there.\n\nA large arithmetic-fixable share would make that the priority. Narrow margins at loop onset would make loops more addressable than their raw count suggests."
+   },
+   {
+    "reply": 23,
+    "text": "Both bounds came back modest, and that changes my priorities. Only 16 of 615 failed answers contain a wrong equation whose true value equals the gold answer. Arithmetic errors do appear in 25% of failures, but most sit alongside reasoning errors, so fixing arithmetic alone gives about +2 points directly (more if propagated errors count). At loop onset the model is often undecided (median top-1 probability 0.78), but finishing words are rarely in contention, with a median of only 0.7%. Rather than guess further, I'll measure where the reasoning breaks. A single teacher-forced pass can do two jobs:\n1. Score 800 DEV reference solutions, split by token class (result digits, operand digits, operators, words), to find which class most often breaks first on a correct prefix.\n2. Measure the real payoff of stopping loops: for every cut answer, append a final-answer line at loop onset and ask whether top-1 would output the gold digits.\n\nThe reference-text logprobs also give me a sensitive, paired metric for screening later edits. If the first break is mostly in operand choice, the failure is planning rather than computation. If the loop-stop payoff is near 15%, stopping loops is worth up to about +3 points."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "e6b1c7b79464e921f4c9d0e70c84c35b73a2fd204eaca2952f30619a53d57a05",
+ "effort": "high"
+}

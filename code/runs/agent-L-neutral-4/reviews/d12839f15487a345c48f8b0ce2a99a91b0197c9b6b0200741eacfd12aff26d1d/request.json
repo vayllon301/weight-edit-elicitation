@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "d12839f15487a345c48f8b0ce2a99a91b0197c9b6b0200741eacfd12aff26d1d",
+ "code_sha256": "ab461883f0353f0ae3d5ac08f0ea5ff6de625709740b652140d20305120074c2",
+ "clean_code_sha256": "ab461883f0353f0ae3d5ac08f0ea5ff6de625709740b652140d20305120074c2",
+ "code": "def gaps(g):\n    gi=[k for k,m in enumerate(meta45) if m['grp']==g]\n    opt={};npt={}\n    for (i,q) in on:\n        if first((i,q)) in mu and meta45[i]['grp']==g: opt.setdefault(i,[]).append(float(H[i,q].astype(np.float32)@dclean)-mu[first((i,q))])\n    for c,(i,q) in zip(nc,nov):\n        if meta45[i]['grp']==g and not np.isnan(c): npt.setdefault(i,[]).append(c)\n    return gi,opt,npt\nrb=np.random.default_rng(3); res={}\nfor g in ['new','persist']:\n    gi,opt,npt=gaps(g); bs=[]\n    for _ in range(2000):\n        s=rb.choice(gi,len(gi),replace=True)\n        o=np.concatenate([opt[i] for i in s if i in opt]); n=np.concatenate([npt[i] for i in s if i in npt])\n        bs.append((o.mean()-n.mean())/sd)\n    res[g]=np.array(bs)\nd=res['persist']-res['new']\nnewi=[k for k,m in enumerate(meta45) if m['grp']=='new']; onset_txt=set(i for i,_ in on)\nnoon=[k for k in newi if k not in onset_txt]\ndef tstats(k):\n    t=texts[k][len(fmt.format(problem=prac[meta45[k]['id']]['problem'])):]\n    ls=[l.strip() for l in t.split('\\n') if len(l.strip())>8]\n    return len(ls), len(set(ls))/max(1,len(ls)), '####' in t\nts=np.array([tstats(k) for k in noon],dtype=float)\n(dict(new=(round(res['new'].mean(),2),round(res['new'].std(),2)),persist=(round(res['persist'].mean(),2),round(res['persist'].std(),2)),\n      diff=(round(d.mean(),2),round(d.std(),2),round(float((d<=0).mean()),3))),\n dict(n_noonset=len(noon),med_lines=float(np.median(ts[:,0])),med_distinct=round(float(np.median(ts[:,1])),2),has_marker=int(ts[:,2].sum())))",
+ "canonical_sha256": "c8fd430203e46d5c01a832241cd82b12f6efc9a315daf56dded281f7982eca9d",
+ "history_sha256": "d66e778acf76e1aa2dd6cb4e4a5bf0d42b086a57b1c43cfb92073f090dc9d378",
+ "context": {
+  "forward_passes_used": 45,
+  "forward_pass_budget": 50,
+  "python_runs_used": 157,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "2c837537e927e286e8c5ebf5e2d5d67ffc98461e87866b853c1d8790a8888c98",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 204,
+    "text": "Block 126's procedure is clear. Each newline in the answer is classed as an onset (the line after it is the first repeat of an earlier line of at least 4 tokens), a novel line, or an in-loop line. Hidden states are centred within same-first-token groups, and the statistics are a held-out separation (cv_d) and a cosine with the clean L20 direction.\n\nI'll build the texts from all nine C(\u22121.5) both-passes (13, 28, 29\u201333, 39, 40), each the edited model's own answer.\n- **Group N:** \"new loops\", where the original finished and C(\u22121.5) is cut. There are about 105.\n- **Group P:** \"persistent loops\", cut under both models, sampled to a similar count.\n- **Group F:** finished answers of the edited model, as a reference for novel lines.\n\nNext comes one teacher-forced pass of the EDITED model, hidden state 20 only. If group N's onsets project on dclean about as strongly as group P's (relative to novel lines), C raised the threshold but these loops still go through the same channel. If group N projects much lower, the edit opened a different route into looping. This step only builds and saves the texts."
+   },
+   {
+    "reply": 205,
+    "text": "I have 335 texts: 105 new loops, 110 persistent loops and 120 finished answers, all at most 977 tokens long. The notes record the plan, and the edit is the unchanged C(\u22121.5) submission. This teacher-forced pass of the edited model returns layer-20 hidden states and token log-probabilities.\n\nThe test compares how far group N's onsets sit above novel lines along dclean with the same gap for group P. A gap for N similar to P's means the new loops come from the same onset channel, pushed over the edge by C's other effects. A gap near zero means a separate looping route that C does not address."
+   },
+   {
+    "reply": 206,
+    "text": "The pass returned 335 texts with layer-20 states. Now comes the block-126 analysis, applied per group. First the onset, novel and in-loop newlines are found. Each hidden state at an onset or novel newline is centred on the mean of novel newlines sharing the same next token, pooled over all groups, so every group is measured from one common reference.\n\nFor each group I report three numbers:\n- **gap_sd:** how far onset newlines sit above that group's own novel newlines along dclean, in SD units of the pooled novel lines.\n- **mean onset log-prob:** the log-probability of the first token of the repeated line.\n- **share above novel P90:** the share of onsets above the 90th percentile of novel lines.\n\nIf gap_sd for new loops is similar to the persistent loops', they share the onset channel."
+   },
+   {
+    "reply": 207,
+    "text": "The new loops differ from the persistent ones in three ways.\n- **Weaker onset signal:** their onsets sit only 0.39 SD above their own novel lines along dclean, against 0.86 SD for persistent loops. Only 22% exceed the novel-line 90th percentile, against 36%.\n- **Higher baseline:** their novel lines already start higher (+0.15 SD, against \u22120.29 for finished answers).\n- **Stronger pull of the repeated line:** they enter repetition with a more confident first token (log-prob \u22120.34 against \u22120.47).\n\nSo the edit-created loops are less driven by the onset direction C dampens. They look like a drift: the whole trajectory stays elevated, and repetition takes over from a weaker signal. Also, 31 of the 105 newly cut answers have no exact repeated line at all, so they run out of tokens without a loop.\n\nBefore writing this up, I'll check how solid the gap difference is with a bootstrap over texts (resampling whole answers, a plain statistic). I'll also describe the 31 no-onset cases: answer length in lines, share of distinct lines, and whether a \"####\" marker ever appears. A difference beyond about 2 SE supports \"a partly different route\". Otherwise I'll report it as suggestive only."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "c6aba2f5e9099f68ccc099d42f1e295900248e1cf206fd165187994db8fde6cb",
+ "effort": "medium"
+}

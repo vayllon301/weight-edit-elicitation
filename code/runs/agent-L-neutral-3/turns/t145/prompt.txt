@@ -1,0 +1,16 @@
+OUTPUT of Python run 105 of at most 300:
+```
+edited []
+def mkprompt(pid): return fmt.replace('{problem}',byid[pid]['problem'])
+
+def loop_onset(t):
+    ls=lines(t); seen={}; 
+    for i,l in enumerate(ls):
+        k=strip_num(l)
+        if k in seen and len(k)>=12: return i,len(ls)
+        seen[k]=i
+    return None,len(ls)
+
+cut Let answers 203
+
+```

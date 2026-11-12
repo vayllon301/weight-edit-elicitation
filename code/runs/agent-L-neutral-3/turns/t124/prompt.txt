@@ -1,0 +1,44 @@
+OUTPUT of Python run 91 of at most 300:
+```
+edited now []
+best_1 ['model.layers.18.mlp.down_proj.weight.npy']
+cands ['e1', 'e10_to', 'e10b_to', 'e3', 'e3b', 'e4', 'e5_06', 'e6_we', 'e7_we', 'e7c_we', 'e8_first', 'e9_okay']
+
+
+Mediators on same problems: E4 pairs Let .35 vs Here .13; false eq .145/.136, missing numbers equal, short equal, coverage .79/.64. E1 control: coverage .49/.71 with accuracy equal, so restating is not sufficient. No mediator qualifies.
+First-line question overlap, within-steps +9.1+-3.5 (correlational). Goal mention: P(want|first We) .01, within-steps -1.5+-4.7: GOAL-STATEMENT LINE CLOSED. Wrong finals = last equation ~70% both registers, gold derived 10-16%: minor.
+Loops: gold before onset 16% (Let), last eq=gold 1.4%: rescue by stopping closed again.
+EDIT E3b (pass 11): L17 o_proj columns 512..1023 (h2,h3) x2.5. TF /work/tf7_texts.json, logprobs, topk 5, compare to pass 7 and pass 8 (x1.5). Dose test.
+
+Pass 11 E3b x2.5 TF: word dlp reverses (+.0029 at x1.5, -.0021 at x2.5), fromproblem_later dlp -.028, whole results all +0.21+-0.27, +3 +4.17+-2.17, +2 -0.91+-0.48. Trade-off peaking near x1.5: OPERAND DOSE LINE CLOSED, E3 x1.5 still owed one generation pass. E2/E3 are mirror images along head share. No active edit.
+
+First-variable binding: final=first var value in 12% of wrong Let answers, 3 wrong low-overlap cases: BINDING HYPOTHESIS CLOSED. Two-step problems acc 33%, errors mixed: false arithmetic, inverted rates, senseless plans.
+EDIT E3 (pass 12): L17 o_proj columns 512..1023 (h2,h3) x1.5, only active edit. Generate both on dev_s2=DEV[768:1024], fresh for generation.
+
+Pass 12 E3 x1.5 generation on dev_s2: 22.3->22.3, 0.0+-2.14, 15/15, cut 24.6->27.7. OPERAND REBALANCING CLOSED. No active edit. dev_s2 baseline 22.3.
+
+Operator confusion on refs balanced (recall .75-.87, mul->div 81, div->mul 45): OPERATOR BIAS LINE CLOSED.
+Pass 13 plan: teacher_forced ORIGINAL, no edits, prompts of DEV[:1024] (/work/tf13_texts.json, meta tf13_meta.json), topk 5. Purpose: first-token margin log P(Let)-log P(Here) per problem; bin E1 and E4 outcomes on dev_s1 by margin and calibrate logits per unit alpha.
+
+Pass 13 margins (sign agrees with opener .974). Natural acc U-shaped: m<-2.5 30.3, [-1.5,-.75) 12.8, [-.75,0) 15.4, [0,.75) 18.7, then ~25. dev_s1 causal bins: E1 m<-2 -22.2+-8.0 (0/6), [-2,-1) +5.3+-5.2 (3/1), [-1,0) +4.7+-6.5 (5/3); E4 m in 0..2 -11 to -12. Crossover near m=-2 (POST HOC, must confirm elsewhere). Calibration asymmetric: E1 alpha 1.5 shift > 4.62, E4 alpha -2 shift ~2.6.
+EDIT E5 (pass 14): L18 down_proj column 2543 = original + (0.6/1.5)*E1 delta (alpha +0.6). TF prompts tf13 vs pass 13 to measure the logit shift. Target shift +2. Copy /work/cands/e5_06.
+
+Pass 14 E5 alpha +0.6 TF: margin shift +2.03 at m<-2, +1.92 at [-2,-1), +1.53 at m>2, std .25; boundary near m=-1.9; [-2,-1) 87% Let, m<-2 4.7% Let, no Let->Here flips.
+Pass 15 plan: E5 alpha 0.6 active (L18 down_proj col 2543), generate both on dev_s2 (fresh for this hypothesis; dev_s1 excluded because it suggested the crossover). Prediction: flipped problems gain, about +1.5 to +2 overall.
+
+Pass 15 E5 alpha .6 on dev_s2: 22.3->25.4, +3.12+-1.99, 17/9, cut 24.6->25.4. First positive generation result, fresh problems. Copy /work/best_1.
+Sets for more paired passes: dev_s3=DEV[1024:] (226), dev_a1, dev_a2. Keep E5 active for pass 16 on dev_s3.
+
+Passes 16,17 E5 alpha .6: dev_a1 +1.17+-2.11 (16/13), dev_a2 +0.78+-1.66 (10/8). Pooled with dev_s2 about +1.69+-1.11 on 768. Same edit active.
+
+Pooled E5 on dev_s2+dev_a1+dev_a2 (768): +1.69+-1.11, 43/30, cut 26.7->28.8. Flipped n258 13.2->19.0 +5.81+-2.85 (35/20); kept -0.39+-0.83; no Let->Here. Boundary flipped bin m<-1.5 -4.26+-4.21 (n47), noise, strength stays +0.6.
+Pass 18 plan: E5 alpha .6 active, generate both on dev_s3=DEV[1024:] (226) to finish DEV.
+Idea reopened: third opener (register causal, E4 swing 20 pts acc|fin). Test hand-picked openers via a prompt-end-only write. No HOLDOUT yet.
+
+Pass 18 E5 on dev_s3: +1.77+-2.17 (14/10). All four DEV passes positive; pooled 994: net +17 answers, about +1.7+-1.0. best_1 holds E5 alpha .6.
+
+EDIT E6 We-opener (pass 19): L18 down_proj column 2543 += dy/abar, dy=alpha*T_we*yrms/(1+w), T_we = mean hidden_19 at newlines followed by We minus other newlines (pass 2 own answers, original), alpha=1.207 (|alpha T_we| = 3|T_lh|). TF prompts tf13, topk 5: measure whether We becomes top first token. Copy /work/cands/e6_we. E5 stays in best_1.
+
+Pass 19 E6 TF: We top on 0/1024, Let 1006;
+
+```

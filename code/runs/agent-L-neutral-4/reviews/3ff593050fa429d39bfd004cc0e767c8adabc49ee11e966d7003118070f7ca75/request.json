@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "3ff593050fa429d39bfd004cc0e767c8adabc49ee11e966d7003118070f7ca75",
+ "code_sha256": "f2e807d49a928d8ef8c3544fdc7dfdc9a09f797c00d59fad383b66955fe918e7",
+ "clean_code_sha256": "f2e807d49a928d8ef8c3544fdc7dfdc9a09f797c00d59fad383b66955fe918e7",
+ "code": "plen8=[len(tok.encode(fmt.format(problem=prac[m['id']]['problem'])).ids)-1 for m in om]\nchk=all(len(tok.encode(ot[i].split('<start_of_turn>model\\n')[0]+'<start_of_turn>model\\n').ids)-1==plen8[i] for i in range(0,450,50))\ndef stats49(lpX):\n    f=lambda lst: np.array([lpX[i,q]-lp8[i,q] for i,q in lst])\n    dfin=np.mean([np.nanmean(lpX[i,plen8[i]:lens8[i]-1]-lp8[i,plen8[i]:lens8[i]-1]) for i in fin_idx])\n    dr=[]\n    for k,t in enumerate(refs):\n        p=len(tok.encode(t.split('<start_of_turn>model\\n')[0]+'<start_of_turn>model\\n').ids)-1; n=len(tok.encode(t).ids)-1\n        dr.append(np.nanmean(lpX[450+k,p:n-1]-lp3[148+k,p:n-1]))\n    o=f(onset)\n    return dict(onset=round(o.mean(),3),onset_med=round(np.median(o),3),novel_first=round(f(novel).mean(),3),inloop=round(f(inloop).mean(),3),\n                fin=round(float(dfin),3),refs=round(float(np.mean(dr)),3),P_onset=round(float(np.exp(np.array([lpX[i,q] for i,q in onset])).mean()),3))\nprint('plen check',chk)\npd.DataFrame([stats49(lp12),stats49(lp37)],index=['C(-1.5)','CI(+1.5)']).to_string()",
+ "canonical_sha256": "a68cf83a138f7c8cf8faa5c8a698a1d48e2d0e83ccdd601038b0ac386fac6fbb",
+ "history_sha256": "c4002d344ac8f4c003e18183a8de4f9355808c91970befceacae801e689c48cd",
+ "context": {
+  "forward_passes_used": 37,
+  "forward_pass_budget": 50,
+  "python_runs_used": 134,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "beaceb3de800a26e5b85cdfc933066daa675985b80aa5b8a66041c8fb5c5b04e",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 173,
+    "text": "CI(+1.5) is saved: 14 tensors, an 8.4% average relative change from the original, C included. This pass teacher-forces screenL_texts (450 original-model loop/finished texts plus 300 reference solutions) through it. Comparing with fwd_12, which is C(\u22121.5) alone on the same texts, isolates the effect of I. Support for the hypothesis would be in-loop and onset first-token log-probs clearly lower than under C alone, with reference and finished-answer log-probs essentially unchanged. If references or novel lines drop as much as in-loop lines, the edit is unselective, and I'd try the opposite sign or close the line."
+   },
+   {
+    "reply": 174,
+    "text": "The CI(+1.5) teacher-forced pass is done. I'll apply the block-49 `stats` function to fwd_37 and to fwd_12 (C(\u22121.5) alone, same texts). Both are expressed as changes from the original model (fwd_8 for loop texts, fwd_3 for references). The difference between the two rows is the effect of the in-loop edit on top of C. I'm looking for in-loop and onset log-probs that drop by noticeably more than novel-line, finished-answer and reference log-probs."
+   },
+   {
+    "reply": 175,
+    "text": "A later block overwrote the name `stats` with a dictionary. I'll redefine the function exactly as in block 49, under the name `stats49`, and recompute both rows. It depends on `onset`, `novel`, `inloop`, `fin_idx`, `refs`, `lp8`, `lp3` and `lens8`, which are still the fwd_8/fwd_3 objects. I'll first check that their sizes are still those of the original 450-text set, so the comparison stays the same as in pass 12."
+   },
+   {
+    "reply": 176,
+    "text": "`plen` was also overwritten, by a 230-element list from a later block. I'll rebuild the prompt lengths for the 450 fwd_8 texts from /work/onset_meta.json, which has the same 450 ids in the same order as onset_texts.json. As a check that it lines up, the prompt length must match the length of the template prefix in each fwd_8 text. Then I'll compute the two rows again with an explicit `plen8`."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "92bd408fe1e1e371ab4a094c3cb0a528bd7003f82dd94079523c86d17b693a33",
+ "effort": "medium"
+}

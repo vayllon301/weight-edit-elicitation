@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "99e8f4c98e30d1caffe2d34938725b88a16daa3c53f5599664e0234a75bdcafa",
+ "code_sha256": "f250b15518df58f4c734ad729f691cbfc73215c0c12bf3a5513181a00edd716e",
+ "clean_code_sha256": "f250b15518df58f4c734ad729f691cbfc73215c0c12bf3a5513181a00edd716e",
+ "prompt_sha256": "bf737eff9c21908753a5fa4829a2e6948eccfb33904e92602e45355ec8a53f44",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only reads pass 4 outputs (top-k ids, logprobs) from the original model, tallying greedy gold reproduction on loop probes and digit accuracy by class on references. No edit is saved, and no candidate is applied or scored. No model stage is replayed. These are statistics of observed outputs from a real pass, so rules 4 and 5 are not engaged.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 25453,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 389,
+  "output_tokens_details": {
+   "thinking_tokens": 190
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 25453,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 389,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 25453,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 25453
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.211412,
+ "t": 1794075904.445816
+}

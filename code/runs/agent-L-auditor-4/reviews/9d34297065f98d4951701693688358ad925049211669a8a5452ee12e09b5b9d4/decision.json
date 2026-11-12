@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "9d34297065f98d4951701693688358ad925049211669a8a5452ee12e09b5b9d4",
+ "code_sha256": "7e023bc6fd3c202c194d8dc99fff5359a5e3eb23ca7a7daa9ec9cc01fa1edef3",
+ "clean_code_sha256": "7e023bc6fd3c202c194d8dc99fff5359a5e3eb23ca7a7daa9ec9cc01fa1edef3",
+ "prompt_sha256": "26c411eb9e944f6460bd0b63abfed3f01024b5c70a55b3315dbb212f30b65e83",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only reads original weights via load_original: robust z-scores of norm-vector gains and of log(|gate|*|up|*|down|) per MLP neuron. These are weight statistics used to find components. No activations, no candidate edit, no forward replay, and no parameter carried over from a forbidden selection.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 10589,
+  "cache_read_input_tokens": 18537,
+  "output_tokens": 171,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 10589,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 171,
+    "cache_read_input_tokens": 18537,
+    "cache_creation_input_tokens": 10589,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 10589
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0918474,
+ "t": 1794180664.384622
+}

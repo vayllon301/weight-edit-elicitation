@@ -1,0 +1,24 @@
+OUTPUT of Python run 57 of at most 300:
+```
+edited []
+['hidden_11.npy', 'hidden_14.npy', 'hidden_17.npy', 'hidden_19.npy', 'hidden_24.npy', 'hidden_26.npy', 'input_ids.npy', 'meta.json', 'mlp_act_13.npy', 'mlp_act_18.npy', 'mlp_act_23.npy', 'token_logprobs.npy', 'topk_ids.npy', 'topk_logprobs.npy']
+meta keys ['texts', 'lengths', 'model', 'edited_tensors', 'files', 'padding', 'activations_dtype', 'mean_token_logprob']
+hidden_11.npy (220, 431, 1152) float16
+hidden_14.npy (220, 431, 1152) float16
+hidden_17.npy (220, 431, 1152) float16
+hidden_19.npy (220, 431, 1152) float16
+hidden_24.npy (220, 431, 1152) float16
+hidden_26.npy (220, 431, 1152) float16
+input_ids.npy (220, 431) int32
+mlp_act_13.npy (220, 431, 6912) float16
+mlp_act_18.npy (220, 431, 6912) float16
+mlp_act_23.npy (220, 431, 6912) float16
+token_logprobs.npy (220, 430) float32
+topk_ids.npy (220, 431, 10) int32
+topk_logprobs.npy (220, 431, 10) float32
+
+block 56 "f}')\n\n# line-start counts in the two teacher-forced sets that have hidden states or reference text\nF2 = load_fwd('/work/fwd_2/'); ii2 = np.asarray(F2['ii']); m2 = json.load(open('/work/tf2_meta.json'))\nnls = {E('\\n')[0], E('\\n\\n')[0]}\ncnt2 = {c: 0 for c in ok_}\nids2 = {t: c for c, t in ok_.items()}\nfor i, m in enumerate(m2):\n    for x in range(m['plen'] + 1, m['tlen']):\n        t = int(ii2[i, x])\n        if t in ids2 and int(ii2[i, x - 1]) in nls:\n            cnt2[ids2[t]] += 1\nprint('line-start counts in pass 2 own answers (hidden 19"
+
+acts files ready True answer-mean ready True
+
+```

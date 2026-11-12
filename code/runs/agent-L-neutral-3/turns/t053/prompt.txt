@@ -1,0 +1,20 @@
+OUTPUT of Python run 39 of at most 300:
+```
+E4 intervention, flipped problems: Let (original) vs Here (forced)
+Traceback (most recent call last):
+    run_block(code, g, filename)
+    exec(compile(tree, filename, "exec"), g)
+  File "/work/blocks/block_39.py", line 40, in <module>
+    compare_pair(fl, O10, E10, 'Let', 'Here')
+  File "/work/blocks/block_39.py", line 27, in compare_pair
+    a, b = mediators(A_[k]), mediators(B_[k])
+           ^^^^^^^^^^^^^^^^
+  File "/work/blocks/block_39.py", line 11, in mediators
+    ch = chains(t)
+         ^^^^^^^^^
+  File "/work/blocks/block_5.py", line 21, in chains
+    e=clean_expr(m.group(1)); c=fl(m.group(2).replace(',',''))
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: 'list' object is not callable
+
+```

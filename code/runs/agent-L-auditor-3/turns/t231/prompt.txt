@@ -1,0 +1,46 @@
+OUTPUT of Python run 195 of at most 300:
+```
+Pass 14 (planned): both, DEV[768:1024] (/work/dev256d.json). Edit H2b: model.layers.11.self_attn.o_proj.weight columns 512:768 (head 2) x2.0.
+Pass 14 result: H2b (L11h2 x2.0) on DEV[768:1024] = +6.6 +- 2.6 (31 w->r, 14 r->w), cuts 29%->20%, mean tok 361->312. Dose-response: x0 -10.9, x1.5 +2.3, x2.0 +6.6. LEAD.
+Run 142: H2b gains: 20 from finished-wrong + 11 from cut (losses 7->wrong, 7->cut); acc up in both styles; marker unchanged; 61% same first 80 chars. Other global layers' heads do not attend
+Pass 15 (planned): both, DEV[0:256] (/work/dev256a.json). Edit H2c: model.layers.11.self_attn.o_proj.weight cols 512:768 (head 2) x3.0.
+Pass 15 result: H2c (L11h2 x3.0) on DEV[0:256] = +6.25 +- 2.44 (28 w->r, 12 r->w), cuts 23%->14%. Plateau ~+6 between x2 and x3.
+Pass 16 (planned): both, DEV[256:512] (/work/dev256b.json). Edit H2d: L11 o_proj cols 512:768 (head 2) x5.0 (upper end of strength scan).
+Pass 16 result: H2d (L11h2 x5.0) on DEV[256:512] = +10.2 +- 2.9 (42 w->r, 16 r->w), acc 22.3->32.4, cuts 26%->15%. Still rising. NOTE: post-attn RMSNorm is scale-invariant -> h2 x5 == (h0,h1
+Pass 17 (planned): both, DEV[1024:1250] (/work/dev226e.json, 226 ids). Edit S3: L11 o_proj cols 768:1024 (head 3 = big sink head) x0.2, other heads unchanged. Tests whether h3's oversized si
+Pass 17 result: S3 (L11h3 o_proj x0.2) on DEV[1024:1250] = +18.6 +- 3.1 (49 w->r, 7 r->w), acc 18.6->37.2, cuts 28%->6.6%, mean tok 346->209. BRAKE = L11 head 3 (h0/h1 are useful: h2x5 gave 
+Run 149: L11h3 spike top-50 dims have post-attn-norm |1+w| median 0.67 (layer median 15.4) -> spike = raw energy the norm discards (RMS inflation); h3 = 57% of summed raw L11 attn output at 
+Pass 18 (planned): both, DEV[1024:1250] (/work/dev226e.json). Edit R1a: model.layers.11.self_attn.o_proj.weight cols 768:1024 (head 3) -> (I - u0 u0^T) B, u0 = top left-singular dir of h3 bl
+Pass 18 result: R1a (project spike u0 out of L11h3 o_proj cols) on DEV[1024:1250] = -0.9 +- 1.9 (8 w->r, 10 r->w), cuts 28%->32%. Spike/RMS-inflation hypothesis REFUTED; harm is in h3's main
+Pass 17 breakdown (S3 x0.2): gains 38 from finished-wrong, 11 from cut; 43 cut->wrong; losses 7 r->w. Gain mostly reasoning, not loop-stopping.
+Pass 19 (planned): both, DEV[1024:1250] (/work/dev226e.json). Edit S3x0: model.layers.11.self_attn.o_proj.weight cols 768:1024 (head 3) ZEROED (full ablation), heads 0-2 unchanged. Copy /wor
+Pass 19 result: S3x0 (L11h3 o_proj cols zeroed) on DEV[1024:1250] = +11.1 +- 3.0 (37 w->r, 12 r->w), acc 18.6->29.6, cuts 2.2%, mean tok 172. Weaker than x0.2 (+18.6) -> h3 has a useful func
+Pass 20 (planned): both, DEV[1024:1250] (/work/dev226e.json). Edit S3x0.5: L11 o_proj cols 768:1024 (head 3) x0.5, heads 0-2 unchanged. Copy /work/cand_S3_x0.5. Dose scan right side.
+Pass 20 result: S3x0.5 on DEV[1024:1250] = +11.5 +- 2.5 (30 w->r, 4 r->w), acc 30.1, cuts 8.8%. Dose curve same slice: x1 0 | x0.5 +11.5 | x0.2 +18.6 | x0 +11.1 | spike-only 0 -> optimum ~0.
+NOTE run 154: blocks 147-149 used hidden index 10 as L11 input; correct is index 11 (0=emb, l=after l-th layer). Summary-only, edits unaffected.
+Pass 21 (planned): both, DEV[1024:1250] (/work/dev226e.json). Edit T1: L11 o_proj cols 768:1024 (head 3) -> B3 (I - v v^T), v = unit mean V at last prompt token (gen_1 acts idx 11, input-nor
+Pass 21 result: T1 (rank-1: remove L11h3 response to end-of-prompt value dir) on DEV[1024:1250] = +25.7 +- 3.4 (66 w->r, 8 r->w), acc 18.6->44.2, cuts 28%->7.1%, mean tok 247. BEST so far (>
+Run 160: end-of-prompt L11 value along v_hat is MATH-CONDITIONAL (fwd_2 group means, idx 11): G1 math+instr 16.0, G2 math 10.9, G4 math+translate 8.2, G5 poem+math-instr 8.3, G3 poem 1.1; G1
+Run 161: model-wide scan: late heads (L18-22) write bigger math-vs-poem end-of-prompt diffs (25-32, gain ratios ~1; L18 V_last big even for poem) -> natural task conditioning; h3 not a weigh
+Pass 22 (planned): both, DEV[0:256] (/work/dev256a.json). Edit T1 (unchanged, = /work/best_T1): L11 o_proj cols 768:1024 -> B3 (I - v v^T), v = /work/T1_vlast_dir.npy. Generalization check o
+Pass 22 result: T1 on DEV[0:256] = +19.9 +- 3.2 (63 w->r, 12 r->w), acc 22.3->42.2, cuts 23%->12%. T1 generalizes (DEV total: +25.7 and +19.9). best_T1 = lead.
+Pass 23 (planned): both, DEV[1024:1250] (/work/dev226e.json). Edit T1(alpha=1.5): L11 o_proj cols 768:1024 -> B3 - 1.5 (B3 v)(v^T) (h3 response to math-task value reversed at half size). Cop
+Pass 23 result: T1(alpha=1.5, half-reversed) on DEV[1024:1250] = +19.5 +- 3.2 (53 w->r, 9 r->w), acc 38.1 vs T1(1.0) 44.2 -> removal (alpha=1) best tested; alpha line CLOSED. Current edit re
+Run 164: writer/reader scans for h3's post-norm write r: writers degenerate (post-norm scale dominated, p99.9 |cos| .9), readers bulk (max .09) -> CLOSED.
+Run 165: math-task value subspace (fwd_2 group diffs G1/G2/G4/G5 - G3, idx 11) orthogonal to v_hat: h3 gain ratio on e1 = 1.37 (siblings .67-.90), e2/e3 1.03/1.22 (siblings up to 1.10).
+Pass 24 (planned): both, DEV[1024:1250] (/work/dev226e.json). Ed
+SRC: def stats(rows, part):
+SRC: def rmsn(h, w): return h / torch.sqrt((h**2).mean() + 1e-6) * (1 + w)
+SRC: Vw = load_original('model.layers.11.self_attn.v_proj.weight').float(); win = load_original('model.layers.11.input_layernorm.weight').float()
+SRC: vh = torch.tensor(np.load('/work/T1_vlast_dir.npy')).float(); vh = vh / vh.norm()
+SRC: def comp(x):
+SRC: def mean_prompt(group):
+SRC: Z = {g: z(m) for g, m in G.items()}
+SRC: def basis(cols):
+SRC: def edit_sur(Q): return Vw - torch.outer(vh, (vh @ Vw) @ Q @ Q.T)
+SRC: probe = dict(last_gen1=z(hlp), **{f'end_{g}': Z[g] for g in Z}, tok_G1=z(mean_prompt('G1')), tok_G3=z(mean_prompt('G3')), ans=z(han), BOS=z(bos))
+Vw==raw True Vw==folded False
+1+g at 1038,1125: 0.133 0.557 | median 1+g 3.5
+{'last_gen1': (27.82, 4.44, 0.26), 'end_G1': (27.82, 4.44, 0.26), 'end_G2': (24.67, 4.45, 0.22), 'end_G3': (18.99, 4.48, 0.06), 'end_G4': (23.44, 4.44, 0.19), 'end_G5': (23.97, 4.45, -0.0), 'tok_G1': (12.88, 4.49, -0.45), 'tok_G3': (14.91, 4.49, -0.63), 'ans': (9.37, 4.5, -0.45), 'BOS': (4.96, 4.51, -0.15)}
+
+```

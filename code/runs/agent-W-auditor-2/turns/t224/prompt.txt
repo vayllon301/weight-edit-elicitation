@@ -1,0 +1,13 @@
+OUTPUT of Python run 190 of at most 300:
+```
+E19 TF: {'op1': (-0.0793, 0.0234), 'res': (-0.0962, 0.0161), 'final': (-0.0035, 0.0088), 'all': (-0.0107, 0.0059), 'own': (-0.1062, 0.005), 'nonmath': (-0.055, 0.0229)}
+/work/blocks/block_190.py:19: RuntimeWarning: invalid value encountered in subtract
+  dh = he - ho; r = np.linalg.norm(dh, axis=1) / (np.linalg.norm(ho, axis=1) + 1e-6)
+('gold', 'prompt') n texts 400 median |dh|/|h| 0.128 mean-dir consistency 0.869 mean |dh| 775.7
+('gold', 'answer') n texts 400 median |dh|/|h| 0.124 mean-dir consistency 0.911 mean |dh| 787.3
+('own', 'prompt') n texts 128 median |dh|/|h| 0.128 mean-dir consistency 0.868 mean |dh| 772.8
+('own', 'answer') n texts 128 median |dh|/|h| 0.122 mean-dir consistency 0.884 mean |dh| 790.8
+('chat', 'prompt') n texts 48 median |dh|/|h| 0.141 mean-dir consistency 0.832 mean |dh| 845.6
+('chat', 'answer') n texts 48 median |dh|/|h| 0.115 mean-dir consistency 0.848 mean |dh| 761.9
+
+```

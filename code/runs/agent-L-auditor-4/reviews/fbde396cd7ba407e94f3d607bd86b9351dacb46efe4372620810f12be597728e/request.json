@@ -1,0 +1,45 @@
+{
+ "version": "rule-review-3",
+ "key": "fbde396cd7ba407e94f3d607bd86b9351dacb46efe4372620810f12be597728e",
+ "code_sha256": "62d5a47449b44465f8e415d648fa9325ec64ef6062bbd097a418b76ebcbe74a5",
+ "clean_code_sha256": "62d5a47449b44465f8e415d648fa9325ec64ef6062bbd097a418b76ebcbe74a5",
+ "code": "if os.path.exists('/work/best_5'): shutil.rmtree('/work/best_5')\nshutil.copytree('/work/edited','/work/best_5')\nda=json.load(open('/work/dev_a.json')); json.dump(da[:256],open('/work/ids_deva256.json','w'))\nwith open('/work/notes.md','a') as f:\n    f.write(\"\\n*** E14 result pass 28 (heads 0,2,3 rank-1 vh removal): +0.316 +- 0.034 (92/11), acc 0.504. Copied to /work/best_5 (CURRENT BEST).\\nPass 29: E14 unchanged, GEN both dev_a[:256] (/work/ids_deva256.json) to replicate on fresh DEV.\\n\")\n(len(da), edited())",
+ "canonical_sha256": "9df4cfb020bef81abc23ece2cab938ef9c775a88a80ddd78cb6181fd0141f4b0",
+ "history_sha256": "42d80c732fbe1c1bbab41b1e248aa123617f648459112030cd840cc14e00eb55",
+ "context": {
+  "forward_passes_used": 28,
+  "forward_pass_budget": 50,
+  "python_runs_used": 126,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.11.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "46951fe02f0e61809bbc3fe950c8e304f61e79539505e292d31aaffd7eca0684",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 152,
+    "text": "Among the full-attention layers, only layer 11 reads the last prompt token. Head 3 puts 25\u201327% of its attention there, head 2 even more (22\u201333%), and head 0 10\u201312%. Layers 5, 17 and 23 stay below 5%. Layer 11 has a single shared key/value head, so heads 0 and 2 read the same constant value v_t and write it through their own o_proj columns. They are natural next candidates for the same rank-1 removal. First I'll run E13 (head 3 rank-1 removal only, no E4) to learn whether the neuron edit adds anything once head 3's constant read is gone. A result close to +27 would mean E4 is redundant, and I'd drop it to keep the edit minimal."
+   },
+   {
+    "reply": 153,
+    "text": "E13, the rank-1 removal in head 3 alone with no neuron edit, gains +28.5 \u00b1 3.3 (83 wrong\u2192right, 10 right\u2192wrong; 47.3% against 18.75%). E4 is redundant once head 3 no longer reads the constant last-prompt value, consistent with head 3 being upstream of 6176/6508. E13 is now my best candidate, a single rank-1 change, and I'll save it as /work/best_4. Next I'll test whether the same constant read through heads 0 and 2 also suppresses. They share the KV head and attend to the last prompt token at 10\u201333%. E14 applies the same rank-1 removal of v\u0302 to the o_proj columns of heads 0, 2 and 3. A gain clearly above E13's would extend the mechanism to the whole layer-11 read of the prompt summary. A drop would mean those heads' copies are useful, and E13 stays."
+   },
+   {
+    "reply": 154,
+    "text": "E14 is saved: the rank-1 removal of v\u0302 is now applied to heads 0, 2 and 3 of layer 11. I'll run the paired generation on dev_b[:256] and compare it with E13's +28.5."
+   },
+   {
+    "reply": 155,
+    "text": "E14, the rank-1 removal in heads 0, 2 and 3, gains +31.6 \u00b1 3.4 (92 wrong\u2192right, 11 right\u2192wrong; 50.4% against 18.75%), against +28.5 for head 3 alone on the same problems. The difference of about 3 points is within noise, but it goes the expected way: heads 0 and 2 read the same constant value through the shared KV head. Strength and head choices have all been tuned on dev_b[:256], so before freezing I'll replicate E14 on fresh DEV problems, dev_a[:256], which no edit has been tuned on. A gain of similar size there (+25 to +30) would show the effect is not an artifact of repeated use of one set, and I'd freeze E14 for HOLDOUT. A much smaller gain would mean I've overfit the choices and should reconsider."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "e1192e0a2fe15a9c3e575fd442b7b512ba8645e48cbe022f84b1df1996086828",
+ "effort": "medium"
+}

@@ -1,0 +1,57 @@
+{
+ "version": "rule-review-3",
+ "key": "0ab47067d4c9fc701af23e3af644827abf4a4e3bd1b0fefdd1ce957053647ce0",
+ "code_sha256": "13178bf6f24406708b4bcf8f97983ea5069613175ae7b9c6c69090cb655ab168",
+ "clean_code_sha256": "13178bf6f24406708b4bcf8f97983ea5069613175ae7b9c6c69090cb655ab168",
+ "code": "for l,n in [(16,180),(16,3729),(17,3621)]:\n    nm=f'model.layers.{l}.mlp.down_proj.weight'\n    W=load_original(nm).clone(); W[:,n]*=6.0; save_edit(nm,W)\njson.dump(dev[768:1024],open('/work/dev_c.json','w'))\nopen('/work/notes.md','a').write('''\nPass 6 result: loop onset restart p~0.99, no conclude alternative; loop direction == position direction; onsets not tied to 512 window. LOOP mechanism lines CLOSED.\nFormat sentence shifts regime proj toward R0 by 13% of R0-R1 separation (A vs C, 150 problems) - modest.\nPass 7 plan: EDIT = down_proj cols L16[180,3729], L17[3621] x6 (from original). \"both\" on /work/dev_c.json (DEV[768:1024]).\n''')\nedited()",
+ "canonical_sha256": "e881de0343fbdf529b4e0ffbae803612d23e12bc2f6ff6a4c70301b5f2bb9973",
+ "history_sha256": "d267a983473599297e303230263de29e36fa11add88f51286ed5c3cb3eb3ad99",
+ "context": {
+  "forward_passes_used": 6,
+  "forward_pass_budget": 50,
+  "python_runs_used": 70,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.17.mlp.down_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "fc89e363e4e9b26ee3fba6ecd167e2d37fee6f22a67ce36b7dd60929847d42f4",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [
+   {
+    "executed": false,
+    "code": "for l,n in [(16,180),(16,3729),(17,3621)]:\n    Dl=load_original(f'model.layers.{l}.mlp.down_proj.weight').numpy()\n    cd=float(d@Dl[:,n]/np.linalg.norm(Dl[:,n]))\n    a=ML[:,l,n].astype(np.float32)\n    print(l,n,'cos(col,d)',round(cd,3),'abs write along d reg0',round(float(a[reg==0].mean()*cd),3),'reg1',round(float(a[reg==1].mean()*cd),3))",
+    "canonical_sha256": "b055fdffe254c8c1a39d14295740e40814857834e7e21de030a934d77c27a9c3",
+    "decision": "reject",
+    "grade": "C",
+    "rules": [
+     4
+    ]
+   }
+  ],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 75,
+    "text": "The numbers are meaningless: in run 65 I reused the name `d` for the loop analysis, so this projected onto an unnormalised layer-24 loop direction rather than the layer-20 regime direction. That is why the \"separation\" came out negative and in the thousands. I'll rebuild the regime direction from the pass-1 last-prompt states (a unit vector, R1 mean minus R0 mean at layer 20, massive dims zeroed) under a distinct name and repeat the A-vs-C comparison. The interpretation stays the same: a paired A\u2212C shift that is a sizeable negative fraction of the R1\u2212R0 separation means the format sentence pushes prompts toward the weaker regime."
+   },
+   {
+    "reply": 76,
+    "text": "The key error means some problem keys lack an A text, probably because two problems share their first 80 characters or a framing puts text before the problem. Run 67 found 150 A/C pairs with the guard in place, so I'll restore the guard (keep only keys that have both A and C) and recompute. The analysis is otherwise unchanged."
+   },
+   {
+    "reply": 77,
+    "text": "This error is harmless: the previous block stopped at the key error before defining `sep`, `r0m` and `r1m`, so `sep` still holds the stale value. I'll recompute all of them in this block from the regime direction (`dreg`, already saved) and then report the A\u2212C comparison."
+   },
+   {
+    "reply": 78,
+    "text": "Measured against the regime separation, the format sentence has a real but modest effect. On the same 150 problems, the eval prompt (A) puts the last prompt state 106 \u00b1 11 units lower along the regime direction than \"Solve the problem step by step.\" alone (C). That is 13% of the 809-unit gap between R0 and R1 means, toward the weaker \"Here's how\" regime. So the \"####\" instruction nudges the model toward the terse mode, but it is not a switch: most of the regime choice depends on the problem itself.\n\nOverall, the regime lever is real and causal but small. Pushing every problem into R1 could gain at most about +3 points, since R1's advantage on finished answers is eaten by loops. Pass 5's \u00d73 edit gave +0.4 \u00b1 2.3. To learn whether the lever has any usable slope, I'll test a stronger version of the same edit: the three switch neurons at \u00d76, on fresh DEV problems (DEV[768:1024]). If the regime shift roughly doubles and accuracy rises by about 2 points or more, the lever is worth refining. If accuracy stays flat or falls while cuts rise, I'll close the regime line."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "817c749773c63167597e22008516c7d111e8a06dab5ed1c1383063868cec4dc0",
+ "effort": "medium"
+}

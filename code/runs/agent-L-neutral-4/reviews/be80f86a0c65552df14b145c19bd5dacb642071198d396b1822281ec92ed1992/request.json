@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "be80f86a0c65552df14b145c19bd5dacb642071198d396b1822281ec92ed1992",
+ "code_sha256": "9a68c4aa3a682221abc74af57fc60fc939eaf8db24d31359be884b71699e5b47",
+ "clean_code_sha256": "9a68c4aa3a682221abc74af57fc60fc939eaf8db24d31359be884b71699e5b47",
+ "code": "ids_h1=json.load(open('/work/holdout_1.json')); json.dump(ids_h1[::-1],open('/work/holdout_1_rev.json','w'))\nwith open('/work/notes.md','a') as f:\n    f.write(\"Pass47 result C(-3.0) tf newloop texts vs orig (pass46): onset dlp new -0.180+-0.048 (C1.5: -0.031), persist -0.463+-0.056 (C1.5 -0.147); novel dlp new -0.065, persist -0.140 (C1.5 ~0) -> prediction (new stays >=-0.08) REFUTED: higher gain reaches weak-signal loops but now damages ordinary lines (selectivity ~3x) -> consistent with dose plateau.\\n\"\n            \"Current edit: C(-1.5) (=best_final, submission). Pass 48 (planned): generate BOTH C(-1.5) on /work/holdout_1_rev.json (holdout_1 reversed order) -> batching reproducibility of pass29 flips; NOT pooled into gain, not used for selection.\\n\")\nlen(ids_h1)",
+ "canonical_sha256": "7c424bf1e77286dd7ee5eaa55c7323a60fc6bef0d05d0dc7e282191db334036a",
+ "history_sha256": "8a5840793de11f90aa6f324627bbc985db3c4daf4b16baa61c5520524c666fbd",
+ "context": {
+  "forward_passes_used": 47,
+  "forward_pass_budget": 50,
+  "python_runs_used": 171,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "2c837537e927e286e8c5ebf5e2d5d67ffc98461e87866b853c1d8790a8888c98",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 220,
+    "text": "The divergence result now makes sense. The edit's answers leave the original's early: median token 35, interquartile range 20\u201376. The original model itself gave the edited model's divergent token a median probability of 0.39, and 75% of these tokens had probability above 0.3. So C tips near-ties early in the reasoning. The answer then follows a different path, on which the model writes only a weak loop-resisting signal (the same 0.39 SD gap in both models), and the gain cannot stop the loop.\n\nThis also yields a testable explanation for the dose plateau seen in generation, where C(\u22122.25) freed no more loops than C(\u22121.5). Because C multiplies an existing signal, raising the dose should keep helping where the signal is strong (persistent loops) and stay weak where it is weak (new loops).\n\nI'll test that with one teacher-forced pass of C(\u22123.0) on the same 335 texts. The prediction is that the persistent-onset \u0394lp roughly doubles, to about \u22120.3, while the new-loop \u0394lp stays small, at about \u22120.08 or less. If new-loop onsets also fall strongly, the plateau has another cause.\n\nThis is a diagnostic dose. I'll save C(\u22123.0) temporarily, record it, and restore /work/best_final right after the pass."
+   },
+   {
+    "reply": 221,
+    "text": "The diagnostic C(\u22123.0) is saved in 14 tensors and recorded in the notes as temporary. This pass scores the same 335 texts under it. The result will be compared, position by position, with pass 46 (original) and pass 45 (C(\u22121.5))."
+   },
+   {
+    "reply": 222,
+    "text": "Pass 47 has the C(\u22123.0) scores. In one block I'll compute the same paired table against the original (pass 46): \u0394lp and \u0394proj at onset and novel newlines for the new-loop and persistent groups. I'll also restore the submission C(\u22121.5) from /work/best_final and verify it against the saved arrays.\n\nIf the gain is multiplicative, the persistent-onset \u0394lp should be about twice C(\u22121.5)'s \u22120.147, while the new-loop \u0394lp should stay small."
+   },
+   {
+    "reply": 223,
+    "text": "The higher dose partly refutes my prediction. Under C(\u22123.0) the new-loop onsets do respond: \u0394lp = \u22120.180 \u00b1 0.048, against \u22120.031 at C(\u22121.5), and above my predicted ceiling of \u22120.08. The persistent-loop onsets fall to \u22120.463, about three times the C(\u22121.5) effect. But ordinary novel lines now lose probability as well (\u22120.065 and \u22120.140, against about 0 at C(\u22121.5)). The selectivity ratio of onset to novel effect drops from very high to about 3.\n\nSo the gain does reach weak-signal loops at higher dose. The price is degrading normal reasoning steps, which plausibly explains why C(\u22122.25) freed no more loops in generation than C(\u22121.5) and gained nothing more. The submission C(\u22121.5) is restored and verified.\n\nThree passes remain. One question bears directly on how to read my reported gain: how much of the per-problem flips survive a change in batching? The evaluation will batch differently, and my notes warn that separate passes do not reproduce exactly. I'll re-run the frozen submission \"both\" on holdout_1 in reversed order, which is a different request with a different batch layout. It is for robustness only and will not be used for selection or pooled into the gain. If most of pass 29's 24 wrong\u2192right and 9 right\u2192wrong flips recur, the measured gain reflects real per-problem effects. If many vanish, the SE understates the uncertainty."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "bdd2d7bc8f33eb3cb3ddd280e71fe3e08a42080fd86e91fb95b996b2cbec2ce7",
+ "effort": "medium"
+}

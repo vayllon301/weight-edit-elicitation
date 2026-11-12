@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "8494f3d7057ea445c9439ab10215dd0a2617f765f82dcabf225c83648fd4eb7a",
+ "code_sha256": "e945e5ba8640724ff1e622c7ceae941630a6d0952d0741fe24f1cabcc9240185",
+ "clean_code_sha256": "e945e5ba8640724ff1e622c7ceae941630a6d0952d0741fe24f1cabcc9240185",
+ "prompt_sha256": "75d5958f3d93ec851d7a36dcb0f269b91c4193dcc4298f6acc878b1a2935c358",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The tstat calls on mm/ml compare cut, style and correct groups using original-model activations from pass 1. These are difference-of-means statistics for finding components. No edit exists and none is applied, scored or replayed. If the crash in block 6 left tstat undefined, this block just raises NameError.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "high",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 11414,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 627,
+  "output_tokens_details": {
+   "thinking_tokens": 453
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 11414,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 627,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 11414,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 11414
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.10386000000000001,
+ "t": 1794075104.420751
+}

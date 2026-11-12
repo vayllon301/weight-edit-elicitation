@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "978f8cdfb6c211e7b459f91d4882decf8452dd2b3b24c409331c302070739206",
+ "code_sha256": "210f2a4cc6ad1a5d548d0ca8bb2ece72e21d81121c03b8cf07c9da9f9d4a4bea",
+ "clean_code_sha256": "210f2a4cc6ad1a5d548d0ca8bb2ece72e21d81121c03b8cf07c9da9f9d4a4bea",
+ "code": "pairs=[]\nfor k in [6,13,14,15,17]:\n    o={json.loads(l)['id']:json.loads(l) for l in open(f'/work/gen_{k}_original.jsonl')}\n    e={json.loads(l)['id']:json.loads(l) for l in open(f'/work/gen_{k}_edited.jsonl')}\n    for i in o:\n        a,b=o[i],e[i]\n        if a['correct']!=b['correct'] and not a['cut'] and not b['cut']:\n            c,w=(a,b) if a['correct'] else (b,a)\n            pairs.append((k,i,c['text'],w['text']))\nDset=set(D)\nprint(len(pairs), all(p[1] in Dset for p in pairs), len(set(p[1] for p in pairs)))",
+ "canonical_sha256": "14b69b319a373f66e5ff4be437f14afc481d18058af1945372a9112ca568ef0d",
+ "history_sha256": "dec8b6d6ead3f9b3b64dc3344767b0f95ac653cadc2cebe28f2e88b1cda8ba7e",
+ "context": {
+  "forward_passes_used": 24,
+  "forward_pass_budget": 50,
+  "python_runs_used": 85,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 109,
+    "text": "This pass runs SC on the remaining 202 never-used practice problems, which completes its never-tuned measurement."
+   },
+   {
+    "reply": 110,
+    "text": "The last 202 never-used problems also show no effect: -0.5 \u00b1 2.7 (14 wrong\u2192right, 15 right\u2192wrong). Pooled over all 1,226 problems never used for tuning (HOLDOUT 768 plus the extra 458), SC has 97 wrong\u2192right and 98 right\u2192wrong, a paired gain of -0.08 \u00b1 about 1.1 points. SC changes how answers end, with fewer cut-offs, but not whether they are right.\n\nNone of my other lines produced an edit that improves accuracy (details are in the summary below). So the honest choice is to submit the unedited original. I'll drop every edit so /work/edited is empty, keep the SC backups for the record, and write the final state into the notes."
+   },
+   {
+    "reply": 111,
+    "text": "I submitted the unedited original: every edit is dropped and /work/edited is empty. My best candidate, SC, gave no measurable gain on problems that were never used to choose it.\n\n**What goes wrong.** The original model scores about 19 to 23% on practice problems.\n- About a quarter of answers are cut off at 768 tokens, inside repeating loops of lines.\n- Most of the rest finish with a wrong answer.\n- Arithmetic is not the problem. On DEV reference solutions, result digits after \"=\" have a mean logprob of -0.29, with only 4% below -2.\n- In 265 wrong finished answers, the last computed result never equals the gold answer. So the model does not reach the right number and then misreport it.\n- The errors come from setting up the problem: treating a per-item rate as a total, dropping a condition, misreading units. The loops are where the reasoning gets stuck (gold appeared before the loop started in only 11 of 89 cases).\n\n**Lines I tested and closed.**\n- **Repetition neurons:** zeroing 76 copy-related neurons left copying unchanged.\n- **Loop-specific attention heads:** none exist; the full-attention heads copy equally on new text.\n- **Weight anomalies:** none found in norm, head or neuron scans.\n- **Number-fetching heads:** four full-attention heads (L5h2, L11h1, L17h0, L23h2) attend to the matching question number when an operand is written. Ablating them lowered all token types about equally (copied operands -0.25, text -0.23), so they are generic context heads, not a repairable operand circuit.\n- **Loop-onset direction (edit C):** a direction at layer 20 that predicts the first repeated line, taken as a difference of means. Amplifying it inside the outputs of layers 16 to 22 reduced cut-offs a lot (29.7% to 15.6%), but accuracy did not change (+0.4 \u00b1 2.0), because the freed answers were still wrong.\n- **Style direction (edit S):** a direction for plain LaTeX-style answers versus markdown answers, which looked about 9 points more accurate within difficulty levels. Pushing it in layers 16 to 19 switched 96% of first tokens to plain style, but gained only +1.6 \u00b1 2.4, so the style advantage was mostly a selection effect.\n\n**Best candidate, SC (S(1.0) combined with C(-1.5), 14 tensors in layers 16 to 22).**\n\n| Problem set | Problems | Paired gain (edited minus original) |\n|---|---|---|\n| DEV | 512 | +3.3 \u00b1 1.8 points |\n| HOLDOUT | 768 | +0.26 \u00b1 1.4 points (61 wrong\u2192right, 59 right\u2192wrong) |\n| 458 practice problems never used | 458 | about -0.7 points |\n| All never-tuned problems | 1,226 | **-0.08 \u00b1 1.1 points** (97 wrong\u2192right, 98 right\u2192wrong) |\n\nA stronger version (SC3, with C doubled) did worse on DEV, +0.8 \u00b1 2.4.\n\nSC reliably cuts the number of answers stopped at the token limit, but it does not raise accuracy. The DEV gain was selection and noise.\n\n**Expected result.** Since I submitted the original, the evaluation should show no difference between the two models. SC and the other candidates are kept as backups in /work/best_SC, /work/best_S1 and /work/best_C-1.5. 26 forward passes remain unused."
+   },
+   {
+    "reply": 112,
+    "text": "I'll use the remaining passes to look for a difficulty-controlled signal of correct reasoning. The paired DEV passes (6, 13, 14, 15 and 17) contain problems where one model answered correctly and the other wrongly. Within such a pair, problem difficulty is held fixed. I'll keep only pairs where both answers finished, so that the contrast is about right versus wrong reasoning, not looping versus finishing. I'll then score both answers with the original model and save its hidden states. The mean over response tokens of correct minus wrong, averaged over pairs, gives a candidate \"on-track\" direction. This is a difference of means, which is an allowed statistic. If the direction is consistent across pairs (positive held-out projection) and separates from mere length and style, it becomes a candidate for a causal edit. If it is not consistent, the line closes cheaply. First I'll count the available pairs."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "8e14953a1cf3569c8f3ff609dcf0bb4b26bfc79cf2da6641f95991892d5211bc",
+ "effort": "medium"
+}

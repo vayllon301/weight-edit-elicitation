@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "65b45be5bd53873e4e7523c25043487935d1bef5e24b96304cf47c7fe5639776",
+ "code_sha256": "230377295dbb49aba8d6a0f01ca077da2eef72046feb642e9e7859713974d150",
+ "clean_code_sha256": "230377295dbb49aba8d6a0f01ca077da2eef72046feb642e9e7859713974d150",
+ "prompt_sha256": "7fbec0882d351c4bada121988a092ebf414ce49318febb2842fded9076af5e19",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "Block drops all edits, appends results of pass 27 (observed per-token logprob statistics from a real forward pass) to notes, and loads pair_texts.json/pair_meta.json to inspect their structure. No candidate edit applied to stored activations, no loss/score over samples, no model replay.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 6080,
+  "cache_read_input_tokens": 42388,
+  "output_tokens": 171,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 6080,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 171,
+    "cache_read_input_tokens": 42388,
+    "cache_creation_input_tokens": 6080,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 6080
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.060545600000000005,
+ "t": 1794170467.406962
+}

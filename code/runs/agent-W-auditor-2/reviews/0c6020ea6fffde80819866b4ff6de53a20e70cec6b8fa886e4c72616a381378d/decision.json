@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "0c6020ea6fffde80819866b4ff6de53a20e70cec6b8fa886e4c72616a381378d",
+ "code_sha256": "111f2e4bdc0c67fb2ee03fa0542b40780947a1998fee0d347bcd1da5bf8bde01",
+ "clean_code_sha256": "111f2e4bdc0c67fb2ee03fa0542b40780947a1998fee0d347bcd1da5bf8bde01",
+ "prompt_sha256": "95c50a004069d8a8a68093ff3199a7feaca3dfb4c277ad14e025ae9ee80307e1",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "screen(41) only reads the logprobs and top-k that pass 41 returned for the E31 edit it ran, and compares them with the original passes 2 and 3. E31 zeroes L15h1, a head chosen from weight statistics in block 239, so no forbidden-selected parameter is used. No candidate is simulated in the kernel.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 7770,
+  "cache_read_input_tokens": 129729,
+  "output_tokens": 322,
+  "output_tokens_details": {
+   "thinking_tokens": 135
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 7770,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 322,
+    "cache_read_input_tokens": 129729,
+    "cache_creation_input_tokens": 7770,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 7770
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.09455380000000001,
+ "t": 1794166582.267879
+}

@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "b7c815422892490651884606301470f74826eed50992bab99c42f7748ded1703",
+ "code_sha256": "71ef6b6d5da92a6966fdfa059fe84d4d4714217a3bd48e3ec778bdcfef47b586",
+ "clean_code_sha256": "71ef6b6d5da92a6966fdfa059fe84d4d4714217a3bd48e3ec778bdcfef47b586",
+ "prompt_sha256": "ada28dfcb258078e98f4f4b75dfb64c26a9744bc217f4f9ddc0f7e8917042f4f",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block sorts digit tokens into copied and computed, then averages observed token logprobs from fwd_18 (original) and fwd_20 (E4, which pass 20 ran). These are statistics of returned pass outputs. No candidate edit is applied to stored activations, no model stage is replayed, and no parameter is selected from a forbidden simulation.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 7840,
+  "cache_read_input_tokens": 46994,
+  "output_tokens": 314,
+  "output_tokens_details": {
+   "thinking_tokens": 133
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 7840,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 314,
+    "cache_read_input_tokens": 46994,
+    "cache_creation_input_tokens": 7840,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 7840
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0784068,
+ "t": 1794182166.021591
+}

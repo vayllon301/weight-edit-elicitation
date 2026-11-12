@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "f69352d6cc20b8ac29a9c417d7355a750179e9dbdd7cb28680b5785501019449",
+ "code_sha256": "ddaa04f69f027c80cdd7905eed49df43bc9162cdc91dc966a154e0af3966ad75",
+ "clean_code_sha256": "ddaa04f69f027c80cdd7905eed49df43bc9162cdc91dc966a154e0af3966ad75",
+ "code": "import json, re, collections, numpy as np\ngen=[json.loads(l) for l in open('/work/gen_1.jsonl')]\nprint(gen[0].keys())\nbyid={r['id']:r for r in rows}\ncorr=[g for g in gen if g['correct']]; cut=[g for g in gen if g['cut'] and not g['correct']]; wrong=[g for g in gen if not g['correct'] and not g['cut']]\nprint(len(corr),len(cut),len(wrong))\nfor nm,G in [('corr',corr),('cut',cut),('wrong',wrong)]:\n    nt=np.array([g['n_tokens'] for g in G]); print(nm,'tok pct',np.percentile(nt,[10,50,90]).round(), 'marker',np.mean([g['used_marker'] for g in G]).round(3))\ndef show(g,n=300):\n    t=g['text'].encode('ascii','replace').decode()\n    print('---',g['id'],'gold',g['gold'],'pred',g['pred'],'ntok',g['n_tokens'],'\\nHEAD:',t[:n].replace('\\n',' | '),'\\nTAIL:',t[-160:].replace('\\n',' | '))\nfor g in corr[:2]+wrong[:4]+cut[:4]: show(g)",
+ "canonical_sha256": "b4d82bf2c503361db866a3917b80691e11a35784f32e09b6f280da656e028816",
+ "history_sha256": "bff13bf060b374e65482e4c2c2f464e6cb68e8116867db9c57959b3e4e5fdf72",
+ "context": {
+  "forward_passes_used": 1,
+  "forward_pass_budget": 50,
+  "python_runs_used": 2,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 1,
+    "text": "I'm starting by checking the kernel: which tensors exist, what the practice data looks like and what the evaluation prompt format is. I'll also check whether notes from an earlier session exist in /work, so I don't redo work or spend passes twice. No forward passes yet. This only orients me before I design a diagnostic generation pass."
+   },
+   {
+    "reply": 2,
+    "text": "The kernel works and nothing has been edited. The config matches a Gemma-3-style model, and the prompt format is clear. Before any measurement I'll fix DEV and HOLDOUT from a seeded shuffle, so the split can't depend on anything I see later. The budget is 50 passes and a \"both\" pass covers 256 problems per model, so I'll give DEV 1,250 ids and HOLDOUT 1,000, which is enough for four independent HOLDOUT passes. I'll also check the config and weight norms per layer, then write the notes. The next step is a baseline generation pass on 512 DEV problems with activations, to count failure types and read the failures. This step has no hypothesis to test yet."
+   },
+   {
+    "reply": 3,
+    "text": "DEV and HOLDOUT are fixed and stored. The architecture is Gemma-3 270M-class with 26 layers. The norm weights grow sharply with depth, so later layers apply much larger post-block gains, which could matter later. Now for the baseline pass: the original model on 512 DEV problems, with activations at every layer and at the MLP down_proj inputs. This gives the accuracy, the mix of wrong, cut-off and no-answer outcomes, and text to read. If most failures turn out to be cut-offs or missing markers, I'd look for a format or termination mechanism. If they're mostly wrong answers, I'd separate arithmetic slips from reasoning errors."
+   },
+   {
+    "reply": 4,
+    "text": "Baseline accuracy is only 18.2%, with 281 wrong answers and 138 cut off at the 768-token limit. There were no finished answers without a number, and the model uses an average of 351 tokens. The cut-off rate is high for GSM8K-length solutions, so something may be looping or rambling. The failures need reading before any explanation. I'll break the results down by marker use and token length, read a few correct, wrong and cut samples, and look for repetition in the cut answers and for where wrong answers first go off track. A repetition-dominated cut-off group would suggest a looping mechanism. Sensible but wrong arithmetic would point to computation or carry errors instead."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "64502873cc6e44f67c133ba0b8a9525f5767da5be8caf2d8045fc5bac213ebc5",
+ "effort": "high"
+}

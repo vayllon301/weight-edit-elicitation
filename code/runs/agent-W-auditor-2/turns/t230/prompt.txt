@@ -1,0 +1,30 @@
+OUTPUT of Python run 196 of at most 300:
+```
+input_layern exact -1.0 per layer [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] | near-0 inexact [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+post_attenti exact -1.0 per layer [1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0] | near-0 inexact [2, 2, 1, 1, 7, 1, 5, 2, 9, 6, 2, 1, 0, 0, 0, 0, 0, 0]
+   exact zeros (layer,ch): [(0, 542), (2, 133), (3, 149), (9, 218)]
+pre_feedforw exact -1.0 per layer [1, 2, 1, 1, 1, 2, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0] | near-0 inexact [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0]
+   exact zeros (layer,ch): [(0, 400), (1, 97), (1, 400), (2, 400), (3, 400), (4, 400), (5, 163), (5, 400), (7, 163), (8, 163)]
+post_feedfor exact -1.0 per layer [0, 1, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] | near-0 inexact [1, 0, 0, 2, 13, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0]
+   exact zeros (layer,ch): [(1, 93), (4, 188), (4, 232), (4, 360), (4, 436), (4, 547)]
+L4 post-FF deviating channels: (ch, eff L3, L4, L5, ch median, z, L4 down row-norm/median)
+(87, np.float64(2.66), np.float64(0.01), np.float64(104.5), 86.8, -15.3, 3.9)
+(127, np.float64(0.0), np.float64(0.01), np.float64(35.25), 96.5, -18.2, 4.14)
+(133, np.float64(0.8), np.float64(0.02), np.float64(24.5), 55.1, -16.6, 4.0)
+(167, np.float64(1.04), np.float64(-0.01), np.float64(38.0), 89.8, -18.2, 3.95)
+(188, np.float64(0.87), np.float64(0.0), np.float64(38.0), 48.8, -36.1, 4.53)
+(203, np.float64(0.93), np.float64(-0.01), np.float64(33.25), 53.1, -18.2, 4.3)
+(217, np.float64(1.35), np.float64(0.04), np.float64(32.75), 32.3, -10.7, 3.75)
+(232, np.float64(0.89), np.float64(0.0), np.float64(29.5), 51.4, -36.2, 4.23)
+(338, np.float64(1.04), np.float64(0.02), np.float64(35.0), 92.5, -16.0, 4.04)
+(360, np.float64(0.8), np.float64(0.0), np.float64(18.75), 29.6, -35.4, 4.13)
+(420, np.float64(1.19), np.float64(-0.01), np.float64(39.75), 85.0, -18.3, 4.02)
+(436, np.float64(0.87), np.float64(0.0), np.float64(32.88), 55.5, -36.3, 4.13)
+(517, np.float64(0.72), np.float64(0.0), np.float64(18.0), 30.9, -19.2, 4.2)
+(526, np.float64(0.84), np.float64(0.01), np.float64(24.5), 46.8, -16.9, 4.56)
+(527, np.float64(0.79), np.float64(0.0), np.float64(27.5), 32.8, -19.4, 3.98)
+(547, np.float64(0.77), np.float64(0.0), np.float64(19.38), 32.4, -35.6, 4.06)
+(565, np.float64(0.81), np.float64(-0.01), np.float64(26.25), 49.4, -18.2, 4.06)
+(621, np.float64(1.82), np.float64(0.01), np.float64(54.5), 90.0, -18.5, 3.83)
+
+```

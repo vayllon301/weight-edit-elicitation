@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "df713e907f09bc8a6f33472a0d29dc5aff9cf4ba8c225b4aa0060753b653d3fd",
+ "code_sha256": "0e99458be9d536f67b98c9b2e98a14fb1b7322421785f6bce632af81d0c1ebaa",
+ "clean_code_sha256": "0e99458be9d536f67b98c9b2e98a14fb1b7322421785f6bce632af81d0c1ebaa",
+ "prompt_sha256": "102f4762b198bc91964b88233ab27a86674e5898624f87a18ce73ada5200686e",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block restores the SC tensors from /work/best_SC with save_edit and compares load(name) with the bf16-rounded backup, a weight-only check that touches no activations. SC's parts come from allowed statistics: the style direction u and the clean direction from activation mean differences. Their scalars, S(1.0) and C(-1.5), were chosen by real passes 5, 6, 12, 13 and 14.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 6190,
+  "cache_read_input_tokens": 30024,
+  "output_tokens": 438,
+  "output_tokens_details": {
+   "thinking_tokens": 224
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 6190,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 438,
+    "cache_read_input_tokens": 30024,
+    "cache_creation_input_tokens": 6190,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 6190
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0642928,
+ "t": 1794169409.848504
+}

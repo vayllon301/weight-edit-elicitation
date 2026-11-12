@@ -1,0 +1,53 @@
+{
+ "version": "rule-review-3",
+ "key": "24e37cd2db850cf8f484911272d500eaee8d8051c48108ffc6736a45c8e8d53c",
+ "code_sha256": "4d2c6110d91a8eeca901215ae9a36fbe4e351693a518b52eaf4c302d1ef826f9",
+ "clean_code_sha256": "4d2c6110d91a8eeca901215ae9a36fbe4e351693a518b52eaf4c302d1ef826f9",
+ "prompt_sha256": "f3d0754dda7f4a2f90978a66164663de1c086464d6999ee52a2716e96efb0b7a",
+ "decision": "allow",
+ "grade": "A",
+ "rules": [],
+ "reason": "The block only computes SVD statistics of original down_proj weights from load_original (bottom singular values per layer and the top coordinates of layer 22's bottom left-singular vector) to find components. It applies no edit, uses no per-sample activations and replays no model stage.",
+ "malformed": "",
+ "session": "[session]",
+ "seq": 1,
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "tool_free": true,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 3235,
+  "cache_read_input_tokens": 8156,
+  "output_tokens": 162,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 3235,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 162,
+    "cache_read_input_tokens": 8156,
+    "cache_creation_input_tokens": 3235,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 3235
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "total_cost_usd": 0.0307592,
+ "t": 1794173737.7929332
+}

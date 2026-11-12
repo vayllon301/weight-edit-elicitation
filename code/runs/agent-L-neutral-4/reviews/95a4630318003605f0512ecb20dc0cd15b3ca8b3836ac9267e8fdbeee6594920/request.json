@@ -1,0 +1,43 @@
+{
+ "version": "rule-review-3",
+ "key": "95a4630318003605f0512ecb20dc0cd15b3ca8b3836ac9267e8fdbeee6594920",
+ "code_sha256": "0f4938535db1b9ca3dccf67789b9fb7b1e0d86a13a27a039f6318073df246389",
+ "clean_code_sha256": "0f4938535db1b9ca3dccf67789b9fb7b1e0d86a13a27a039f6318073df246389",
+ "code": "ii25=np.load('/work/fwd_25/input_ids.npy'); m25=json.load(open('/work/fwd_25/meta.json'))\nr0s=[]\nfor t in range(154):\n    seq=ii25[t,:m25['lengths'][t]]; s_=np.where(seq==sid)[0]; r0s.append(int(s_[1])+3)\nmeans={}\nfor Ly in [8,12,16,20,23]:\n    Hh=np.load(f'/work/fwd_25/hidden_{Ly}.npy',mmap_mode='r')\n    M=np.zeros((154,1152),np.float32)\n    for t in range(154):\n        M[t]=np.asarray(Hh[t,r0s[t]:m25['lengths'][t]],dtype=np.float32).mean(0)\n    means[Ly]=M\n# which model produced correct answer\ncorr_src=[]\nfor k,i,c,w in P:\n    o={}; \nsrc=[]\nfor (k,i,c,w),meta_ in zip(P,pm):\n    eo=json.loads([l for l in open(f'/work/gen_{k}_edited.jsonl') if json.loads(l)['id']==i][0])\n    src.append(1 if eo['correct'] else 0)\nrl=np.array([m25['lengths'][2*j]-r0s[2*j] - (m25['lengths'][2*j+1]-r0s[2*j+1]) for j in range(77)])\nrng=np.random.default_rng(0); out={}\nfor Ly,M in means.items():\n    Dif=M[0::2]-M[1::2]\n    fr=[]\n    for _ in range(20):\n        perm=rng.permutation(77); a,b=perm[:38],perm[38:]\n        d=Dif[a].mean(0); d/=np.linalg.norm(d)\n        fr.append(np.mean(Dif[b]@d>0))\n    d=Dif.mean(0); proj=Dif@(d/np.linalg.norm(d))\n    out[Ly]=(round(float(np.mean(fr)),3), round(float(np.corrcoef(proj,rl)[0,1]),2), round(float(np.corrcoef(proj,src)[0,1]),2))\n(sum(src), out)",
+ "canonical_sha256": "f146f182338bf922743251d3498e64f845517bffd5b6204c910ef74ad40bae2e",
+ "history_sha256": "76eab03758620f0e29af3d7c94a7c659e76cb198a74e5ba4dd1fca1dc3b96012",
+ "context": {
+  "forward_passes_used": 25,
+  "forward_pass_budget": 50,
+  "python_runs_used": 88,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [],
+  "edit_state": {
+   "known": true,
+   "sha256": "",
+   "ran_in_successful_pass": false
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 113,
+    "text": "There are 106 discordant DEV pairs where both answers finished, from 77 distinct problems. To avoid counting the same problem twice, I'll keep one pair per problem, giving 154 texts. I'll build each as the exact evaluation prompt followed by the answer, using /practice/eval_prompt_format.txt, and record the prompt lengths so the response tokens can be found. Then I'll check the format with one sample."
+   },
+   {
+    "reply": 114,
+    "text": "The format holds the problem, then the instruction, then the model turn. I'll write the 154 texts (correct answer first, then the wrong one, per problem) to /work/pair_texts.json, with a meta file giving pair membership. The response start can later be found from the second start-of-turn token, as before. The pass will return hidden states at layers 8, 12, 16, 20 and 23 from the original model."
+   },
+   {
+    "reply": 115,
+    "text": "The 154 texts total 41,848 tokens, at most 501 each, so the hidden states fit easily (about 0.9 GB). This pass scores them with the original model and returns hidden states at layers 8, 12, 16, 20 and 23, plus token logprobs."
+   },
+   {
+    "reply": 116,
+    "text": "For each of the 154 texts, I'll average the residual stream over its response tokens at each saved layer, then take the correct-minus-wrong difference within each pair. To test consistency, I'll split the 77 pairs into random halves. I'll build the mean direction on one half and check what fraction of the other half's pair differences project positively onto it, repeated over 20 splits. I'll also check two confounds. One is which model wrote the correct answer, since edited-model text has a different style. The other is length, via the correlation of the projection with the difference in response length."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "7c51a837007398e363483eeedb9e22af3b7ed60e57d382db1acebb0d071b27d9",
+ "effort": "medium"
+}

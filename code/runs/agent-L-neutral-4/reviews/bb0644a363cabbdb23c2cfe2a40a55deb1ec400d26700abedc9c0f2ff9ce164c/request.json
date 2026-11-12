@@ -1,0 +1,58 @@
+{
+ "version": "rule-review-3",
+ "key": "bb0644a363cabbdb23c2cfe2a40a55deb1ec400d26700abedc9c0f2ff9ce164c",
+ "code_sha256": "633401cf32ea7d97d82ac972cdb184c656d4991b56a76cf7c44cced687f0ff97",
+ "clean_code_sha256": "633401cf32ea7d97d82ac972cdb184c656d4991b56a76cf7c44cced687f0ff97",
+ "code": "with open('/work/notes.md','a') as f:\n    f.write(\"Run151: C(-1.5) collateral on orig-finished (all 9 C passes, 1665 finished): 105 (6.3%) become cut; r2w 97: 16% newly cut, rest drift to longer wrong answers (len ratio 1.42 vs 1.05 for w2r); 0 style changes, ~60% share first 120 chars. -> C shifts the loop boundary (frees ~60% of loops, creates some new).\\n\"\n            \"FINAL PLAN: submit C(-1.5) (14 tensors, /work/edited = /work/best_final). HOLDOUT +2.2+-0.95 (1226); all practice +1.2+-0.7 (2250). Remaining passes not used for new edits (cannot validate on DEV+HOLDOUT). Closed this session: C2 onset dir, earlier-layer extension, in-loop dir (both signs), module split (mlp/attn), C(-1.0) (futility), C(-2.25).\\n\")\n(len(edited()), sorted(os.listdir('/work/edited'))==sorted(os.listdir('/work/best_final')))",
+ "canonical_sha256": "d5642e662201d152697ddca9aca2cc9b550f03e8daca648e3ee5e9b57cba14e5",
+ "history_sha256": "97517f21d6249627393285f7c1b8a35b087fab7627cb1ed3ec05b5229c46a6d4",
+ "context": {
+  "forward_passes_used": 44,
+  "forward_pass_budget": 50,
+  "python_runs_used": 151,
+  "kernel_restarts": 0,
+  "tensors_with_a_saved_edit": [
+   "model.layers.16.mlp.down_proj.weight",
+   "model.layers.16.self_attn.o_proj.weight",
+   "model.layers.17.mlp.down_proj.weight",
+   "model.layers.17.self_attn.o_proj.weight",
+   "model.layers.18.mlp.down_proj.weight",
+   "model.layers.18.self_attn.o_proj.weight",
+   "model.layers.19.mlp.down_proj.weight",
+   "model.layers.19.self_attn.o_proj.weight",
+   "model.layers.20.mlp.down_proj.weight",
+   "model.layers.20.self_attn.o_proj.weight",
+   "model.layers.21.mlp.down_proj.weight",
+   "model.layers.21.self_attn.o_proj.weight",
+   "model.layers.22.mlp.down_proj.weight",
+   "model.layers.22.self_attn.o_proj.weight"
+  ],
+  "edit_state": {
+   "known": true,
+   "sha256": "2c837537e927e286e8c5ebf5e2d5d67ffc98461e87866b853c1d8790a8888c98",
+   "ran_in_successful_pass": true
+  },
+  "blocked_attempts_never_executed": [],
+  "agent_explanations_oldest_first": [
+   {
+    "reply": 197,
+    "text": "The notes are updated, and C(\u22121.0) is unchanged (14 tensors). This pass measures it on dev_a2, where C(\u22121.5) gave \u22121.17 (9/12) with cut-offs at 14.8%. Under the futility rule set beforehand, pooled DEV over dev_a1 and dev_a2 below +0.8 ends the C(\u22121.0) line. At or above +0.8, I'll continue to dev_b1 and dev_b2."
+   },
+   {
+    "reply": 198,
+    "text": "C(\u22121.0) on dev_a2 gives +1.17 \u00b1 1.61 (10/7), with cut-offs at 18.4%. Pooled over dev_a it is +0.78 (22 wrong\u2192right, 18 right\u2192wrong over 512), just below the +0.8 futility threshold I set before this pass, so the C(\u22121.0) line stops. Even with perfect follow-up, the original +1.9 DEV bar would require about +3.0 on each of dev_b1 and dev_b2, far above anything any C variant has produced there.\n\nThe two doses do behave as the flip proxy predicted. C(\u22121.0) frees fewer loops (cut-offs 21% and 18%, against 14% and 15% for C(\u22121.5)) and causes fewer losses on finished answers. On dev_a it scores about 2 points above C(\u22121.5), but that is unpaired between doses, measured on the set used to build the direction, and within noise. I'm restoring the frozen submission C(\u22121.5) from /work/best_final and verifying it byte for byte."
+   },
+   {
+    "reply": 199,
+    "text": "The submission C(\u22121.5) is restored and verified. Six passes remain, which is not enough to build and fully validate a new edit, so any further work should explain the edit's one known weakness. That weakness is the net loss on problems the original finished: 70 wrong\u2192right against 97 right\u2192wrong. This analysis uses no pass. I'll take the right\u2192wrong cases among originally finished problems across all C(\u22121.5) generation passes (13, 28, 29\u201333, 39, 40). Each lost answer is sorted three ways: the edit made it loop (now cut), it ended with a different wrong number, or it changed solution style. Style is judged by the first token, \"Let\" (plain) against \"Here\" (markdown), which I earlier found tied to accuracy. If many losses are newly cut answers, C also creates loops in some problems. If most are style changes, the collateral damage acts through the style-switch effect seen earlier. Either finding is useful in the report, even without a pass left to act on it."
+   },
+   {
+    "reply": 200,
+    "text": "Among the originally finished problems that C(\u22121.5) turned wrong (97), 16% now loop to the token limit. The rest finish with a different wrong number, in answers that run on average 1.42 times longer, against 1.05 for the gains. No loss comes from a change of solution style: the first token never changes, and in about 60% of cases the first 120 characters are identical. Overall, 105 of 1,665 originally finished answers (6.3%) become cut under C. So the edit does not only free loops: it moves the loop boundary, freeing about 60% of the original's loops while causing new ones, or longer, drifting reasoning, in a small share of answers that had been fine. That explains the modest net gain and its variability between sets.\n\nSix passes cannot both build and validate a correction for those new loops on DEV and HOLDOUT, so I won't start a new edit. I'll record this finding and the final plan in the notes."
+   }
+  ]
+ },
+ "flagged": [],
+ "prompt_sha256": "eae5479816c9cf9ff0aade4a23b838611a4a2f3a73cd4afa1bb7cb82beb9b3b6",
+ "effort": "medium"
+}
